@@ -41,6 +41,10 @@ data class PrayerWidgetData(
 object PrayerWidget {
     private const val PREFS = "prayer_widget"
 
+    // Must match SunnahCalendarRules.minOffset/maxOffset on the Dart side.
+    private const val MIN_HIJRI_OFFSET = -2
+    private const val MAX_HIJRI_OFFSET = 2
+
     fun prefs(context: Context): SharedPreferences =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
@@ -127,14 +131,20 @@ object PrayerWidget {
      * The Hijri date. Computed natively (Umm al-Qura via ICU) so it advances at
      * midnight without the app, using the localized month names Flutter pushed.
      * Falls back to the Flutter-rendered string when ICU isn't available.
+     *
+     * The user's sighting offset is applied here as well as in the app. The
+     * calculated date can run a day either side of a local sighting, and the
+     * widget sits next to the app on the same screen — if only one of them
+     * honoured the adjustment they would visibly disagree.
      */
     private fun hijriDate(p: SharedPreferences): String {
+        // Already carries the offset: Flutter rendered it before pushing.
         val fallback = p.getString("hijri", "") ?: ""
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return fallback
         return try {
             val cal = android.icu.util.IslamicCalendar().apply {
                 calculationType = android.icu.util.IslamicCalendar.CalculationType.ISLAMIC_UMALQURA
-                timeInMillis = System.currentTimeMillis()
+                timeInMillis = shiftedNow(hijriOffset(p))
             }
             val day = cal.get(android.icu.util.Calendar.DAY_OF_MONTH)
             val monthIndex = cal.get(android.icu.util.Calendar.MONTH) // 0-based
@@ -148,6 +158,33 @@ object PrayerWidget {
             fallback
         }
     }
+
+    /**
+     * The stored sighting adjustment, in days. Clamped to the same range the
+     * app offers, so a malformed or stale value can't push the widget somewhere
+     * the app would never go. Absent (an install predating the setting) is 0.
+     */
+    private fun hijriOffset(p: SharedPreferences): Int =
+        (p.getString("hijri_offset", null)?.toIntOrNull() ?: 0)
+            .coerceIn(MIN_HIJRI_OFFSET, MAX_HIJRI_OFFSET)
+
+    /**
+     * Now, moved by [offsetDays], for converting to a Hijri date.
+     *
+     * Pinned to midday before the days are added — the same thing the Dart side
+     * does. Adding a day's worth of milliseconds outright would land on a
+     * skipped or repeated hour across a daylight-saving change and could come
+     * out on the wrong calendar day.
+     */
+    private fun shiftedNow(offsetDays: Int): Long =
+        Calendar.getInstance().apply {
+            timeInMillis = System.currentTimeMillis()
+            set(Calendar.HOUR_OF_DAY, 12)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+            add(Calendar.DAY_OF_MONTH, offsetDays)
+        }.timeInMillis
 
     private fun paramsFor(method: String?): CalculationParameters = when (method) {
         "muslim_world_league" -> CalculationMethod.MUSLIM_WORLD_LEAGUE.parameters
