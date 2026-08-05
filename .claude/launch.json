@@ -1,0 +1,20 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "duaweb",
+      "runtimeExecutable": "flutter",
+      "runtimeArgs": [
+        "run",
+        "-d",
+        "web-server",
+        "--release",
+        "--web-port",
+        "8090",
+        "--web-hostname",
+        "127.0.0.1"
+      ],
+      "port": 8090
+    }
+  ]
+}

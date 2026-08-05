@@ -1,0 +1,95 @@
+# Hisn — Dua & Adhkar companion
+
+A Flutter mobile app for the duas Muslims recite through the day, with a built-in
+**Tasbih** (dhikr counter). This is an early prototype: the structure is in place,
+the content is authentic but intentionally small, and it's built to grow.
+
+## Features (prototype)
+
+- **Prayer-time header** — live clock, current prayer, and a countdown to the next
+  adhan, with a tap-to-open full daily schedule. Uses GPS (falls back to Makkah) and
+  the Umm al-Qura calculation method by default.
+- **Prayer reminders** — opt-in local notifications at each prayer time, with a master
+  switch and per-prayer toggles. Re-scheduled (a rolling few-day window) on every launch
+  and whenever the prayer settings change.
+- **Settings** — change the location (device GPS or a built-in city), the calculation
+  method, the Asr/madhab rule, and notification preferences from inside the app; all
+  choices persist.
+- **Recommended now** — a time-aware suggestion at the top of the home screen that points
+  to the most relevant adhkar for the current part of the day (based on the current prayer
+  period: Fajr/Dhuhr → Morning, Asr/Maghrib → Evening, Isha → Before Sleep).
+- **Search** — full-text search across every dua (title, transliteration, translation,
+  source, and Arabic).
+- **Qibla compass** — a live compass pointing to the Ka'bah using the device magnetometer
+  and the Qibla bearing for the current location (needs a device with a compass sensor).
+- **Display options** — adjustable text size and toggles to show/hide the transliteration
+  and translation lines (e.g. for Arabic-only reading).
+- **Adhkar library** — duas grouped into categories (Morning, Evening, After Prayer,
+  Before Sleep, Upon Waking, Everyday Life). Each dua shows Arabic, transliteration,
+  translation, repetition count, source reference, and (where relevant) its virtue.
+- **Read & count** — inside a category, tap a dua to count down its repetitions (×3, ×7,
+  ×100…); a progress bar tracks completion across the whole set, with haptics on each tap
+  and on finishing a dua. Progress is per-session.
+- **Tasbih counter** — tap-anywhere counter with presets (SubhanAllah, Alhamdulillah,
+  Allahu Akbar, Tahlil, Istighfar, Salawat…), an animated progress ring, set tracking,
+  and haptic feedback. Counts persist between launches.
+- **Bookmarks** — save any dua to the *Saved* tab for quick access.
+- **Offline-first** — all content and the Amiri Arabic font are bundled; no network needed.
+- Light/dark theme that follows the system.
+
+## Project structure
+
+```
+lib/
+  main.dart                 App entry; loads data + prefs, then runs DuaApp
+  app.dart                  Providers (repository, favorites, tasbih) + MaterialApp
+  models/                   Dua, DuaCategory, Dhikr (plain data classes)
+  data/dua_repository.dart  Loads & queries the JSON content
+  services/                 FavoritesService, TasbihController (ChangeNotifier + prefs)
+  theme/                    Palette, ThemeData, per-category icon/colour
+  screens/                  Home (nav), Adhkar grid, category list, Tasbih, Saved
+  widgets/                  ArabicText, CategoryCard, DuaCard
+assets/
+  data/duas.json            The dua content  ← add more here
+  data/categories.json      Category definitions
+  data/tasbih.json          Tasbih presets
+  fonts/Amiri-*.ttf         Bundled Arabic font
+```
+
+**To add content**, edit the JSON in `assets/data/` — no Dart changes needed. The UI
+reads everything through `DuaRepository`.
+
+## Architecture notes
+
+- **State**: `provider` with `ChangeNotifier`. Kept deliberately light for a prototype.
+- **Persistence**: `shared_preferences` for bookmarks and Tasbih counts.
+- **Content as data**: duas live in JSON, not Dart, so the catalogue can grow (or move
+  to a database / remote source) without touching the UI.
+- **Prayer times**: the `adhan` package computes times from coordinates; `geolocator`
+  supplies the location (permissions are declared in the Android manifest and iOS
+  Info.plist). Location mode, method, and madhab are user-configurable in Settings and
+  persisted; the seed defaults live in `lib/services/prayer_service.dart`, and the city
+  list / method labels in `lib/services/prayer_settings.dart`.
+- **Notifications**: `flutter_local_notifications` + `timezone` schedule reminders
+  (`lib/services/notification_service.dart`). Because local notifications need concrete
+  times, the service keeps a rolling ~3-day window and re-schedules on launch / when
+  prayer settings change — no background work needed. Android requires core-library
+  desugaring (set in `android/app/build.gradle.kts`) plus the POST_NOTIFICATIONS /
+  exact-alarm permissions and FLN receivers in the manifest. Reminders are **off by
+  default** (opt-in). Actual delivery can only be tested on a real device/emulator.
+
+## Running
+
+```bash
+flutter pub get
+flutter run            # on a connected Android/iOS device or emulator
+```
+
+The project also has web enabled for quick previews (`flutter run -d chrome`), but it's
+designed as a mobile app.
+
+## Content & authenticity
+
+Duas are sourced from the Qur'an and well-known hadith collections (Bukhari, Muslim,
+Abu Dawud, Tirmidhi, an-Nasa'i), with references shown on each card. Before release,
+the Arabic text and references should be reviewed by a qualified person.

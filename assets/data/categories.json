@@ -1,0 +1,82 @@
+[
+  {
+    "id": "morning",
+    "title": "Morning Adhkar",
+    "titleArabic": "أَذْكَارُ الصَّبَاحِ",
+    "subtitle": "Recited after Fajr until sunrise",
+    "subtitleArabic": "تُقال بعد الفجر حتى الشروق",
+    "group": "daily_routine"
+  },
+  {
+    "id": "evening",
+    "title": "Evening Adhkar",
+    "titleArabic": "أَذْكَارُ الْمَسَاءِ",
+    "subtitle": "Recited after Asr until sunset",
+    "subtitleArabic": "تُقال بعد العصر حتى الغروب",
+    "group": "daily_routine"
+  },
+  {
+    "id": "after_salah",
+    "title": "After Prayer",
+    "titleArabic": "أَذْكَارُ بَعْدَ الصَّلَاةِ",
+    "subtitle": "Said following the obligatory prayers",
+    "subtitleArabic": "تُقال عقب الصلوات المفروضة",
+    "group": "daily_routine"
+  },
+  {
+    "id": "waking",
+    "title": "Upon Waking",
+    "titleArabic": "أَذْكَارُ الِاسْتِيقَاظِ",
+    "subtitle": "Said after waking from sleep",
+    "subtitleArabic": "تُقال بعد الاستيقاظ من النوم",
+    "group": "daily_routine"
+  },
+  {
+    "id": "sleep",
+    "title": "Before Sleep",
+    "titleArabic": "أَذْكَارُ النَّوْمِ",
+    "subtitle": "Recited when going to bed",
+    "subtitleArabic": "تُقال عند النوم",
+    "group": "daily_routine"
+  },
+  {
+    "id": "daily",
+    "title": "Everyday Life",
+    "titleArabic": "أَذْكَارٌ يَوْمِيَّةٌ",
+    "subtitle": "Eating, leaving home, and more",
+    "subtitleArabic": "الطعام والخروج من المنزل وغيرها",
+    "group": "situational"
+  },
+  {
+    "id": "forgiveness",
+    "title": "Seeking Forgiveness",
+    "titleArabic": "الِاسْتِغْفَارُ",
+    "subtitle": "Turning back to Allah in repentance",
+    "subtitleArabic": "الرجوع إلى الله بالتوبة",
+    "group": "situational"
+  },
+  {
+    "id": "distress",
+    "title": "Anxiety & Distress",
+    "titleArabic": "الْكَرْبُ وَالْهَمُّ",
+    "subtitle": "When weighed down by worry or grief",
+    "subtitleArabic": "عند الضيق بالهمّ أو الحزن",
+    "group": "situational"
+  },
+  {
+    "id": "travel",
+    "title": "Travel",
+    "titleArabic": "أَذْكَارُ السَّفَرِ",
+    "subtitle": "Setting off, stopping, and returning",
+    "subtitleArabic": "الانطلاق والنزول والرجوع",
+    "group": "situational"
+  },
+  {
+    "id": "mosque",
+    "title": "The Mosque",
+    "titleArabic": "الْمَسْجِدُ وَالْأَذَانُ",
+    "subtitle": "The adhan, entering and leaving",
+    "subtitleArabic": "الأذان ودخول المسجد والخروج منه",
+    "group": "situational"
+  }
+]

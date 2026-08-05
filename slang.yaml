@@ -1,0 +1,14 @@
+base_locale: en
+input_directory: lib/i18n
+input_file_pattern: .i18n.json
+output_directory: lib/i18n
+output_file_name: strings.g.dart
+# Strings carry interpolations like "$percent" and "$name".
+string_interpolation: dart
+# Generated getters stay lowerCamelCase regardless of JSON key casing.
+key_case: camel
+# Compile every locale into the one generated file (offline app, only 3 langs)
+# so translations can be built synchronously without deferred-library loads.
+lazy: false
+# If a locale is missing a key, fall back to the English (base) string.
+fallback_strategy: base_locale
