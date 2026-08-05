@@ -17,6 +17,7 @@ const _sample = <String, Object>{
   'tasbih_count_subhanallah': 33,
   'tasbih_laps_subhanallah': 4,
   'quran_bookmark_pages': <String>['2', '604'],
+  'quran_bookmark_ayahs': <String>['2:255', '18:10'],
   'quran_last_page': 255,
   // settings
   'app_language': 'ar',
@@ -88,6 +89,10 @@ void main() {
       expect(BackupService.inScope('muhassan_streak', progress), isTrue);
       expect(BackupService.inScope('custom_duas', progress), isTrue);
       expect(BackupService.inScope('tasbih_count_x', progress), isTrue);
+      // Covered by the `quran_` prefix rather than by name, so a Quran key
+      // added later is backed up without anyone remembering to list it.
+      expect(BackupService.inScope('quran_bookmark_ayahs', progress), isTrue);
+      expect(BackupService.inScope('quran_anything_later', progress), isTrue);
       expect(BackupService.inScope('prayer_lat', progress), isFalse);
       expect(BackupService.inScope('app_language', progress), isFalse);
       expect(BackupService.inScope('notif_master_enabled', progress), isFalse);
@@ -130,7 +135,8 @@ void main() {
       expect(backup.summary.fortifiedDays, 45);
       expect(backup.summary.favorites, 2);
       expect(backup.summary.customDuas, 3);
-      expect(backup.summary.quranBookmarks, 2);
+      // Saved pages and saved verses both count.
+      expect(backup.summary.quranBookmarks, 4);
     });
 
     test('carries the stamp and a readable filename', () async {
@@ -418,7 +424,7 @@ void main() {
       final (backup, _) = service.parse(raw);
 
       expect(backup!.countIn(BackupScope.everything), _sample.length);
-      expect(backup.countIn(BackupScope.progressOnly), 10);
+      expect(backup.countIn(BackupScope.progressOnly), 11);
     });
   });
 }

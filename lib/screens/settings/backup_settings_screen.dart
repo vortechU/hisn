@@ -123,13 +123,14 @@ class _BackupSettingsScreenState extends State<BackupSettingsScreen> {
     // Read live from the services rather than from prefs, so the figures match
     // what the rest of the app is showing this second.
     final muhassan = context.watch<MuhassanService>();
+    final quran = context.watch<QuranService>();
     final summary = BackupSummary(
       streak: muhassan.streak,
       bestStreak: muhassan.best,
       fortifiedDays: muhassan.totalFortified,
       favorites: context.watch<FavoritesService>().ids.length,
       customDuas: context.watch<CustomDuaService>().count,
-      quranBookmarks: context.watch<QuranService>().bookmarkCount,
+      quranBookmarks: quran.bookmarkCount + quran.verseBookmarkCount,
     );
 
     return Scaffold(

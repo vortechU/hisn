@@ -14,6 +14,7 @@ import 'package:dua_app/screens/favorites_screen.dart';
 import 'package:dua_app/screens/home_screen.dart';
 import 'package:dua_app/screens/mushaf_screen.dart';
 import 'package:dua_app/screens/prayer_schedule_screen.dart';
+import 'package:dua_app/screens/quran_bookmarks_screen.dart';
 import 'package:dua_app/screens/quran_screen.dart';
 import 'package:dua_app/screens/search_screen.dart';
 import 'package:dua_app/screens/settings/about_settings_screen.dart';
@@ -69,7 +70,11 @@ void main() {
   late SharedPreferences prefs;
 
   setUpAll(() async {
-    SharedPreferences.setMockInitialValues({});
+    SharedPreferences.setMockInitialValues({
+      // Populated lists exercise far more layout than empty states do.
+      'quran_bookmark_pages': <String>['1', '255', '604'],
+      'quran_bookmark_ayahs': <String>['2:255', '18:10', '114:1'],
+    });
     prefs = await SharedPreferences.getInstance();
     repo = DuaRepository();
     quran = QuranRepository();
@@ -144,7 +149,12 @@ void main() {
       textScale: textScale,
       lang: lang,
     ));
-    await tester.pump(const Duration(milliseconds: 400));
+    // Several pumps rather than pumpAndSettle: some screens carry a ticking
+    // clock that would never settle, but rows backed by an asset load need
+    // more than a single frame to appear.
+    for (var i = 0; i < 4; i++) {
+      await tester.pump(const Duration(milliseconds: 200));
+    }
     expect(tester.takeException(), isNull);
   }
 
@@ -164,6 +174,7 @@ void main() {
     'display': () => const DisplaySettingsScreen(),
     'language': () => const LanguageSettingsScreen(),
     'about': () => const AboutSettingsScreen(),
+    'quran bookmarks': () => const QuranBookmarksScreen(),
     'backup': () => const BackupSettingsScreen(),
     // The restore confirmation is a sheet, never routed to, so it is rendered
     // here directly — long hint lines plus a two-button row in a narrow sheet

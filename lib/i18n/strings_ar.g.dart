@@ -367,6 +367,11 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get restoreErrTooNew => 'أُنشئت هذه النسخة بإصدار أحدث من حصن. حدّث التطبيق أولًا.';
 	@override String get restoreErrEmpty => 'لا يوجد في هذه النسخة ما يُستعاد.';
 	@override String get restoreFailed => 'تعذّرت الاستعادة. لم يتغيّر شيء.';
+	@override String get versesOnThisPage => 'آيات هذه الصفحة';
+	@override String get savedVerses => 'الآيات المحفوظة';
+	@override String get savedPages => 'الصفحات المحفوظة';
+	@override String get saveVerse => 'حفظ الآية';
+	@override String get unsaveVerse => 'إزالة الآية المحفوظة';
 }
 
 /// The flat map containing all translations for locale <ar>.
@@ -689,6 +694,11 @@ extension on TranslationsAr {
 			'restoreErrTooNew' => 'أُنشئت هذه النسخة بإصدار أحدث من حصن. حدّث التطبيق أولًا.',
 			'restoreErrEmpty' => 'لا يوجد في هذه النسخة ما يُستعاد.',
 			'restoreFailed' => 'تعذّرت الاستعادة. لم يتغيّر شيء.',
+			'versesOnThisPage' => 'آيات هذه الصفحة',
+			'savedVerses' => 'الآيات المحفوظة',
+			'savedPages' => 'الصفحات المحفوظة',
+			'saveVerse' => 'حفظ الآية',
+			'unsaveVerse' => 'إزالة الآية المحفوظة',
 			_ => null,
 		};
 	}

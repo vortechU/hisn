@@ -367,6 +367,11 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get restoreErrTooNew => 'Cadangan itu dibuat oleh versi Hisn yang lebih baru. Perbarui aplikasi terlebih dahulu.';
 	@override String get restoreErrEmpty => 'Tidak ada yang bisa dipulihkan dari cadangan itu.';
 	@override String get restoreFailed => 'Tidak dapat memulihkan. Tidak ada yang diubah.';
+	@override String get versesOnThisPage => 'Ayat di halaman ini';
+	@override String get savedVerses => 'Ayat tersimpan';
+	@override String get savedPages => 'Halaman tersimpan';
+	@override String get saveVerse => 'Simpan ayat';
+	@override String get unsaveVerse => 'Hapus ayat tersimpan';
 }
 
 /// The flat map containing all translations for locale <id>.
@@ -689,6 +694,11 @@ extension on TranslationsId {
 			'restoreErrTooNew' => 'Cadangan itu dibuat oleh versi Hisn yang lebih baru. Perbarui aplikasi terlebih dahulu.',
 			'restoreErrEmpty' => 'Tidak ada yang bisa dipulihkan dari cadangan itu.',
 			'restoreFailed' => 'Tidak dapat memulihkan. Tidak ada yang diubah.',
+			'versesOnThisPage' => 'Ayat di halaman ini',
+			'savedVerses' => 'Ayat tersimpan',
+			'savedPages' => 'Halaman tersimpan',
+			'saveVerse' => 'Simpan ayat',
+			'unsaveVerse' => 'Hapus ayat tersimpan',
 			_ => null,
 		};
 	}

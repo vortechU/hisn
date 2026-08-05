@@ -897,6 +897,21 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
 	/// en: 'Could not restore. Nothing was changed.'
 	String get restoreFailed => 'Could not restore. Nothing was changed.';
+
+	/// en: 'Verses on this page'
+	String get versesOnThisPage => 'Verses on this page';
+
+	/// en: 'Saved verses'
+	String get savedVerses => 'Saved verses';
+
+	/// en: 'Saved pages'
+	String get savedPages => 'Saved pages';
+
+	/// en: 'Save verse'
+	String get saveVerse => 'Save verse';
+
+	/// en: 'Remove saved verse'
+	String get unsaveVerse => 'Remove saved verse';
 }
 
 /// The flat map containing all translations for locale <en>.
@@ -1219,6 +1234,11 @@ extension on Translations {
 			'restoreErrTooNew' => 'That backup was made by a newer version of Hisn. Update the app first.',
 			'restoreErrEmpty' => 'That backup has nothing to restore.',
 			'restoreFailed' => 'Could not restore. Nothing was changed.',
+			'versesOnThisPage' => 'Verses on this page',
+			'savedVerses' => 'Saved verses',
+			'savedPages' => 'Saved pages',
+			'saveVerse' => 'Save verse',
+			'unsaveVerse' => 'Remove saved verse',
 			_ => null,
 		};
 	}

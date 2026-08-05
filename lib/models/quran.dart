@@ -135,6 +135,35 @@ class MushafPage {
       );
 }
 
+/// A verse together with the surah it belongs to.
+///
+/// The mushaf pages are glyph runs with no verse identity in them, so anything
+/// that needs to name a verse — bookmarking it, showing its meaning — joins the
+/// page to the surah files on the page number they both carry.
+class PageVerse {
+  const PageVerse({required this.surah, required this.ayah});
+
+  final Surah surah;
+  final Ayah ayah;
+
+  /// The conventional citation, e.g. `2:255`.
+  String get reference => '${surah.number}:${ayah.number}';
+
+  /// The stable key a bookmark is stored under.
+  String get key => reference;
+
+  /// Parses a stored bookmark key back into its two numbers, or null if the
+  /// key is malformed.
+  static (int surah, int ayah)? parseKey(String key) {
+    final parts = key.split(':');
+    if (parts.length != 2) return null;
+    final s = int.tryParse(parts[0]);
+    final a = int.tryParse(parts[1]);
+    if (s == null || a == null) return null;
+    return (s, a);
+  }
+}
+
 /// A surah with its full list of verses (loaded on demand).
 class SurahDetail {
   const SurahDetail({

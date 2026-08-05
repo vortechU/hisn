@@ -326,5 +326,10 @@
   "restoreErrNotABackup": "That is not a Hisn backup file.",
   "restoreErrTooNew": "That backup was made by a newer version of Hisn. Update the app first.",
   "restoreErrEmpty": "That backup has nothing to restore.",
-  "restoreFailed": "Could not restore. Nothing was changed."
+  "restoreFailed": "Could not restore. Nothing was changed.",
+  "versesOnThisPage": "Verses on this page",
+  "savedVerses": "Saved verses",
+  "savedPages": "Saved pages",
+  "saveVerse": "Save verse",
+  "unsaveVerse": "Remove saved verse"
 }

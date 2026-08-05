@@ -326,5 +326,10 @@
   "restoreErrNotABackup": "Itu bukan berkas cadangan Hisn.",
   "restoreErrTooNew": "Cadangan itu dibuat oleh versi Hisn yang lebih baru. Perbarui aplikasi terlebih dahulu.",
   "restoreErrEmpty": "Tidak ada yang bisa dipulihkan dari cadangan itu.",
-  "restoreFailed": "Tidak dapat memulihkan. Tidak ada yang diubah."
+  "restoreFailed": "Tidak dapat memulihkan. Tidak ada yang diubah.",
+  "versesOnThisPage": "Ayat di halaman ini",
+  "savedVerses": "Ayat tersimpan",
+  "savedPages": "Halaman tersimpan",
+  "saveVerse": "Simpan ayat",
+  "unsaveVerse": "Hapus ayat tersimpan"
 }

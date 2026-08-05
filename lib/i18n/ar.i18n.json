@@ -326,5 +326,10 @@
   "restoreErrNotABackup": "هذا ليس ملف نسخة احتياطية لحصن.",
   "restoreErrTooNew": "أُنشئت هذه النسخة بإصدار أحدث من حصن. حدّث التطبيق أولًا.",
   "restoreErrEmpty": "لا يوجد في هذه النسخة ما يُستعاد.",
-  "restoreFailed": "تعذّرت الاستعادة. لم يتغيّر شيء."
+  "restoreFailed": "تعذّرت الاستعادة. لم يتغيّر شيء.",
+  "versesOnThisPage": "آيات هذه الصفحة",
+  "savedVerses": "الآيات المحفوظة",
+  "savedPages": "الصفحات المحفوظة",
+  "saveVerse": "حفظ الآية",
+  "unsaveVerse": "إزالة الآية المحفوظة"
 }

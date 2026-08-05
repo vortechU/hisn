@@ -13,6 +13,7 @@ import '../theme/app_theme.dart';
 import '../util/arabic.dart';
 import '../widgets/arabic_text.dart';
 import '../widgets/ornament.dart';
+import '../widgets/verse_row.dart';
 
 /// The four inks a mushaf page is printed with, taken from the active palette
 /// so the reader follows the user's chosen scheme and their light/dark mode
@@ -258,6 +259,22 @@ class _MushafScreenState extends State<MushafScreen> {
     _controller.jumpToPage(_total - target);
   }
 
+  /// The verses printed on the page in view, so a particular āyah can be read
+  /// as text and kept.
+  ///
+  /// Reached from the app bar rather than by tapping the page: the reader
+  /// already spends taps on swiping and pinching, and a page that opened a
+  /// sheet whenever it was touched would be unusable to read from.
+  Future<void> _openPageVerses() async {
+    final page = _currentPage.value;
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (_) => _PageVersesSheet(page: page),
+    );
+  }
+
   Future<void> _openGoToAyah() async {
     final repo = context.read<QuranRepository>();
     final currentSurah = repo.surahForPage(_currentPage.value).number;
@@ -296,6 +313,11 @@ class _MushafScreenState extends State<MushafScreen> {
                       Text('${s.surahWord} ${repo.surahForPage(page).translit}'),
                 ),
                 actions: [
+                  IconButton(
+                    icon: const Icon(Icons.format_list_bulleted),
+                    tooltip: s.versesOnThisPage,
+                    onPressed: _openPageVerses,
+                  ),
                   IconButton(
                     icon: const Icon(Icons.my_location),
                     tooltip: s.goToAyah,
@@ -509,6 +531,81 @@ class _MushafPageView extends StatelessWidget {
                   color: inks.ink,
                   height: 1.2,
                 ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Lists the verses printed on one mushaf page, as text.
+///
+/// The page itself is a run of glyphs with no verse identity in it, so the
+/// verses are recovered from the surah files by page number — see
+/// [QuranRepository.versesOnPage].
+class _PageVersesSheet extends StatelessWidget {
+  const _PageVersesSheet({required this.page});
+
+  final int page;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = AppStrings.of(context);
+    final theme = Theme.of(context);
+    final ms = ManuscriptTheme.of(context);
+    final repo = context.read<QuranRepository>();
+
+    return SafeArea(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.85,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(Ms.margin, 0, Ms.margin, 6),
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Text(s.versesOnThisPage,
+                    style: theme.textTheme.titleMedium),
+              ),
+            ),
+            const RuleDivider(indent: Ms.margin),
+            Flexible(
+              child: FutureBuilder<List<PageVerse>>(
+                future: repo.versesOnPage(page),
+                builder: (context, snap) {
+                  if (!snap.hasData) {
+                    return Padding(
+                      padding: const EdgeInsets.all(28),
+                      child: Center(
+                          child:
+                              CircularProgressIndicator(color: ms.gilt)),
+                    );
+                  }
+                  final verses = snap.data!;
+                  return ListView.separated(
+                    shrinkWrap: true,
+                    padding: const EdgeInsets.only(bottom: 12),
+                    itemCount: verses.length,
+                    separatorBuilder: (context, _) => Divider(
+                      height: 1,
+                      indent: Ms.margin,
+                      endIndent: Ms.margin,
+                      color: ms.rule,
+                    ),
+                    itemBuilder: (context, i) => VerseRow(
+                      verse: verses[i],
+                      // Several surahs can share a page, so each verse still
+                      // names its own.
+                      showSurahName: verses.length > 1 &&
+                          verses.first.surah.number != verses.last.surah.number,
+                    ),
+                  );
+                },
               ),
             ),
           ],

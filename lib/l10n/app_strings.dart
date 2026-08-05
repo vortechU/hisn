@@ -8,7 +8,7 @@ import '../services/backup_service.dart';
 import 'locale_controller.dart';
 
 /// Bump this when shipping a build so the About screen confirms what's running.
-const String kAppVersion = '1.10.1';
+const String kAppVersion = '1.11.0';
 
 /// UI strings facade. The actual text lives in per-language files under
 /// `lib/i18n/` (`en.i18n.json`, `ar.i18n.json`, `id.i18n.json`) and is compiled
@@ -117,6 +117,11 @@ class AppStrings {
   String juzLabel(int n) => _t.juzLabel(n: n);
   String get quranBookmarks => _t.quranBookmarks;
   String get noBookmarks => _t.noBookmarks;
+  String get versesOnThisPage => _t.versesOnThisPage;
+  String get savedVerses => _t.savedVerses;
+  String get savedPages => _t.savedPages;
+  String get saveVerse => _t.saveVerse;
+  String get unsaveVerse => _t.unsaveVerse;
   String get bookmarkAdded => _t.bookmarkAdded;
   String get bookmarkRemoved => _t.bookmarkRemoved;
   String get goToAyah => _t.goToAyah;

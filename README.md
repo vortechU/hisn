@@ -34,6 +34,14 @@ the content is authentic but intentionally small, and it's built to grow.
   Allahu Akbar, Tahlil, Istighfar, Salawat…), an animated progress ring, set tracking,
   and haptic feedback. Counts persist between launches.
 - **Bookmarks** — save any dua to the *Saved* tab for quick access.
+- **Mushaf reader** — the Madani Mushaf page by page in the King Fahd (QCF v4) page
+  fonts, swiped right-to-left like the printed copy, with a go-to-verse jump and
+  pinch-to-fullscreen. The page keeps its own proportions at any orientation:
+  in landscape it is letterboxed rather than stretched, so the lines stay justified.
+- **Verses on a page** — the reader lists the verses printed on the page in view as
+  text, each with its citation, so a particular āyah can be read, copied, or saved.
+  Saved verses are kept apart from saved pages: one records an āyah worth returning
+  to, the other records where reading stopped.
 - **Backup & restore** — writes everything the app knows (streak and history, saved
   duas, your own duas, Quran bookmarks, and all settings) to a single readable JSON
   file, handed to the system share sheet so it can go to Drive, Files, or yourself.

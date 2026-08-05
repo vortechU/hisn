@@ -112,14 +112,13 @@ class BackupService {
   static const _progressKeys = <String>{
     'favorite_dua_ids',
     'custom_duas',
-    'quran_bookmark_pages',
-    'quran_last_page',
   };
   static const _progressPrefixes = <String>[
     'muhassan_', // streak, best, history, per-day completion
     'dua_progress_', // today's partially-counted set
     'tasbih_count_',
     'tasbih_laps_',
+    'quran_', // bookmarked pages and verses, last-read position
   ];
 
   // --- what counts as "settings": this device's configuration ---
@@ -495,7 +494,10 @@ class BackupService {
       fortifiedDays: intOf('muhassan_total'),
       favorites: lengthOf('favorite_dua_ids'),
       customDuas: _customDuaCount(values['custom_duas']),
-      quranBookmarks: lengthOf('quran_bookmark_pages'),
+      // Pages and verses together — the summary answers "how much of my Quran
+      // reading is in here", not which kind of mark it is.
+      quranBookmarks: lengthOf('quran_bookmark_pages') +
+          lengthOf('quran_bookmark_ayahs'),
     );
   }
 

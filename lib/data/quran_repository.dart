@@ -77,6 +77,45 @@ class QuranRepository {
     return mushaf;
   }
 
+  /// The verses printed on a mushaf page, in reading order.
+  ///
+  /// The glyph pages carry no verse identity — they are runs of private-use
+  /// codepoints — so the verses are recovered from the surah files, which
+  /// record the page each verse falls on. The page's own surah list says which
+  /// files to consult, keeping this to one or two loads (both cached) rather
+  /// than a scan of all 114.
+  Future<List<PageVerse>> versesOnPage(int page) async {
+    final mushaf = await loadPage(page);
+    final numbers = mushaf.surahs.isNotEmpty
+        ? mushaf.surahs.map((s) => s.id).toSet().toList()
+        : [surahForPage(page).number];
+    numbers.sort();
+
+    final verses = <PageVerse>[];
+    for (final number in numbers) {
+      final surah = surahByNumber(number);
+      if (surah == null) continue;
+      final detail = await loadSurah(number);
+      for (final ayah in detail.ayahs) {
+        if (ayah.page == page) {
+          verses.add(PageVerse(surah: surah, ayah: ayah));
+        }
+      }
+    }
+    return verses;
+  }
+
+  /// One verse by surah and number, or null if either is out of range.
+  Future<PageVerse?> verse(int surah, int ayah) async {
+    final meta = surahByNumber(surah);
+    if (meta == null) return null;
+    final detail = await loadSurah(surah);
+    for (final a in detail.ayahs) {
+      if (a.number == ayah) return PageVerse(surah: meta, ayah: a);
+    }
+    return null;
+  }
+
   /// The mushaf page a given verse sits on. Loads the surah on demand and
   /// looks the verse up by number; falls back to the surah's first page.
   Future<int> pageForAyah(int surah, int ayah) async {
