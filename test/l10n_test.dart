@@ -60,7 +60,11 @@ void main() {
           expect(s.prayerName(p), isNotEmpty);
           expect(s.notifTitle(p), isNotEmpty);
           expect(s.notifBody(p, 'Madinah'), contains('Madinah'));
+          expect(s.notifIqamahBody(p, 'Madinah'), contains('Madinah'));
         }
+        expect(s.iqamahOffset, isNotEmpty);
+        expect(s.iqamahOffsetValue(0), isNotEmpty);
+        expect(s.iqamahOffsetValue(15), contains('15'));
         for (final m in Madhab.values) {
           expect(s.madhabLabel(m), isNotEmpty);
           expect(s.madhabHint(m), isNotEmpty);

@@ -33,6 +33,7 @@ class NotificationService extends ChangeNotifier {
     _masterEnabled = _prefs.getBool(_kMaster) ?? false;
     for (final prayer in notifiablePrayers) {
       _enabled[prayer] = _prefs.getBool(_keyFor(prayer)) ?? true;
+      _iqamahOffset[prayer] = _prefs.getInt(_iqamahKeyFor(prayer)) ?? 0;
     }
     _dailyRemembrance = _prefs.getBool(_kDailyRemembrance) ?? false;
   }
@@ -45,6 +46,13 @@ class NotificationService extends ChangeNotifier {
   static const _kMaster = 'notif_master_enabled';
   static const _kLanguage = 'app_language';
   static String _keyFor(Prayer p) => 'notif_prayer_${p.name}';
+
+  // Minutes after the adhan that the reminder fires (0 = at adhan time). Lets
+  // the notification match iqāmah rather than adhan for mosques with a fixed
+  // gap. The adhan audio itself always plays at the real prayer time —
+  // only the reminder notification (and its text) shifts.
+  static String _iqamahKeyFor(Prayer p) => 'notif_iqamah_${p.name}';
+  static const iqamahOffsetChoices = [0, 5, 10, 15, 20, 25, 30, 45, 60];
 
   // The single "daily remembrance" bundle toggle (morning/evening adhkar +
   // Friday & nightly sunnah reminders).
@@ -103,6 +111,7 @@ class NotificationService extends ChangeNotifier {
 
   bool _masterEnabled = false;
   final Map<Prayer, bool> _enabled = {};
+  final Map<Prayer, int> _iqamahOffset = {};
   bool _dailyRemembrance = false;
   bool _initialized = false;
   bool _permissionDenied = false;
@@ -115,6 +124,7 @@ class NotificationService extends ChangeNotifier {
   bool get masterEnabled => _masterEnabled;
   bool get permissionDenied => _permissionDenied;
   bool isPrayerEnabled(Prayer prayer) => _enabled[prayer] ?? true;
+  int iqamahOffset(Prayer prayer) => _iqamahOffset[prayer] ?? 0;
 
   /// Whether the daily-remembrance bundle (morning/evening adhkar + Friday &
   /// nightly sunnah reminders) is on. Independent of the prayer-time master.
@@ -192,6 +202,14 @@ class NotificationService extends ChangeNotifier {
     await reschedule();
   }
 
+  Future<void> setIqamahOffset(Prayer prayer, int minutes) async {
+    assert(iqamahOffsetChoices.contains(minutes));
+    _iqamahOffset[prayer] = minutes;
+    await _prefs.setInt(_iqamahKeyFor(prayer), minutes);
+    notifyListeners();
+    await reschedule();
+  }
+
   Future<void> setDailyRemembrance(bool value) async {
     _dailyRemembrance = value;
     await _prefs.setBool(_kDailyRemembrance, value);
@@ -242,14 +260,20 @@ class NotificationService extends ChangeNotifier {
         final prayers = prayer.prayersForDay(now.add(Duration(days: day)));
         for (final timing in prayers) {
           if (!isPrayerEnabled(timing.prayer)) continue;
-          if (!timing.time.isAfter(now)) continue;
+          final offset = iqamahOffset(timing.prayer);
+          final fireTime = offset == 0
+              ? timing.time
+              : timing.time.add(Duration(minutes: offset));
+          if (!fireTime.isAfter(now)) continue;
           final id = day * 10 + notifiablePrayers.indexOf(timing.prayer);
           try {
             await _plugin.zonedSchedule(
               id,
               s.notifTitle(timing.prayer),
-              s.notifBody(timing.prayer, place),
-              tz.TZDateTime.from(timing.time, tz.local),
+              offset == 0
+                  ? s.notifBody(timing.prayer, place)
+                  : s.notifIqamahBody(timing.prayer, place),
+              tz.TZDateTime.from(fireTime, tz.local),
               details,
               androidScheduleMode: mode,
             );

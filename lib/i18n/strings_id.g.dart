@@ -221,6 +221,10 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get prayerNone => '—';
 	@override String notifTitle({required Object name}) => 'Salat ${name}';
 	@override String notifBody({required Object name, required Object place}) => 'Sudah masuk waktu salat ${name} — ${place}.';
+	@override String notifIqamahBody({required Object name, required Object place}) => 'Iqamah salat ${name} — ${place}.';
+	@override String get iqamahOffset => 'Jeda iqamah';
+	@override String get iqamahAtAdhan => 'Saat azan';
+	@override String iqamahPlusMinutes({required Object minutes}) => '+${minutes} menit';
 	@override String get testNotifTitle => 'Pengingat percobaan';
 	@override String get testNotifBody => 'Jika Anda membaca ini, pengingat salat berfungsi. 🌙';
 	@override String get sendTestNotif => 'Kirim notifikasi percobaan';
@@ -556,6 +560,10 @@ extension on TranslationsId {
 			'prayerNone' => '—',
 			'notifTitle' => ({required Object name}) => 'Salat ${name}',
 			'notifBody' => ({required Object name, required Object place}) => 'Sudah masuk waktu salat ${name} — ${place}.',
+			'notifIqamahBody' => ({required Object name, required Object place}) => 'Iqamah salat ${name} — ${place}.',
+			'iqamahOffset' => 'Jeda iqamah',
+			'iqamahAtAdhan' => 'Saat azan',
+			'iqamahPlusMinutes' => ({required Object minutes}) => '+${minutes} menit',
 			'testNotifTitle' => 'Pengingat percobaan',
 			'testNotifBody' => 'Jika Anda membaca ini, pengingat salat berfungsi. 🌙',
 			'sendTestNotif' => 'Kirim notifikasi percobaan',

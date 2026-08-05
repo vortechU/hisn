@@ -1,3 +1,4 @@
+import 'package:adhan/adhan.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -58,6 +59,9 @@ class NotificationsSettingsScreen extends StatelessWidget {
                     const EdgeInsetsDirectional.only(start: 32, end: 12),
                 dense: true,
                 title: Text(s.prayerName(prayer)),
+                subtitle: notifications.isPrayerEnabled(prayer)
+                    ? _IqamahOffsetPicker(prayer: prayer)
+                    : null,
                 value: notifications.isPrayerEnabled(prayer),
                 onChanged: (value) => context
                     .read<NotificationService>()
@@ -202,5 +206,77 @@ class NotificationsSettingsScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+/// A small tappable label under a prayer's switch, showing the reminder's
+/// delay after adhan ("At adhan" / "+15 min") and opening a picker on tap.
+/// The delay only shifts the reminder notification — the adhan audio (if on)
+/// still plays at the real prayer time.
+class _IqamahOffsetPicker extends StatelessWidget {
+  const _IqamahOffsetPicker({required this.prayer});
+
+  final Prayer prayer;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = AppStrings.of(context);
+    final theme = Theme.of(context);
+    final notifications = context.watch<NotificationService>();
+    final offset = notifications.iqamahOffset(prayer);
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(6),
+      onTap: () => _pick(context),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.timer_outlined,
+                size: 14, color: theme.colorScheme.onSurfaceVariant),
+            const SizedBox(width: 4),
+            Text(s.iqamahOffsetValue(offset),
+                style: theme.textTheme.bodySmall
+                    ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pick(BuildContext context) async {
+    final notifications = context.read<NotificationService>();
+    final s = AppStrings.of(context);
+    final selected = await showModalBottomSheet<int>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Text('${s.prayerName(prayer)} · ${s.iqamahOffset}',
+                    style: Theme.of(sheetContext).textTheme.titleSmall),
+              ),
+            ),
+            for (final minutes in NotificationService.iqamahOffsetChoices)
+              ListTile(
+                title: Text(s.iqamahOffsetValue(minutes)),
+                trailing: minutes == notifications.iqamahOffset(prayer)
+                    ? const Icon(Icons.check)
+                    : null,
+                onTap: () => Navigator.of(sheetContext).pop(minutes),
+              ),
+          ],
+        ),
+      ),
+    );
+    if (selected != null) {
+      await notifications.setIqamahOffset(prayer, selected);
+    }
   }
 }

@@ -10,8 +10,10 @@ the content is authentic but intentionally small, and it's built to grow.
   adhan, with a tap-to-open full daily schedule. Uses GPS (falls back to Makkah) and
   the Umm al-Qura calculation method by default.
 - **Prayer reminders** — opt-in local notifications at each prayer time, with a master
-  switch and per-prayer toggles. Re-scheduled (a rolling few-day window) on every launch
-  and whenever the prayer settings change.
+  switch and per-prayer toggles, and an optional per-prayer iqāmah delay so the
+  reminder fires a few minutes after adhan (matching a mosque's fixed gap) instead
+  of at adhan time — the adhan audio itself always plays right on time. Re-scheduled
+  (a rolling few-day window) on every launch and whenever the prayer settings change.
 - **Settings** — change the location (device GPS or a built-in city), the calculation
   method, the Asr/madhab rule, and notification preferences from inside the app; all
   choices persist.

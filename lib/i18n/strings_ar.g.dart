@@ -221,6 +221,10 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get prayerNone => '—';
 	@override String notifTitle({required Object name}) => 'صلاة ${name}';
 	@override String notifBody({required Object name, required Object place}) => 'حان وقت صلاة ${name} — ${place}.';
+	@override String notifIqamahBody({required Object name, required Object place}) => 'إقامة صلاة ${name} — ${place}.';
+	@override String get iqamahOffset => 'تأخير الإقامة';
+	@override String get iqamahAtAdhan => 'عند الأذان';
+	@override String iqamahPlusMinutes({required Object minutes}) => '+${minutes} دقيقة';
 	@override String get testNotifTitle => 'تنبيه تجريبي';
 	@override String get testNotifBody => 'إذا رأيت هذا، فإن تذكيرات الصلاة تعمل. 🌙';
 	@override String get sendTestNotif => 'إرسال تنبيه تجريبي';
@@ -556,6 +560,10 @@ extension on TranslationsAr {
 			'prayerNone' => '—',
 			'notifTitle' => ({required Object name}) => 'صلاة ${name}',
 			'notifBody' => ({required Object name, required Object place}) => 'حان وقت صلاة ${name} — ${place}.',
+			'notifIqamahBody' => ({required Object name, required Object place}) => 'إقامة صلاة ${name} — ${place}.',
+			'iqamahOffset' => 'تأخير الإقامة',
+			'iqamahAtAdhan' => 'عند الأذان',
+			'iqamahPlusMinutes' => ({required Object minutes}) => '+${minutes} دقيقة',
 			'testNotifTitle' => 'تنبيه تجريبي',
 			'testNotifBody' => 'إذا رأيت هذا، فإن تذكيرات الصلاة تعمل. 🌙',
 			'sendTestNotif' => 'إرسال تنبيه تجريبي',

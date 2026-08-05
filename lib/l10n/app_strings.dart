@@ -301,6 +301,11 @@ class AppStrings {
       _t.notifTitle(name: prayerName(prayer));
   String notifBody(Prayer prayer, String place) =>
       _t.notifBody(name: prayerName(prayer), place: place);
+  String notifIqamahBody(Prayer prayer, String place) =>
+      _t.notifIqamahBody(name: prayerName(prayer), place: place);
+  String get iqamahOffset => _t.iqamahOffset;
+  String iqamahOffsetValue(int minutes) =>
+      minutes == 0 ? _t.iqamahAtAdhan : _t.iqamahPlusMinutes(minutes: minutes);
   String get testNotifTitle => _t.testNotifTitle;
   String get testNotifBody => _t.testNotifBody;
   String get sendTestNotif => _t.sendTestNotif;

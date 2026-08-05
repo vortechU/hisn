@@ -540,6 +540,18 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// en: 'It's time for $name prayer — $place.'
 	String notifBody({required Object name, required Object place}) => 'It\'s time for ${name} prayer — ${place}.';
 
+	/// en: '$name iqāmah — $place.'
+	String notifIqamahBody({required Object name, required Object place}) => '${name} iqāmah — ${place}.';
+
+	/// en: 'Iqāmah delay'
+	String get iqamahOffset => 'Iqāmah delay';
+
+	/// en: 'At adhan'
+	String get iqamahAtAdhan => 'At adhan';
+
+	/// en: '+$minutes min'
+	String iqamahPlusMinutes({required Object minutes}) => '+${minutes} min';
+
 	/// en: 'Test reminder'
 	String get testNotifTitle => 'Test reminder';
 
@@ -1096,6 +1108,10 @@ extension on Translations {
 			'prayerNone' => '—',
 			'notifTitle' => ({required Object name}) => '${name} prayer',
 			'notifBody' => ({required Object name, required Object place}) => 'It\'s time for ${name} prayer — ${place}.',
+			'notifIqamahBody' => ({required Object name, required Object place}) => '${name} iqāmah — ${place}.',
+			'iqamahOffset' => 'Iqāmah delay',
+			'iqamahAtAdhan' => 'At adhan',
+			'iqamahPlusMinutes' => ({required Object minutes}) => '+${minutes} min',
 			'testNotifTitle' => 'Test reminder',
 			'testNotifBody' => 'If you can read this, prayer reminders are working. 🌙',
 			'sendTestNotif' => 'Send a test notification',
