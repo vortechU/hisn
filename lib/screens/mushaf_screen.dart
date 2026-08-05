@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -44,31 +46,73 @@ class _MushafInk {
 
 const double _refFontSize = 40;
 
-// Memoised per-page font size, keyed by page number + frame size. The 15-line
-// TextPainter measurement that finds the fill size is expensive; its result
-// only changes when the available space does (i.e. on rotation), so caching it
-// keeps every revisit and rebuild free.
-final Map<String, double> _fontSizeCache = {};
-
-// The most recent inner frame size, captured during layout. Used to pre-compute
-// (and warm the font for) neighbouring pages before they're swiped into view.
-Size? _lastInnerSize;
+// Memoised per-page measurements, keyed by page number alone. The 15-line
+// TextPainter pass is the expensive part and its result does not depend on the
+// frame — it is the page's own shape at a reference font size — so a rotation
+// re-derives the layout arithmetically instead of measuring again.
+final Map<int, _PageMetrics> _metricsCache = {};
 
 bool _isSpecialLine(List<MushafWord> line) =>
     line.any((w) => w.isHeader || w.isBismillah);
 
-/// The font size that makes the widest verse line on [page] fill the frame
-/// width, capped so the 15 lines never overflow vertically. Memoised by page +
-/// frame size.
-double _fontSizeFor(MushafPage page, double availW, double availH) {
-  final key = '${page.page}:${availW.round()}:${availH.round()}';
-  return _fontSizeCache[key] ??= _measureFontSize(page, availW, availH);
+/// The intrinsic shape of one mushaf page, measured once at [_refFontSize].
+@immutable
+class _PageMetrics {
+  const _PageMetrics({
+    required this.maxLineWidth,
+    required this.maxLineHeight,
+    required this.lineCount,
+  });
+
+  /// Width of the widest verse line, at [_refFontSize].
+  final double maxLineWidth;
+
+  /// Height of the tallest glyph block, at [_refFontSize].
+  final double maxLineHeight;
+
+  final int lineCount;
+
+  /// Glyph block height per unit of font size.
+  double get lineRatio => maxLineHeight / _refFontSize;
+
+  /// The page's natural width-to-height ratio: how wide the text block wants to
+  /// be for the height its lines need. Sizing the frame to this is what keeps
+  /// full lines justified edge to edge, the way the page is printed.
+  double get aspect => maxLineWidth / (lineCount * maxLineHeight);
 }
 
-double _measureFontSize(MushafPage page, double availW, double availH) {
+/// How a page should be drawn into a given frame.
+@immutable
+class MushafPageLayout {
+  const MushafPageLayout({required this.fontSize, required this.width});
+
+  final double fontSize;
+
+  /// The width the text block is actually drawn at — never wider than the
+  /// page's natural proportions allow.
+  final double width;
+}
+
+/// Fits [page] into a frame, exposed for tests.
+///
+/// The proportion rule this encodes — a page is letterboxed rather than
+/// stretched — is invisible in a screenshot until it is wrong, so it is pinned
+/// directly.
+@visibleForTesting
+MushafPageLayout mushafPageLayoutFor(
+  MushafPage page,
+  double availW,
+  double availH,
+) =>
+    _layoutFor(page, availW, availH);
+
+_PageMetrics _metricsFor(MushafPage page) =>
+    _metricsCache[page.page] ??= _measure(page);
+
+_PageMetrics _measure(MushafPage page) {
   // Measure the verse lines (ignoring decorative header/basmalah lines) to find
-  // the widest, then size the font so it fills the width. Laying each line out
-  // here also warms its glyph font as a side effect.
+  // the widest and the tallest. Laying each line out here also warms its glyph
+  // font as a side effect.
   var maxW = 1.0;
   var maxH = _refFontSize;
   for (final line in page.lines) {
@@ -92,13 +136,36 @@ double _measureFontSize(MushafPage page, double availW, double availH) {
     if (tp.height > maxH) maxH = tp.height;
     tp.dispose();
   }
-  final lineRatio = maxH / _refFontSize; // glyph block height per unit font size
-  // Each of the 15 lines gets an equal share of the page height so the block
-  // always fills the frame top-to-bottom, like the printed mushaf.
-  final slot = availH / page.lines.length;
-  final widthFont = availW / maxW * _refFontSize * 0.99;
-  final heightFont = slot / lineRatio; // cap so a glyph never overflows its slot
-  return widthFont < heightFont ? widthFont : heightFont;
+  return _PageMetrics(
+    maxLineWidth: maxW,
+    maxLineHeight: maxH,
+    lineCount: page.lines.length,
+  );
+}
+
+/// Fits [page] into the frame, keeping the page's own proportions.
+///
+/// A mushaf page is a tall block of fifteen justified lines. Given only a
+/// height cap, a landscape frame would sit far wider than those lines need, and
+/// the font — bound by the height — would shrink until the text was a narrow
+/// ragged column adrift in the middle of the page. So the block is never
+/// allowed to be wider than its natural aspect: in landscape it is letterboxed
+/// to the width its lines actually want, which puts the width and height
+/// constraints in agreement and leaves the lines justified at any orientation.
+MushafPageLayout _layoutFor(MushafPage page, double availW, double availH) {
+  final metrics = _metricsFor(page);
+  final width = math.min(availW, availH * metrics.aspect);
+
+  // Each line gets an equal share of the height, so the block fills the frame
+  // top-to-bottom like the printed page.
+  final slot = availH / metrics.lineCount;
+  final widthFont = width / metrics.maxLineWidth * _refFontSize * 0.99;
+  final heightFont = slot / metrics.lineRatio;
+
+  return MushafPageLayout(
+    fontSize: math.min(widthFont, heightFont),
+    width: width,
+  );
 }
 
 /// The Madani Mushaf reader: a swipeable, page-by-page view rendered with the
@@ -168,20 +235,18 @@ class _MushafScreenState extends State<MushafScreen> {
     _prefetchNeighbors(page);
   }
 
-  /// Warm the JSON, page font, and layout for the pages on either side, so
-  /// swiping onto them is instant rather than triggering a ~2 MB font parse and
-  /// a fresh 15-line measurement mid-gesture.
+  /// Warm the JSON, page font, and measurements for the pages on either side,
+  /// so swiping onto them is instant rather than triggering a ~2 MB font parse
+  /// and a fresh 15-line measurement mid-gesture.
   void _prefetchNeighbors(int page) {
     final repo = context.read<QuranRepository>();
     for (final p in [page + 1, page - 1, page + 2, page - 2]) {
       if (p < 1 || p > _total) continue;
       repo.loadPage(p).then((mp) {
-        final size = _lastInnerSize;
-        if (mounted && size != null) {
-          // Side effect: lays out each line with its font, warming the glyph
-          // cache and populating _fontSizeCache for an instant first paint.
-          _fontSizeFor(mp, size.width, size.height);
-        }
+        // Side effect: lays out each line with its font, warming the glyph
+        // cache and filling _metricsCache for an instant first paint. The
+        // measurement is frame-independent, so no size is needed here.
+        if (mounted) _metricsFor(mp);
       });
     }
   }
@@ -664,44 +729,47 @@ class _PageBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, c) {
-        final availW = c.maxWidth;
         final availH = c.maxHeight;
-        // Remember the frame size so neighbouring pages can be pre-measured.
-        _lastInnerSize = Size(availW, availH);
-
-        // Memoised — the expensive 15-line measurement runs once per page/size.
-        final fontSize = _fontSizeFor(page, availW, availH);
+        // The expensive 15-line measurement is memoised per page; everything
+        // here is arithmetic on top of it, so rotating costs nothing.
+        final layout = _layoutFor(page, c.maxWidth, availH);
         final slot = availH / page.lines.length;
 
-        return SizedBox(
-          height: availH,
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              for (final line in page.lines)
-                SizedBox(
-                  width: availW,
-                  height: slot,
-                  child: Center(
-                    child: _isSpecialLine(line)
-                        ? FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text.rich(
-                              TextSpan(children: _spans(line, fontSize)),
+        // Centred, because in landscape the block is narrower than the frame:
+        // the page sits in the middle of its surroundings rather than being
+        // stretched to fill them.
+        return Center(
+          child: SizedBox(
+            width: layout.width,
+            height: availH,
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                for (final line in page.lines)
+                  SizedBox(
+                    width: layout.width,
+                    height: slot,
+                    child: Center(
+                      child: _isSpecialLine(line)
+                          ? FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text.rich(
+                                TextSpan(children: _spans(line, layout.fontSize)),
+                                textDirection: TextDirection.ltr,
+                              ),
+                            )
+                          : Text.rich(
+                              TextSpan(children: _spans(line, layout.fontSize)),
                               textDirection: TextDirection.ltr,
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              softWrap: false,
+                              overflow: TextOverflow.visible,
                             ),
-                          )
-                        : Text.rich(
-                            TextSpan(children: _spans(line, fontSize)),
-                            textDirection: TextDirection.ltr,
-                            textAlign: TextAlign.center,
-                            maxLines: 1,
-                            softWrap: false,
-                            overflow: TextOverflow.visible,
-                          ),
+                    ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         );
       },

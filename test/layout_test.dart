@@ -12,6 +12,7 @@ import 'package:dua_app/screens/category_duas_screen.dart';
 import 'package:dua_app/screens/custom_duas_screen.dart';
 import 'package:dua_app/screens/favorites_screen.dart';
 import 'package:dua_app/screens/home_screen.dart';
+import 'package:dua_app/screens/mushaf_screen.dart';
 import 'package:dua_app/screens/prayer_schedule_screen.dart';
 import 'package:dua_app/screens/quran_screen.dart';
 import 'package:dua_app/screens/search_screen.dart';
@@ -169,6 +170,28 @@ void main() {
     // is the shape most likely to overflow at a large text scale.
     'restore sheet': () => Scaffold(body: RestoreSheet(backup: _sampleBackup)),
   };
+
+  // The mushaf is the one screen with a hard aspect requirement: fifteen
+  // justified lines that must fill a frame of any shape. Landscape is where it
+  // broke, so it is checked there explicitly rather than only at phone sizes.
+  group('mushaf renders without overflow', () {
+    for (final (label, size) in const [
+      ('portrait phone', Size(375, 812)),
+      ('narrow portrait', Size(320, 640)),
+      ('landscape phone', Size(812, 375)),
+      ('short landscape', Size(640, 320)),
+      ('tablet landscape', Size(1280, 800)),
+    ]) {
+      testWidgets(label, (tester) async {
+        await renders(tester, const MushafScreen(startPage: 1), size: size);
+      });
+    }
+
+    testWidgets('landscape, Arabic', (tester) async {
+      await renders(tester, const MushafScreen(startPage: 2),
+          size: const Size(812, 375), lang: AppLang.ar);
+    });
+  });
 
   group('renders without overflow', () {
     for (final entry in screens.entries) {
