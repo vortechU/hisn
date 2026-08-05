@@ -334,6 +334,39 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	];
 	@override String hijriDateFormat({required Object day, required Object month, required Object year}) => '${day} ${month} ${year} H';
 	@override String get hijriSuffix => 'H';
+	@override String get secBackup => 'Cadangan & pemulihan';
+	@override String get backupSub => 'Simpan kemajuan Anda ke sebuah berkas';
+	@override String get backupOnThisDevice => 'Di perangkat ini';
+	@override String get backupSave => 'Simpan cadangan';
+	@override String get backupSaveHint => 'Menulis semua yang ada di bawah ke sebuah berkas yang bisa Anda simpan di Drive atau Files, atau kirim ke diri sendiri.';
+	@override String get backupRestoreHeading => 'Pemulihan';
+	@override String get backupRestore => 'Pulihkan dari berkas';
+	@override String get backupRestoreHint => 'Mengganti apa yang ada di perangkat ini dengan isi berkas cadangan.';
+	@override String get backupPrivacy => 'Cadangan adalah berkas teks biasa. Berkas itu tetap di perangkat ini kecuali Anda sendiri mengirimkannya — Hisn tidak pernah mengunggahnya.';
+	@override String get backupStatStreak => 'Rentetan saat ini';
+	@override String get backupStatBest => 'Rentetan terbaik';
+	@override String get backupStatDays => 'Hari terbentengi';
+	@override String get backupStatFavorites => 'Doa tersimpan';
+	@override String get backupStatCustom => 'Doa saya';
+	@override String get backupStatQuran => 'Penanda Quran';
+	@override String get restoreTitle => 'Pulihkan cadangan ini?';
+	@override String restoreSavedOn({required Object date}) => 'Disimpan ${date}';
+	@override String restoreSavedOnVersion({required Object date, required Object version}) => 'Disimpan ${date} · v${version}';
+	@override String get restoreScopeEverything => 'Semuanya';
+	@override String get restoreScopeEverythingSub => 'Kemajuan dan pengaturan';
+	@override String get restoreScopeProgress => 'Hanya kemajuan';
+	@override String get restoreScopeProgressSub => 'Pertahankan lokasi, pengingat, dan bahasa ponsel ini';
+	@override String get restoreWarning => 'Ini akan mengganti apa yang ada di perangkat ini sekarang.';
+	@override String get restoreAction => 'Pulihkan';
+	@override String get restoreDoneOne => '1 item dipulihkan';
+	@override String restoreDoneOther({required Object n}) => '${n} item dipulihkan';
+	@override String get backupSaved => 'Cadangan siap disimpan';
+	@override String get backupFailed => 'Tidak dapat membuat cadangan';
+	@override String get restoreErrMalformed => 'Berkas itu tidak dapat dibaca.';
+	@override String get restoreErrNotABackup => 'Itu bukan berkas cadangan Hisn.';
+	@override String get restoreErrTooNew => 'Cadangan itu dibuat oleh versi Hisn yang lebih baru. Perbarui aplikasi terlebih dahulu.';
+	@override String get restoreErrEmpty => 'Tidak ada yang bisa dipulihkan dari cadangan itu.';
+	@override String get restoreFailed => 'Tidak dapat memulihkan. Tidak ada yang diubah.';
 }
 
 /// The flat map containing all translations for locale <id>.
@@ -623,6 +656,39 @@ extension on TranslationsId {
 			'hijriMonths.11' => 'Zulhijah',
 			'hijriDateFormat' => ({required Object day, required Object month, required Object year}) => '${day} ${month} ${year} H',
 			'hijriSuffix' => 'H',
+			'secBackup' => 'Cadangan & pemulihan',
+			'backupSub' => 'Simpan kemajuan Anda ke sebuah berkas',
+			'backupOnThisDevice' => 'Di perangkat ini',
+			'backupSave' => 'Simpan cadangan',
+			'backupSaveHint' => 'Menulis semua yang ada di bawah ke sebuah berkas yang bisa Anda simpan di Drive atau Files, atau kirim ke diri sendiri.',
+			'backupRestoreHeading' => 'Pemulihan',
+			'backupRestore' => 'Pulihkan dari berkas',
+			'backupRestoreHint' => 'Mengganti apa yang ada di perangkat ini dengan isi berkas cadangan.',
+			'backupPrivacy' => 'Cadangan adalah berkas teks biasa. Berkas itu tetap di perangkat ini kecuali Anda sendiri mengirimkannya — Hisn tidak pernah mengunggahnya.',
+			'backupStatStreak' => 'Rentetan saat ini',
+			'backupStatBest' => 'Rentetan terbaik',
+			'backupStatDays' => 'Hari terbentengi',
+			'backupStatFavorites' => 'Doa tersimpan',
+			'backupStatCustom' => 'Doa saya',
+			'backupStatQuran' => 'Penanda Quran',
+			'restoreTitle' => 'Pulihkan cadangan ini?',
+			'restoreSavedOn' => ({required Object date}) => 'Disimpan ${date}',
+			'restoreSavedOnVersion' => ({required Object date, required Object version}) => 'Disimpan ${date} · v${version}',
+			'restoreScopeEverything' => 'Semuanya',
+			'restoreScopeEverythingSub' => 'Kemajuan dan pengaturan',
+			'restoreScopeProgress' => 'Hanya kemajuan',
+			'restoreScopeProgressSub' => 'Pertahankan lokasi, pengingat, dan bahasa ponsel ini',
+			'restoreWarning' => 'Ini akan mengganti apa yang ada di perangkat ini sekarang.',
+			'restoreAction' => 'Pulihkan',
+			'restoreDoneOne' => '1 item dipulihkan',
+			'restoreDoneOther' => ({required Object n}) => '${n} item dipulihkan',
+			'backupSaved' => 'Cadangan siap disimpan',
+			'backupFailed' => 'Tidak dapat membuat cadangan',
+			'restoreErrMalformed' => 'Berkas itu tidak dapat dibaca.',
+			'restoreErrNotABackup' => 'Itu bukan berkas cadangan Hisn.',
+			'restoreErrTooNew' => 'Cadangan itu dibuat oleh versi Hisn yang lebih baru. Perbarui aplikasi terlebih dahulu.',
+			'restoreErrEmpty' => 'Tidak ada yang bisa dipulihkan dari cadangan itu.',
+			'restoreFailed' => 'Tidak dapat memulihkan. Tidak ada yang diubah.',
 			_ => null,
 		};
 	}

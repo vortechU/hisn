@@ -34,6 +34,14 @@ the content is authentic but intentionally small, and it's built to grow.
   Allahu Akbar, Tahlil, Istighfar, Salawat…), an animated progress ring, set tracking,
   and haptic feedback. Counts persist between launches.
 - **Bookmarks** — save any dua to the *Saved* tab for quick access.
+- **Backup & restore** — writes everything the app knows (streak and history, saved
+  duas, your own duas, Quran bookmarks, and all settings) to a single readable JSON
+  file, handed to the system share sheet so it can go to Drive, Files, or yourself.
+  Restoring reads one back, shows what is in it, and lets you take either the whole
+  snapshot or only the progress — keeping this phone's location, reminders and
+  language. Nothing leaves the device unless you send it. A restore is all or
+  nothing: the previous state is journalled first, so a failed write rolls back,
+  and a restore interrupted by the app being killed is undone at the next launch.
 - **Offline-first** — all content and the Amiri Arabic font are bundled; no network needed.
 - Light/dark theme that follows the system.
 

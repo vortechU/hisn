@@ -8,13 +8,11 @@
   "navPrayer": "الصلاة",
   "prayerQiblaTitle": "الصلاة والقبلة",
   "weeklySchedule": "جدول الأسبوع",
-
   "searchDuas": "ابحث في الأدعية…",
   "allAdhkar": "كل الأذكار",
   "groupDaily": "الأذكار اليومية",
   "groupSituational": "لكل حال",
   "groupMine": "الخاصة بي",
-
   "muhassanHeading": "مُحَصَّن",
   "muhassanToday": "محصَّن اليوم بنسبة $percent٪",
   "muhassanComplete": "محصَّن بالكامل — ما شاء الله",
@@ -24,7 +22,6 @@
   "streakDaysOther": "سلسلة $n أيام",
   "streakStart": "ابدأ سلسلتك",
   "streakBest": "الأفضل: $n",
-
   "streakTitle": "سلسلتك",
   "streakWord": "يوم متتابع",
   "statCurrent": "الحالية",
@@ -38,8 +35,15 @@
   "last4Weeks": "آخر ٤ أسابيع",
   "todayLabel": "اليوم",
   "fortifiedLegend": "محصَّن",
-  "weekdayLetters": ["ن", "ث", "ر", "خ", "ج", "س", "ح"],
-
+  "weekdayLetters": [
+    "ن",
+    "ث",
+    "ر",
+    "خ",
+    "ج",
+    "س",
+    "ح"
+  ],
   "quranTitle": "القرآن الكريم",
   "searchSurah": "ابحث في السور…",
   "continueReading": "متابعة القراءة",
@@ -58,7 +62,6 @@
   "verseNumber": "رقم الآية",
   "verseRange": "١–$n",
   "goAction": "انتقال",
-
   "myDuas": "أدعيتي",
   "myDuasSub": "أدعية تضيفها بنفسك",
   "addDua": "إضافة دعاء",
@@ -86,66 +89,58 @@
   "readNowOther": "اقرأ الآن · $count",
   "duaCountOne": "ذِكْر واحد",
   "duaCountOther": "$count ذِكْر",
-
   "now": "الآن",
   "next": "التالي",
   "remaining": "متبقٍّ",
   "countdownNow": "الآن",
   "todaysPrayers": "صلوات اليوم · $location",
-
   "searchHint": "ابحث في الأدعية والمعاني والمصادر…",
   "clear": "مسح",
   "searchPrompt": "ابحث بالعنوان أو المعنى أو النطق أو المصدر.",
   "noResults": "لا توجد أدعية لـ «$query».",
   "resultsCountOne": "نتيجة واحدة",
   "resultsCountOther": "$n نتيجة",
-
   "noSavedTitle": "لا توجد أدعية محفوظة بعد",
   "noSavedBody": "اضغط على علامة الحفظ في أي دعاء لتحتفظ به هنا.",
-
   "resetCount": "إعادة العدّ",
   "tapToCount": "اضغط في أي مكان للعدّ",
   "setsCompletedOne": "اكتملت جولة واحدة",
   "setsCompletedOther": "اكتمل $n جولات",
   "ofTarget": "من $n",
-
   "resetProgress": "إعادة التقدّم",
   "setComplete": "اكتملت — تقبّل الله",
   "tapEachDua": "اضغط كل دعاء لعدّ تكراره",
-
   "duaCopied": "تم نسخ الدعاء",
   "removeBookmark": "إزالة الحفظ",
   "bookmark": "حفظ",
   "copy": "نسخ",
   "done": "تمّ",
-
   "settings": "الإعدادات",
   "secPrayerTimes": "مواقيت الصلاة",
   "secReminders": "التذكيرات",
   "secDisplay": "العرض",
   "secLanguage": "اللغة",
   "secAbout": "حول التطبيق",
-
   "location": "الموقع",
   "locYourLocationGps": "موقعك (GPS)",
   "locDeviceGps": "موقع الجهاز · $label",
   "locFixedCity": "$label (مدينة ثابتة)",
-
   "calcMethod": "طريقة الحساب",
   "asrCalc": "حساب العصر",
-
   "notifications": "الإشعارات",
   "prayerReminders": "تذكيرات الصلاة",
   "prayerRemindersSub": "تنبيه عند كل وقت صلاة",
-
   "dailyRemembrance": "الذكر اليومي",
   "dailyRemembranceSub": "أذكار الصباح والمساء (تتكرر حتى تُتمّها) مع سنن الجمعة والليل",
-
   "adhanSound": "صوت الأذان",
   "adhanSoundSub": "تشغيل الأذان عند كل وقت صلاة",
   "adhanNeedsReminders": "فعّل تذكيرات الصلاة بالأعلى ليُشغَّل الأذان عند وقت الصلاة.",
   "adhanVolume": "مستوى صوت الأذان",
-  "streamLabels": ["الوسائط", "الرنين", "المنبّه"],
+  "streamLabels": [
+    "الوسائط",
+    "الرنين",
+    "المنبّه"
+  ],
   "streamHints": [
     "يتحكّم به مستوى صوت الوسائط",
     "يتحكّم به مستوى صوت الرنين",
@@ -155,28 +150,28 @@
   "stopAdhan": "إيقاف",
   "adhanPlaying": "جارٍ تشغيل الأذان…",
   "notifBlocked": "الإشعارات محظورة. فعّلها لتطبيق Hisn من إعدادات جهازك.",
-
   "textSize": "حجم الخط",
-  "fontScaleLabels": ["صغير", "افتراضي", "كبير", "كبير جدًا"],
+  "fontScaleLabels": [
+    "صغير",
+    "افتراضي",
+    "كبير",
+    "كبير جدًا"
+  ],
   "showTransliteration": "إظهار النطق اللاتيني",
   "showTransliterationSub": "سطر النطق بالحروف اللاتينية",
   "showTranslation": "إظهار الترجمة",
   "showTranslationSub": "المعنى بالإنجليزية",
-
   "aboutBody": "رفيق الأدعية والأذكار · نموذج أولي\nمواقيت الصلاة عبر مكتبة Adhan.",
-
   "automatic": "تلقائي",
   "useDeviceLocation": "استخدام موقع جهازي",
   "gpsActive": "مُفعّل · المواقيت حسب مكانك",
   "gpsDetect": "تحديد عبر GPS (يطلب الإذن)",
   "chooseCity": "اختر مدينة",
   "cityNote": "تُعرض مواقيت المدينة المختارة بتوقيت جهازك الحالي — وهي دقيقة عندما تكون المدينة في منطقتك.",
-
   "madhabStandard": "الجمهور (الشافعي، المالكي، الحنبلي)",
   "madhabHanafi": "الحنفي",
   "asrHintStandard": "يبدأ العصر عندما يساوي ظلّ الشيء طوله",
   "asrHintHanafi": "يبدأ العصر عندما يبلغ ظلّ الشيء مِثلَيْ طوله",
-
   "prayerFajr": "الفَجْر",
   "prayerSunrise": "الشُّرُوق",
   "prayerDhuhr": "الظُّهْر",
@@ -184,7 +179,6 @@
   "prayerMaghrib": "المَغْرِب",
   "prayerIsha": "العِشَاء",
   "prayerNone": "—",
-
   "notifTitle": "صلاة $name",
   "notifBody": "حان وقت صلاة $name — $place.",
   "testNotifTitle": "تنبيه تجريبي",
@@ -193,7 +187,6 @@
   "testSent": "تم الإرسال — يجب أن يظهر واحد الآن، وآخر خلال ١٢ ثانية (اقفل هاتفك).",
   "testBlocked": "تم الإرسال، لكن هاتفك يقول إن إشعارات Hisn مُعطّلة. فعّلها من الإعدادات ← التطبيقات ← Hisn ← الإشعارات.",
   "batteryHint": "بعض الهواتف (مثل شاومي/MIUI وسامسونج) تمنع التذكيرات المجدولة عند إغلاق التطبيق. إن لم تصل التذكيرات، فعّل \"التشغيل التلقائي\" واضبط استهلاك البطارية على \"بدون قيود\" لتطبيق Hisn.",
-
   "adhkarMorningTitle": "أذكار الصباح",
   "adhkarMorningBody": "ابدأ صباحك بالذكر — حصِّن يومك.",
   "adhkarEveningTitle": "أذكار المساء",
@@ -206,7 +199,6 @@
   "salawatFridayBody": "إنه يوم الجمعة — أكثِر من الصلاة على النبي ﷺ.",
   "mulkTitle": "سورة الملك",
   "mulkBody": "قبل أن تنام — اقرأ سورة الملك.",
-
   "qiblaFromNorth": "القبلة · $degrees° من الشمال",
   "facingQibla": "أنت تواجه القبلة",
   "turnRight": "استدر يمينًا $degrees°",
@@ -216,11 +208,9 @@
   "compassUnavailableBody": "لا يحتوي هذا الجهاز على مستشعر بوصلة، أو يحتاج إلى معايرة. جرّب تحريكه على شكل الرقم ٨.",
   "qiblaNoLocation": "الموقع مطلوب",
   "qiblaNoLocationBody": "لا يمكن حساب اتجاه القبلة قبل معرفة موقعك. فعّل خدمات الموقع، أو اختر مدينتك من الإعدادات.",
-
   "placeYourLocation": "موقعك",
   "placeSelectedCity": "مدينة مختارة",
   "placeMakkah": "مكة",
-
   "onboardSkip": "تخطّي",
   "onboardNext": "التالي",
   "onboardGetStarted": "ابدأ الآن",
@@ -241,7 +231,6 @@
   "onboardNotifBody": "تذكير لطيف عند كل وقت صلاة كي لا تفوتك صلاة.",
   "onboardNotifAction": "تفعيل التذكيرات",
   "onboardGranted": "مُفعّل",
-
   "secAppearance": "المظهر",
   "appearanceColors": "لوحة الألوان",
   "appearanceTheme": "السمة",
@@ -254,7 +243,6 @@
   "paletteRosewood": "خشب الورد",
   "paletteLagoon": "بحيرة",
   "paletteDesert": "صحراء",
-
   "arabicFont": "خط العربية",
   "readingTheme": "خلفية القراءة",
   "readingSystem": "حسب التطبيق",
@@ -262,13 +250,81 @@
   "readingNight": "ليلي",
   "patterns": "زخرفة هندسية",
   "patternsSub": "زخرفة خفيفة على العناوين والعدّاد",
-
-  "ampm": ["ص", "م"],
-  "weekdaysShort": ["الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت", "الأحد"],
-  "monthsShort": ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"],
+  "ampm": [
+    "ص",
+    "م"
+  ],
+  "weekdaysShort": [
+    "الاثنين",
+    "الثلاثاء",
+    "الأربعاء",
+    "الخميس",
+    "الجمعة",
+    "السبت",
+    "الأحد"
+  ],
+  "monthsShort": [
+    "يناير",
+    "فبراير",
+    "مارس",
+    "أبريل",
+    "مايو",
+    "يونيو",
+    "يوليو",
+    "أغسطس",
+    "سبتمبر",
+    "أكتوبر",
+    "نوفمبر",
+    "ديسمبر"
+  ],
   "dateFormat": "$weekday، $day $month",
-
-  "hijriMonths": ["محرم", "صفر", "ربيع الأول", "ربيع الآخر", "جمادى الأولى", "جمادى الآخرة", "رجب", "شعبان", "رمضان", "شوال", "ذو القعدة", "ذو الحجة"],
+  "hijriMonths": [
+    "محرم",
+    "صفر",
+    "ربيع الأول",
+    "ربيع الآخر",
+    "جمادى الأولى",
+    "جمادى الآخرة",
+    "رجب",
+    "شعبان",
+    "رمضان",
+    "شوال",
+    "ذو القعدة",
+    "ذو الحجة"
+  ],
   "hijriDateFormat": "$day $month $year هـ",
-  "hijriSuffix": "هـ"
+  "hijriSuffix": "هـ",
+  "secBackup": "النسخ الاحتياطي والاستعادة",
+  "backupSub": "احفظ تقدّمك في ملف",
+  "backupOnThisDevice": "على هذا الجهاز",
+  "backupSave": "حفظ نسخة احتياطية",
+  "backupSaveHint": "يكتب كل ما بالأسفل في ملف يمكنك حفظه في درايف أو الملفات، أو إرساله إلى نفسك.",
+  "backupRestoreHeading": "الاستعادة",
+  "backupRestore": "استعادة من ملف",
+  "backupRestoreHint": "يستبدل ما على هذا الجهاز بمحتوى ملف النسخة الاحتياطية.",
+  "backupPrivacy": "النسخة ملف نصي بسيط، يبقى على جهازك ما لم ترسله أنت — وحصن لا يرفعه أبدًا.",
+  "backupStatStreak": "المتتالية الحالية",
+  "backupStatBest": "أطول متتالية",
+  "backupStatDays": "أيام مُحصَّنة",
+  "backupStatFavorites": "الأدعية المحفوظة",
+  "backupStatCustom": "أدعيتي",
+  "backupStatQuran": "علامات المصحف",
+  "restoreTitle": "استعادة هذه النسخة؟",
+  "restoreSavedOn": "حُفظت $date",
+  "restoreSavedOnVersion": "حُفظت $date · إصدار $version",
+  "restoreScopeEverything": "كل شيء",
+  "restoreScopeEverythingSub": "التقدّم والإعدادات",
+  "restoreScopeProgress": "التقدّم فقط",
+  "restoreScopeProgressSub": "الإبقاء على موقع هذا الهاتف وتنبيهاته ولغته",
+  "restoreWarning": "سيحلّ هذا محلّ ما هو موجود على الجهاز الآن.",
+  "restoreAction": "استعادة",
+  "restoreDoneOne": "تمت استعادة عنصر واحد",
+  "restoreDoneOther": "تمت استعادة $n عنصرًا",
+  "backupSaved": "النسخة جاهزة للحفظ",
+  "backupFailed": "تعذّر إنشاء النسخة",
+  "restoreErrMalformed": "تعذّرت قراءة هذا الملف.",
+  "restoreErrNotABackup": "هذا ليس ملف نسخة احتياطية لحصن.",
+  "restoreErrTooNew": "أُنشئت هذه النسخة بإصدار أحدث من حصن. حدّث التطبيق أولًا.",
+  "restoreErrEmpty": "لا يوجد في هذه النسخة ما يُستعاد.",
+  "restoreFailed": "تعذّرت الاستعادة. لم يتغيّر شيء."
 }

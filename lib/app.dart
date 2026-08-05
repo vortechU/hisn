@@ -33,8 +33,29 @@ Set<String> _essentialIds(DuaRepository repository, String categoryId) =>
         .map((d) => d.id)
         .toSet();
 
+/// Rebuilds the app from persisted state.
+///
+/// Every service reads [SharedPreferences] once, in its constructor. After a
+/// backup is restored the store no longer matches what those services hold in
+/// memory, so the whole provider subtree is thrown away and built again —
+/// which re-runs every constructor and re-reads everything. The alternative,
+/// a `reload()` on each of the dozen services, is more code to write now and a
+/// standing invitation for the next service to quietly forget to implement it.
+class AppReload extends InheritedWidget {
+  const AppReload({super.key, required this.reload, required super.child});
+
+  /// Discards the current provider tree and rebuilds it from storage.
+  final Future<void> Function() reload;
+
+  static AppReload of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<AppReload>()!;
+
+  @override
+  bool updateShouldNotify(AppReload oldWidget) => false;
+}
+
 /// Wires up the providers and the [MaterialApp].
-class DuaApp extends StatelessWidget {
+class DuaApp extends StatefulWidget {
   const DuaApp({
     super.key,
     required this.repository,
@@ -47,11 +68,58 @@ class DuaApp extends StatelessWidget {
   final SharedPreferences prefs;
 
   @override
+  State<DuaApp> createState() => _DuaAppState();
+}
+
+class _DuaAppState extends State<DuaApp> {
+  /// Changing this key discards the provider subtree below it.
+  int _generation = 0;
+
+  /// True for exactly one frame, while the old tree is torn down.
+  bool _rebuilding = false;
+
+  Future<void> _reload() async {
+    // The old and the new tree must not exist at once: [appNavigatorKey] is a
+    // GlobalKey, and two MaterialApps holding it in the same frame is a
+    // duplicate-key error. Blanking for a frame guarantees the old one is
+    // unmounted before the new one is built.
+    setState(() => _rebuilding = true);
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+    setState(() {
+      _rebuilding = false;
+      _generation++;
+    });
+    // Settle the replacement tree before returning, so a caller can address
+    // the new navigator (to report what it did) the moment this completes.
+    await WidgetsBinding.instance.endOfFrame;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    return AppReload(
+      reload: _reload,
+      child: _rebuilding
+          // One frame, in the brand ground colour — short enough not to read
+          // as a flash, and there is no theme to consult this far up the tree.
+          ? const ColoredBox(color: Color(0xFF072C3E))
+          : KeyedSubtree(
+              key: ValueKey(_generation),
+              child: _providers(context),
+            ),
+    );
+  }
+
+  Widget _providers(BuildContext context) {
+    final repository = widget.repository;
+    final quran = widget.quran;
+    final prefs = widget.prefs;
     return MultiProvider(
       providers: [
         Provider<DuaRepository>.value(value: repository),
         Provider<QuranRepository>.value(value: quran),
+        // Exposed so backup & restore can read and write the whole store.
+        Provider<SharedPreferences>.value(value: prefs),
         ChangeNotifierProvider(create: (_) => QuranService(prefs)),
         ChangeNotifierProvider(create: (_) => LocaleController(prefs)),
         ChangeNotifierProvider(create: (_) => CustomDuaService(prefs)),

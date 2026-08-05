@@ -798,6 +798,105 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
 	/// en: 'AH'
 	String get hijriSuffix => 'AH';
+
+	/// en: 'Backup & restore'
+	String get secBackup => 'Backup & restore';
+
+	/// en: 'Save your progress to a file'
+	String get backupSub => 'Save your progress to a file';
+
+	/// en: 'On this device'
+	String get backupOnThisDevice => 'On this device';
+
+	/// en: 'Save a backup'
+	String get backupSave => 'Save a backup';
+
+	/// en: 'Writes everything below to a file you can keep in Drive or Files, or send to yourself.'
+	String get backupSaveHint => 'Writes everything below to a file you can keep in Drive or Files, or send to yourself.';
+
+	/// en: 'Restore'
+	String get backupRestoreHeading => 'Restore';
+
+	/// en: 'Restore from a file'
+	String get backupRestore => 'Restore from a file';
+
+	/// en: 'Replaces what is on this device with the contents of a backup file.'
+	String get backupRestoreHint => 'Replaces what is on this device with the contents of a backup file.';
+
+	/// en: 'A backup is a plain text file. It stays on this device unless you send it somewhere yourself — Hisn never uploads it.'
+	String get backupPrivacy => 'A backup is a plain text file. It stays on this device unless you send it somewhere yourself — Hisn never uploads it.';
+
+	/// en: 'Current streak'
+	String get backupStatStreak => 'Current streak';
+
+	/// en: 'Best streak'
+	String get backupStatBest => 'Best streak';
+
+	/// en: 'Days fortified'
+	String get backupStatDays => 'Days fortified';
+
+	/// en: 'Saved duas'
+	String get backupStatFavorites => 'Saved duas';
+
+	/// en: 'My duas'
+	String get backupStatCustom => 'My duas';
+
+	/// en: 'Quran bookmarks'
+	String get backupStatQuran => 'Quran bookmarks';
+
+	/// en: 'Restore this backup?'
+	String get restoreTitle => 'Restore this backup?';
+
+	/// en: 'Saved $date'
+	String restoreSavedOn({required Object date}) => 'Saved ${date}';
+
+	/// en: 'Saved $date · v$version'
+	String restoreSavedOnVersion({required Object date, required Object version}) => 'Saved ${date} · v${version}';
+
+	/// en: 'Everything'
+	String get restoreScopeEverything => 'Everything';
+
+	/// en: 'Progress and settings'
+	String get restoreScopeEverythingSub => 'Progress and settings';
+
+	/// en: 'Progress only'
+	String get restoreScopeProgress => 'Progress only';
+
+	/// en: 'Keep this phone's location, reminders and language'
+	String get restoreScopeProgressSub => 'Keep this phone\'s location, reminders and language';
+
+	/// en: 'This replaces what is currently on this device.'
+	String get restoreWarning => 'This replaces what is currently on this device.';
+
+	/// en: 'Restore'
+	String get restoreAction => 'Restore';
+
+	/// en: 'Restored 1 item'
+	String get restoreDoneOne => 'Restored 1 item';
+
+	/// en: 'Restored $n items'
+	String restoreDoneOther({required Object n}) => 'Restored ${n} items';
+
+	/// en: 'Backup ready to save'
+	String get backupSaved => 'Backup ready to save';
+
+	/// en: 'Could not create the backup'
+	String get backupFailed => 'Could not create the backup';
+
+	/// en: 'That file could not be read.'
+	String get restoreErrMalformed => 'That file could not be read.';
+
+	/// en: 'That is not a Hisn backup file.'
+	String get restoreErrNotABackup => 'That is not a Hisn backup file.';
+
+	/// en: 'That backup was made by a newer version of Hisn. Update the app first.'
+	String get restoreErrTooNew => 'That backup was made by a newer version of Hisn. Update the app first.';
+
+	/// en: 'That backup has nothing to restore.'
+	String get restoreErrEmpty => 'That backup has nothing to restore.';
+
+	/// en: 'Could not restore. Nothing was changed.'
+	String get restoreFailed => 'Could not restore. Nothing was changed.';
 }
 
 /// The flat map containing all translations for locale <en>.
@@ -1087,6 +1186,39 @@ extension on Translations {
 			'hijriMonths.11' => 'Dhul-Hijjah',
 			'hijriDateFormat' => ({required Object day, required Object month, required Object year}) => '${day} ${month} ${year} AH',
 			'hijriSuffix' => 'AH',
+			'secBackup' => 'Backup & restore',
+			'backupSub' => 'Save your progress to a file',
+			'backupOnThisDevice' => 'On this device',
+			'backupSave' => 'Save a backup',
+			'backupSaveHint' => 'Writes everything below to a file you can keep in Drive or Files, or send to yourself.',
+			'backupRestoreHeading' => 'Restore',
+			'backupRestore' => 'Restore from a file',
+			'backupRestoreHint' => 'Replaces what is on this device with the contents of a backup file.',
+			'backupPrivacy' => 'A backup is a plain text file. It stays on this device unless you send it somewhere yourself — Hisn never uploads it.',
+			'backupStatStreak' => 'Current streak',
+			'backupStatBest' => 'Best streak',
+			'backupStatDays' => 'Days fortified',
+			'backupStatFavorites' => 'Saved duas',
+			'backupStatCustom' => 'My duas',
+			'backupStatQuran' => 'Quran bookmarks',
+			'restoreTitle' => 'Restore this backup?',
+			'restoreSavedOn' => ({required Object date}) => 'Saved ${date}',
+			'restoreSavedOnVersion' => ({required Object date, required Object version}) => 'Saved ${date} · v${version}',
+			'restoreScopeEverything' => 'Everything',
+			'restoreScopeEverythingSub' => 'Progress and settings',
+			'restoreScopeProgress' => 'Progress only',
+			'restoreScopeProgressSub' => 'Keep this phone\'s location, reminders and language',
+			'restoreWarning' => 'This replaces what is currently on this device.',
+			'restoreAction' => 'Restore',
+			'restoreDoneOne' => 'Restored 1 item',
+			'restoreDoneOther' => ({required Object n}) => 'Restored ${n} items',
+			'backupSaved' => 'Backup ready to save',
+			'backupFailed' => 'Could not create the backup',
+			'restoreErrMalformed' => 'That file could not be read.',
+			'restoreErrNotABackup' => 'That is not a Hisn backup file.',
+			'restoreErrTooNew' => 'That backup was made by a newer version of Hisn. Update the app first.',
+			'restoreErrEmpty' => 'That backup has nothing to restore.',
+			'restoreFailed' => 'Could not restore. Nothing was changed.',
 			_ => null,
 		};
 	}

@@ -8,13 +8,11 @@
   "navPrayer": "Salat",
   "prayerQiblaTitle": "Salat & Kiblat",
   "weeklySchedule": "Jadwal mingguan",
-
   "searchDuas": "Cari doa…",
   "allAdhkar": "SEMUA ZIKIR",
   "groupDaily": "ZIKIR HARIAN",
   "groupSituational": "UNTUK SETIAP KEADAAN",
   "groupMine": "MILIK SAYA",
-
   "muhassanHeading": "Muhassan",
   "muhassanToday": "Anda $percent% terbentengi hari ini",
   "muhassanComplete": "Terbentengi penuh — masha Allah",
@@ -24,7 +22,6 @@
   "streakDaysOther": "$n hari beruntun",
   "streakStart": "Mulai rentetan Anda",
   "streakBest": "Terbaik: $n",
-
   "streakTitle": "Rentetan Anda",
   "streakWord": "hari beruntun",
   "statCurrent": "Saat ini",
@@ -38,8 +35,15 @@
   "last4Weeks": "4 minggu terakhir",
   "todayLabel": "Hari ini",
   "fortifiedLegend": "Terbentengi",
-  "weekdayLetters": ["S", "S", "R", "K", "J", "S", "M"],
-
+  "weekdayLetters": [
+    "S",
+    "S",
+    "R",
+    "K",
+    "J",
+    "S",
+    "M"
+  ],
   "quranTitle": "Al-Qur'an",
   "searchSurah": "Cari surah…",
   "continueReading": "Lanjutkan membaca",
@@ -58,7 +62,6 @@
   "verseNumber": "Nomor ayat",
   "verseRange": "1–$n",
   "goAction": "Buka",
-
   "myDuas": "Doa Saya",
   "myDuasSub": "Doa yang Anda tambahkan sendiri",
   "addDua": "Tambah doa",
@@ -86,66 +89,58 @@
   "readNowOther": "Baca sekarang · $count doa",
   "duaCountOne": "1 doa",
   "duaCountOther": "$count doa",
-
   "now": "SEKARANG",
   "next": "BERIKUTNYA",
   "remaining": "tersisa",
   "countdownNow": "sekarang",
   "todaysPrayers": "Salat hari ini · $location",
-
   "searchHint": "Cari doa, makna, sumber…",
   "clear": "Hapus",
   "searchPrompt": "Cari berdasarkan judul, makna, transliterasi, atau sumber.",
   "noResults": "Tidak ada doa untuk \"$query\".",
   "resultsCountOne": "1 hasil",
   "resultsCountOther": "$n hasil",
-
   "noSavedTitle": "Belum ada doa tersimpan",
   "noSavedBody": "Ketuk penanda pada doa mana pun untuk menyimpannya di sini.",
-
   "resetCount": "Atur ulang hitungan",
   "tapToCount": "Ketuk di mana saja untuk menghitung",
   "setsCompletedOne": "1 putaran selesai",
   "setsCompletedOther": "$n putaran selesai",
   "ofTarget": "dari $n",
-
   "resetProgress": "Atur ulang progres",
   "setComplete": "Selesai — taqabbalallah",
   "tapEachDua": "Ketuk tiap doa untuk menghitung pengulangannya",
-
   "duaCopied": "Doa disalin",
   "removeBookmark": "Hapus penanda",
   "bookmark": "Tandai",
   "copy": "Salin",
   "done": "Selesai",
-
   "settings": "Pengaturan",
   "secPrayerTimes": "Waktu salat",
   "secReminders": "Pengingat",
   "secDisplay": "Tampilan",
   "secLanguage": "Bahasa",
   "secAbout": "Tentang",
-
   "location": "Lokasi",
   "locYourLocationGps": "Lokasi Anda (GPS)",
   "locDeviceGps": "GPS perangkat · $label",
   "locFixedCity": "$label (kota tetap)",
-
   "calcMethod": "Metode perhitungan",
   "asrCalc": "Perhitungan Asar",
-
   "notifications": "Notifikasi",
   "prayerReminders": "Pengingat salat",
   "prayerRemindersSub": "Dapatkan notifikasi di tiap waktu salat",
-
   "dailyRemembrance": "Zikir harian",
   "dailyRemembranceSub": "Zikir pagi & petang (berulang sampai selesai), plus sunah Jumat & malam",
-
   "adhanSound": "Suara azan",
   "adhanSoundSub": "Putar azan di tiap waktu salat",
   "adhanNeedsReminders": "Aktifkan Pengingat salat di atas agar azan berbunyi saat waktu salat.",
   "adhanVolume": "Volume azan",
-  "streamLabels": ["Media", "Dering", "Alarm"],
+  "streamLabels": [
+    "Media",
+    "Dering",
+    "Alarm"
+  ],
   "streamHints": [
     "Dikontrol oleh volume media Anda",
     "Dikontrol oleh volume dering Anda",
@@ -155,28 +150,28 @@
   "stopAdhan": "Berhenti",
   "adhanPlaying": "Memutar azan…",
   "notifBlocked": "Notifikasi diblokir. Aktifkan untuk Hisn di pengaturan perangkat Anda.",
-
   "textSize": "Ukuran teks",
-  "fontScaleLabels": ["Kecil", "Standar", "Besar", "Sangat besar"],
+  "fontScaleLabels": [
+    "Kecil",
+    "Standar",
+    "Besar",
+    "Sangat besar"
+  ],
   "showTransliteration": "Tampilkan transliterasi",
   "showTransliterationSub": "Baris pelafalan huruf Latin",
   "showTranslation": "Tampilkan terjemahan",
   "showTranslationSub": "Makna dalam bahasa Inggris",
-
   "aboutBody": "Pendamping Doa & Zikir · prototipe\nWaktu salat via pustaka Adhan.",
-
   "automatic": "OTOMATIS",
   "useDeviceLocation": "Gunakan lokasi perangkat saya",
   "gpsActive": "Aktif · waktu sesuai lokasi Anda",
   "gpsDetect": "Deteksi via GPS (meminta izin)",
   "chooseCity": "PILIH KOTA",
   "cityNote": "Waktu kota yang dipilih ditampilkan dalam zona waktu perangkat Anda saat ini — akurat bila kota berada di wilayah Anda.",
-
   "madhabStandard": "Standar (Syafi'i, Maliki, Hanbali)",
   "madhabHanafi": "Hanafi",
   "asrHintStandard": "Asar dimulai saat bayangan benda sama dengan panjangnya",
   "asrHintHanafi": "Asar dimulai saat bayangan benda dua kali panjangnya",
-
   "prayerFajr": "Subuh",
   "prayerSunrise": "Syuruk",
   "prayerDhuhr": "Zuhur",
@@ -184,7 +179,6 @@
   "prayerMaghrib": "Magrib",
   "prayerIsha": "Isya",
   "prayerNone": "—",
-
   "notifTitle": "Salat $name",
   "notifBody": "Sudah masuk waktu salat $name — $place.",
   "testNotifTitle": "Pengingat percobaan",
@@ -193,7 +187,6 @@
   "testSent": "Percobaan terkirim — satu muncul sekarang, satu lagi dalam 12 dtk (kunci ponsel Anda).",
   "testBlocked": "Terkirim, tetapi ponsel Anda melaporkan notifikasi MATI untuk Hisn. Aktifkan di Pengaturan → Aplikasi → Hisn → Notifikasi.",
   "batteryHint": "Beberapa ponsel (mis. Xiaomi/MIUI, Samsung) memblokir pengingat terjadwal saat aplikasi ditutup. Jika pengingat tidak muncul, izinkan Autostart dan atur penggunaan baterai ke \"Tanpa batasan\" untuk Hisn.",
-
   "adhkarMorningTitle": "Zikir pagi",
   "adhkarMorningBody": "Awali pagimu dengan zikir — bentengi harimu.",
   "adhkarEveningTitle": "Zikir petang",
@@ -206,7 +199,6 @@
   "salawatFridayBody": "Hari ini Jumat — perbanyak salawat kepada Nabi ﷺ.",
   "mulkTitle": "Surah Al-Mulk",
   "mulkBody": "Sebelum tidur — bacalah Surah Al-Mulk.",
-
   "qiblaFromNorth": "Kiblat · $degrees° dari Utara",
   "facingQibla": "Anda menghadap kiblat",
   "turnRight": "Putar kanan $degrees°",
@@ -216,11 +208,9 @@
   "compassUnavailableBody": "Perangkat ini tidak memiliki sensor kompas, atau perlu kalibrasi. Coba gerakkan membentuk angka 8.",
   "qiblaNoLocation": "Lokasi diperlukan",
   "qiblaNoLocationBody": "Arah kiblat belum dapat dihitung sebelum lokasi Anda diketahui. Aktifkan layanan lokasi, atau pilih kota Anda di Pengaturan.",
-
   "placeYourLocation": "Lokasi Anda",
   "placeSelectedCity": "Kota terpilih",
   "placeMakkah": "Makkah",
-
   "onboardSkip": "Lewati",
   "onboardNext": "Lanjut",
   "onboardGetStarted": "Mulai",
@@ -241,7 +231,6 @@
   "onboardNotifBody": "Pengingat lembut di setiap waktu salat agar Anda tidak melewatkan salat.",
   "onboardNotifAction": "Aktifkan pengingat",
   "onboardGranted": "Aktif",
-
   "secAppearance": "Tampilan",
   "appearanceColors": "Palet warna",
   "appearanceTheme": "Tema",
@@ -254,7 +243,6 @@
   "paletteRosewood": "Kayu Mawar",
   "paletteLagoon": "Laguna",
   "paletteDesert": "Gurun",
-
   "arabicFont": "Font Arab",
   "readingTheme": "Latar baca",
   "readingSystem": "Ikuti aplikasi",
@@ -262,13 +250,81 @@
   "readingNight": "Malam",
   "patterns": "Pola geometris",
   "patternsSub": "Ornamen halus di header dan penghitung",
-
-  "ampm": ["AM", "PM"],
-  "weekdaysShort": ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"],
-  "monthsShort": ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"],
+  "ampm": [
+    "AM",
+    "PM"
+  ],
+  "weekdaysShort": [
+    "Sen",
+    "Sel",
+    "Rab",
+    "Kam",
+    "Jum",
+    "Sab",
+    "Min"
+  ],
+  "monthsShort": [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "Mei",
+    "Jun",
+    "Jul",
+    "Agu",
+    "Sep",
+    "Okt",
+    "Nov",
+    "Des"
+  ],
   "dateFormat": "$weekday, $day $month",
-
-  "hijriMonths": ["Muharram", "Safar", "Rabiulawal", "Rabiulakhir", "Jumadilawal", "Jumadilakhir", "Rajab", "Syaban", "Ramadan", "Syawal", "Zulkaidah", "Zulhijah"],
+  "hijriMonths": [
+    "Muharram",
+    "Safar",
+    "Rabiulawal",
+    "Rabiulakhir",
+    "Jumadilawal",
+    "Jumadilakhir",
+    "Rajab",
+    "Syaban",
+    "Ramadan",
+    "Syawal",
+    "Zulkaidah",
+    "Zulhijah"
+  ],
   "hijriDateFormat": "$day $month $year H",
-  "hijriSuffix": "H"
+  "hijriSuffix": "H",
+  "secBackup": "Cadangan & pemulihan",
+  "backupSub": "Simpan kemajuan Anda ke sebuah berkas",
+  "backupOnThisDevice": "Di perangkat ini",
+  "backupSave": "Simpan cadangan",
+  "backupSaveHint": "Menulis semua yang ada di bawah ke sebuah berkas yang bisa Anda simpan di Drive atau Files, atau kirim ke diri sendiri.",
+  "backupRestoreHeading": "Pemulihan",
+  "backupRestore": "Pulihkan dari berkas",
+  "backupRestoreHint": "Mengganti apa yang ada di perangkat ini dengan isi berkas cadangan.",
+  "backupPrivacy": "Cadangan adalah berkas teks biasa. Berkas itu tetap di perangkat ini kecuali Anda sendiri mengirimkannya — Hisn tidak pernah mengunggahnya.",
+  "backupStatStreak": "Rentetan saat ini",
+  "backupStatBest": "Rentetan terbaik",
+  "backupStatDays": "Hari terbentengi",
+  "backupStatFavorites": "Doa tersimpan",
+  "backupStatCustom": "Doa saya",
+  "backupStatQuran": "Penanda Quran",
+  "restoreTitle": "Pulihkan cadangan ini?",
+  "restoreSavedOn": "Disimpan $date",
+  "restoreSavedOnVersion": "Disimpan $date · v$version",
+  "restoreScopeEverything": "Semuanya",
+  "restoreScopeEverythingSub": "Kemajuan dan pengaturan",
+  "restoreScopeProgress": "Hanya kemajuan",
+  "restoreScopeProgressSub": "Pertahankan lokasi, pengingat, dan bahasa ponsel ini",
+  "restoreWarning": "Ini akan mengganti apa yang ada di perangkat ini sekarang.",
+  "restoreAction": "Pulihkan",
+  "restoreDoneOne": "1 item dipulihkan",
+  "restoreDoneOther": "$n item dipulihkan",
+  "backupSaved": "Cadangan siap disimpan",
+  "backupFailed": "Tidak dapat membuat cadangan",
+  "restoreErrMalformed": "Berkas itu tidak dapat dibaca.",
+  "restoreErrNotABackup": "Itu bukan berkas cadangan Hisn.",
+  "restoreErrTooNew": "Cadangan itu dibuat oleh versi Hisn yang lebih baru. Perbarui aplikasi terlebih dahulu.",
+  "restoreErrEmpty": "Tidak ada yang bisa dipulihkan dari cadangan itu.",
+  "restoreFailed": "Tidak dapat memulihkan. Tidak ada yang diubah."
 }

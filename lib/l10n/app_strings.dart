@@ -4,10 +4,11 @@ import 'package:hijri/hijri_calendar.dart';
 import 'package:provider/provider.dart';
 
 import '../i18n/strings.g.dart';
+import '../services/backup_service.dart';
 import 'locale_controller.dart';
 
 /// Bump this when shipping a build so the About screen confirms what's running.
-const String kAppVersion = '1.9.0';
+const String kAppVersion = '1.10.1';
 
 /// UI strings facade. The actual text lives in per-language files under
 /// `lib/i18n/` (`en.i18n.json`, `ar.i18n.json`, `id.i18n.json`) and is compiled
@@ -427,4 +428,53 @@ class AppStrings {
     final month = _t.hijriMonths[(h.hMonth - 1).clamp(0, 11)];
     return _t.hijriDateFormat(day: h.hDay, month: month, year: h.hYear);
   }
+
+  // ---- backup & restore ----
+  String get secBackup => _t.secBackup;
+  String get backupSub => _t.backupSub;
+  String get backupOnThisDevice => _t.backupOnThisDevice;
+  String get backupSave => _t.backupSave;
+  String get backupSaveHint => _t.backupSaveHint;
+  String get backupRestoreHeading => _t.backupRestoreHeading;
+  String get backupRestore => _t.backupRestore;
+  String get backupRestoreHint => _t.backupRestoreHint;
+  String get backupPrivacy => _t.backupPrivacy;
+  String get backupStatStreak => _t.backupStatStreak;
+  String get backupStatBest => _t.backupStatBest;
+  String get backupStatDays => _t.backupStatDays;
+  String get backupStatFavorites => _t.backupStatFavorites;
+  String get backupStatCustom => _t.backupStatCustom;
+  String get backupStatQuran => _t.backupStatQuran;
+  String get restoreTitle => _t.restoreTitle;
+  String get restoreScopeEverything => _t.restoreScopeEverything;
+  String get restoreScopeEverythingSub => _t.restoreScopeEverythingSub;
+  String get restoreScopeProgress => _t.restoreScopeProgress;
+  String get restoreScopeProgressSub => _t.restoreScopeProgressSub;
+  String get restoreWarning => _t.restoreWarning;
+  String get restoreAction => _t.restoreAction;
+  String get backupSaved => _t.backupSaved;
+  String get backupFailed => _t.backupFailed;
+  String get restoreFailed => _t.restoreFailed;
+
+  /// When the backup being restored was written. [version] is the app version
+  /// that wrote it, omitted when the file didn't record one.
+  String restoreSavedOn(DateTime date, String version) {
+    // Day-month-year rather than the weekday form [dateLabel] uses: a backup
+    // can be years old, so the year has to be on it.
+    final d = '${date.day} ${_t.monthsShort[date.month - 1]} ${date.year}';
+    return version.isEmpty
+        ? _t.restoreSavedOn(date: d)
+        : _t.restoreSavedOnVersion(date: d, version: version);
+  }
+
+  String restoreDone(int n) =>
+      n == 1 ? _t.restoreDoneOne : _t.restoreDoneOther(n: n);
+
+  /// The message for a backup file that can't be used.
+  String restoreError(BackupError error) => switch (error) {
+        BackupError.malformed => _t.restoreErrMalformed,
+        BackupError.notABackup => _t.restoreErrNotABackup,
+        BackupError.tooNew => _t.restoreErrTooNew,
+        BackupError.empty => _t.restoreErrEmpty,
+      };
 }

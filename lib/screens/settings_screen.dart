@@ -9,6 +9,7 @@ import '../theme/app_theme.dart';
 import '../widgets/ornament.dart';
 import 'settings/about_settings_screen.dart';
 import 'settings/appearance_settings_screen.dart';
+import 'settings/backup_settings_screen.dart';
 import 'settings/display_settings_screen.dart';
 import 'settings/language_settings_screen.dart';
 import 'settings/notifications_settings_screen.dart';
@@ -45,6 +46,8 @@ class SettingsScreen extends StatelessWidget {
           (_) => const DisplaySettingsScreen()),
       _Entry(Icons.translate_outlined, s.secLanguage, s.currentLanguage,
           (_) => const LanguageSettingsScreen()),
+      _Entry(Icons.backup_outlined, s.secBackup, s.backupSub,
+          (_) => const BackupSettingsScreen()),
       _Entry(Icons.info_outline, s.secAbout, 'v$kAppVersion',
           (_) => const AboutSettingsScreen()),
     ];

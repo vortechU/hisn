@@ -1,5 +1,6 @@
 import 'package:adhan/adhan.dart';
 import 'package:dua_app/l10n/app_strings.dart';
+import 'package:dua_app/services/backup_service.dart';
 import 'package:dua_app/l10n/locale_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -85,6 +86,56 @@ void main() {
           expect(hijri, isNotEmpty);
           expect(hijri, contains(s.hijriSuffix));
         }
+      });
+
+      test('backup & restore strings are present and parameterised', () {
+        for (final text in [
+          s.secBackup,
+          s.backupSub,
+          s.backupOnThisDevice,
+          s.backupSave,
+          s.backupSaveHint,
+          s.backupRestoreHeading,
+          s.backupRestore,
+          s.backupRestoreHint,
+          s.backupPrivacy,
+          s.backupStatStreak,
+          s.backupStatBest,
+          s.backupStatDays,
+          s.backupStatFavorites,
+          s.backupStatCustom,
+          s.backupStatQuran,
+          s.restoreTitle,
+          s.restoreScopeEverything,
+          s.restoreScopeEverythingSub,
+          s.restoreScopeProgress,
+          s.restoreScopeProgressSub,
+          s.restoreWarning,
+          s.restoreAction,
+          s.backupSaved,
+          s.backupFailed,
+          s.restoreFailed,
+        ]) {
+          expect(text, isNotEmpty);
+        }
+
+        // Every failure mode needs a sentence the user can act on.
+        for (final error in BackupError.values) {
+          expect(s.restoreError(error), isNotEmpty);
+        }
+
+        // The date and version placeholders must actually be substituted.
+        final dated = s.restoreSavedOn(DateTime(2026, 8, 5), '1.9.0');
+        expect(dated, contains('2026'));
+        expect(dated, contains('1.9.0'));
+        expect(dated, isNot(contains(r'$')));
+        // A file with no recorded version falls back to the date-only form.
+        final undated = s.restoreSavedOn(DateTime(2026, 8, 5), '');
+        expect(undated, isNot(contains('1.9.0')));
+        expect(undated, isNot(contains(r'$')));
+
+        expect(s.restoreDone(1), isNotEmpty);
+        expect(s.restoreDone(7), contains('7'));
       });
 
       test('place sentinels translate, unknown names pass through', () {

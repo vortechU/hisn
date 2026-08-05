@@ -334,6 +334,39 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	];
 	@override String hijriDateFormat({required Object day, required Object month, required Object year}) => '${day} ${month} ${year} هـ';
 	@override String get hijriSuffix => 'هـ';
+	@override String get secBackup => 'النسخ الاحتياطي والاستعادة';
+	@override String get backupSub => 'احفظ تقدّمك في ملف';
+	@override String get backupOnThisDevice => 'على هذا الجهاز';
+	@override String get backupSave => 'حفظ نسخة احتياطية';
+	@override String get backupSaveHint => 'يكتب كل ما بالأسفل في ملف يمكنك حفظه في درايف أو الملفات، أو إرساله إلى نفسك.';
+	@override String get backupRestoreHeading => 'الاستعادة';
+	@override String get backupRestore => 'استعادة من ملف';
+	@override String get backupRestoreHint => 'يستبدل ما على هذا الجهاز بمحتوى ملف النسخة الاحتياطية.';
+	@override String get backupPrivacy => 'النسخة ملف نصي بسيط، يبقى على جهازك ما لم ترسله أنت — وحصن لا يرفعه أبدًا.';
+	@override String get backupStatStreak => 'المتتالية الحالية';
+	@override String get backupStatBest => 'أطول متتالية';
+	@override String get backupStatDays => 'أيام مُحصَّنة';
+	@override String get backupStatFavorites => 'الأدعية المحفوظة';
+	@override String get backupStatCustom => 'أدعيتي';
+	@override String get backupStatQuran => 'علامات المصحف';
+	@override String get restoreTitle => 'استعادة هذه النسخة؟';
+	@override String restoreSavedOn({required Object date}) => 'حُفظت ${date}';
+	@override String restoreSavedOnVersion({required Object date, required Object version}) => 'حُفظت ${date} · إصدار ${version}';
+	@override String get restoreScopeEverything => 'كل شيء';
+	@override String get restoreScopeEverythingSub => 'التقدّم والإعدادات';
+	@override String get restoreScopeProgress => 'التقدّم فقط';
+	@override String get restoreScopeProgressSub => 'الإبقاء على موقع هذا الهاتف وتنبيهاته ولغته';
+	@override String get restoreWarning => 'سيحلّ هذا محلّ ما هو موجود على الجهاز الآن.';
+	@override String get restoreAction => 'استعادة';
+	@override String get restoreDoneOne => 'تمت استعادة عنصر واحد';
+	@override String restoreDoneOther({required Object n}) => 'تمت استعادة ${n} عنصرًا';
+	@override String get backupSaved => 'النسخة جاهزة للحفظ';
+	@override String get backupFailed => 'تعذّر إنشاء النسخة';
+	@override String get restoreErrMalformed => 'تعذّرت قراءة هذا الملف.';
+	@override String get restoreErrNotABackup => 'هذا ليس ملف نسخة احتياطية لحصن.';
+	@override String get restoreErrTooNew => 'أُنشئت هذه النسخة بإصدار أحدث من حصن. حدّث التطبيق أولًا.';
+	@override String get restoreErrEmpty => 'لا يوجد في هذه النسخة ما يُستعاد.';
+	@override String get restoreFailed => 'تعذّرت الاستعادة. لم يتغيّر شيء.';
 }
 
 /// The flat map containing all translations for locale <ar>.
@@ -623,6 +656,39 @@ extension on TranslationsAr {
 			'hijriMonths.11' => 'ذو الحجة',
 			'hijriDateFormat' => ({required Object day, required Object month, required Object year}) => '${day} ${month} ${year} هـ',
 			'hijriSuffix' => 'هـ',
+			'secBackup' => 'النسخ الاحتياطي والاستعادة',
+			'backupSub' => 'احفظ تقدّمك في ملف',
+			'backupOnThisDevice' => 'على هذا الجهاز',
+			'backupSave' => 'حفظ نسخة احتياطية',
+			'backupSaveHint' => 'يكتب كل ما بالأسفل في ملف يمكنك حفظه في درايف أو الملفات، أو إرساله إلى نفسك.',
+			'backupRestoreHeading' => 'الاستعادة',
+			'backupRestore' => 'استعادة من ملف',
+			'backupRestoreHint' => 'يستبدل ما على هذا الجهاز بمحتوى ملف النسخة الاحتياطية.',
+			'backupPrivacy' => 'النسخة ملف نصي بسيط، يبقى على جهازك ما لم ترسله أنت — وحصن لا يرفعه أبدًا.',
+			'backupStatStreak' => 'المتتالية الحالية',
+			'backupStatBest' => 'أطول متتالية',
+			'backupStatDays' => 'أيام مُحصَّنة',
+			'backupStatFavorites' => 'الأدعية المحفوظة',
+			'backupStatCustom' => 'أدعيتي',
+			'backupStatQuran' => 'علامات المصحف',
+			'restoreTitle' => 'استعادة هذه النسخة؟',
+			'restoreSavedOn' => ({required Object date}) => 'حُفظت ${date}',
+			'restoreSavedOnVersion' => ({required Object date, required Object version}) => 'حُفظت ${date} · إصدار ${version}',
+			'restoreScopeEverything' => 'كل شيء',
+			'restoreScopeEverythingSub' => 'التقدّم والإعدادات',
+			'restoreScopeProgress' => 'التقدّم فقط',
+			'restoreScopeProgressSub' => 'الإبقاء على موقع هذا الهاتف وتنبيهاته ولغته',
+			'restoreWarning' => 'سيحلّ هذا محلّ ما هو موجود على الجهاز الآن.',
+			'restoreAction' => 'استعادة',
+			'restoreDoneOne' => 'تمت استعادة عنصر واحد',
+			'restoreDoneOther' => ({required Object n}) => 'تمت استعادة ${n} عنصرًا',
+			'backupSaved' => 'النسخة جاهزة للحفظ',
+			'backupFailed' => 'تعذّر إنشاء النسخة',
+			'restoreErrMalformed' => 'تعذّرت قراءة هذا الملف.',
+			'restoreErrNotABackup' => 'هذا ليس ملف نسخة احتياطية لحصن.',
+			'restoreErrTooNew' => 'أُنشئت هذه النسخة بإصدار أحدث من حصن. حدّث التطبيق أولًا.',
+			'restoreErrEmpty' => 'لا يوجد في هذه النسخة ما يُستعاد.',
+			'restoreFailed' => 'تعذّرت الاستعادة. لم يتغيّر شيء.',
 			_ => null,
 		};
 	}

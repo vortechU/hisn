@@ -17,11 +17,13 @@ import 'package:dua_app/screens/quran_screen.dart';
 import 'package:dua_app/screens/search_screen.dart';
 import 'package:dua_app/screens/settings/about_settings_screen.dart';
 import 'package:dua_app/screens/settings/appearance_settings_screen.dart';
+import 'package:dua_app/screens/settings/backup_settings_screen.dart';
 import 'package:dua_app/screens/settings/display_settings_screen.dart';
 import 'package:dua_app/screens/settings/language_settings_screen.dart';
 import 'package:dua_app/screens/settings_screen.dart';
 import 'package:dua_app/screens/streak_stats_screen.dart';
 import 'package:dua_app/screens/tasbih_screen.dart';
+import 'package:dua_app/services/backup_service.dart';
 import 'package:dua_app/services/custom_dua_service.dart';
 import 'package:dua_app/services/display_settings.dart';
 import 'package:dua_app/services/dua_progress_service.dart';
@@ -41,6 +43,23 @@ import 'package:dua_app/theme/app_theme.dart';
 /// pairs, both of which are easy to overflow on a narrow phone or at a large
 /// accessibility text scale — and neither `flutter analyze` nor a single
 /// screenshot would catch it. This does.
+/// Stands in for a picked backup file, with figures wide enough to be a real
+/// layout test (four digits, not zeroes).
+final _sampleBackup = Backup(
+  formatVersion: BackupService.formatVersion,
+  appVersion: '1.9.0',
+  createdAt: DateTime(2026, 12, 28),
+  summary: const BackupSummary(
+    streak: 365,
+    bestStreak: 1024,
+    fortifiedDays: 2048,
+    favorites: 128,
+    customDuas: 64,
+    quranBookmarks: 256,
+  ),
+  values: const {'muhassan_streak': 365},
+);
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -63,6 +82,7 @@ void main() {
       providers: [
         Provider<DuaRepository>.value(value: repo),
         Provider<QuranRepository>.value(value: quran),
+        Provider<SharedPreferences>.value(value: prefs),
         ChangeNotifierProvider(create: (_) => QuranService(prefs)),
         ChangeNotifierProvider(create: (_) => LocaleController(prefs)..setLang(lang)),
         ChangeNotifierProvider(create: (_) => CustomDuaService(prefs)),
@@ -143,6 +163,11 @@ void main() {
     'display': () => const DisplaySettingsScreen(),
     'language': () => const LanguageSettingsScreen(),
     'about': () => const AboutSettingsScreen(),
+    'backup': () => const BackupSettingsScreen(),
+    // The restore confirmation is a sheet, never routed to, so it is rendered
+    // here directly — long hint lines plus a two-button row in a narrow sheet
+    // is the shape most likely to overflow at a large text scale.
+    'restore sheet': () => Scaffold(body: RestoreSheet(backup: _sampleBackup)),
   };
 
   group('renders without overflow', () {
