@@ -924,6 +924,155 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
 	/// en: 'Remove saved verse'
 	String get unsaveVerse => 'Remove saved verse';
+
+	/// en: 'Islamic calendar'
+	String get secCalendar => 'Islamic calendar';
+
+	/// en: 'Sunnah fasts and Hijri occasions'
+	String get calendarSub => 'Sunnah fasts and Hijri occasions';
+
+	/// en: 'Fasts & occasions'
+	String get sunnahCalendarTitle => 'Fasts & occasions';
+
+	/// en: 'Upcoming'
+	String get upcomingLabel => 'Upcoming';
+
+	/// en: 'Nothing marked in the next two months.'
+	String get nothingUpcoming => 'Nothing marked in the next two months.';
+
+	/// en: 'Dates are calculated (Umm al-Qura) and can differ from your local sighting by a day.'
+	String get calendarNote => 'Dates are calculated (Umm al-Qura) and can differ from your local sighting by a day.';
+
+	/// en: 'Sunnah to fast'
+	String get fastingRecommended => 'Sunnah to fast';
+
+	/// en: 'Obligatory fast'
+	String get fastingObligatory => 'Obligatory fast';
+
+	/// en: 'Not a day to fast'
+	String get fastingForbidden => 'Not a day to fast';
+
+	/// en: 'No particular fast today.'
+	String get fastingNoneToday => 'No particular fast today.';
+
+	/// en: 'Ramadan'
+	String get fastRamadan => 'Ramadan';
+
+	/// en: 'Monday fast'
+	String get fastMonday => 'Monday fast';
+
+	/// en: 'Thursday fast'
+	String get fastThursday => 'Thursday fast';
+
+	/// en: 'The white days'
+	String get fastWhiteDay => 'The white days';
+
+	/// en: 'Tasu'a'
+	String get fastTasua => 'Tasu\'a';
+
+	/// en: 'Ashura'
+	String get fastAshura => 'Ashura';
+
+	/// en: 'The ten of Dhul Hijjah'
+	String get fastDhulHijjah => 'The ten of Dhul Hijjah';
+
+	/// en: 'The Day of Arafah'
+	String get fastArafah => 'The Day of Arafah';
+
+	/// en: 'Six of Shawwal'
+	String get fastSixOfShawwal => 'Six of Shawwal';
+
+	/// en: 'The obligatory fast of the month.'
+	String get fastRamadanSub => 'The obligatory fast of the month.';
+
+	/// en: 'Deeds are presented on Mondays and Thursdays. — Tirmidhi'
+	String get fastMondaySub => 'Deeds are presented on Mondays and Thursdays. — Tirmidhi';
+
+	/// en: 'Deeds are presented on Mondays and Thursdays. — Tirmidhi'
+	String get fastThursdaySub => 'Deeds are presented on Mondays and Thursdays. — Tirmidhi';
+
+	/// en: 'The 13th, 14th and 15th of every Hijri month. — Bukhari & Muslim'
+	String get fastWhiteDaySub => 'The 13th, 14th and 15th of every Hijri month. — Bukhari & Muslim';
+
+	/// en: 'Fasted along with the tenth. — Muslim'
+	String get fastTasuaSub => 'Fasted along with the tenth. — Muslim';
+
+	/// en: 'It expiates the year before it. — Muslim'
+	String get fastAshuraSub => 'It expiates the year before it. — Muslim';
+
+	/// en: 'No days are more beloved to Allah for righteous deeds than these. — Bukhari'
+	String get fastDhulHijjahSub => 'No days are more beloved to Allah for righteous deeds than these. — Bukhari';
+
+	/// en: 'It expiates the year before and the year after — for those not on Hajj. — Muslim'
+	String get fastArafahSub => 'It expiates the year before and the year after — for those not on Hajj. — Muslim';
+
+	/// en: 'Whoever fasts Ramadan and follows it with six of Shawwal, it is as fasting the whole year. — Muslim'
+	String get fastSixOfShawwalSub => 'Whoever fasts Ramadan and follows it with six of Shawwal, it is as fasting the whole year. — Muslim';
+
+	/// en: 'Islamic New Year'
+	String get eventNewYear => 'Islamic New Year';
+
+	/// en: 'Ashura'
+	String get eventAshura => 'Ashura';
+
+	/// en: 'Ramadan begins'
+	String get eventRamadan => 'Ramadan begins';
+
+	/// en: 'The last ten nights'
+	String get eventLastTen => 'The last ten nights';
+
+	/// en: 'Eid al-Fitr'
+	String get eventEidFitr => 'Eid al-Fitr';
+
+	/// en: 'Dhul Hijjah begins'
+	String get eventDhulHijjah => 'Dhul Hijjah begins';
+
+	/// en: 'The Day of Arafah'
+	String get eventArafah => 'The Day of Arafah';
+
+	/// en: 'Eid al-Adha'
+	String get eventEidAdha => 'Eid al-Adha';
+
+	/// en: 'Laylat al-Qadr is sought in the odd nights of these ten.'
+	String get eventLastTenSub => 'Laylat al-Qadr is sought in the odd nights of these ten.';
+
+	/// en: 'Fasting is not allowed on Eid al-Fitr.'
+	String get barEidAlFitr => 'Fasting is not allowed on Eid al-Fitr.';
+
+	/// en: 'Fasting is not allowed on Eid al-Adha.'
+	String get barEidAlAdha => 'Fasting is not allowed on Eid al-Adha.';
+
+	/// en: 'Fasting is not allowed on the days of Tashriq.'
+	String get barTashriq => 'Fasting is not allowed on the days of Tashriq.';
+
+	/// en: 'Hijri date adjustment'
+	String get hijriAdjust => 'Hijri date adjustment';
+
+	/// en: 'The calculated date can run a day ahead of or behind your local sighting. Adjust it to match your community.'
+	String get hijriAdjustHint => 'The calculated date can run a day ahead of or behind your local sighting. Adjust it to match your community.';
+
+	List<String> get hijriOffsetLabels => [
+		'−2 days',
+		'−1 day',
+		'No adjustment',
+		'+1 day',
+		'+2 days',
+	];
+
+	/// en: 'Fasting reminders'
+	String get fastingReminders => 'Fasting reminders';
+
+	/// en: 'A reminder the evening before a sunnah fast'
+	String get fastingRemindersSub => 'A reminder the evening before a sunnah fast';
+
+	/// en: 'Fasting tomorrow'
+	String get notifFastTitle => 'Fasting tomorrow';
+
+	/// en: 'Tomorrow is $name — a fast from the Sunnah.'
+	String notifFastBody({required Object name}) => 'Tomorrow is ${name} — a fast from the Sunnah.';
+
+	/// en: 'Tomorrow, in sha' Allah.'
+	String get notifOccasionBody => 'Tomorrow, in sha\' Allah.';
 }
 
 /// The flat map containing all translations for locale <en>.
@@ -1255,6 +1404,58 @@ extension on Translations {
 			'savedPages' => 'Saved pages',
 			'saveVerse' => 'Save verse',
 			'unsaveVerse' => 'Remove saved verse',
+			'secCalendar' => 'Islamic calendar',
+			'calendarSub' => 'Sunnah fasts and Hijri occasions',
+			'sunnahCalendarTitle' => 'Fasts & occasions',
+			'upcomingLabel' => 'Upcoming',
+			'nothingUpcoming' => 'Nothing marked in the next two months.',
+			'calendarNote' => 'Dates are calculated (Umm al-Qura) and can differ from your local sighting by a day.',
+			'fastingRecommended' => 'Sunnah to fast',
+			'fastingObligatory' => 'Obligatory fast',
+			'fastingForbidden' => 'Not a day to fast',
+			'fastingNoneToday' => 'No particular fast today.',
+			'fastRamadan' => 'Ramadan',
+			'fastMonday' => 'Monday fast',
+			'fastThursday' => 'Thursday fast',
+			'fastWhiteDay' => 'The white days',
+			'fastTasua' => 'Tasu\'a',
+			'fastAshura' => 'Ashura',
+			'fastDhulHijjah' => 'The ten of Dhul Hijjah',
+			'fastArafah' => 'The Day of Arafah',
+			'fastSixOfShawwal' => 'Six of Shawwal',
+			'fastRamadanSub' => 'The obligatory fast of the month.',
+			'fastMondaySub' => 'Deeds are presented on Mondays and Thursdays. — Tirmidhi',
+			'fastThursdaySub' => 'Deeds are presented on Mondays and Thursdays. — Tirmidhi',
+			'fastWhiteDaySub' => 'The 13th, 14th and 15th of every Hijri month. — Bukhari & Muslim',
+			'fastTasuaSub' => 'Fasted along with the tenth. — Muslim',
+			'fastAshuraSub' => 'It expiates the year before it. — Muslim',
+			'fastDhulHijjahSub' => 'No days are more beloved to Allah for righteous deeds than these. — Bukhari',
+			'fastArafahSub' => 'It expiates the year before and the year after — for those not on Hajj. — Muslim',
+			'fastSixOfShawwalSub' => 'Whoever fasts Ramadan and follows it with six of Shawwal, it is as fasting the whole year. — Muslim',
+			'eventNewYear' => 'Islamic New Year',
+			'eventAshura' => 'Ashura',
+			'eventRamadan' => 'Ramadan begins',
+			'eventLastTen' => 'The last ten nights',
+			'eventEidFitr' => 'Eid al-Fitr',
+			'eventDhulHijjah' => 'Dhul Hijjah begins',
+			'eventArafah' => 'The Day of Arafah',
+			'eventEidAdha' => 'Eid al-Adha',
+			'eventLastTenSub' => 'Laylat al-Qadr is sought in the odd nights of these ten.',
+			'barEidAlFitr' => 'Fasting is not allowed on Eid al-Fitr.',
+			'barEidAlAdha' => 'Fasting is not allowed on Eid al-Adha.',
+			'barTashriq' => 'Fasting is not allowed on the days of Tashriq.',
+			'hijriAdjust' => 'Hijri date adjustment',
+			'hijriAdjustHint' => 'The calculated date can run a day ahead of or behind your local sighting. Adjust it to match your community.',
+			'hijriOffsetLabels.0' => '−2 days',
+			'hijriOffsetLabels.1' => '−1 day',
+			'hijriOffsetLabels.2' => 'No adjustment',
+			'hijriOffsetLabels.3' => '+1 day',
+			'hijriOffsetLabels.4' => '+2 days',
+			'fastingReminders' => 'Fasting reminders',
+			'fastingRemindersSub' => 'A reminder the evening before a sunnah fast',
+			'notifFastTitle' => 'Fasting tomorrow',
+			'notifFastBody' => ({required Object name}) => 'Tomorrow is ${name} — a fast from the Sunnah.',
+			'notifOccasionBody' => 'Tomorrow, in sha\' Allah.',
 			_ => null,
 		};
 	}

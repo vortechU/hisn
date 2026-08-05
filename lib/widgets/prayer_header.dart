@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../l10n/app_strings.dart';
 import '../services/prayer_service.dart';
+import '../services/sunnah_calendar_service.dart';
 import '../theme/app_theme.dart';
 import 'arabic_text.dart';
 import 'ornament.dart';
@@ -101,7 +102,8 @@ class _PrayerHeaderState extends State<PrayerHeader> {
             // The date band — today's page, headed the way a chapter is.
             UnwanBand(
               child: Text(
-                s.hijriDate(_now),
+                s.hijriDate(_now,
+                    offset: context.watch<SunnahCalendarService>().offset),
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

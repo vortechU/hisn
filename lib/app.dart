@@ -18,6 +18,7 @@ import 'services/notification_service.dart';
 import 'services/prayer_service.dart';
 import 'services/prayer_widget_service.dart';
 import 'services/quran_service.dart';
+import 'services/sunnah_calendar_service.dart';
 import 'services/tasbih_controller.dart';
 import 'services/theme_controller.dart';
 import 'theme/app_theme.dart';
@@ -137,23 +138,24 @@ class _DuaAppState extends State<DuaApp> {
         ),
         ChangeNotifierProvider(create: (_) => PrayerService(prefs)),
         ChangeNotifierProvider(create: (_) => AdhanAudioService(prefs)),
-        ChangeNotifierProxyProvider3<PrayerService, AdhanAudioService,
-            DuaProgressService, NotificationService>(
+        ChangeNotifierProvider(create: (_) => SunnahCalendarService(prefs)),
+        ChangeNotifierProxyProvider4<PrayerService, AdhanAudioService,
+            DuaProgressService, SunnahCalendarService, NotificationService>(
           // Eager so reminders are (re)scheduled at launch, not only when the
           // Settings tab is first opened.
           lazy: false,
           create: (_) => NotificationService(prefs, repository),
-          update: (_, prayer, adhan, progress, notifications) =>
+          update: (_, prayer, adhan, progress, calendar, notifications) =>
               (notifications ?? NotificationService(prefs, repository))
-                ..bind(prayer, adhan, progress),
+                ..bind(prayer, adhan, progress, calendar),
         ),
-        ChangeNotifierProxyProvider2<PrayerService, LocaleController,
-            PrayerWidgetService>(
+        ChangeNotifierProxyProvider3<PrayerService, LocaleController,
+            SunnahCalendarService, PrayerWidgetService>(
           // Eager so the home-screen widget is refreshed at launch.
           lazy: false,
           create: (_) => PrayerWidgetService(),
-          update: (_, prayer, locale, widget) =>
-              (widget ?? PrayerWidgetService())..bind(prayer, locale),
+          update: (_, prayer, locale, calendar, widget) =>
+              (widget ?? PrayerWidgetService())..bind(prayer, locale, calendar),
         ),
       ],
       // DisplaySettings joins the theme because the Latin faces carry no

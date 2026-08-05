@@ -14,6 +14,7 @@ import 'settings/display_settings_screen.dart';
 import 'settings/language_settings_screen.dart';
 import 'settings/notifications_settings_screen.dart';
 import 'settings/prayer_times_settings_screen.dart';
+import 'sunnah_calendar_screen.dart';
 
 /// Settings hub — one ruled entry per section, each opening its own screen.
 class SettingsScreen extends StatelessWidget {
@@ -40,6 +41,8 @@ class SettingsScreen extends StatelessWidget {
           _locationSubtitle(service, s), (_) => const PrayerTimesSettingsScreen()),
       _Entry(Icons.notifications_none, s.notifications, s.prayerRemindersSub,
           (_) => const NotificationsSettingsScreen()),
+      _Entry(Icons.calendar_month_outlined, s.secCalendar, s.calendarSub,
+          (_) => const SunnahCalendarScreen()),
       _Entry(Icons.palette_outlined, s.secAppearance,
           s.paletteName(theme.palette.id), (_) => const AppearanceSettingsScreen()),
       _Entry(Icons.format_size, s.secDisplay, s.textSize,

@@ -376,6 +376,60 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get savedPages => 'Halaman tersimpan';
 	@override String get saveVerse => 'Simpan ayat';
 	@override String get unsaveVerse => 'Hapus ayat tersimpan';
+	@override String get secCalendar => 'Kalender Hijriah';
+	@override String get calendarSub => 'Puasa sunnah dan peristiwa Hijriah';
+	@override String get sunnahCalendarTitle => 'Puasa & peristiwa';
+	@override String get upcomingLabel => 'Mendatang';
+	@override String get nothingUpcoming => 'Tidak ada yang ditandai dalam dua bulan ke depan.';
+	@override String get calendarNote => 'Tanggal dihitung (Umm al-Qura) dan bisa berbeda satu hari dari rukyat setempat.';
+	@override String get fastingRecommended => 'Sunnah berpuasa';
+	@override String get fastingObligatory => 'Puasa wajib';
+	@override String get fastingForbidden => 'Bukan hari puasa';
+	@override String get fastingNoneToday => 'Tidak ada puasa khusus hari ini.';
+	@override String get fastRamadan => 'Ramadan';
+	@override String get fastMonday => 'Puasa Senin';
+	@override String get fastThursday => 'Puasa Kamis';
+	@override String get fastWhiteDay => 'Ayyamul Bidh';
+	@override String get fastTasua => 'Tasu\'a';
+	@override String get fastAshura => 'Asyura';
+	@override String get fastDhulHijjah => 'Sepuluh hari Zulhijah';
+	@override String get fastArafah => 'Hari Arafah';
+	@override String get fastSixOfShawwal => 'Enam hari Syawal';
+	@override String get fastRamadanSub => 'Puasa wajib bulan ini.';
+	@override String get fastMondaySub => 'Amal dihadapkan pada hari Senin dan Kamis. — Tirmidzi';
+	@override String get fastThursdaySub => 'Amal dihadapkan pada hari Senin dan Kamis. — Tirmidzi';
+	@override String get fastWhiteDaySub => 'Tanggal 13, 14, dan 15 setiap bulan Hijriah. — Bukhari & Muslim';
+	@override String get fastTasuaSub => 'Dipuasakan bersama tanggal sepuluh. — Muslim';
+	@override String get fastAshuraSub => 'Menghapus dosa setahun sebelumnya. — Muslim';
+	@override String get fastDhulHijjahSub => 'Tiada hari yang amal salih padanya lebih dicintai Allah daripada hari-hari ini. — Bukhari';
+	@override String get fastArafahSub => 'Menghapus dosa setahun sebelum dan sesudahnya — bagi yang tidak berhaji. — Muslim';
+	@override String get fastSixOfShawwalSub => 'Siapa berpuasa Ramadan lalu mengikutkannya enam hari Syawal, seperti berpuasa setahun penuh. — Muslim';
+	@override String get eventNewYear => 'Tahun Baru Hijriah';
+	@override String get eventAshura => 'Asyura';
+	@override String get eventRamadan => 'Awal Ramadan';
+	@override String get eventLastTen => 'Sepuluh malam terakhir';
+	@override String get eventEidFitr => 'Idulfitri';
+	@override String get eventDhulHijjah => 'Awal Zulhijah';
+	@override String get eventArafah => 'Hari Arafah';
+	@override String get eventEidAdha => 'Iduladha';
+	@override String get eventLastTenSub => 'Lailatulqadar dicari pada malam-malam ganjil dari sepuluh ini.';
+	@override String get barEidAlFitr => 'Puasa tidak dibolehkan pada hari Idulfitri.';
+	@override String get barEidAlAdha => 'Puasa tidak dibolehkan pada hari Iduladha.';
+	@override String get barTashriq => 'Puasa tidak dibolehkan pada hari-hari Tasyrik.';
+	@override String get hijriAdjust => 'Penyesuaian tanggal Hijriah';
+	@override String get hijriAdjustHint => 'Tanggal hasil hitungan bisa lebih cepat atau lambat satu hari dari rukyat setempat. Sesuaikan dengan daerah Anda.';
+	@override List<String> get hijriOffsetLabels => [
+		'−2 hari',
+		'−1 hari',
+		'Tanpa penyesuaian',
+		'+1 hari',
+		'+2 hari',
+	];
+	@override String get fastingReminders => 'Pengingat puasa';
+	@override String get fastingRemindersSub => 'Pengingat pada malam sebelum puasa sunnah';
+	@override String get notifFastTitle => 'Puasa besok';
+	@override String notifFastBody({required Object name}) => 'Besok ${name} — puasa yang disunnahkan.';
+	@override String get notifOccasionBody => 'Besok, insyaAllah.';
 }
 
 /// The flat map containing all translations for locale <id>.
@@ -707,6 +761,58 @@ extension on TranslationsId {
 			'savedPages' => 'Halaman tersimpan',
 			'saveVerse' => 'Simpan ayat',
 			'unsaveVerse' => 'Hapus ayat tersimpan',
+			'secCalendar' => 'Kalender Hijriah',
+			'calendarSub' => 'Puasa sunnah dan peristiwa Hijriah',
+			'sunnahCalendarTitle' => 'Puasa & peristiwa',
+			'upcomingLabel' => 'Mendatang',
+			'nothingUpcoming' => 'Tidak ada yang ditandai dalam dua bulan ke depan.',
+			'calendarNote' => 'Tanggal dihitung (Umm al-Qura) dan bisa berbeda satu hari dari rukyat setempat.',
+			'fastingRecommended' => 'Sunnah berpuasa',
+			'fastingObligatory' => 'Puasa wajib',
+			'fastingForbidden' => 'Bukan hari puasa',
+			'fastingNoneToday' => 'Tidak ada puasa khusus hari ini.',
+			'fastRamadan' => 'Ramadan',
+			'fastMonday' => 'Puasa Senin',
+			'fastThursday' => 'Puasa Kamis',
+			'fastWhiteDay' => 'Ayyamul Bidh',
+			'fastTasua' => 'Tasu\'a',
+			'fastAshura' => 'Asyura',
+			'fastDhulHijjah' => 'Sepuluh hari Zulhijah',
+			'fastArafah' => 'Hari Arafah',
+			'fastSixOfShawwal' => 'Enam hari Syawal',
+			'fastRamadanSub' => 'Puasa wajib bulan ini.',
+			'fastMondaySub' => 'Amal dihadapkan pada hari Senin dan Kamis. — Tirmidzi',
+			'fastThursdaySub' => 'Amal dihadapkan pada hari Senin dan Kamis. — Tirmidzi',
+			'fastWhiteDaySub' => 'Tanggal 13, 14, dan 15 setiap bulan Hijriah. — Bukhari & Muslim',
+			'fastTasuaSub' => 'Dipuasakan bersama tanggal sepuluh. — Muslim',
+			'fastAshuraSub' => 'Menghapus dosa setahun sebelumnya. — Muslim',
+			'fastDhulHijjahSub' => 'Tiada hari yang amal salih padanya lebih dicintai Allah daripada hari-hari ini. — Bukhari',
+			'fastArafahSub' => 'Menghapus dosa setahun sebelum dan sesudahnya — bagi yang tidak berhaji. — Muslim',
+			'fastSixOfShawwalSub' => 'Siapa berpuasa Ramadan lalu mengikutkannya enam hari Syawal, seperti berpuasa setahun penuh. — Muslim',
+			'eventNewYear' => 'Tahun Baru Hijriah',
+			'eventAshura' => 'Asyura',
+			'eventRamadan' => 'Awal Ramadan',
+			'eventLastTen' => 'Sepuluh malam terakhir',
+			'eventEidFitr' => 'Idulfitri',
+			'eventDhulHijjah' => 'Awal Zulhijah',
+			'eventArafah' => 'Hari Arafah',
+			'eventEidAdha' => 'Iduladha',
+			'eventLastTenSub' => 'Lailatulqadar dicari pada malam-malam ganjil dari sepuluh ini.',
+			'barEidAlFitr' => 'Puasa tidak dibolehkan pada hari Idulfitri.',
+			'barEidAlAdha' => 'Puasa tidak dibolehkan pada hari Iduladha.',
+			'barTashriq' => 'Puasa tidak dibolehkan pada hari-hari Tasyrik.',
+			'hijriAdjust' => 'Penyesuaian tanggal Hijriah',
+			'hijriAdjustHint' => 'Tanggal hasil hitungan bisa lebih cepat atau lambat satu hari dari rukyat setempat. Sesuaikan dengan daerah Anda.',
+			'hijriOffsetLabels.0' => '−2 hari',
+			'hijriOffsetLabels.1' => '−1 hari',
+			'hijriOffsetLabels.2' => 'Tanpa penyesuaian',
+			'hijriOffsetLabels.3' => '+1 hari',
+			'hijriOffsetLabels.4' => '+2 hari',
+			'fastingReminders' => 'Pengingat puasa',
+			'fastingRemindersSub' => 'Pengingat pada malam sebelum puasa sunnah',
+			'notifFastTitle' => 'Puasa besok',
+			'notifFastBody' => ({required Object name}) => 'Besok ${name} — puasa yang disunnahkan.',
+			'notifOccasionBody' => 'Besok, insyaAllah.',
 			_ => null,
 		};
 	}

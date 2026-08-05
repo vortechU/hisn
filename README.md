@@ -20,6 +20,15 @@ the content is authentic but intentionally small, and it's built to grow.
 - **Recommended now** — a time-aware suggestion at the top of the home screen that points
   to the most relevant adhkar for the current part of the day (based on the current prayer
   period: Fajr/Dhuhr → Morning, Asr/Maghrib → Evening, Isha → Before Sleep).
+- **Sunnah fasts & occasions** — today's Hijri date with how fasting stands on it,
+  then the notable days ahead: Mondays and Thursdays, the white days, ʿĀshūrāʾ and
+  Tāsūʿāʾ, the ten of Dhul Hijjah and the Day of ʿArafah, the six of Shawwāl, and
+  the occasions of the Islamic year. Each fast is shown with its reference.
+  Days on which fasting is **forbidden** — the two Eids and the days of Tashrīq —
+  are marked as such and never suggested, even when a Monday or a white day falls
+  on one. Opt-in reminders arrive at Maghrib the evening before. Because the
+  calculated (Umm al-Qura) date can run a day either side of a local sighting,
+  it can be nudged ±2 days to match your community.
 - **Search** — full-text search across every dua (title, transliteration, translation,
   source, and Arabic).
 - **Qibla compass** — a live compass pointing to the Ka'bah using the device magnetometer
@@ -111,3 +120,12 @@ designed as a mobile app.
 Duas are sourced from the Qur'an and well-known hadith collections (Bukhari, Muslim,
 Abu Dawud, Tirmidhi, an-Nasa'i), with references shown on each card. Before release,
 the Arabic text and references should be reviewed by a qualified person.
+
+The same applies to the calendar. The short lines describing each fast's virtue are
+renderings of well-known hadith, not quotations, and carry their collection — they
+need the same review. Occasions whose date is **not** authentically established are
+deliberately absent (the Mawlid on 12 Rabiʿ al-Awwal, the Isrāʾ and Miʿrāj on
+27 Rajab, mid-Shaʿbān): the app would rather omit a date than assert one. The
+fasting rulings encoded in `lib/models/sunnah_day.dart` — in particular which days
+fasting is forbidden on — should be checked by a qualified person too, since the
+app acts on them by sending reminders.

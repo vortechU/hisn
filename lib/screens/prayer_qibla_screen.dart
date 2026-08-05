@@ -8,6 +8,7 @@ import '../widgets/arabic_text.dart';
 import '../widgets/ornament.dart';
 import 'prayer_schedule_screen.dart';
 import 'qibla_screen.dart';
+import 'sunnah_calendar_screen.dart';
 
 /// The combined Prayer & Qibla tab: the live compass above, then today's
 /// prayers as a ruled register. Tapping any entry opens the weekly schedule.
@@ -34,6 +35,13 @@ class PrayerQiblaScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(s.prayerQiblaTitle),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.nights_stay_outlined),
+            tooltip: s.sunnahCalendarTitle,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const SunnahCalendarScreen()),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.calendar_month_outlined),
             tooltip: s.weeklySchedule,

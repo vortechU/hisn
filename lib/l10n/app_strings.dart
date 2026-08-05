@@ -4,11 +4,12 @@ import 'package:hijri/hijri_calendar.dart';
 import 'package:provider/provider.dart';
 
 import '../i18n/strings.g.dart';
+import '../models/sunnah_day.dart';
 import '../services/backup_service.dart';
 import 'locale_controller.dart';
 
 /// Bump this when shipping a build so the About screen confirms what's running.
-const String kAppVersion = '1.11.0';
+const String kAppVersion = '1.13.0';
 
 /// UI strings facade. The actual text lives in per-language files under
 /// `lib/i18n/` (`en.i18n.json`, `ar.i18n.json`, `id.i18n.json`) and is compiled
@@ -433,11 +434,146 @@ class AppStrings {
   String get hijriSuffix => _t.hijriSuffix;
 
   /// The Hijri date for [date], e.g. "12 Ramadan 1447 AH" (Umm al-Qura).
-  String hijriDate(DateTime date) {
-    final h = HijriCalendar.fromDate(date);
+  ///
+  /// [offset] is the user's sighting adjustment (see [SunnahCalendarService]);
+  /// every place that shows a Hijri date must pass it, or the app will
+  /// contradict itself between the header and the calendar.
+  String hijriDate(DateTime date, {int offset = 0}) {
+    final shifted = DateTime(date.year, date.month, date.day + offset, 12);
+    final h = HijriCalendar.fromDate(shifted);
     final month = _t.hijriMonths[(h.hMonth - 1).clamp(0, 11)];
     return _t.hijriDateFormat(day: h.hDay, month: month, year: h.hYear);
   }
+
+  /// The Hijri date of an already-resolved [day], formatted without redoing
+  /// the conversion.
+  String hijriDateOf(SunnahDay day) => _t.hijriDateFormat(
+        day: day.hijriDay,
+        month: _t.hijriMonths[(day.hijriMonth - 1).clamp(0, 11)],
+        year: day.hijriYear,
+      );
+
+  // ---- Islamic calendar: sunnah fasts & occasions ----
+  String get secCalendar => _t.secCalendar;
+  String get calendarSub => _t.calendarSub;
+  String get sunnahCalendarTitle => _t.sunnahCalendarTitle;
+  String get upcomingLabel => _t.upcomingLabel;
+  String get nothingUpcoming => _t.nothingUpcoming;
+  String get calendarNote => _t.calendarNote;
+  String get fastingNoneToday => _t.fastingNoneToday;
+
+  /// The heading for a day, given how fasting on it is ruled.
+  String fastingRuling(FastingRuling ruling) {
+    switch (ruling) {
+      case FastingRuling.obligatory:
+        return _t.fastingObligatory;
+      case FastingRuling.recommended:
+        return _t.fastingRecommended;
+      case FastingRuling.forbidden:
+        return _t.fastingForbidden;
+      case FastingRuling.none:
+        return _t.fastingNoneToday;
+    }
+  }
+
+  String fastName(SunnahFast fast) {
+    switch (fast) {
+      case SunnahFast.ramadan:
+        return _t.fastRamadan;
+      case SunnahFast.monday:
+        return _t.fastMonday;
+      case SunnahFast.thursday:
+        return _t.fastThursday;
+      case SunnahFast.whiteDay:
+        return _t.fastWhiteDay;
+      case SunnahFast.tasua:
+        return _t.fastTasua;
+      case SunnahFast.ashura:
+        return _t.fastAshura;
+      case SunnahFast.dhulHijjah:
+        return _t.fastDhulHijjah;
+      case SunnahFast.arafah:
+        return _t.fastArafah;
+      case SunnahFast.sixOfShawwal:
+        return _t.fastSixOfShawwal;
+    }
+  }
+
+  /// What the Sunnah says about [fast], with its reference.
+  String fastVirtue(SunnahFast fast) {
+    switch (fast) {
+      case SunnahFast.ramadan:
+        return _t.fastRamadanSub;
+      case SunnahFast.monday:
+        return _t.fastMondaySub;
+      case SunnahFast.thursday:
+        return _t.fastThursdaySub;
+      case SunnahFast.whiteDay:
+        return _t.fastWhiteDaySub;
+      case SunnahFast.tasua:
+        return _t.fastTasuaSub;
+      case SunnahFast.ashura:
+        return _t.fastAshuraSub;
+      case SunnahFast.dhulHijjah:
+        return _t.fastDhulHijjahSub;
+      case SunnahFast.arafah:
+        return _t.fastArafahSub;
+      case SunnahFast.sixOfShawwal:
+        return _t.fastSixOfShawwalSub;
+    }
+  }
+
+  String eventName(IslamicEvent event) {
+    switch (event) {
+      case IslamicEvent.islamicNewYear:
+        return _t.eventNewYear;
+      case IslamicEvent.ashuraDay:
+        return _t.eventAshura;
+      case IslamicEvent.ramadanBegins:
+        return _t.eventRamadan;
+      case IslamicEvent.lastTenNights:
+        return _t.eventLastTen;
+      case IslamicEvent.eidAlFitr:
+        return _t.eventEidFitr;
+      case IslamicEvent.dhulHijjahBegins:
+        return _t.eventDhulHijjah;
+      case IslamicEvent.dayOfArafah:
+        return _t.eventArafah;
+      case IslamicEvent.eidAlAdha:
+        return _t.eventEidAdha;
+    }
+  }
+
+  /// A note about [event], or null when the name says it all.
+  String? eventNote(IslamicEvent event) =>
+      event == IslamicEvent.lastTenNights ? _t.eventLastTenSub : null;
+
+  /// Why fasting is not allowed on a day.
+  String fastingBar(FastingBar bar) {
+    switch (bar) {
+      case FastingBar.eidAlFitr:
+        return _t.barEidAlFitr;
+      case FastingBar.eidAlAdha:
+        return _t.barEidAlAdha;
+      case FastingBar.tashriq:
+        return _t.barTashriq;
+    }
+  }
+
+  String get hijriAdjust => _t.hijriAdjust;
+  String get hijriAdjustHint => _t.hijriAdjustHint;
+
+  /// The label for a Hijri offset, e.g. -1 → "−1 day".
+  String hijriOffsetLabel(int offset) => _t.hijriOffsetLabels[
+      (offset - SunnahCalendarRules.minOffset)
+          .clamp(0, _t.hijriOffsetLabels.length - 1)];
+
+  String get fastingReminders => _t.fastingReminders;
+  String get fastingRemindersSub => _t.fastingRemindersSub;
+  String get notifFastTitle => _t.notifFastTitle;
+  String notifFastBody(SunnahFast fast) =>
+      _t.notifFastBody(name: fastName(fast));
+  String get notifOccasionBody => _t.notifOccasionBody;
 
   // ---- backup & restore ----
   String get secBackup => _t.secBackup;

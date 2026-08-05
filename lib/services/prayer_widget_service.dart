@@ -7,6 +7,7 @@ import '../l10n/app_strings.dart';
 import '../l10n/locale_controller.dart';
 import 'adhan_widget_bridge.dart';
 import 'prayer_service.dart';
+import 'sunnah_calendar_service.dart';
 
 /// Keeps the Android home-screen prayer widget in sync with the app's current
 /// location, calculation settings, and UI language.
@@ -21,11 +22,15 @@ class PrayerWidgetService extends ChangeNotifier {
   Timer? _debounce;
   PrayerService? _prayer;
   AppLang _lang = AppLang.en;
+  int _hijriOffset = 0;
 
-  /// Wired by the provider whenever the [PrayerService] or the language changes.
-  void bind(PrayerService prayer, LocaleController locale) {
+  /// Wired by the provider whenever the [PrayerService], the language, or the
+  /// Hijri sighting offset changes.
+  void bind(PrayerService prayer, LocaleController locale,
+      SunnahCalendarService calendar) {
     _prayer = prayer;
     _lang = locale.lang;
+    _hijriOffset = calendar.offset;
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), _push);
   }
@@ -57,10 +62,14 @@ class PrayerWidgetService extends ChangeNotifier {
       'am': s.ampm(9),
       'pm': s.ampm(21),
       // Hijri date: a ready-made string (fallback for old Android) plus the
-      // pieces the widget needs to recompute it natively each day.
-      'hijri': s.hijriDate(DateTime.now()),
+      // pieces the widget needs to recompute it natively each day. The
+      // sighting offset is pushed alongside; the ready-made string already
+      // carries it, but the native daily recompute must apply it too or the
+      // widget will drift a day from the app.
+      'hijri': s.hijriDate(DateTime.now(), offset: _hijriOffset),
       'hijri_months': s.hijriMonths.join('|'),
       'hijri_suffix': s.hijriSuffix,
+      'hijri_offset': _hijriOffset.toString(),
     });
   }
 }

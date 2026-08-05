@@ -125,6 +125,10 @@ class BackupService {
   static const _settingsKeys = <String>{
     'app_language',
     'onboarding_seen_v1',
+    // Nudges the calculated Hijri date onto the local sighting. A device
+    // setting, not progress: restoring "progress only" onto a phone in another
+    // country must leave that phone's own alignment alone.
+    'hijri_offset',
   };
   static const _settingsPrefixes = <String>[
     'prayer_', // location, method, madhab

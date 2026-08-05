@@ -12,12 +12,14 @@ import 'package:timezone/timezone.dart' as tz;
 import '../data/dua_repository.dart';
 import '../l10n/app_strings.dart';
 import '../l10n/locale_controller.dart';
+import '../models/sunnah_day.dart';
 import '../screens/category_duas_screen.dart';
 import '../util/app_navigator.dart';
 import 'adhan_audio.dart';
 import 'adhan_scheduler.dart';
 import 'dua_progress_service.dart';
 import 'prayer_service.dart';
+import 'sunnah_calendar_service.dart';
 
 /// Schedules local notifications at prayer times.
 ///
@@ -97,6 +99,7 @@ class NotificationService extends ChangeNotifier {
   static const _salawatFridayIdBase = 7400; // 7400 + day
   static const _mulkIdBase = 7500; // 7500 + day
   static const _salawatDailyIdBase = 7600; // 7600 + day
+  static const _fastingIdBase = 7700; // 7700 + day
 
   static const _daysAhead = 3;
 
@@ -119,6 +122,7 @@ class NotificationService extends ChangeNotifier {
   PrayerService? _prayer;
   AdhanAudioService? _adhan;
   DuaProgressService? _progress;
+  SunnahCalendarService? _calendar;
   Timer? _debounce;
 
   bool get masterEnabled => _masterEnabled;
@@ -131,15 +135,18 @@ class NotificationService extends ChangeNotifier {
   bool get dailyRemembranceEnabled => _dailyRemembrance;
 
   /// Called by the provider whenever the [PrayerService] (times/location), the
-  /// [AdhanAudioService] (sound on/off, volume stream), or today's reading
-  /// [DuaProgressService] changes — keeps the scheduled window in sync (so e.g.
-  /// finishing the morning adhkar cancels the rest of today's reminders),
-  /// debounced against bursts.
+  /// [AdhanAudioService] (sound on/off, volume stream), today's reading
+  /// [DuaProgressService], or the [SunnahCalendarService] (fasting reminders,
+  /// Hijri offset) changes — keeps the scheduled window in sync (so e.g.
+  /// finishing the morning adhkar cancels the rest of today's reminders, and
+  /// nudging the Hijri date moves the fasting reminders with it), debounced
+  /// against bursts.
   void bind(PrayerService prayer, AdhanAudioService adhan,
-      DuaProgressService progress) {
+      DuaProgressService progress, SunnahCalendarService calendar) {
     _prayer = prayer;
     _adhan = adhan;
     _progress = progress;
+    _calendar = calendar;
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 400), reschedule);
   }
@@ -218,8 +225,9 @@ class NotificationService extends ChangeNotifier {
     await reschedule();
   }
 
-  /// Cancel and re-create the rolling window of scheduled notifications — both
-  /// the prayer-time reminders and the morning/evening adhkar reminders.
+  /// Cancel and re-create the rolling window of scheduled notifications — the
+  /// prayer-time reminders, the morning/evening adhkar reminders, and the
+  /// night-before sunnah-fasting reminders.
   Future<void> reschedule() async {
     if (kIsWeb) return;
     final prayer = _prayer;
@@ -229,7 +237,8 @@ class NotificationService extends ChangeNotifier {
     await _plugin.cancelAll();
 
     final remembranceOn = _dailyRemembrance;
-    if (!_masterEnabled && !remembranceOn) {
+    final fastingOn = _calendar?.remindersEnabled ?? false;
+    if (!_masterEnabled && !remembranceOn && !fastingOn) {
       await AdhanScheduler.cancelAll();
       return;
     }
@@ -306,6 +315,55 @@ class NotificationService extends ChangeNotifier {
     // ---- daily-remembrance bundle ----
     if (remembranceOn) {
       await _scheduleRemembrance(prayer, now, s, mode);
+    }
+
+    // ---- night-before sunnah-fasting reminders ----
+    final calendar = _calendar;
+    if (fastingOn && calendar != null) {
+      await _scheduleFasting(prayer, calendar, now, s, mode);
+    }
+  }
+
+  /// Remind the evening before a day worth fasting, or an occasion worth
+  /// knowing about.
+  ///
+  /// Fires at Maghrib, which is both when the Islamic day it announces
+  /// actually begins and late enough to be a useful prompt to form the
+  /// intention and eat before Fajr.
+  ///
+  /// Ramadan is skipped: its fast is obligatory and its rhythm is already
+  /// well known, so a nightly "you should fast tomorrow" would be noise. Days
+  /// on which fasting is forbidden are never announced as fasts — the calendar
+  /// resolves that (see [SunnahCalendarRules]) — but the Eid itself is still
+  /// worth an occasion notice.
+  Future<void> _scheduleFasting(
+    PrayerService prayer,
+    SunnahCalendarService calendar,
+    DateTime now,
+    AppStrings s,
+    AndroidScheduleMode mode,
+  ) async {
+    for (var day = 0; day < _daysAhead; day++) {
+      final evening = now.add(Duration(days: day));
+      // Maghrib on the evening *before* the day being announced.
+      DateTime? maghrib;
+      for (final t in prayer.prayersForDay(evening)) {
+        if (t.prayer == Prayer.maghrib) maghrib = t.time;
+      }
+      if (maghrib == null || !maghrib.isAfter(now)) continue;
+
+      final tomorrow = calendar.dayFor(evening.add(const Duration(days: 1)));
+
+      final fast = tomorrow.ruling == FastingRuling.recommended
+          ? tomorrow.primaryFast
+          : null;
+      if (fast != null) {
+        await _scheduleOne(_fastingIdBase + day, maghrib, s.notifFastTitle,
+            s.notifFastBody(fast), null, mode);
+      } else if (tomorrow.events.isNotEmpty) {
+        await _scheduleOne(_fastingIdBase + day, maghrib,
+            s.eventName(tomorrow.events.first), s.notifOccasionBody, null, mode);
+      }
     }
   }
 

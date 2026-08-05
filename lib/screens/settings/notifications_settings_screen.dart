@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../l10n/app_strings.dart';
 import '../../services/adhan_audio.dart';
 import '../../services/notification_service.dart';
+import '../../services/sunnah_calendar_service.dart';
 import 'settings_common.dart';
 
 /// All notification settings: prayer-time reminders, the daily-remembrance
@@ -16,6 +17,7 @@ class NotificationsSettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final notifications = context.watch<NotificationService>();
     final adhan = context.watch<AdhanAudioService>();
+    final calendar = context.watch<SunnahCalendarService>();
     final s = AppStrings.of(context);
     final theme = Theme.of(context);
 
@@ -119,6 +121,21 @@ class NotificationsSettingsScreen extends StatelessWidget {
             value: notifications.dailyRemembranceEnabled,
             onChanged: (value) =>
                 context.read<NotificationService>().setDailyRemembrance(value),
+          ),
+          SwitchListTile(
+            secondary: const Icon(Icons.nights_stay_outlined),
+            title: Text(s.fastingReminders),
+            subtitle: Text(s.fastingRemindersSub),
+            value: calendar.remindersEnabled,
+            onChanged: (value) async {
+              await context
+                  .read<SunnahCalendarService>()
+                  .setRemindersEnabled(value);
+              if (!context.mounted) return;
+              // The calendar service doesn't own the scheduler, so ask for the
+              // window to be rebuilt now rather than at the next launch.
+              await context.read<NotificationService>().reschedule();
+            },
           ),
           const Divider(height: 24),
           SettingsSectionHeader(s.adhanSound),

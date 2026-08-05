@@ -1,5 +1,6 @@
 import 'package:adhan/adhan.dart';
 import 'package:dua_app/l10n/app_strings.dart';
+import 'package:dua_app/models/sunnah_day.dart';
 import 'package:dua_app/services/backup_service.dart';
 import 'package:dua_app/l10n/locale_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -71,6 +72,48 @@ void main() {
         }
         expect(s.revelationLabel('meccan'), isNotEmpty);
         expect(s.revelationLabel('medinan'), isNotEmpty);
+        for (final f in SunnahFast.values) {
+          expect(s.fastName(f), isNotEmpty);
+          // Every fast must carry its grounding — an unsourced claim about
+          // what the Sunnah encourages is exactly what this app must not do.
+          expect(s.fastVirtue(f), isNotEmpty);
+          expect(s.notifFastBody(f), contains(s.fastName(f)));
+        }
+        for (final e in IslamicEvent.values) {
+          expect(s.eventName(e), isNotEmpty);
+        }
+        for (final b in FastingBar.values) {
+          expect(s.fastingBar(b), isNotEmpty);
+        }
+        for (final r in FastingRuling.values) {
+          expect(s.fastingRuling(r), isNotEmpty);
+        }
+        for (var o = SunnahCalendarRules.minOffset;
+            o <= SunnahCalendarRules.maxOffset;
+            o++) {
+          expect(s.hijriOffsetLabel(o), isNotEmpty);
+        }
+        // The five offsets must read differently, or the picker is unusable.
+        expect(
+          {
+            for (var o = SunnahCalendarRules.minOffset;
+                o <= SunnahCalendarRules.maxOffset;
+                o++)
+              s.hijriOffsetLabel(o),
+          },
+          hasLength(
+              SunnahCalendarRules.maxOffset - SunnahCalendarRules.minOffset + 1),
+        );
+      });
+
+      test('the Hijri offset actually moves the printed date', () {
+        // A date late in a Hijri month, so ±1 stays inside the same month and
+        // the day number is what changes.
+        final date = DateTime(2026, 8, 6);
+        expect(s.hijriDate(date, offset: 0),
+            isNot(s.hijriDate(date, offset: 1)));
+        expect(s.hijriDate(date, offset: 0),
+            isNot(s.hijriDate(date, offset: -1)));
       });
 
       test('date + clock formatting works for all months/weekdays', () {

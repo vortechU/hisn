@@ -376,6 +376,60 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get savedPages => 'الصفحات المحفوظة';
 	@override String get saveVerse => 'حفظ الآية';
 	@override String get unsaveVerse => 'إزالة الآية المحفوظة';
+	@override String get secCalendar => 'التقويم الهجري';
+	@override String get calendarSub => 'صيام السنة والمناسبات';
+	@override String get sunnahCalendarTitle => 'الصيام والمناسبات';
+	@override String get upcomingLabel => 'القادم';
+	@override String get nothingUpcoming => 'لا شيء في الشهرين القادمين.';
+	@override String get calendarNote => 'التواريخ محسوبة (أم القرى) وقد تختلف عن رؤية بلدك بيوم.';
+	@override String get fastingRecommended => 'يُسن صيامه';
+	@override String get fastingObligatory => 'صيام واجب';
+	@override String get fastingForbidden => 'ليس يوم صيام';
+	@override String get fastingNoneToday => 'لا صيام مخصوص اليوم.';
+	@override String get fastRamadan => 'رمضان';
+	@override String get fastMonday => 'صيام الاثنين';
+	@override String get fastThursday => 'صيام الخميس';
+	@override String get fastWhiteDay => 'الأيام البيض';
+	@override String get fastTasua => 'تاسوعاء';
+	@override String get fastAshura => 'عاشوراء';
+	@override String get fastDhulHijjah => 'عشر ذي الحجة';
+	@override String get fastArafah => 'يوم عرفة';
+	@override String get fastSixOfShawwal => 'ست من شوال';
+	@override String get fastRamadanSub => 'صيام الشهر المفروض.';
+	@override String get fastMondaySub => 'تُعرض الأعمال يوم الاثنين والخميس. — الترمذي';
+	@override String get fastThursdaySub => 'تُعرض الأعمال يوم الاثنين والخميس. — الترمذي';
+	@override String get fastWhiteDaySub => 'الثالث عشر والرابع عشر والخامس عشر من كل شهر هجري. — البخاري ومسلم';
+	@override String get fastTasuaSub => 'يُصام مع العاشر. — مسلم';
+	@override String get fastAshuraSub => 'يُكفّر السنة الماضية. — مسلم';
+	@override String get fastDhulHijjahSub => 'ما من أيام العمل الصالح فيها أحب إلى الله من هذه. — البخاري';
+	@override String get fastArafahSub => 'يُكفّر السنة الماضية والباقية، لغير الحاج. — مسلم';
+	@override String get fastSixOfShawwalSub => 'من صام رمضان ثم أتبعه ستًّا من شوال كان كصيام الدهر. — مسلم';
+	@override String get eventNewYear => 'رأس السنة الهجرية';
+	@override String get eventAshura => 'عاشوراء';
+	@override String get eventRamadan => 'بداية رمضان';
+	@override String get eventLastTen => 'العشر الأواخر';
+	@override String get eventEidFitr => 'عيد الفطر';
+	@override String get eventDhulHijjah => 'بداية ذي الحجة';
+	@override String get eventArafah => 'يوم عرفة';
+	@override String get eventEidAdha => 'عيد الأضحى';
+	@override String get eventLastTenSub => 'تُلتمس ليلة القدر في أوتار العشر.';
+	@override String get barEidAlFitr => 'لا يجوز صيام يوم عيد الفطر.';
+	@override String get barEidAlAdha => 'لا يجوز صيام يوم عيد الأضحى.';
+	@override String get barTashriq => 'لا يجوز صيام أيام التشريق.';
+	@override String get hijriAdjust => 'تعديل التاريخ الهجري';
+	@override String get hijriAdjustHint => 'قد يتقدم التاريخ المحسوب على رؤية بلدك أو يتأخر عنها بيوم. عدّله ليوافق بلدك.';
+	@override List<String> get hijriOffsetLabels => [
+		'−2 يوم',
+		'−1 يوم',
+		'بدون تعديل',
+		'+1 يوم',
+		'+2 يوم',
+	];
+	@override String get fastingReminders => 'تذكير الصيام';
+	@override String get fastingRemindersSub => 'تذكير مساء اليوم السابق للصيام المسنون';
+	@override String get notifFastTitle => 'صيام غدًا';
+	@override String notifFastBody({required Object name}) => 'غدًا ${name} — صيام من السنة.';
+	@override String get notifOccasionBody => 'غدًا إن شاء الله.';
 }
 
 /// The flat map containing all translations for locale <ar>.
@@ -707,6 +761,58 @@ extension on TranslationsAr {
 			'savedPages' => 'الصفحات المحفوظة',
 			'saveVerse' => 'حفظ الآية',
 			'unsaveVerse' => 'إزالة الآية المحفوظة',
+			'secCalendar' => 'التقويم الهجري',
+			'calendarSub' => 'صيام السنة والمناسبات',
+			'sunnahCalendarTitle' => 'الصيام والمناسبات',
+			'upcomingLabel' => 'القادم',
+			'nothingUpcoming' => 'لا شيء في الشهرين القادمين.',
+			'calendarNote' => 'التواريخ محسوبة (أم القرى) وقد تختلف عن رؤية بلدك بيوم.',
+			'fastingRecommended' => 'يُسن صيامه',
+			'fastingObligatory' => 'صيام واجب',
+			'fastingForbidden' => 'ليس يوم صيام',
+			'fastingNoneToday' => 'لا صيام مخصوص اليوم.',
+			'fastRamadan' => 'رمضان',
+			'fastMonday' => 'صيام الاثنين',
+			'fastThursday' => 'صيام الخميس',
+			'fastWhiteDay' => 'الأيام البيض',
+			'fastTasua' => 'تاسوعاء',
+			'fastAshura' => 'عاشوراء',
+			'fastDhulHijjah' => 'عشر ذي الحجة',
+			'fastArafah' => 'يوم عرفة',
+			'fastSixOfShawwal' => 'ست من شوال',
+			'fastRamadanSub' => 'صيام الشهر المفروض.',
+			'fastMondaySub' => 'تُعرض الأعمال يوم الاثنين والخميس. — الترمذي',
+			'fastThursdaySub' => 'تُعرض الأعمال يوم الاثنين والخميس. — الترمذي',
+			'fastWhiteDaySub' => 'الثالث عشر والرابع عشر والخامس عشر من كل شهر هجري. — البخاري ومسلم',
+			'fastTasuaSub' => 'يُصام مع العاشر. — مسلم',
+			'fastAshuraSub' => 'يُكفّر السنة الماضية. — مسلم',
+			'fastDhulHijjahSub' => 'ما من أيام العمل الصالح فيها أحب إلى الله من هذه. — البخاري',
+			'fastArafahSub' => 'يُكفّر السنة الماضية والباقية، لغير الحاج. — مسلم',
+			'fastSixOfShawwalSub' => 'من صام رمضان ثم أتبعه ستًّا من شوال كان كصيام الدهر. — مسلم',
+			'eventNewYear' => 'رأس السنة الهجرية',
+			'eventAshura' => 'عاشوراء',
+			'eventRamadan' => 'بداية رمضان',
+			'eventLastTen' => 'العشر الأواخر',
+			'eventEidFitr' => 'عيد الفطر',
+			'eventDhulHijjah' => 'بداية ذي الحجة',
+			'eventArafah' => 'يوم عرفة',
+			'eventEidAdha' => 'عيد الأضحى',
+			'eventLastTenSub' => 'تُلتمس ليلة القدر في أوتار العشر.',
+			'barEidAlFitr' => 'لا يجوز صيام يوم عيد الفطر.',
+			'barEidAlAdha' => 'لا يجوز صيام يوم عيد الأضحى.',
+			'barTashriq' => 'لا يجوز صيام أيام التشريق.',
+			'hijriAdjust' => 'تعديل التاريخ الهجري',
+			'hijriAdjustHint' => 'قد يتقدم التاريخ المحسوب على رؤية بلدك أو يتأخر عنها بيوم. عدّله ليوافق بلدك.',
+			'hijriOffsetLabels.0' => '−2 يوم',
+			'hijriOffsetLabels.1' => '−1 يوم',
+			'hijriOffsetLabels.2' => 'بدون تعديل',
+			'hijriOffsetLabels.3' => '+1 يوم',
+			'hijriOffsetLabels.4' => '+2 يوم',
+			'fastingReminders' => 'تذكير الصيام',
+			'fastingRemindersSub' => 'تذكير مساء اليوم السابق للصيام المسنون',
+			'notifFastTitle' => 'صيام غدًا',
+			'notifFastBody' => ({required Object name}) => 'غدًا ${name} — صيام من السنة.',
+			'notifOccasionBody' => 'غدًا إن شاء الله.',
 			_ => null,
 		};
 	}

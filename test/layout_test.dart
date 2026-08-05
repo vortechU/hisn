@@ -24,6 +24,7 @@ import 'package:dua_app/screens/settings/display_settings_screen.dart';
 import 'package:dua_app/screens/settings/language_settings_screen.dart';
 import 'package:dua_app/screens/settings_screen.dart';
 import 'package:dua_app/screens/streak_stats_screen.dart';
+import 'package:dua_app/screens/sunnah_calendar_screen.dart';
 import 'package:dua_app/screens/tasbih_screen.dart';
 import 'package:dua_app/services/backup_service.dart';
 import 'package:dua_app/services/custom_dua_service.dart';
@@ -33,6 +34,7 @@ import 'package:dua_app/services/favorites_service.dart';
 import 'package:dua_app/services/muhassan_service.dart';
 import 'package:dua_app/services/prayer_service.dart';
 import 'package:dua_app/services/quran_service.dart';
+import 'package:dua_app/services/sunnah_calendar_service.dart';
 import 'package:dua_app/services/tasbih_controller.dart';
 import 'package:dua_app/services/theme_controller.dart';
 import 'package:dua_app/theme/app_palette.dart';
@@ -105,6 +107,7 @@ void main() {
             ),
         ),
         ChangeNotifierProvider(create: (_) => PrayerService(prefs)),
+        ChangeNotifierProvider(create: (_) => SunnahCalendarService(prefs)),
       ],
       child: MaterialApp(
         // Match how app.dart builds the theme: an Arabic interface gets the
@@ -176,6 +179,7 @@ void main() {
     'about': () => const AboutSettingsScreen(),
     'quran bookmarks': () => const QuranBookmarksScreen(),
     'backup': () => const BackupSettingsScreen(),
+    'sunnah calendar': () => const SunnahCalendarScreen(),
     // The restore confirmation is a sheet, never routed to, so it is rendered
     // here directly — long hint lines plus a two-button row in a narrow sheet
     // is the shape most likely to overflow at a large text scale.
