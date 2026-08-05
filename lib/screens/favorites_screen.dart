@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import '../data/dua_repository.dart';
 import '../l10n/app_strings.dart';
 import '../services/favorites_service.dart';
+import '../theme/app_theme.dart';
 import '../widgets/dua_card.dart';
+import '../widgets/ornament.dart';
 
 /// Shows the duas the user has bookmarked.
 class FavoritesScreen extends StatelessWidget {
@@ -19,44 +21,17 @@ class FavoritesScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(s.navSaved)),
       body: duas.isEmpty
-          ? const _EmptyState()
+          ? EmptyPage(
+              icon: Icons.bookmark_border,
+              title: s.noSavedTitle,
+              body: s.noSavedBody,
+            )
           : ListView.builder(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+              padding: const EdgeInsets.fromLTRB(
+                  Ms.margin, Ms.margin, Ms.margin, 34),
               itemCount: duas.length,
               itemBuilder: (context, index) => DuaCard(dua: duas[index]),
             ),
-    );
-  }
-}
-
-class _EmptyState extends StatelessWidget {
-  const _EmptyState();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final s = AppStrings.of(context);
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.bookmark_border,
-                size: 64, color: theme.colorScheme.onSurfaceVariant),
-            const SizedBox(height: 16),
-            Text(s.noSavedTitle, style: theme.textTheme.titleMedium),
-            const SizedBox(height: 6),
-            Text(
-              s.noSavedBody,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

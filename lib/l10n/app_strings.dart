@@ -159,8 +159,6 @@ class AppStrings {
   String get next => _t.next;
   String get remaining => _t.remaining;
   String get countdownNow => _t.countdownNow;
-  String nextPrayerLine(String name, String time) =>
-      _t.nextPrayerLine(name: name, time: time);
   String todaysPrayers(String location) =>
       _t.todaysPrayers(location: location);
 

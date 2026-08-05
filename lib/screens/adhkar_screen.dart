@@ -6,8 +6,10 @@ import '../l10n/app_strings.dart';
 import '../models/dua.dart';
 import '../models/dua_category.dart';
 import '../services/custom_dua_service.dart';
+import '../theme/app_theme.dart';
 import '../widgets/category_card.dart';
 import '../widgets/muhassan_card.dart';
+import '../widgets/ornament.dart';
 import '../widgets/prayer_header.dart';
 import '../widgets/recommended_adhkar.dart';
 import 'category_duas_screen.dart';
@@ -16,8 +18,12 @@ import 'favorites_screen.dart';
 import 'search_screen.dart';
 import 'tasbih_screen.dart';
 
-/// Home tab: a greeting header, the daily muhassan meter, and the dua
-/// categories grouped into sections (daily routine vs. situational).
+/// The Adhkar tab, laid out as the opening of a book: an illuminated plate,
+/// the day's tally, the rubric pointing at what to read now, then the sections
+/// of the table of contents.
+///
+/// Each section leads with one wide entry and continues in two columns, so the
+/// page has a first read rather than an undifferentiated field of tiles.
 class AdhkarScreen extends StatelessWidget {
   const AdhkarScreen({super.key});
 
@@ -30,8 +36,9 @@ class AdhkarScreen extends StatelessWidget {
 
     final daily =
         categories.where((c) => c.group == DuaCategory.groupDaily).toList();
-    final situational =
-        categories.where((c) => c.group == DuaCategory.groupSituational).toList();
+    final situational = categories
+        .where((c) => c.group == DuaCategory.groupSituational)
+        .toList();
 
     // A synthetic category card for the user's own duas, shown in its own group.
     final customCategory = DuaCategory(
@@ -44,28 +51,23 @@ class AdhkarScreen extends StatelessWidget {
 
     return Scaffold(
       body: SafeArea(
+        bottom: false,
         child: CustomScrollView(
           slivers: [
             const SliverToBoxAdapter(child: PrayerHeader()),
-            _SearchBar(),
-            const _QuickActions(),
+            const SliverToBoxAdapter(child: _Toolbar()),
             const SliverToBoxAdapter(child: MuhassanCard()),
             const SliverToBoxAdapter(child: RecommendedAdhkar()),
-            _SectionHeader(s.groupDaily),
-            _CategoryGrid(
-              categories: daily,
-              countOf: repo.countForCategory,
-            ),
-            _SectionHeader(s.groupSituational),
-            _CategoryGrid(
-              categories: situational,
-              countOf: repo.countForCategory,
-            ),
-            _SectionHeader(s.groupMine),
-            _CategoryGrid(
+            SliverToBoxAdapter(child: SectionMark(label: s.groupDaily)),
+            _CategorySection(categories: daily, countOf: repo.countForCategory),
+            SliverToBoxAdapter(child: SectionMark(label: s.groupSituational)),
+            _CategorySection(
+                categories: situational, countOf: repo.countForCategory),
+            SliverToBoxAdapter(child: SectionMark(label: s.groupMine)),
+            _CategorySection(
               categories: [customCategory],
               countOf: (_) => custom.count,
-              bottomPadding: 24,
+              bottomPadding: 28,
               onTapOverride: (context, _) => Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const CustomDuasScreen()),
               ),
@@ -77,117 +79,111 @@ class AdhkarScreen extends StatelessWidget {
   }
 }
 
-class _SearchBar extends StatelessWidget {
+/// Search, tasbih and saved on one ruled strip.
+///
+/// These are the three ways *into* the book rather than parts of it, so they
+/// share a single line of chrome instead of taking a card each — search
+/// stretches, the two shortcuts are square marks at the end.
+class _Toolbar extends StatelessWidget {
+  const _Toolbar();
+
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final ms = ManuscriptTheme.of(context);
     final s = AppStrings.of(context);
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
-        child: Material(
-          color: scheme.surface,
-          borderRadius: BorderRadius.circular(16),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(16),
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const SearchScreen()),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              child: Row(
-                children: [
-                  Icon(Icons.search, color: scheme.onSurfaceVariant),
-                  const SizedBox(width: 12),
-                  Text(
-                    s.searchDuas,
-                    style:
-                        TextStyle(color: scheme.onSurfaceVariant, fontSize: 15),
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(Ms.margin, 8, Ms.margin, 2),
+      child: Row(
+        children: [
+          Expanded(
+            child: Material(
+              type: MaterialType.transparency,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(Ms.rSmall),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const SearchScreen()),
+                ),
+                child: Container(
+                  height: 44,
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: ms.rule),
+                    borderRadius: BorderRadius.circular(Ms.rSmall),
                   ),
-                ],
+                  child: Row(
+                    children: [
+                      Icon(Icons.search,
+                          size: 19, color: theme.colorScheme.onSurfaceVariant),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          s.searchDuas,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
-        ),
+          const SizedBox(width: 8),
+          _ToolMark(
+            icon: Icons.radio_button_checked,
+            tooltip: s.navTasbih,
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const TasbihScreen()),
+            ),
+          ),
+          const SizedBox(width: 8),
+          _ToolMark(
+            icon: Icons.bookmark_border,
+            tooltip: s.navSaved,
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const FavoritesScreen()),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-/// Quick-access tiles for Tasbih and Saved, which used to be their own bottom
-/// nav tabs and now live inside the Adhkar tab. Each opens the existing,
-/// unchanged screen.
-class _QuickActions extends StatelessWidget {
-  const _QuickActions();
-
-  @override
-  Widget build(BuildContext context) {
-    final s = AppStrings.of(context);
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-        child: Row(
-          children: [
-            Expanded(
-              child: _QuickTile(
-                icon: Icons.radio_button_checked,
-                label: s.navTasbih,
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const TasbihScreen()),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _QuickTile(
-                icon: Icons.bookmark,
-                label: s.navSaved,
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const FavoritesScreen()),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _QuickTile extends StatelessWidget {
-  const _QuickTile({
+class _ToolMark extends StatelessWidget {
+  const _ToolMark({
     required this.icon,
-    required this.label,
+    required this.tooltip,
     required this.onTap,
   });
 
   final IconData icon;
-  final String label;
+  final String tooltip;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Material(
-      color: scheme.surface,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          child: Row(
-            children: [
-              Icon(icon, size: 20, color: scheme.primary),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  label,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-              ),
-            ],
+    final ms = ManuscriptTheme.of(context);
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(Ms.rSmall),
+          onTap: onTap,
+          child: Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              border: Border.all(color: ms.rule),
+              borderRadius: BorderRadius.circular(Ms.rSmall),
+            ),
+            child: Icon(icon, size: 19, color: ms.rubric),
           ),
         ),
       ),
@@ -195,77 +191,80 @@ class _QuickTile extends StatelessWidget {
   }
 }
 
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader(this.label);
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-        child: Text(
-          label,
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 1.2,
-              ),
-        ),
-      ),
-    );
-  }
-}
-
-class _CategoryGrid extends StatelessWidget {
-  const _CategoryGrid({
+/// A section of the table of contents: one wide entry, then two columns.
+class _CategorySection extends StatelessWidget {
+  const _CategorySection({
     required this.categories,
     required this.countOf,
     this.onTapOverride,
-    this.bottomPadding = 8,
+    this.bottomPadding = 4,
   });
 
   final List<DuaCategory> categories;
   final int Function(String id) countOf;
 
-  /// Optional custom tap handler (used for the "My Duas" tile).
-  final void Function(BuildContext context, DuaCategory category)? onTapOverride;
+  /// Optional custom tap handler (used for the "My Duas" entry).
+  final void Function(BuildContext context, DuaCategory category)?
+      onTapOverride;
   final double bottomPadding;
+
+  void _open(BuildContext context, DuaCategory category) {
+    if (onTapOverride != null) {
+      onTapOverride!(context, category);
+      return;
+    }
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => CategoryDuasScreen(category: category)),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return SliverPadding(
-      padding: EdgeInsets.fromLTRB(16, 0, 16, bottomPadding),
-      sliver: SliverGrid(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisSpacing: 14,
-          crossAxisSpacing: 14,
-          childAspectRatio: 0.92,
+    if (categories.isEmpty) return const SliverToBoxAdapter();
+
+    final lead = categories.first;
+    final rest = categories.skip(1).toList();
+
+    return SliverMainAxisGroup(
+      slivers: [
+        SliverPadding(
+          padding: EdgeInsets.fromLTRB(
+              Ms.margin, 0, Ms.margin, rest.isEmpty ? bottomPadding : 12),
+          sliver: SliverToBoxAdapter(
+            child: CategoryCard(
+              category: lead,
+              count: countOf(lead.id),
+              featured: true,
+              onTap: () => _open(context, lead),
+            ),
+          ),
         ),
-        delegate: SliverChildBuilderDelegate(
-          (context, index) {
-            final category = categories[index];
-            return CategoryCard(
-              category: category,
-              count: countOf(category.id),
-              onTap: () {
-                if (onTapOverride != null) {
-                  onTapOverride!(context, category);
-                } else {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => CategoryDuasScreen(category: category),
-                    ),
+        if (rest.isNotEmpty)
+          SliverPadding(
+            padding:
+                EdgeInsets.fromLTRB(Ms.margin, 0, Ms.margin, bottomPadding),
+            sliver: SliverGrid(
+              gridDelegate:
+                  const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 12,
+                crossAxisSpacing: 12,
+                childAspectRatio: 1.06,
+              ),
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final category = rest[index];
+                  return CategoryCard(
+                    category: category,
+                    count: countOf(category.id),
+                    onTap: () => _open(context, category),
                   );
-                }
-              },
-            );
-          },
-          childCount: categories.length,
-        ),
-      ),
+                },
+                childCount: rest.length,
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

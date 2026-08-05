@@ -88,25 +88,41 @@ class DuaApp extends StatelessWidget {
               (widget ?? PrayerWidgetService())..bind(prayer, locale),
         ),
       ],
-      child: Consumer2<LocaleController, ThemeController>(
-        builder: (context, localeController, themeController, _) => MaterialApp(
-          title: 'Hisn',
-          navigatorKey: appNavigatorKey,
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.light(themeController.palette),
-          darkTheme: AppTheme.dark(themeController.palette),
-          themeMode: themeController.themeMode,
-          locale: localeController.locale,
-          supportedLocales: LocaleController.supported,
-          localizationsDelegates: const [
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          home: (prefs.getBool(OnboardingScreen.seenKey) ?? false)
-              ? const HomeScreen()
-              : OnboardingScreen(prefs: prefs),
-        ),
+      // DisplaySettings joins the theme because the Latin faces carry no
+      // Arabic: the chosen Arabic typeface is threaded in as the fallback so
+      // Arabic interface text is set in the same face as the dua text, rather
+      // than in whatever the platform substitutes.
+      child: Consumer3<LocaleController, ThemeController, DisplaySettings>(
+        builder: (context, localeController, themeController, display, _) {
+          final arabicFamily = display.arabicFontFamily;
+          final arabicUi = localeController.lang == AppLang.ar;
+          return MaterialApp(
+            title: 'Hisn',
+            navigatorKey: appNavigatorKey,
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.light(
+              themeController.palette,
+              arabicFamily: arabicFamily,
+              arabicUi: arabicUi,
+            ),
+            darkTheme: AppTheme.dark(
+              themeController.palette,
+              arabicFamily: arabicFamily,
+              arabicUi: arabicUi,
+            ),
+            themeMode: themeController.themeMode,
+            locale: localeController.locale,
+            supportedLocales: LocaleController.supported,
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            home: (prefs.getBool(OnboardingScreen.seenKey) ?? false)
+                ? const HomeScreen()
+                : OnboardingScreen(prefs: prefs),
+          );
+        },
       ),
     );
   }

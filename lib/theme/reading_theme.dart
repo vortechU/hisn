@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'app_theme.dart';
+
 /// An optional reading-surface tint applied to dua cards, independent of the
 /// app's light/dark theme — like the page modes on an e-reader. [system] keeps
 /// whatever the active theme provides.
@@ -31,33 +33,62 @@ extension ReadingThemeX on ReadingTheme {
       case ReadingTheme.sepia:
         return const _ReadingColors(
           Color(0xFFF3E7CC), // warm paper
-          Color(0xFF463524), // brown ink
-          Color(0xFF7C6A4E),
+          Color(0xFF3E2E1E), // brown ink
+          Color(0xFF6E5C42),
         );
       case ReadingTheme.night:
         return const _ReadingColors(
           Color(0xFF15140F), // near-black, faint warmth
           Color(0xFFE6DECB), // soft off-white
-          Color(0xFFA39B86),
+          Color(0xFFA79E88),
         );
     }
   }
 
-  /// [base] with the reading-surface colours layered in. The accent roles
-  /// (primary/secondary) are left untouched so badges and highlights keep the
-  /// active palette. Returns [base] unchanged for [ReadingTheme.system].
+  /// [base] with the reading-surface colours layered in.
+  ///
+  /// The accent roles — rubric and gilt — are left untouched so a card keeps
+  /// the active palette's inks even on a sepia or night page. The rules are
+  /// re-derived from the new ink so frames stay visible against the tinted
+  /// paper instead of disappearing into it. Returns [base] unchanged for
+  /// [ReadingTheme.system].
   ThemeData apply(ThemeData base) {
     final colors = _colors;
     if (colors == null) return base;
+
     final scheme = base.colorScheme.copyWith(
       surface: colors.surface,
       onSurface: colors.onSurface,
       onSurfaceVariant: colors.onSurfaceVariant,
     );
+    final ms = base.extension<ManuscriptTheme>()!;
+    final rule = Color.lerp(colors.onSurface, colors.surface, 0.62)!;
+
     return base.copyWith(
       colorScheme: scheme,
       cardColor: colors.surface,
       cardTheme: base.cardTheme.copyWith(color: colors.surface),
+      // Re-ink the type for the tinted page, then restore the two muted roles
+      // that `apply` would otherwise flatten into full-strength ink.
+      textTheme: base.textTheme
+          .apply(
+            bodyColor: colors.onSurface,
+            displayColor: colors.onSurface,
+          )
+          .copyWith(
+            bodySmall: base.textTheme.bodySmall!
+                .copyWith(color: colors.onSurfaceVariant),
+            labelSmall: base.textTheme.labelSmall!
+                .copyWith(color: colors.onSurfaceVariant),
+          ),
+      extensions: [
+        ms.copyWith(
+          paper: colors.surface,
+          ground: Color.lerp(colors.surface, colors.onSurface, 0.06)!,
+          rule: rule,
+          ruleStrong: Color.lerp(rule, colors.onSurface, 0.4)!,
+        ),
+      ],
     );
   }
 }

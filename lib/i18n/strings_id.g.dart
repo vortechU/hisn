@@ -133,7 +133,6 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get next => 'BERIKUTNYA';
 	@override String get remaining => 'tersisa';
 	@override String get countdownNow => 'sekarang';
-	@override String nextPrayerLine({required Object name, required Object time}) => 'Berikutnya · ${name}  ${time}';
 	@override String todaysPrayers({required Object location}) => 'Salat hari ini · ${location}';
 	@override String get searchHint => 'Cari doa, makna, sumber…';
 	@override String get clear => 'Hapus';
@@ -437,7 +436,6 @@ extension on TranslationsId {
 			'next' => 'BERIKUTNYA',
 			'remaining' => 'tersisa',
 			'countdownNow' => 'sekarang',
-			'nextPrayerLine' => ({required Object name, required Object time}) => 'Berikutnya · ${name}  ${time}',
 			'todaysPrayers' => ({required Object location}) => 'Salat hari ini · ${location}',
 			'searchHint' => 'Cari doa, makna, sumber…',
 			'clear' => 'Hapus',

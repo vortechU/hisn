@@ -8,11 +8,17 @@ import '../data/dua_repository.dart';
 import '../l10n/app_strings.dart';
 import '../screens/category_duas_screen.dart';
 import '../services/prayer_service.dart';
+import '../theme/app_theme.dart';
 import '../theme/category_visuals.dart';
 import 'arabic_text.dart';
+import 'ornament.dart';
 
-/// A time-aware suggestion shown above the category grid: it points to the set
-/// of adhkar most relevant to the current part of the day.
+/// A time-aware pointer to the set of adhkar most relevant to the current part
+/// of the day.
+///
+/// Set as a *rubric* — an instruction ruled into the page rather than boxed —
+/// so it reads differently from the framed category entries below it and gives
+/// the screen an asymmetric moment instead of a third identical panel.
 ///
 /// The choice follows the current prayer period (more meaningful than the wall
 /// clock — morning adhkar are tied to Fajr, evening to Asr), with an hour-based
@@ -66,6 +72,7 @@ class _RecommendedAdhkarState extends State<RecommendedAdhkar> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final ms = ManuscriptTheme.of(context);
     final repo = context.read<DuaRepository>();
     final prayer = context.watch<PrayerService>();
     final s = AppStrings.of(context);
@@ -79,113 +86,102 @@ class _RecommendedAdhkarState extends State<RecommendedAdhkar> {
     final count = repo.countForCategory(category.id);
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 4, bottom: 8),
-            child: Text(
-              s.recommendedNow,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.primary,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 1.2,
-              ),
+      padding: const EdgeInsets.fromLTRB(Ms.margin, 18, Ms.margin, 2),
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => CategoryDuasScreen(category: category),
             ),
           ),
-          Material(
-            color: visuals.color.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(20),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(20),
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => CategoryDuasScreen(category: category),
-                ),
+          child: Container(
+            decoration: BoxDecoration(
+              // Ruled top and bottom only — the band runs to the page margins
+              // instead of sitting in a box of its own.
+              border: Border(
+                top: BorderSide(color: ms.gilt.withValues(alpha: 0.7), width: Ms.stroke),
+                bottom: BorderSide(color: ms.rule),
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
+            ),
+            padding: const EdgeInsets.only(top: 11, bottom: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: visuals.color.withValues(alpha: 0.22),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Icon(visuals.icon, color: visuals.color, size: 28),
-                    ),
-                    const SizedBox(width: 14),
+                    Text(s.recommendedNow.toUpperCase(),
+                        style: theme.textTheme.labelSmall
+                            ?.copyWith(color: ms.gilt)),
+                    const SizedBox(width: 8),
+                    Rosette(size: 12, color: ms.gilt, lobes: visuals.lobes),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                // The Arabic name is the dominant element here — in a book,
+                // the rubric names the chapter you are being sent to.
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: s.ar
-                                    ? ArabicText(
-                                        category.titleArabic,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w700,
-                                        textAlign: TextAlign.start,
-                                        height: 1.4,
-                                        maxLines: 1,
-                                      )
-                                    : Text(
-                                        category.title,
-                                        style: theme.textTheme.titleMedium
-                                            ?.copyWith(
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                              ),
-                              if (!s.ar) ...[
-                                const SizedBox(width: 8),
+                      child: s.ar
+                          ? ArabicText(
+                              category.titleArabic,
+                              fontSize: 27,
+                              fontWeight: FontWeight.w600,
+                              textAlign: TextAlign.start,
+                              height: 1.45,
+                              maxLines: 1,
+                            )
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                                 ArabicText(category.titleArabic,
-                                    fontSize: 17, color: visuals.color),
+                                    fontSize: 24,
+                                    textAlign: TextAlign.start,
+                                    height: 1.5,
+                                    maxLines: 1),
+                                Text(category.title,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: theme.textTheme.titleMedium),
                               ],
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            category.subtitleFor(s.ar),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
                             ),
+                    ),
+                    const SizedBox(width: 12),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 2),
+                      child: Row(
+                        children: [
+                          Text(
+                            s.readNow(count),
+                            style: theme.textTheme.labelMedium
+                                ?.copyWith(color: ms.rubric),
                           ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Text(
-                                s.readNow(count),
-                                style: theme.textTheme.labelMedium?.copyWith(
-                                  color: visuals.color,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(width: 4),
-                              Icon(
-                                s.ar
-                                    ? Icons.arrow_back
-                                    : Icons.arrow_forward,
-                                size: 15,
-                                color: visuals.color,
-                              ),
-                            ],
+                          const SizedBox(width: 5),
+                          Icon(
+                            s.ar
+                                ? Icons.arrow_back_rounded
+                                : Icons.arrow_forward_rounded,
+                            size: 15,
+                            color: ms.rubric,
                           ),
                         ],
                       ),
                     ),
                   ],
                 ),
-              ),
+                const SizedBox(height: 3),
+                Text(
+                  category.subtitleFor(s.ar),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodySmall,
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }

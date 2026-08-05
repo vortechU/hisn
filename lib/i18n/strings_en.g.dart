@@ -306,9 +306,6 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// en: 'now'
 	String get countdownNow => 'now';
 
-	/// en: 'Next · $name $time'
-	String nextPrayerLine({required Object name, required Object time}) => 'Next · ${name}  ${time}';
-
 	/// en: 'Today's prayers · $location'
 	String todaysPrayers({required Object location}) => 'Today\'s prayers · ${location}';
 
@@ -903,7 +900,6 @@ extension on Translations {
 			'next' => 'NEXT',
 			'remaining' => 'remaining',
 			'countdownNow' => 'now',
-			'nextPrayerLine' => ({required Object name, required Object time}) => 'Next · ${name}  ${time}',
 			'todaysPrayers' => ({required Object location}) => 'Today\'s prayers · ${location}',
 			'searchHint' => 'Search duas, meanings, sources…',
 			'clear' => 'Clear',

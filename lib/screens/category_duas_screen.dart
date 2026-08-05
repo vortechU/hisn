@@ -8,14 +8,16 @@ import '../models/dua.dart';
 import '../models/dua_category.dart';
 import '../services/dua_progress_service.dart';
 import '../services/muhassan_service.dart';
+import '../theme/app_theme.dart';
 import '../theme/category_visuals.dart';
 import '../widgets/arabic_text.dart';
 import '../widgets/dua_card.dart';
+import '../widgets/ornament.dart';
 
-/// Lists every dua within a single category as an interactive "read & count"
-/// session: tap a dua to advance through its repetitions, with a progress bar
-/// for the whole set. Progress persists for the rest of the day (via
-/// [DuaProgressService]) so leaving and returning keeps your place.
+/// Every dua in a category, read as a session: tap a block to advance through
+/// its repetitions, with the set's progress ruled across the head of the page.
+/// Progress persists for the rest of the day (via [DuaProgressService]) so
+/// leaving and returning keeps your place.
 class CategoryDuasScreen extends StatefulWidget {
   const CategoryDuasScreen({super.key, required this.category});
 
@@ -56,58 +58,91 @@ class _CategoryDuasScreenState extends State<CategoryDuasScreen> {
     }
   }
 
-  void _resetAll() {
-    _progress.resetDuas(_duas.map((d) => d.id));
-  }
+  void _resetAll() => _progress.resetDuas(_duas.map((d) => d.id));
 
   @override
   Widget build(BuildContext context) {
-    // Subscribe so the list + progress bar rebuild whenever a count changes.
+    // Subscribe so the list + progress rule rebuild whenever a count changes.
     context.watch<DuaProgressService>();
+    final theme = Theme.of(context);
+    final ms = ManuscriptTheme.of(context);
     final visuals = CategoryVisuals.of(widget.category.id);
+    final tint = visuals.color(context);
     final allDone = _completedCount == _duas.length && _duas.isNotEmpty;
     final s = AppStrings.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(widget.category.titleFor(s.ar)),
-            Text(
-              widget.category.subtitleFor(s.ar),
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-            ),
-          ],
-        ),
+        title: Text(widget.category.titleFor(s.ar)),
         actions: [
           if (_completedCount > 0)
             IconButton(
-              icon: const Icon(Icons.refresh),
+              icon: const Icon(Icons.restart_alt),
               tooltip: s.resetProgress,
               onPressed: _resetAll,
             ),
-          if (!s.ar)
-            Padding(
-              padding: const EdgeInsetsDirectional.only(end: 12),
-              child: ArabicText(widget.category.titleArabic,
-                  fontSize: 20, color: visuals.color),
-            ),
+          const SizedBox(width: 6),
         ],
       ),
       body: Column(
         children: [
-          _ProgressHeader(
-            completed: _completedCount,
-            total: _duas.length,
-            color: visuals.color,
-            allDone: allDone,
+          // The head of the session: the set's name in Arabic, its mark, and
+          // the tally of blocks finished — the page's one dominant element.
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(Ms.margin, 0, Ms.margin, 12),
+            decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: ms.rule)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(allDone ? Icons.check : visuals.icon,
+                        size: 24, color: allDone ? ms.gilt : tint),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (!s.ar)
+                            ArabicText(widget.category.titleArabic,
+                                fontSize: 21,
+                                color: tint,
+                                textAlign: TextAlign.start,
+                                height: 1.5,
+                                maxLines: 1),
+                          Text(
+                            allDone ? s.setComplete : s.tapEachDua,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Cartouche(
+                      label: '$_completedCount / ${_duas.length}',
+                      color: allDone ? ms.gilt : tint,
+                      filled: allDone,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 11),
+                ProgressRule(
+                  value: _duas.isEmpty ? 0 : _completedCount / _duas.length,
+                  color: allDone ? ms.gilt : tint,
+                ),
+              ],
+            ),
           ),
           Expanded(
             child: ListView.builder(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+              padding: const EdgeInsets.fromLTRB(
+                  Ms.margin, Ms.margin, Ms.margin, 34),
               itemCount: _duas.length,
               itemBuilder: (context, index) {
                 final dua = _duas[index];
@@ -117,85 +152,6 @@ class _CategoryDuasScreenState extends State<CategoryDuasScreen> {
                   onCount: () => _tap(dua),
                 );
               },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ProgressHeader extends StatelessWidget {
-  const _ProgressHeader({
-    required this.completed,
-    required this.total,
-    required this.color,
-    required this.allDone,
-  });
-
-  final int completed;
-  final int total;
-  final Color color;
-  final bool allDone;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final s = AppStrings.of(context);
-    final progress = total == 0 ? 0.0 : completed / total;
-
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 14),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        border: Border(
-          bottom: BorderSide(
-            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
-          ),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                allDone ? Icons.check_circle : Icons.touch_app_outlined,
-                size: 18,
-                color: allDone ? color : theme.colorScheme.onSurfaceVariant,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  allDone ? s.setComplete : s.tapEachDua,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: allDone ? color : theme.colorScheme.onSurface,
-                  ),
-                ),
-              ),
-              Text(
-                '$completed / $total',
-                style: theme.textTheme.labelLarge?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: TweenAnimationBuilder<double>(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOut,
-              tween: Tween(begin: 0, end: progress),
-              builder: (context, value, _) => LinearProgressIndicator(
-                value: value,
-                minHeight: 6,
-                backgroundColor: color.withValues(alpha: 0.14),
-                valueColor: AlwaysStoppedAnimation<Color>(color),
-              ),
             ),
           ),
         ],

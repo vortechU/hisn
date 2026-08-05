@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import '../data/dua_repository.dart';
 import '../l10n/app_strings.dart';
 import '../services/custom_dua_service.dart';
+import '../theme/app_theme.dart';
 import '../widgets/dua_card.dart';
+import '../widgets/ornament.dart';
 
 /// Full-text search across every dua (title, transliteration, translation,
 /// reference, and Arabic).
@@ -52,75 +54,51 @@ class _SearchScreenState extends State<SearchScreen> {
         actions: [
           if (hasQuery)
             IconButton(
-              icon: const Icon(Icons.clear),
+              icon: const Icon(Icons.close),
               tooltip: s.clear,
               onPressed: () {
                 _controller.clear();
                 setState(() => _query = '');
               },
             ),
+          const SizedBox(width: 6),
         ],
       ),
       body: !hasQuery
-          ? _Hint(
-              icon: Icons.search,
-              text: s.searchPrompt,
-            )
+          ? EmptyPage(icon: Icons.search, body: s.searchPrompt)
           : results.isEmpty
-              ? _Hint(
-                  icon: Icons.sentiment_dissatisfied_outlined,
-                  text: s.noResults(_query.trim()),
+              ? EmptyPage(
+                  icon: Icons.search_off,
+                  body: s.noResults(_query.trim()),
                 )
               : ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+                  padding: const EdgeInsets.fromLTRB(
+                      Ms.margin, 10, Ms.margin, 34),
                   itemCount: results.length + 1,
                   itemBuilder: (context, index) {
                     if (index == 0) {
                       return Padding(
-                        padding: const EdgeInsetsDirectional.only(
-                            start: 4, bottom: 12),
-                        child: Text(
-                          s.resultsCount(results.length),
-                          style: theme.textTheme.labelLarge?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
+                        padding: const EdgeInsets.only(bottom: 14),
+                        child: Row(
+                          children: [
+                            Text(
+                              s.resultsCount(results.length).toUpperCase(),
+                              style: theme.textTheme.labelSmall,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Container(
+                                height: Ms.hair,
+                                color: ManuscriptTheme.of(context).rule,
+                              ),
+                            ),
+                          ],
                         ),
                       );
                     }
                     return DuaCard(dua: results[index - 1]);
                   },
                 ),
-    );
-  }
-}
-
-class _Hint extends StatelessWidget {
-  const _Hint({required this.icon, required this.text});
-
-  final IconData icon;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 56, color: theme.colorScheme.onSurfaceVariant),
-            const SizedBox(height: 14),
-            Text(
-              text,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

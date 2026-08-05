@@ -3,12 +3,15 @@ import 'package:provider/provider.dart';
 
 import '../l10n/app_strings.dart';
 import '../services/muhassan_service.dart';
+import '../theme/app_theme.dart';
+import '../widgets/ornament.dart';
 
-const _flameColor = Color(0xFFEF6C00);
-
-/// A dedicated page for the daily-adhkar streak: current/best/total stats and a
-/// four-week calendar heatmap of fortified days. Opened from the streak chip on
-/// the home muhassan card.
+/// The daily-adhkar streak: the running count, the three totals as one ruled
+/// register, and four weeks of fortified days.
+///
+/// The totals share a single framed table split by vertical rules rather than
+/// three separate cards — they are one set of related figures, and a table is
+/// what a set of related figures wants to be.
 class StreakStatsScreen extends StatelessWidget {
   const StreakStatsScreen({super.key});
 
@@ -20,48 +23,27 @@ class StreakStatsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(s.streakTitle)),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+        padding: const EdgeInsets.fromLTRB(Ms.margin, 4, Ms.margin, 34),
         children: [
           _Hero(streak: m.streak, fortifiedToday: m.fortifiedToday),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(
-                child: _StatTile(
-                  icon: Icons.local_fire_department,
-                  color: _flameColor,
-                  label: s.statCurrent,
-                  value: '${m.streak}',
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _StatTile(
-                  icon: Icons.emoji_events_outlined,
-                  color: const Color(0xFFB8860B),
-                  label: s.statBest,
-                  value: '${m.best}',
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _StatTile(
-                  icon: Icons.shield_outlined,
-                  color: Theme.of(context).colorScheme.primary,
-                  label: s.statTotal,
-                  value: '${m.totalFortified}',
-                ),
-              ),
+          const SizedBox(height: 18),
+          _Register(
+            entries: [
+              (s.statCurrent, '${m.streak}'),
+              (s.statBest, '${m.best}'),
+              (s.statTotal, '${m.totalFortified}'),
             ],
           ),
-          const SizedBox(height: 24),
-          _CalendarCard(),
+          const SizedBox(height: 22),
+          const _Calendar(),
         ],
       ),
     );
   }
 }
 
+/// The streak itself: the numeral inside an illuminated medallion, with the
+/// day's standing spelled out beneath.
 class _Hero extends StatelessWidget {
   const _Hero({required this.streak, required this.fortifiedToday});
 
@@ -71,61 +53,34 @@ class _Hero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final ms = ManuscriptTheme.of(context);
     final s = AppStrings.of(context);
     final active = streak > 0;
-    final color = active ? _flameColor : theme.colorScheme.onSurfaceVariant;
+    final tint = active ? ms.gilt : theme.colorScheme.onSurfaceVariant;
 
     final message = !active
         ? s.streakBroken
         : (fortifiedToday ? s.streakOnFire : s.streakTodayPending);
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            color.withValues(alpha: 0.18),
-            color.withValues(alpha: 0.06),
-          ],
-        ),
-        border: Border.all(color: color.withValues(alpha: 0.35)),
-      ),
+    return JadwalFrame(
+      emphasis: active,
+      accent: active ? ms.gilt : null,
+      padding: const EdgeInsets.fromLTRB(20, 22, 20, 20),
       child: Column(
         children: [
-          Icon(
-            active
-                ? Icons.local_fire_department
-                : Icons.sentiment_dissatisfied_outlined,
-            size: 56,
-            color: color,
-          ),
-          const SizedBox(height: 6),
+          // The number is the whole point, so it is set large and plain
+          // rather than framed inside a medallion.
+          Numeral('$streak', size: 76, weight: FontWeight.w600, color: tint),
+          const SizedBox(height: 8),
           Text(
-            '$streak',
-            style: theme.textTheme.displayMedium?.copyWith(
-              fontWeight: FontWeight.w800,
-              color: theme.colorScheme.onSurface,
-              height: 1.0,
-            ),
+            s.streakWord.toUpperCase(),
+            style: theme.textTheme.labelSmall?.copyWith(color: tint),
           ),
-          Text(
-            s.streakWord,
-            style: theme.textTheme.titleSmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 12),
+          const RuleDivider(indent: 40),
           Text(
             message,
             textAlign: TextAlign.center,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.85),
-            ),
+            style: theme.textTheme.bodyLarge,
           ),
         ],
       ),
@@ -133,60 +88,61 @@ class _Hero extends StatelessWidget {
   }
 }
 
-class _StatTile extends StatelessWidget {
-  const _StatTile({
-    required this.icon,
-    required this.color,
-    required this.label,
-    required this.value,
-  });
+/// A framed table of figures, split by vertical rules.
+class _Register extends StatelessWidget {
+  const _Register({required this.entries});
 
-  final IconData icon;
-  final Color color;
-  final String label;
-  final String value;
+  final List<(String, String)> entries;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final ms = ManuscriptTheme.of(context);
+
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+        border: Border.all(color: ms.rule),
+        borderRadius: BorderRadius.circular(Ms.rPanel),
+      ),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (var i = 0; i < entries.length; i++) ...[
+              if (i > 0) VerticalDivider(width: 1, color: ms.rule),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Numeral(entries[i].$2, size: 27),
+                      const SizedBox(height: 4),
+                      Text(
+                        entries[i].$1.toUpperCase(),
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.labelSmall,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ],
         ),
       ),
-      child: Column(
-        children: [
-          Icon(icon, color: color, size: 22),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
 
-class _CalendarCard extends StatelessWidget {
+/// Four weeks of days, each cell inked when the day was fortified.
+class _Calendar extends StatelessWidget {
+  const _Calendar();
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
+    final ms = ManuscriptTheme.of(context);
     final s = AppStrings.of(context);
     final m = context.watch<MuhassanService>();
 
@@ -197,46 +153,30 @@ class _CalendarCard extends StatelessWidget {
     final start = monday.subtract(const Duration(days: 21));
     final days = List.generate(28, (i) => start.add(Duration(days: i)));
 
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
-      decoration: BoxDecoration(
-        color: scheme.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.4)),
-      ),
+    return JadwalFrame(
+      padding: const EdgeInsets.fromLTRB(14, 13, 14, 15),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            s.last4Weeks,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 14),
+          Text(s.last4Weeks, style: theme.textTheme.titleSmall),
+          const SizedBox(height: 11),
           Row(
             children: [
               for (final d in s.weekdayLetters)
                 Expanded(
                   child: Center(
-                    child: Text(
-                      d,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: scheme.onSurfaceVariant,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
+                    child: Text(d, style: theme.textTheme.labelSmall),
                   ),
                 ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 7),
           GridView.count(
             crossAxisCount: 7,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 6,
-            crossAxisSpacing: 6,
+            mainAxisSpacing: 5,
+            crossAxisSpacing: 5,
             children: [
               for (final day in days)
                 _DayCell(
@@ -246,24 +186,31 @@ class _CalendarCard extends StatelessWidget {
                 ),
             ],
           ),
-          const SizedBox(height: 14),
-          Row(
+          const SizedBox(height: 12),
+          Container(height: Ms.hair, color: ms.rule),
+          const SizedBox(height: 10),
+          // Wrap, not Row: the two labels are translated, and in Indonesian
+          // they are long enough to need a second line on a narrow screen.
+          Wrap(
+            spacing: 18,
+            runSpacing: 6,
             children: [
-              _LegendDot(color: scheme.primary, filled: true),
-              const SizedBox(width: 6),
-              Text(
-                s.fortifiedLegend,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: scheme.onSurfaceVariant,
+              _Legend(
+                label: s.fortifiedLegend,
+                swatch: Container(
+                  width: 13,
+                  height: 13,
+                  color: ms.gilt.withValues(alpha: 0.28),
                 ),
               ),
-              const SizedBox(width: 16),
-              _LegendDot(color: scheme.primary, filled: false),
-              const SizedBox(width: 6),
-              Text(
-                s.todayLabel,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: scheme.onSurfaceVariant,
+              _Legend(
+                label: s.todayLabel,
+                swatch: Container(
+                  width: 13,
+                  height: 13,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: ms.rubric, width: Ms.stroke),
+                  ),
                 ),
               ),
             ],
@@ -287,60 +234,51 @@ class _DayCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final ms = ManuscriptTheme.of(context);
     final isToday = day == today;
     final isFuture = day.isAfter(today);
 
-    final Color bg;
-    final Color fg;
-    if (fortified) {
-      bg = scheme.primary;
-      fg = scheme.onPrimary;
-    } else if (isFuture) {
-      bg = scheme.surfaceContainerHighest.withValues(alpha: 0.25);
-      fg = scheme.onSurfaceVariant.withValues(alpha: 0.4);
-    } else {
-      bg = scheme.surfaceContainerHighest.withValues(alpha: 0.6);
-      fg = scheme.onSurfaceVariant;
-    }
-
     return Container(
       decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(8),
-        border: isToday
-            ? Border.all(color: scheme.primary, width: 2)
-            : null,
+        color: fortified ? ms.gilt.withValues(alpha: 0.28) : null,
+        border: Border.all(
+          color: isToday
+              ? ms.rubric
+              : fortified
+                  ? ms.gilt.withValues(alpha: 0.55)
+                  : ms.rule,
+          width: isToday ? Ms.stroke : Ms.hair,
+        ),
+        borderRadius: BorderRadius.circular(Ms.rSmall),
       ),
       alignment: Alignment.center,
-      child: Text(
+      child: Numeral(
         '${day.day}',
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: isToday ? FontWeight.w800 : FontWeight.w500,
-          color: fg,
-        ),
+        size: 12,
+        serif: false,
+        weight: isToday || fortified ? FontWeight.w700 : FontWeight.w500,
+        color: isFuture
+            ? theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.45)
+            : theme.colorScheme.onSurface,
       ),
     );
   }
 }
 
-class _LegendDot extends StatelessWidget {
-  const _LegendDot({required this.color, required this.filled});
+class _Legend extends StatelessWidget {
+  const _Legend({required this.label, required this.swatch});
 
-  final Color color;
-  final bool filled;
+  final String label;
+  final Widget swatch;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 14,
-      height: 14,
-      decoration: BoxDecoration(
-        color: filled ? color : Colors.transparent,
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: color, width: filled ? 0 : 2),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          swatch,
+          const SizedBox(width: 6),
+          Text(label, style: Theme.of(context).textTheme.bodySmall),
+        ],
+      );
 }

@@ -98,6 +98,27 @@ flutter:
     - assets/audio/
 
   fonts:
+    # Latin text faces. Crimson Pro carries content (headings, prose,
+    # translations) — it is the Latin companion Amiri was designed to sit
+    # beside. Karla carries the apparatus (labels, numerals, buttons). Both are
+    # SIL OFL 1.1; instanced from the upstream variable fonts and subset to the
+    # Latin ranges the app actually uses (see assets/fonts/latin/*-OFL.txt).
+    - family: Crimson Pro
+      fonts:
+        - asset: assets/fonts/latin/CrimsonPro-Regular.ttf
+        - asset: assets/fonts/latin/CrimsonPro-Italic.ttf
+          style: italic
+        - asset: assets/fonts/latin/CrimsonPro-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/latin/CrimsonPro-Bold.ttf
+          weight: 700
+    - family: Karla
+      fonts:
+        - asset: assets/fonts/latin/Karla-Regular.ttf
+        - asset: assets/fonts/latin/Karla-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/latin/Karla-Bold.ttf
+          weight: 700
     - family: Amiri
       fonts:
         - asset: assets/fonts/Amiri-Regular.ttf

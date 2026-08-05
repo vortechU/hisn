@@ -7,17 +7,23 @@ import '../models/dua_category.dart';
 import '../screens/category_duas_screen.dart';
 import '../screens/streak_stats_screen.dart';
 import '../services/muhassan_service.dart';
+import '../theme/app_theme.dart';
+import 'ornament.dart';
 
-/// The daily "muhassan" (fortified) meter: a ring that fills as the user
-/// completes their morning and evening adhkar, plus the running streak. Tapping
-/// a session pill jumps straight into that set.
+/// The daily *muhassan* (fortified) tally: a rosette that illuminates as the
+/// morning and evening adhkar are completed, over a ruled two-line register of
+/// the day's sessions.
+///
+/// The register is set as ruled rows rather than as two pills, so the numbers
+/// line up in a column and can actually be compared — a tally is a table, not
+/// a pair of buttons.
 class MuhassanCard extends StatelessWidget {
   const MuhassanCard({super.key});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
+    final ms = ManuscriptTheme.of(context);
     final s = AppStrings.of(context);
     final m = context.watch<MuhassanService>();
 
@@ -27,103 +33,68 @@ class MuhassanCard extends StatelessWidget {
     }
 
     final complete = m.fraction >= 1.0;
-    final ringColor = complete ? scheme.primary : scheme.secondary;
+    final tint = complete ? ms.gilt : ms.rubric;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: scheme.surface,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: (complete ? scheme.primary : scheme.outlineVariant)
-                .withValues(alpha: complete ? 0.5 : 0.4),
-          ),
-        ),
+      padding: const EdgeInsets.fromLTRB(Ms.margin, 12, Ms.margin, 0),
+      child: JadwalFrame(
+        accent: complete ? ms.gilt : null,
+        padding: const EdgeInsets.fromLTRB(15, 14, 15, 6),
         child: Column(
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                _Ring(fraction: m.fraction, color: ringColor, complete: complete),
-                const SizedBox(width: 16),
+                ProgressRosette(
+                  fraction: m.fraction,
+                  size: 58,
+                  // Plain arc: the two session rules below already give the
+                  // breakdown, so this only needs to carry the total.
+                  lobes: 0,
+                  color: tint,
+                  child: complete
+                      ? Icon(Icons.check, size: 20, color: tint)
+                      : Numeral('${m.percent}%',
+                          size: 15, weight: FontWeight.w700, serif: false),
+                ),
+                const SizedBox(width: 15),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Title + streak chip share a line when they fit, but on
-                      // narrow screens (or a large system font scale) the chip
-                      // would otherwise overflow the right edge — so let it wrap
-                      // onto its own line instead. spaceBetween keeps the wide
-                      // layout (title left, chip right) unchanged.
-                      SizedBox(
-                        width: double.infinity,
-                        child: Wrap(
-                          alignment: WrapAlignment.spaceBetween,
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  complete
-                                      ? Icons.verified
-                                      : Icons.shield_outlined,
-                                  size: 18,
-                                  color: ringColor,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  s.muhassanHeading,
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            _StreakChip(streak: m.streak, best: m.best),
-                          ],
-                        ),
+                      Text(
+                        s.muhassanHeading,
+                        style: theme.textTheme.titleMedium,
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 2),
                       Text(
                         complete ? s.muhassanComplete : s.muhassanToday(m.percent),
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: scheme.onSurfaceVariant,
-                        ),
+                        style: theme.textTheme.bodySmall,
                       ),
+                      const SizedBox(height: 9),
+                      _StreakMark(streak: m.streak, best: m.best),
                     ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 14),
-            Row(
-              children: [
-                Expanded(
-                  child: _SessionPill(
-                    label: s.muhassanMorning,
-                    icon: Icons.wb_sunny_outlined,
-                    done: m.morningDone,
-                    count: m.morningCount,
-                    total: m.morningTotal,
-                    categoryId: MuhassanService.morningId,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _SessionPill(
-                    label: s.muhassanEvening,
-                    icon: Icons.bedtime_outlined,
-                    done: m.eveningDone,
-                    count: m.eveningCount,
-                    total: m.eveningTotal,
-                    categoryId: MuhassanService.eveningId,
-                  ),
-                ),
-              ],
+            const SizedBox(height: 12),
+            _SessionRow(
+              label: s.muhassanMorning,
+              done: m.morningDone,
+              count: m.morningCount,
+              total: m.morningTotal,
+              categoryId: MuhassanService.morningId,
+              lobes: 12,
+            ),
+            _SessionRow(
+              label: s.muhassanEvening,
+              done: m.eveningDone,
+              count: m.eveningCount,
+              total: m.eveningTotal,
+              categoryId: MuhassanService.eveningId,
+              lobes: 10,
+              last: true,
             ),
           ],
         ),
@@ -132,142 +103,25 @@ class MuhassanCard extends StatelessWidget {
   }
 }
 
-class _Ring extends StatelessWidget {
-  const _Ring({
-    required this.fraction,
-    required this.color,
-    required this.complete,
-  });
-
-  final double fraction;
-  final Color color;
-  final bool complete;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return SizedBox(
-      width: 64,
-      height: 64,
-      child: TweenAnimationBuilder<double>(
-        duration: const Duration(milliseconds: 450),
-        curve: Curves.easeOut,
-        tween: Tween(begin: 0, end: fraction),
-        builder: (context, value, _) => Stack(
-          alignment: Alignment.center,
-          children: [
-            SizedBox(
-              width: 64,
-              height: 64,
-              child: CircularProgressIndicator(
-                value: value,
-                strokeWidth: 6,
-                strokeCap: StrokeCap.round,
-                backgroundColor: color.withValues(alpha: 0.15),
-                valueColor: AlwaysStoppedAnimation<Color>(color),
-              ),
-            ),
-            complete
-                ? Icon(Icons.check, color: color, size: 26)
-                : Text(
-                    '${(value * 100).round()}%',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 15,
-                      color: scheme.onSurface,
-                    ),
-                  ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _StreakChip extends StatelessWidget {
-  const _StreakChip({required this.streak, required this.best});
-
-  final int streak;
-  final int best;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final s = AppStrings.of(context);
-    final active = streak > 0;
-    final color = active ? const Color(0xFFEF6C00) : scheme.onSurfaceVariant;
-
-    return Tooltip(
-      message: best > 0 ? s.streakBest(best) : s.streakStart,
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(20),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(20),
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const StreakStatsScreen()),
-          ),
-          child: Container(
-            padding: const EdgeInsetsDirectional.only(
-                start: 10, end: 6, top: 5, bottom: 5),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.14),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  active
-                      ? Icons.local_fire_department
-                      : Icons.sentiment_dissatisfied_outlined,
-                  size: 16,
-                  color: color,
-                ),
-                const SizedBox(width: 5),
-                Flexible(
-                  child: Text(
-                    active ? s.streakDays(streak) : s.streakStart,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: color,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 12.5,
-                    ),
-                  ),
-                ),
-                Icon(
-                  Directionality.of(context) == TextDirection.rtl
-                      ? Icons.chevron_left
-                      : Icons.chevron_right,
-                  size: 16,
-                  color: color,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SessionPill extends StatelessWidget {
-  const _SessionPill({
+/// One session in the day's register: mark, name, tally, and the rule beneath.
+class _SessionRow extends StatelessWidget {
+  const _SessionRow({
     required this.label,
-    required this.icon,
     required this.done,
     required this.count,
     required this.total,
     required this.categoryId,
+    required this.lobes,
+    this.last = false,
   });
 
   final String label;
-  final IconData icon;
   final bool done;
   final int count;
   final int total;
   final String categoryId;
+  final int lobes;
+  final bool last;
 
   void _open(BuildContext context) {
     final DuaCategory? category =
@@ -280,40 +134,104 @@ class _SessionPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final color = done ? scheme.primary : scheme.onSurfaceVariant;
+    final theme = Theme.of(context);
+    final ms = ManuscriptTheme.of(context);
+    final tint = done ? ms.gilt : ms.rubric;
+    final fraction = total == 0 ? 0.0 : count / total;
 
     return Material(
-      color: (done ? scheme.primary : scheme.surfaceContainerHighest)
-          .withValues(alpha: done ? 0.12 : 0.5),
-      borderRadius: BorderRadius.circular(14),
+      type: MaterialType.transparency,
       child: InkWell(
-        borderRadius: BorderRadius.circular(14),
         onTap: () => _open(context),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
-          child: Row(
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(top: BorderSide(color: ms.rule)),
+          ),
+          padding: EdgeInsets.only(top: 9, bottom: last ? 10 : 9),
+          child: Column(
             children: [
-              Icon(done ? Icons.check_circle : icon, size: 18, color: color),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  label,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: scheme.onSurface,
+              Row(
+                children: [
+                  Rosette(size: 15, color: tint, lobes: lobes, filled: done),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(label, style: theme.textTheme.titleSmall),
+                  ),
+                  const SizedBox(width: 8),
+                  Numeral(
+                    '$count/$total',
+                    size: 13,
+                    serif: false,
+                    weight: FontWeight.w700,
+                    color: done ? tint : theme.colorScheme.onSurfaceVariant,
+                  ),
+                  if (done) ...[
+                    const SizedBox(width: 6),
+                    Icon(Icons.check, size: 14, color: tint),
+                  ],
+                ],
+              ),
+              const SizedBox(height: 7),
+              ProgressRule(value: fraction, color: tint, thickness: 1.5),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The running streak, marked the way a scribe marks a count: a numeral in the
+/// apparatus face against a small rule, not a coloured pill with a flame.
+class _StreakMark extends StatelessWidget {
+  const _StreakMark({required this.streak, required this.best});
+
+  final int streak;
+  final int best;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final ms = ManuscriptTheme.of(context);
+    final s = AppStrings.of(context);
+    final active = streak > 0;
+    final tint = active ? ms.gilt : theme.colorScheme.onSurfaceVariant;
+
+    return Tooltip(
+      message: best > 0 ? s.streakBest(best) : s.streakStart,
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(Ms.rSmall),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const StreakStatsScreen()),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(width: 10, height: Ms.stroke, color: tint),
+                const SizedBox(width: 7),
+                Flexible(
+                  child: Text(
+                    (active ? s.streakDays(streak) : s.streakStart)
+                        .toUpperCase(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelSmall?.copyWith(color: tint),
                   ),
                 ),
-              ),
-              Text(
-                done ? '✓' : '$count/$total',
-                style: TextStyle(
-                  color: color,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 12.5,
+                const SizedBox(width: 4),
+                Icon(
+                  Directionality.of(context) == TextDirection.rtl
+                      ? Icons.chevron_left
+                      : Icons.chevron_right,
+                  size: 15,
+                  color: tint,
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

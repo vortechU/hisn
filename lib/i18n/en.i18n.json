@@ -91,7 +91,6 @@
   "next": "NEXT",
   "remaining": "remaining",
   "countdownNow": "now",
-  "nextPrayerLine": "Next · $name  $time",
   "todaysPrayers": "Today's prayers · $location",
 
   "searchHint": "Search duas, meanings, sources…",

@@ -6,7 +6,9 @@ import '../l10n/app_strings.dart';
 import '../models/dua.dart';
 import '../services/custom_dua_service.dart';
 import '../services/dua_progress_service.dart';
+import '../theme/app_theme.dart';
 import '../widgets/dua_card.dart';
+import '../widgets/ornament.dart';
 import 'add_dua_screen.dart';
 
 /// The "My Duas" section: lists the user's own duas with add, edit, and delete.
@@ -99,23 +101,34 @@ class CustomDuasScreen extends StatelessWidget {
         actions: [
           if (inProgress)
             IconButton(
-              icon: const Icon(Icons.refresh),
+              icon: const Icon(Icons.restart_alt),
               tooltip: s.resetProgress,
               onPressed: () => context
                   .read<DuaProgressService>()
                   .resetDuas(duas.map((d) => d.id)),
             ),
+          const SizedBox(width: 6),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _add(context),
-        icon: const Icon(Icons.add),
+        elevation: 0,
+        highlightElevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(Ms.rSmall),
+        ),
+        icon: const Icon(Icons.add, size: 20),
         label: Text(s.addDua),
       ),
       body: duas.isEmpty
-          ? _EmptyState(s: s)
+          ? EmptyPage(
+              icon: Icons.volunteer_activism_outlined,
+              title: s.noCustomTitle,
+              body: s.noCustomBody,
+            )
           : ListView.builder(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+              padding: const EdgeInsets.fromLTRB(
+                  Ms.margin, Ms.margin, Ms.margin, 96),
               itemCount: duas.length,
               itemBuilder: (context, index) {
                 final dua = duas[index];
@@ -132,34 +145,3 @@ class CustomDuasScreen extends StatelessWidget {
   }
 }
 
-class _EmptyState extends StatelessWidget {
-  const _EmptyState({required this.s});
-  final AppStrings s;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.volunteer_activism_outlined,
-                size: 64, color: theme.colorScheme.onSurfaceVariant),
-            const SizedBox(height: 16),
-            Text(s.noCustomTitle, style: theme.textTheme.titleMedium),
-            const SizedBox(height: 6),
-            Text(
-              s.noCustomBody,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

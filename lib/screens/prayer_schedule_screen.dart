@@ -3,7 +3,9 @@ import 'package:provider/provider.dart';
 
 import '../l10n/app_strings.dart';
 import '../services/prayer_service.dart';
+import '../theme/app_theme.dart';
 import '../widgets/arabic_text.dart';
+import '../widgets/ornament.dart';
 
 /// The full weekly prayer schedule: the five daily prayers for each of the next
 /// seven days, with today highlighted.
@@ -18,6 +20,7 @@ class PrayerScheduleScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
     final theme = Theme.of(context);
+    final ms = ManuscriptTheme.of(context);
     final service = context.watch<PrayerService>();
     final now = DateTime.now();
     final startOfToday = DateTime(now.year, now.month, now.day);
@@ -25,7 +28,7 @@ class PrayerScheduleScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(s.weeklySchedule)),
       body: ListView.builder(
-        padding: const EdgeInsets.only(bottom: 24),
+        padding: const EdgeInsets.only(bottom: 30),
         itemCount: 7,
         itemBuilder: (context, dayIndex) {
           final day = startOfToday.add(Duration(days: dayIndex));
@@ -35,65 +38,79 @@ class PrayerScheduleScreen extends StatelessWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: double.infinity,
-                color: isToday
-                    ? theme.colorScheme.primary.withValues(alpha: 0.08)
+              // Each day is headed like a dated entry in a register.
+              SectionMark(
+                label: s.dateLabel(day),
+                color: isToday ? ms.rubric : null,
+                trailing: isToday
+                    ? Cartouche(
+                        label: s.todayLabel, color: ms.gilt, filled: true)
                     : null,
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-                child: Row(
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: Ms.margin),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: isToday
+                        ? ms.rubric.withValues(alpha: 0.45)
+                        : ms.rule,
+                  ),
+                  borderRadius: BorderRadius.circular(Ms.rPanel),
+                ),
+                child: Column(
                   children: [
-                    Text(
-                      s.dateLabel(day),
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: isToday ? theme.colorScheme.primary : null,
-                      ),
-                    ),
-                    if (isToday) ...[
-                      const SizedBox(width: 8),
+                    for (var i = 0; i < prayers.length; i++)
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
+                            horizontal: 13, vertical: 10),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.primary,
-                          borderRadius: BorderRadius.circular(10),
+                          border: i == 0
+                              ? null
+                              : Border(top: BorderSide(color: ms.rule)),
                         ),
-                        child: Text(
-                          s.todayLabel,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                          ),
+                        // Every cell is flexible: at a large text scale on a
+                        // narrow screen the name, the Arabic and the time all
+                        // grow, and a fixed cell would push the row over.
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: Text(
+                                s.prayerName(prayers[i].prayer),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.titleSmall,
+                              ),
+                            ),
+                            if (!s.ar) ...[
+                              const SizedBox(width: 8),
+                              Flexible(
+                                flex: 2,
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: AlignmentDirectional.centerEnd,
+                                  child: ArabicText(
+                                      prayers[i].prayer.arabicName,
+                                      fontSize: 18,
+                                      color: ms.rubric,
+                                      height: 1.6),
+                                ),
+                              ),
+                            ],
+                            const SizedBox(width: 12),
+                            Numeral(
+                              _clock(prayers[i].time, s),
+                              size: 14,
+                              serif: false,
+                              weight: FontWeight.w500,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ],
                         ),
                       ),
-                    ],
                   ],
                 ),
               ),
-              ...prayers.map(
-                (timing) => Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 7),
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: 28,
-                        child: ArabicText(timing.prayer.arabicName,
-                            fontSize: 17, color: theme.colorScheme.primary),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(child: Text(s.prayerName(timing.prayer))),
-                      Text(
-                        _clock(timing.time, s),
-                        style: theme.textTheme.bodyLarge,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const Divider(height: 16),
             ],
           );
         },

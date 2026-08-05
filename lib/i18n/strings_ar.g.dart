@@ -133,7 +133,6 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get next => 'التالي';
 	@override String get remaining => 'متبقٍّ';
 	@override String get countdownNow => 'الآن';
-	@override String nextPrayerLine({required Object name, required Object time}) => 'التالي · ${name}  ${time}';
 	@override String todaysPrayers({required Object location}) => 'صلوات اليوم · ${location}';
 	@override String get searchHint => 'ابحث في الأدعية والمعاني والمصادر…';
 	@override String get clear => 'مسح';
@@ -437,7 +436,6 @@ extension on TranslationsAr {
 			'next' => 'التالي',
 			'remaining' => 'متبقٍّ',
 			'countdownNow' => 'الآن',
-			'nextPrayerLine' => ({required Object name, required Object time}) => 'التالي · ${name}  ${time}',
 			'todaysPrayers' => ({required Object location}) => 'صلوات اليوم · ${location}',
 			'searchHint' => 'ابحث في الأدعية والمعاني والمصادر…',
 			'clear' => 'مسح',

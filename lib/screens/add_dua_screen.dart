@@ -5,6 +5,8 @@ import '../l10n/app_strings.dart';
 import '../models/dua.dart';
 import '../services/custom_dua_service.dart';
 import '../services/display_settings.dart';
+import '../theme/app_theme.dart';
+import '../widgets/ornament.dart';
 
 /// A form for adding — or, when [existing] is provided, editing — a custom dua.
 /// Only the Arabic text is required.
@@ -106,9 +108,12 @@ class _AddDuaScreenState extends State<AddDuaScreen> {
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+          padding: const EdgeInsets.fromLTRB(Ms.margin, 4, Ms.margin, 34),
           children: [
-            // Arabic — required, RTL, larger.
+            // The Arabic is the dua; everything else annotates it. So it gets
+            // the framed block and the rest are plain fields beneath.
+            _Label(s.fieldArabic, required: true),
+            const SizedBox(height: 6),
             TextFormField(
               controller: _arabic,
               autofocus: true,
@@ -118,61 +123,43 @@ class _AddDuaScreenState extends State<AddDuaScreen> {
               maxLines: 6,
               style: TextStyle(
                 fontFamily: arabicFamily,
-                fontSize: 22,
-                height: 1.8,
-              ),
-              decoration: InputDecoration(
-                labelText: s.fieldArabic,
-                alignLabelWithHint: true,
-                border: const OutlineInputBorder(),
+                fontSize: 23,
+                height: 1.85,
+                color: theme.colorScheme.onSurface,
               ),
               validator: (v) =>
                   (v == null || v.trim().isEmpty) ? s.fieldArabicRequired : null,
             ),
-            const SizedBox(height: 16),
-            _field(_title, s.fieldTitle),
-            const SizedBox(height: 16),
-            _field(_transliteration, s.fieldTransliteration),
-            const SizedBox(height: 16),
-            _field(_translation, s.fieldTranslation, maxLines: 3),
-            const SizedBox(height: 16),
-            _field(_reference, s.fieldReference),
-            const SizedBox(height: 20),
-            // Repetitions stepper.
-            Row(
-              children: [
-                Expanded(
-                  child: Text(s.fieldRepeat,
-                      style: theme.textTheme.bodyLarge),
-                ),
-                IconButton.outlined(
-                  onPressed: _repeat > 1
-                      ? () => setState(() => _repeat--)
-                      : null,
-                  icon: const Icon(Icons.remove),
-                  tooltip: '−',
-                ),
-                SizedBox(
-                  width: 48,
-                  child: Text(
-                    '$_repeat',
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.titleLarge,
-                  ),
-                ),
-                IconButton.outlined(
-                  onPressed: _repeat < 1000
-                      ? () => setState(() => _repeat++)
-                      : null,
-                  icon: const Icon(Icons.add),
-                  tooltip: '+',
-                ),
-              ],
+            const SizedBox(height: 18),
+            _Label(s.fieldTitle),
+            const SizedBox(height: 6),
+            TextFormField(controller: _title),
+            const SizedBox(height: 18),
+            _Label(s.fieldTransliteration),
+            const SizedBox(height: 6),
+            TextFormField(
+              controller: _transliteration,
+              style: theme.textTheme.bodyLarge
+                  ?.copyWith(fontStyle: FontStyle.italic),
+            ),
+            const SizedBox(height: 18),
+            _Label(s.fieldTranslation),
+            const SizedBox(height: 6),
+            TextFormField(controller: _translation, maxLines: 3),
+            const SizedBox(height: 18),
+            _Label(s.fieldReference),
+            const SizedBox(height: 6),
+            TextFormField(controller: _reference),
+            const SizedBox(height: 22),
+            _RepeatStepper(
+              value: _repeat,
+              label: s.fieldRepeat,
+              onChanged: (v) => setState(() => _repeat = v),
             ),
             const SizedBox(height: 24),
             FilledButton.icon(
               onPressed: _saving ? null : _save,
-              icon: const Icon(Icons.check),
+              icon: const Icon(Icons.check, size: 18),
               label: Text(s.save),
             ),
           ],
@@ -180,15 +167,102 @@ class _AddDuaScreenState extends State<AddDuaScreen> {
       ),
     );
   }
+}
 
-  Widget _field(TextEditingController c, String label, {int maxLines = 1}) {
-    return TextFormField(
-      controller: c,
-      maxLines: maxLines,
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
-      ),
+/// A field label in the apparatus face, with the required marker as a rubric
+/// asterisk rather than as a colour-only cue.
+class _Label extends StatelessWidget {
+  const _Label(this.text, {this.required = false});
+
+  final String text;
+  final bool required;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final ms = ManuscriptTheme.of(context);
+    return Row(
+      children: [
+        Text(text.toUpperCase(), style: theme.textTheme.labelSmall),
+        if (required) ...[
+          const SizedBox(width: 4),
+          Text('*',
+              style: theme.textTheme.labelSmall?.copyWith(color: ms.rubric)),
+        ],
+      ],
+    );
+  }
+}
+
+/// The repetition count, as a numeral between two ruled steppers.
+class _RepeatStepper extends StatelessWidget {
+  const _RepeatStepper({
+    required this.value,
+    required this.label,
+    required this.onChanged,
+  });
+
+  final int value;
+  final String label;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final ms = ManuscriptTheme.of(context);
+
+    Widget step(IconData icon, String tooltip, VoidCallback? onTap) => Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            onTap: onTap,
+            child: Tooltip(
+              message: tooltip,
+              child: SizedBox(
+                width: 44,
+                height: 44,
+                child: Icon(
+                  icon,
+                  size: 19,
+                  color: onTap == null
+                      ? theme.colorScheme.onSurfaceVariant
+                          .withValues(alpha: 0.4)
+                      : ms.rubric,
+                ),
+              ),
+            ),
+          ),
+        );
+
+    return Row(
+      children: [
+        Expanded(
+          child: Text(label.toUpperCase(), style: theme.textTheme.labelSmall),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: ms.rule),
+            borderRadius: BorderRadius.circular(Ms.rSmall),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                step(Icons.remove, '−',
+                    value > 1 ? () => onChanged(value - 1) : null),
+                VerticalDivider(width: 1, color: ms.rule),
+                SizedBox(
+                  width: 56,
+                  child: Center(child: Numeral('$value', size: 19)),
+                ),
+                VerticalDivider(width: 1, color: ms.rule),
+                step(Icons.add, '+',
+                    value < 1000 ? () => onChanged(value + 1) : null),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

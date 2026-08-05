@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_strings.dart';
 import '../services/geomag.dart';
 import '../services/prayer_service.dart';
+import '../theme/app_theme.dart';
 
 /// A live compass that points toward the Qibla (the Ka'bah in Makkah), using
 /// the device magnetometer and the Qibla bearing for the current location.
@@ -153,6 +154,7 @@ class _Compass extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final ms = ManuscriptTheme.of(context);
     final s = AppStrings.of(context);
 
     // Offset of the Qibla from where the device currently points, in [-180,180].
@@ -160,7 +162,7 @@ class _Compass extends StatelessWidget {
     if (offset > 180) offset -= 360;
     if (offset < -180) offset += 360;
     final aligned = offset.abs() < 5;
-    final accent = aligned ? scheme.primary : scheme.secondary;
+    final accent = aligned ? ms.rubric : ms.gilt;
 
     // Accuracy is degrees of heading error; null means the platform flagged
     // the sensor as unreliable. Anything worse than the "medium" bucket (30°)
@@ -173,140 +175,214 @@ class _Compass extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const SizedBox(height: 12),
+        const SizedBox(height: 6),
+        Text(location, style: theme.textTheme.bodySmall),
+        const SizedBox(height: 2),
         Text(s.qiblaFromNorth(qibla.toStringAsFixed(0)),
             style: theme.textTheme.titleMedium),
-        Text(location,
-            style: theme.textTheme.bodySmall
-                ?.copyWith(color: scheme.onSurfaceVariant)),
         if (needsCalibration)
           Padding(
             padding: const EdgeInsets.only(top: 8),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.gesture, size: 16, color: scheme.tertiary),
+                Icon(Icons.gesture, size: 15, color: ms.gilt),
                 const SizedBox(width: 6),
-                Text(s.calibrateHint,
-                    style: theme.textTheme.bodySmall
-                        ?.copyWith(color: scheme.tertiary)),
+                Flexible(
+                  child: Text(s.calibrateHint,
+                      style: theme.textTheme.bodySmall
+                          ?.copyWith(color: ms.gilt)),
+                ),
               ],
             ),
           ),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20),
+          padding: const EdgeInsets.symmetric(vertical: 18),
           child: SizedBox(
-            width: 300,
-            height: 300,
+            width: 288,
+            height: 288,
             child: Stack(
               alignment: Alignment.center,
               children: [
-                  // Fixed top index — where the device is pointing.
-                  Align(
-                    alignment: Alignment.topCenter,
-                    child: Icon(Icons.arrow_drop_up, size: 40, color: accent),
+                // The graduated dial, rotated so North tracks true north.
+                Transform.rotate(
+                  angle: -headingRad,
+                  child: CustomPaint(
+                    size: const Size.square(288),
+                    painter: _DialPainter(
+                      rule: ms.rule,
+                      ink: scheme.onSurfaceVariant,
+                      north: ms.rubric,
+                      face: scheme.onSurface,
+                    ),
                   ),
-                  // Cardinal dial, rotated so North tracks true north.
-                  Transform.rotate(
-                    angle: -headingRad,
-                    child: _CompassRose(color: scheme.onSurfaceVariant),
+                ),
+                // The Qibla index: a ruled line to a rosette at the rim.
+                Transform.rotate(
+                  angle: qiblaRad,
+                  child: _QiblaIndex(color: accent, aligned: aligned),
+                ),
+                // Fixed mark for where the device itself points.
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: CustomPaint(
+                    size: const Size(16, 13),
+                    painter: _IndexMark(accent),
                   ),
-                  // Qibla needle pointing at the Ka'bah direction.
-                  Transform.rotate(
-                    angle: qiblaRad,
-                    child: _QiblaNeedle(color: accent),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        Padding(
-          padding: const EdgeInsets.all(24),
-          child: Text(
-            aligned
-                ? s.facingQibla
-                : offset > 0
-                    ? s.turnRight(offset.abs().toStringAsFixed(0))
-                    : s.turnLeft(offset.abs().toStringAsFixed(0)),
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: accent,
-              fontWeight: FontWeight.w700,
+                ),
+              ],
             ),
           ),
         ),
+        Text(
+          aligned
+              ? s.facingQibla
+              : offset > 0
+                  ? s.turnRight(offset.abs().toStringAsFixed(0))
+                  : s.turnLeft(offset.abs().toStringAsFixed(0)),
+          textAlign: TextAlign.center,
+          style: theme.textTheme.titleMedium?.copyWith(color: accent),
+        ),
+        const SizedBox(height: 6),
       ],
     );
   }
 }
 
-class _CompassRose extends StatelessWidget {
-  const _CompassRose({required this.color});
+/// The graduated dial: two rules, a tick for every five degrees with the
+/// cardinals struck longer, and the four points lettered in the serif.
+class _DialPainter extends CustomPainter {
+  _DialPainter({
+    required this.rule,
+    required this.ink,
+    required this.north,
+    required this.face,
+  });
 
-  final Color color;
+  final Color rule;
+  final Color ink;
+  final Color north;
+  final Color face;
+
+  static const _points = ['N', 'E', 'S', 'W'];
 
   @override
-  Widget build(BuildContext context) {
-    Widget label(String text, Alignment alignment) {
-      return Align(
-        alignment: alignment,
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Text(
-            text,
-            style: TextStyle(
-              color: text == 'N' ? Colors.red.shade300 : color,
-              fontWeight: FontWeight.w700,
-              fontSize: 18,
-            ),
-          ),
-        ),
+  void paint(Canvas canvas, Size size) {
+    final c = size.center(Offset.zero);
+    final r = size.shortestSide / 2;
+
+    final hair = Paint()
+      ..color = rule
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1
+      ..isAntiAlias = true;
+
+    canvas.drawCircle(c, r - 1, hair);
+    canvas.drawCircle(c, r - 26, hair);
+
+    for (var deg = 0; deg < 360; deg += 5) {
+      final major = deg % 45 == 0;
+      final a = (deg - 90) * math.pi / 180;
+      final outer = r - 2;
+      final inner = outer - (major ? 15 : deg % 15 == 0 ? 9 : 5);
+      canvas.drawLine(
+        c + Offset(math.cos(a) * inner, math.sin(a) * inner),
+        c + Offset(math.cos(a) * outer, math.sin(a) * outer),
+        Paint()
+          ..color = major ? ink : rule
+          ..strokeWidth = major ? 1.6 : 1
+          ..isAntiAlias = true,
       );
     }
 
-    return Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: color.withValues(alpha: 0.3), width: 2),
-      ),
-      child: Stack(
-        children: [
-          label('N', Alignment.topCenter),
-          label('E', Alignment.centerRight),
-          label('S', Alignment.bottomCenter),
-          label('W', Alignment.centerLeft),
-        ],
-      ),
-    );
+    for (var i = 0; i < 4; i++) {
+      final a = (i * 90 - 90) * math.pi / 180;
+      final at = c + Offset(math.cos(a) * (r - 40), math.sin(a) * (r - 40));
+      final painter = TextPainter(
+        text: TextSpan(
+          text: _points[i],
+          style: TextStyle(
+            fontFamily: AppTheme.serif,
+            fontSize: 19,
+            fontWeight: FontWeight.w600,
+            color: i == 0 ? north : face,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      painter.paint(canvas, at - painter.size.center(Offset.zero));
+    }
   }
+
+  @override
+  bool shouldRepaint(_DialPainter old) =>
+      old.rule != rule ||
+      old.ink != ink ||
+      old.north != north ||
+      old.face != face;
 }
 
-class _QiblaNeedle extends StatelessWidget {
-  const _QiblaNeedle({required this.color});
+/// The Qibla index: a ruled line from the pivot out to a rosette that carries
+/// the direction of the Ka'bah.
+class _QiblaIndex extends StatelessWidget {
+  const _QiblaIndex({required this.color, required this.aligned});
 
   final Color color;
+  final bool aligned;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
+        // A single ruled ring, not a lobed rosette: this is a compass head and
+        // has to read as a pointer at a glance, not as ornament. It fills when
+        // the device is lined up with the Qibla.
         Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-          child: const Icon(Icons.mosque, color: Colors.white, size: 26),
-        ),
-        Container(width: 4, height: 96, color: color),
-        Container(
-          width: 12,
-          height: 12,
+          width: 44,
+          height: 44,
+          alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.4),
+            color: aligned ? color.withValues(alpha: 0.18) : null,
             shape: BoxShape.circle,
+            border: Border.all(color: color, width: aligned ? 2 : 1.4),
           ),
+          child: Icon(Icons.mosque_outlined, size: 22, color: color),
         ),
+        Container(width: 1.6, height: 92, color: color),
+        Container(
+          width: 7,
+          height: 7,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        // Balances the rosette and shaft above so the pivot dot — not the
+        // column's midpoint — lands on the centre of the dial.
+        const SizedBox(height: 138),
       ],
     );
   }
+}
+
+/// The fixed mark at the top of the dial — a filled triangle showing where the
+/// device is pointing.
+class _IndexMark extends CustomPainter {
+  _IndexMark(this.color);
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final path = Path()
+      ..moveTo(size.width / 2, size.height)
+      ..lineTo(0, 0)
+      ..lineTo(size.width, 0)
+      ..close();
+    canvas.drawPath(path, Paint()..color = color..isAntiAlias = true);
+  }
+
+  @override
+  bool shouldRepaint(_IndexMark old) => old.color != color;
 }
 
 class _NeedsLocation extends StatelessWidget {

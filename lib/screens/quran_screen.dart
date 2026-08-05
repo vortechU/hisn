@@ -5,7 +5,9 @@ import '../data/quran_repository.dart';
 import '../l10n/app_strings.dart';
 import '../models/quran.dart';
 import '../services/quran_service.dart';
+import '../theme/app_theme.dart';
 import '../widgets/arabic_text.dart';
+import '../widgets/ornament.dart';
 import 'mushaf_screen.dart';
 import 'quran_bookmarks_screen.dart';
 
@@ -59,28 +61,23 @@ class _QuranScreenState extends State<QuranScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            padding: const EdgeInsets.fromLTRB(Ms.margin, 4, Ms.margin, 10),
             child: TextField(
               controller: _searchController,
               onChanged: (v) => setState(() => _query = v),
               decoration: InputDecoration(
                 hintText: s.searchSurah,
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search, size: 19),
                 suffixIcon: _query.isEmpty
                     ? null
                     : IconButton(
-                        icon: const Icon(Icons.clear),
+                        icon: const Icon(Icons.close, size: 18),
+                        tooltip: s.clear,
                         onPressed: () {
                           _searchController.clear();
                           setState(() => _query = '');
                         },
                       ),
-                filled: true,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: EdgeInsets.zero,
               ),
             ),
           ),
@@ -93,7 +90,12 @@ class _QuranScreenState extends State<QuranScreen> {
           Expanded(
             child: ListView.separated(
               itemCount: results.length,
-              separatorBuilder: (_, _) => const Divider(height: 1, indent: 72),
+              separatorBuilder: (_, _) => Divider(
+                height: 1,
+                indent: Ms.margin + 52,
+                endIndent: Ms.margin,
+                color: ManuscriptTheme.of(context).rule,
+              ),
               itemBuilder: (context, i) {
                 final surah = results[i];
                 return _SurahTile(
@@ -109,6 +111,8 @@ class _QuranScreenState extends State<QuranScreen> {
   }
 }
 
+/// Where the reader left off, set as a rubric ruled into the page rather than
+/// as a tinted box — the same treatment the Adhkar tab gives its suggestion.
 class _ContinueBanner extends StatelessWidget {
   const _ContinueBanner({
     required this.surah,
@@ -122,44 +126,49 @@ class _ContinueBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final ms = ManuscriptTheme.of(context);
     final s = AppStrings.of(context);
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      padding: const EdgeInsets.fromLTRB(Ms.margin, 4, Ms.margin, 8),
       child: Material(
-        color: scheme.primary.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(14),
+        type: MaterialType.transparency,
         child: InkWell(
-          borderRadius: BorderRadius.circular(14),
           onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(
+                    color: ms.gilt.withValues(alpha: 0.7), width: Ms.stroke),
+                bottom: BorderSide(color: ms.rule),
+              ),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 10),
             child: Row(
               children: [
-                Icon(Icons.menu_book, color: scheme.primary),
-                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        s.continueReading,
-                        style: TextStyle(
-                          color: scheme.primary,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 12,
-                        ),
+                        s.continueReading.toUpperCase(),
+                        style:
+                            theme.textTheme.labelSmall?.copyWith(color: ms.gilt),
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 4),
                       Text(
                         '${s.surahWord} ${surah.translit} · ${s.juzLabel(surah.juz)}',
-                        style: Theme.of(context).textTheme.bodyMedium,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.titleSmall,
                       ),
                     ],
                   ),
                 ),
-                ArabicText(surah.name, fontSize: 20, color: scheme.primary),
+                const SizedBox(width: 12),
+                ArabicText(surah.name,
+                    fontSize: 22, color: ms.rubric, height: 1.5),
               ],
             ),
           ),
@@ -169,6 +178,8 @@ class _ContinueBanner extends StatelessWidget {
   }
 }
 
+/// One sūrah in the register: its number in a khātam medallion, its name in
+/// Latin and Arabic, and where it sits in the revelation.
 class _SurahTile extends StatelessWidget {
   const _SurahTile({required this.surah, required this.onTap});
 
@@ -177,62 +188,43 @@ class _SurahTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final ms = ManuscriptTheme.of(context);
     final s = AppStrings.of(context);
 
-    return ListTile(
-      onTap: onTap,
-      leading: _NumberDiamond(number: surah.number),
-      title: Text(
-        surah.translit,
-        style: const TextStyle(fontWeight: FontWeight.w600),
-      ),
-      subtitle: Text(
-        '${s.revelationLabel(surah.revelation)} · ${s.versesCount(surah.ayahCount)}',
-        style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 12.5),
-      ),
-      trailing: ArabicText(surah.name, fontSize: 20, color: scheme.primary),
-    );
-  }
-}
-
-class _NumberDiamond extends StatelessWidget {
-  const _NumberDiamond({required this.number});
-
-  final int number;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return SizedBox(
-      width: 44,
-      height: 44,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Transform.rotate(
-            angle: 0.785398, // 45°
-            child: Container(
-              width: 30,
-              height: 30,
-              decoration: BoxDecoration(
-                color: scheme.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: scheme.primary.withValues(alpha: 0.35),
+    return Material(
+      type: MaterialType.transparency,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding:
+              const EdgeInsets.symmetric(horizontal: Ms.margin, vertical: 10),
+          child: Row(
+            children: [
+              StarMedallion(number: surah.number, size: 38, color: ms.rubric),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(surah.translit, style: theme.textTheme.titleSmall),
+                    const SizedBox(height: 1),
+                    Text(
+                      '${s.revelationLabel(surah.revelation)} · '
+                      '${s.versesCount(surah.ayahCount)}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  ],
                 ),
               ),
-            ),
+              const SizedBox(width: 10),
+              ArabicText(surah.name,
+                  fontSize: 21, color: ms.rubric, height: 1.5),
+            ],
           ),
-          Text(
-            '$number',
-            style: TextStyle(
-              color: scheme.primary,
-              fontWeight: FontWeight.w700,
-              fontSize: 13,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

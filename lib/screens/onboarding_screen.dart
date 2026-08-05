@@ -6,7 +6,8 @@ import '../l10n/app_strings.dart';
 import '../services/notification_service.dart';
 import '../services/prayer_service.dart';
 import '../theme/app_theme.dart';
-import '../widgets/islamic_pattern.dart';
+import '../theme/motion.dart';
+import '../widgets/ornament.dart';
 import 'home_screen.dart';
 
 /// First-run welcome tour: a few tip pages introducing each tab, then a
@@ -59,7 +60,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       _finish();
     } else {
       _controller.nextPage(
-        duration: const Duration(milliseconds: 300),
+        duration: Motion.of(context, Motion.settle),
         curve: Curves.easeOut,
       );
     }
@@ -102,7 +103,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               alignment: AlignmentDirectional.centerEnd,
               child: AnimatedOpacity(
                 opacity: _onLastPage ? 0 : 1,
-                duration: const Duration(milliseconds: 200),
+                duration: Motion.of(context, Motion.quick),
                 child: TextButton(
                   onPressed: _onLastPage ? null : _finish,
                   child: Text(s.onboardSkip),
@@ -174,7 +175,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 }
 
-/// A single tip page: a large tinted icon, a title, and a short description.
+/// A single tip page: an illuminated mark, a title, and a short description.
+///
+/// The mark is a rosette carrying the tab's own icon, on the geometric ground
+/// — the same vocabulary the rest of the app uses, so the tour introduces the
+/// book rather than a separate onboarding aesthetic.
 class _TipPage extends StatelessWidget {
   const _TipPage({
     required this.icon,
@@ -187,64 +192,63 @@ class _TipPage extends StatelessWidget {
   final String title;
   final String body;
 
-  /// The welcome page uses the brand emerald gradient for its icon badge.
+  /// The welcome page gets the larger, gilt mark over the geometric ground.
   final bool hero;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
+    final ms = ManuscriptTheme.of(context);
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const SizedBox(height: 24),
-          Container(
-            width: 132,
-            height: 132,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: hero ? BrandTheme.of(context) : null,
-              color: hero ? null : scheme.primary.withValues(alpha: 0.12),
-            ),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                if (hero)
-                  Positioned.fill(
-                    child: ClipOval(
-                      child: IslamicPattern(
-                          color: Colors.white, opacity: 0.1, cell: 30),
+    // Centre the leaf's content in the height the PageView actually gives it,
+    // while still allowing it to scroll on short screens and at large text
+    // scales. minHeight has to come from the real viewport — a fraction of the
+    // window leaves the column anchored to the top of a short box.
+    return LayoutBuilder(
+      builder: (context, viewport) => SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 16),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: viewport.maxHeight - 32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 158,
+                height: 158,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    if (hero)
+                      Positioned.fill(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(Ms.rPanel),
+                          child: GirihField(
+                              color: ms.rubric, opacity: 0.16, side: 14),
+                        ),
+                      ),
+                    Icon(
+                      icon,
+                      size: hero ? 64 : 56,
+                      color: hero ? ms.gilt : ms.rubric,
                     ),
-                  ),
-                Icon(
-                  icon,
-                  size: 60,
-                  color: hero ? Colors.white : scheme.primary,
+                  ],
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 28),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.headlineSmall,
+              ),
+              const RuleDivider(indent: 60),
+              Text(
+                body,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyLarge,
+              ),
+            ],
           ),
-          const SizedBox(height: 36),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            body,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: scheme.onSurfaceVariant,
-              height: 1.5,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -272,31 +276,27 @@ class _PermissionsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
     final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
+    final ms = ManuscriptTheme.of(context);
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
+      padding: const EdgeInsets.fromLTRB(22, 12, 22, 8),
       children: [
-        const SizedBox(height: 8),
-        Icon(Icons.verified_user_outlined, size: 56, color: scheme.primary),
-        const SizedBox(height: 20),
+        Center(
+          child: Icon(Icons.lock_outline, size: 42, color: ms.rubric),
+        ),
+        const SizedBox(height: 16),
         Text(
           s.onboardPermsTitle,
           textAlign: TextAlign.center,
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+          style: theme.textTheme.headlineSmall,
         ),
-        const SizedBox(height: 12),
+        const RuleDivider(indent: 56),
         Text(
           s.onboardPermsBody,
           textAlign: TextAlign.center,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: scheme.onSurfaceVariant,
-            height: 1.5,
-          ),
+          style: theme.textTheme.bodyMedium,
         ),
-        const SizedBox(height: 28),
+        const SizedBox(height: 24),
         _PermissionTile(
           icon: Icons.location_on_outlined,
           title: s.onboardLocationTitle,
@@ -344,64 +344,33 @@ class _PermissionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
     final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
+    final ms = ManuscriptTheme.of(context);
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: scheme.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: granted
-              ? scheme.primary.withValues(alpha: 0.6)
-              : scheme.outlineVariant.withValues(alpha: 0.6),
-        ),
-      ),
+    return JadwalFrame(
+      accent: granted ? ms.gilt : null,
+      emphasis: granted,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: scheme.primary.withValues(alpha: 0.12),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: scheme.primary, size: 22),
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Icon(icon, size: 22, color: granted ? ms.gilt : ms.rubric),
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: 13),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: theme.textTheme.titleMedium
-                      ?.copyWith(fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  body,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: scheme.onSurfaceVariant,
-                    height: 1.4,
-                  ),
-                ),
+                Text(title, style: theme.textTheme.titleMedium),
+                const SizedBox(height: 3),
+                Text(body, style: theme.textTheme.bodySmall),
                 const SizedBox(height: 12),
                 if (granted)
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.check_circle,
-                          size: 18, color: scheme.primary),
-                      const SizedBox(width: 6),
-                      Text(
-                        s.onboardGranted,
-                        style: TextStyle(
-                          color: scheme.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
+                  Cartouche(
+                    label: s.onboardGranted,
+                    icon: Icons.check,
+                    color: ms.gilt,
+                    filled: true,
                   )
                 else
                   OutlinedButton(
@@ -423,7 +392,9 @@ class _PermissionTile extends StatelessWidget {
   }
 }
 
-/// A small page-position indicator: a row of dots with the active one widened.
+/// Page position, marked as a row of rules — the current page's rule struck
+/// long and in the rubric, the rest short. Reads as a quire signature rather
+/// than as a carousel's dots.
 class _Dots extends StatelessWidget {
   const _Dots({required this.count, required this.active});
 
@@ -432,22 +403,18 @@ class _Dots extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final ms = ManuscriptTheme.of(context);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: List.generate(count, (i) {
         final selected = i == active;
         return AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
-          margin: const EdgeInsetsDirectional.only(end: 6),
-          width: selected ? 22 : 8,
-          height: 8,
-          decoration: BoxDecoration(
-            color: selected
-                ? scheme.primary
-                : scheme.onSurfaceVariant.withValues(alpha: 0.3),
-            borderRadius: BorderRadius.circular(4),
-          ),
+          duration: Motion.of(context, Motion.quick),
+          curve: Curves.easeOut,
+          margin: const EdgeInsetsDirectional.only(end: 5),
+          width: selected ? 20 : 9,
+          height: 2,
+          color: selected ? ms.rubric : ms.rule,
         );
       }),
     );

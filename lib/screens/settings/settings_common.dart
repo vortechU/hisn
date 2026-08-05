@@ -1,25 +1,17 @@
 import 'package:flutter/material.dart';
 
-/// A small uppercase section header used within the settings sub-screens.
+import '../../theme/app_theme.dart';
+import '../../widgets/ornament.dart';
+
+/// The section header used within the settings sub-screens — the same ruled
+/// mark the rest of the app uses, so settings don't drift into their own
+/// visual dialect.
 class SettingsSectionHeader extends StatelessWidget {
   const SettingsSectionHeader(this.label, {super.key});
   final String label;
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-      child: Text(
-        label.toUpperCase(),
-        style: theme.textTheme.labelSmall?.copyWith(
-          color: theme.colorScheme.primary,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 1.2,
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => SectionMark(label: label);
 }
 
 /// A bottom-sheet single-choice picker (no deprecated Radio API).
@@ -37,6 +29,7 @@ Future<T?> showSettingsPicker<T>({
     isScrollControlled: true,
     builder: (context) {
       final theme = Theme.of(context);
+      final ms = ManuscriptTheme.of(context);
       return SafeArea(
         child: ConstrainedBox(
           constraints: BoxConstraints(
@@ -46,25 +39,35 @@ Future<T?> showSettingsPicker<T>({
             mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+                padding: const EdgeInsets.fromLTRB(Ms.margin, 0, Ms.margin, 4),
                 child: Align(
-                  alignment: Alignment.centerLeft,
+                  alignment: AlignmentDirectional.centerStart,
                   child: Text(title, style: theme.textTheme.titleMedium),
                 ),
               ),
+              const RuleDivider(indent: Ms.margin),
               Flexible(
                 child: ListView(
                   shrinkWrap: true,
                   children: options.map((option) {
                     final isSelected = option == current;
-                    return ListTile(
-                      title: Text(labelOf(option)),
-                      subtitle: hintOf != null ? Text(hintOf(option)) : null,
-                      trailing: isSelected
-                          ? Icon(Icons.check, color: theme.colorScheme.primary)
-                          : null,
-                      selected: isSelected,
-                      onTap: () => Navigator.of(context).pop(option),
+                    return Container(
+                      decoration: BoxDecoration(
+                        border: Border(bottom: BorderSide(color: ms.rule)),
+                      ),
+                      child: ListTile(
+                        title: Text(labelOf(option)),
+                        subtitle: hintOf != null ? Text(hintOf(option)) : null,
+                        leading: SizedBox(
+                          width: 20,
+                          child: isSelected
+                              ? Rosette(
+                                  size: 16, color: ms.gilt, filled: true)
+                              : null,
+                        ),
+                        selected: isSelected,
+                        onTap: () => Navigator.of(context).pop(option),
+                      ),
                     );
                   }).toList(),
                 ),

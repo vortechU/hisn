@@ -7,14 +7,40 @@ import '../data/quran_repository.dart';
 import '../l10n/app_strings.dart';
 import '../models/quran.dart';
 import '../services/quran_service.dart';
+import '../theme/app_theme.dart';
 import '../util/arabic.dart';
 import '../widgets/arabic_text.dart';
+import '../widgets/ornament.dart';
 
-// Mushaf "paper" palette — warm, like the printed Madani mushaf.
-const _paper = Color(0xFFFBF6E9);
-const _ink = Color(0xFF1C1A12);
-const _gold = Color(0xFF9A7B25);
-const _green = Color(0xFF1F6E4C);
+/// The four inks a mushaf page is printed with, taken from the active palette
+/// so the reader follows the user's chosen scheme and their light/dark mode
+/// instead of being pinned to one hardcoded cream page.
+@immutable
+class _MushafInk {
+  const _MushafInk(this.paper, this.ink, this.gold, this.green);
+
+  /// The page.
+  final Color paper;
+
+  /// The body text.
+  final Color ink;
+
+  /// Verse-end marks, the frame, and bookmarks.
+  final Color gold;
+
+  /// Sūrah headers, the running head, and the basmalah.
+  final Color green;
+
+  factory _MushafInk.of(BuildContext context) {
+    final ms = ManuscriptTheme.of(context);
+    return _MushafInk(
+      ms.paper,
+      Theme.of(context).colorScheme.onSurface,
+      ms.gilt,
+      ms.rubric,
+    );
+  }
+}
 
 const double _refFontSize = 40;
 
@@ -173,10 +199,6 @@ class _MushafScreenState extends State<MushafScreen> {
     final page = await showModalBottomSheet<int>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: _paper,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
       builder: (_) => _GoToAyahSheet(repo: repo, currentSurah: currentSurah),
     );
     if (page != null && mounted) _jumpToPage(page);
@@ -186,6 +208,7 @@ class _MushafScreenState extends State<MushafScreen> {
   Widget build(BuildContext context) {
     final repo = context.read<QuranRepository>();
     final s = AppStrings.of(context);
+    final inks = _MushafInk.of(context);
 
     // In fullscreen, the first back press restores the normal chrome instead
     // of leaving the reader.
@@ -195,12 +218,12 @@ class _MushafScreenState extends State<MushafScreen> {
         if (!didPop) _setFullscreen(false);
       },
       child: Scaffold(
-        backgroundColor: _paper,
+        backgroundColor: inks.paper,
         appBar: _fullscreen
             ? null
             : AppBar(
-                backgroundColor: _paper,
-                foregroundColor: _ink,
+                backgroundColor: inks.paper,
+                foregroundColor: inks.ink,
                 elevation: 0,
                 title: ValueListenableBuilder<int>(
                   valueListenable: _currentPage,
@@ -225,7 +248,9 @@ class _MushafScreenState extends State<MushafScreen> {
                               bookmarked
                                   ? Icons.bookmark
                                   : Icons.bookmark_border,
-                              color: bookmarked ? _gold : _ink),
+                              color: bookmarked ? inks.gold : inks.ink),
+                          tooltip:
+                              bookmarked ? s.removeBookmark : s.bookmark,
                           onPressed: () => quran.toggleBookmark(page),
                         );
                       },
@@ -352,63 +377,73 @@ class _MushafPageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final repo = context.read<QuranRepository>();
+    final inks = _MushafInk.of(context);
 
     // Already decoded (prefetched or visited before)? Render straight away —
     // no FutureBuilder, no spinner flash.
     final cached = repo.pageIfCached(pageNumber);
-    if (cached != null) return _buildPage(context, repo, cached);
+    if (cached != null) return _buildPage(context, repo, cached, inks);
 
     return FutureBuilder<MushafPage>(
       future: repo.loadPage(pageNumber),
       builder: (context, snap) {
         if (!snap.hasData) {
-          return const Center(child: CircularProgressIndicator(color: _gold));
+          return Center(child: CircularProgressIndicator(color: inks.gold));
         }
-        return _buildPage(context, repo, snap.data!);
+        return _buildPage(context, repo, snap.data!, inks);
       },
     );
   }
 
-  Widget _buildPage(
-      BuildContext context, QuranRepository repo, MushafPage page) {
+  Widget _buildPage(BuildContext context, QuranRepository repo,
+      MushafPage page, _MushafInk inks) {
     final surahName = page.surahs.isNotEmpty
         ? page.surahs.last.name
         : repo.surahForPage(pageNumber).name;
 
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(14, 6, 14, 4),
+        padding: const EdgeInsets.fromLTRB(14, 4, 14, 2),
         child: Column(
           children: [
-            _RunningHead(surahName: surahName, juz: page.juz),
-            const SizedBox(height: 6),
+            _RunningHead(surahName: surahName, juz: page.juz, inks: inks),
+            const SizedBox(height: 5),
             // Double-ruled gold frame around the text, like the print.
             Expanded(
               child: Container(
-                padding: const EdgeInsets.all(5),
+                padding: const EdgeInsets.all(Ms.gutter + 2),
                 decoration: BoxDecoration(
                   border: Border.all(
-                      color: _gold.withValues(alpha: 0.75), width: 2),
-                  borderRadius: BorderRadius.circular(4),
+                      color: inks.gold.withValues(alpha: 0.75),
+                      width: Ms.stroke),
+                  borderRadius: BorderRadius.circular(Ms.rPanel),
                 ),
                 child: Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                   decoration: BoxDecoration(
                     border: Border.all(
-                        color: _gold.withValues(alpha: 0.4), width: 1),
-                    borderRadius: BorderRadius.circular(2),
+                        color: inks.gold.withValues(alpha: 0.4),
+                        width: Ms.hair),
+                    borderRadius: BorderRadius.circular(Ms.rSmall),
                   ),
-                  child: _PageBody(page: page),
+                  child: _PageBody(page: page, inks: inks),
                 ),
               ),
             ),
+            // The folio number, set in the khātam the printed mushaf marks it
+            // with, in Arabic-Indic digits.
             Padding(
-              padding: const EdgeInsets.only(top: 6),
-              child: Text(
-                toArabicDigits(pageNumber),
-                style: const TextStyle(
-                    color: _ink, fontSize: 15, fontWeight: FontWeight.w600),
+              padding: const EdgeInsets.only(top: 4),
+              child: StarMedallion(
+                size: 32,
+                color: inks.gold,
+                child: ArabicText(
+                  toArabicDigits(pageNumber),
+                  fontSize: 12,
+                  color: inks.ink,
+                  height: 1.2,
+                ),
               ),
             ),
           ],
@@ -465,51 +500,36 @@ class _GoToAyahSheetState extends State<_GoToAyahSheet> {
   @override
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
+    final theme = Theme.of(context);
+    final ms = ManuscriptTheme.of(context);
     final max = _selected.ayahCount;
 
     return Padding(
       padding: EdgeInsets.fromLTRB(
-          20, 12, 20, 20 + MediaQuery.of(context).viewInsets.bottom),
+          Ms.margin, 0, Ms.margin, 20 + MediaQuery.of(context).viewInsets.bottom),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: _ink.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              const Icon(Icons.my_location, color: _green, size: 20),
-              const SizedBox(width: 8),
-              Text(s.goToAyah,
-                  style: const TextStyle(
-                      color: _ink, fontSize: 18, fontWeight: FontWeight.w700)),
-            ],
-          ),
-          const SizedBox(height: 18),
+          Text(s.goToAyah, style: theme.textTheme.titleMedium),
+          const RuleDivider(ornament: false),
+          const SizedBox(height: 4),
           _FieldLabel(s.chooseSurah),
-          const SizedBox(height: 6),
+          const SizedBox(height: 5),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
-              border: Border.all(color: _gold.withValues(alpha: 0.5)),
-              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: ms.rule),
+              borderRadius: BorderRadius.circular(Ms.rSmall),
             ),
             child: DropdownButtonHideUnderline(
               child: DropdownButton<int>(
                 value: _surah,
                 isExpanded: true,
-                borderRadius: BorderRadius.circular(12),
-                dropdownColor: _paper,
-                icon: const Icon(Icons.arrow_drop_down, color: _gold),
+                borderRadius: BorderRadius.circular(Ms.rSmall),
+                dropdownColor: ms.paper,
+                style: theme.textTheme.bodyLarge,
+                icon: Icon(Icons.expand_more, color: ms.rubric, size: 20),
                 items: [
                   for (final su in widget.repo.surahs)
                     DropdownMenuItem(
@@ -519,9 +539,10 @@ class _GoToAyahSheetState extends State<_GoToAyahSheet> {
                           Expanded(
                             child: Text('${su.number} · ${su.translit}',
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(color: _ink)),
+                                style: theme.textTheme.bodyLarge),
                           ),
-                          ArabicText(su.name, fontSize: 16, color: _green),
+                          ArabicText(su.name,
+                              fontSize: 17, color: ms.rubric, height: 1.5),
                         ],
                       ),
                     ),
@@ -530,46 +551,28 @@ class _GoToAyahSheetState extends State<_GoToAyahSheet> {
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           _FieldLabel(s.verseNumber),
-          const SizedBox(height: 6),
+          const SizedBox(height: 5),
           TextField(
             controller: _ayahController,
             keyboardType: TextInputType.number,
-            style: const TextStyle(color: _ink),
-            decoration: InputDecoration(
-              hintText: s.verseRange(max),
-              isDense: true,
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: _gold.withValues(alpha: 0.5)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: _gold, width: 1.5),
-              ),
-            ),
+            decoration: InputDecoration(hintText: s.verseRange(max)),
             onSubmitted: (_) => _go(),
           ),
-          const SizedBox(height: 22),
+          const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
             child: FilledButton.icon(
-              style: FilledButton.styleFrom(
-                backgroundColor: _green,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-              ),
               onPressed: _loading ? null : _go,
               icon: _loading
-                  ? const SizedBox(
-                      width: 18,
-                      height: 18,
+                  ? SizedBox(
+                      width: 16,
+                      height: 16,
                       child: CircularProgressIndicator(
-                          strokeWidth: 2, color: Colors.white),
+                          strokeWidth: 2, color: theme.colorScheme.onPrimary),
                     )
-                  : const Icon(Icons.arrow_forward),
+                  : const Icon(Icons.arrow_forward, size: 18),
               label: Text(s.goAction),
             ),
           ),
@@ -579,36 +582,44 @@ class _GoToAyahSheetState extends State<_GoToAyahSheet> {
   }
 }
 
+/// The label above a field in the go-to-verse sheet, in the apparatus face.
 class _FieldLabel extends StatelessWidget {
   const _FieldLabel(this.text);
   final String text;
 
   @override
   Widget build(BuildContext context) => Text(
-        text,
-        style: TextStyle(
-            color: _ink.withValues(alpha: 0.7),
-            fontSize: 13,
-            fontWeight: FontWeight.w600),
+        text.toUpperCase(),
+        style: Theme.of(context).textTheme.labelSmall,
       );
 }
 
 class _RunningHead extends StatelessWidget {
-  const _RunningHead({required this.surahName, required this.juz});
+  const _RunningHead({
+    required this.surahName,
+    required this.juz,
+    required this.inks,
+  });
 
   final String surahName;
   final int juz;
+  final _MushafInk inks;
 
   @override
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(s.juzLabel(juz),
-            style: const TextStyle(
-                color: _green, fontSize: 13, fontWeight: FontWeight.w600)),
-        ArabicText(surahName, fontSize: 17, color: _green),
+        Text(
+          s.juzLabel(juz).toUpperCase(),
+          style: Theme.of(context)
+              .textTheme
+              .labelSmall
+              ?.copyWith(color: inks.green),
+        ),
+        ArabicText(surahName, fontSize: 18, color: inks.green, height: 1.5),
       ],
     );
   }
@@ -624,14 +635,15 @@ class _RunningHead extends StatelessWidget {
 ///    the width — justified — while the 15 lines are spaced evenly down the page
 ///    and short surah-end lines centre naturally.
 class _PageBody extends StatelessWidget {
-  const _PageBody({required this.page});
+  const _PageBody({required this.page, required this.inks});
 
   final MushafPage page;
+  final _MushafInk inks;
 
   Color _colorFor(MushafWord w) {
-    if (w.type == 'end') return _gold;
-    if (w.isHeader) return _green;
-    return _ink;
+    if (w.type == 'end') return inks.gold;
+    if (w.isHeader) return inks.green;
+    return inks.ink;
   }
 
   List<InlineSpan> _spans(List<MushafWord> words, double size) => [
