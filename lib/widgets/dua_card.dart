@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 
 import '../l10n/app_strings.dart';
 import '../models/dua.dart';
+import '../models/shareable.dart';
+import '../screens/share_sheet.dart';
 import '../services/display_settings.dart';
 import '../services/favorites_service.dart';
 import '../theme/app_theme.dart';
@@ -165,6 +167,8 @@ class DuaCard extends StatelessWidget {
             _Colophon(
               reference: dua.reference,
               onCopy: () => _copy(context),
+              onShare: () => showSharePreview(
+                  context, Shareable.dua(dua, s.lang.name)),
               onEdit: onEdit,
               onDelete: onDelete,
               duaId: dua.id,
@@ -234,6 +238,7 @@ class _Colophon extends StatelessWidget {
   const _Colophon({
     required this.reference,
     required this.onCopy,
+    required this.onShare,
     required this.duaId,
     this.onEdit,
     this.onDelete,
@@ -241,6 +246,7 @@ class _Colophon extends StatelessWidget {
 
   final String reference;
   final VoidCallback onCopy;
+  final VoidCallback onShare;
   final String duaId;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
@@ -277,6 +283,11 @@ class _Colophon extends StatelessWidget {
               icon: Icons.content_copy_outlined,
               tooltip: s.copy,
               onPressed: onCopy,
+            ),
+            _Action(
+              icon: Icons.ios_share,
+              tooltip: s.share,
+              onPressed: onShare,
             ),
             if (onEdit != null)
               _Action(

@@ -17,6 +17,7 @@ import 'package:dua_app/screens/prayer_schedule_screen.dart';
 import 'package:dua_app/screens/quran_bookmarks_screen.dart';
 import 'package:dua_app/screens/quran_screen.dart';
 import 'package:dua_app/screens/search_screen.dart';
+import 'package:dua_app/screens/share_sheet.dart';
 import 'package:dua_app/screens/settings/about_settings_screen.dart';
 import 'package:dua_app/screens/settings/appearance_settings_screen.dart';
 import 'package:dua_app/screens/settings/backup_settings_screen.dart';
@@ -33,6 +34,7 @@ import 'package:dua_app/services/dua_progress_service.dart';
 import 'package:dua_app/services/favorites_service.dart';
 import 'package:dua_app/services/muhassan_service.dart';
 import 'package:dua_app/services/prayer_service.dart';
+import 'package:dua_app/models/shareable.dart';
 import 'package:dua_app/services/quran_service.dart';
 import 'package:dua_app/services/sunnah_calendar_service.dart';
 import 'package:dua_app/services/tasbih_controller.dart';
@@ -62,6 +64,17 @@ final _sampleBackup = Backup(
     quranBookmarks: 256,
   ),
   values: const {'muhassan_streak': 365},
+);
+
+/// A passage with every optional line filled, so the card is exercised at its
+/// tallest rather than in its simplest form.
+const _samplePassage = Shareable(
+  arabic: 'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ',
+  reference: 'Al-Bukhari 6306',
+  title: 'Sayyid al-Istighfar',
+  transliteration: 'Allahumma anta rabbi la ilaha illa anta, khalaqtani wa ana abduka',
+  translation: 'O Allah, You are my Lord. There is no god but You. You created me and I am Your servant.',
+  repeat: 3,
 );
 
 void main() {
@@ -180,6 +193,10 @@ void main() {
     'quran bookmarks': () => const QuranBookmarksScreen(),
     'backup': () => const BackupSettingsScreen(),
     'sunnah calendar': () => const SunnahCalendarScreen(),
+    // The share preview is a sheet, never routed to. Its card is a fixed 360
+    // wide, so the narrow-phone configs are where it would burst its frame.
+    'share sheet': () =>
+        const Scaffold(body: SharePreviewSheet(passage: _samplePassage)),
     // The restore confirmation is a sheet, never routed to, so it is rendered
     // here directly — long hint lines plus a two-button row in a narrow sheet
     // is the shape most likely to overflow at a large text scale.

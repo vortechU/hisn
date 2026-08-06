@@ -389,5 +389,10 @@
   "fastingRemindersSub": "A reminder the evening before a sunnah fast",
   "notifFastTitle": "Fasting tomorrow",
   "notifFastBody": "Tomorrow is $name — a fast from the Sunnah.",
-  "notifOccasionBody": "Tomorrow, in sha' Allah."
+  "notifOccasionBody": "Tomorrow, in sha' Allah.",
+  "share": "Share",
+  "shareAsImage": "Share card",
+  "shareAsText": "Share text",
+  "shareImageFailedNotReady": "The card wasn't ready to capture — sharing the text instead.",
+  "shareImageFailedUnsupported": "This device couldn't make an image — sharing the text instead."
 }

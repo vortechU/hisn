@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 
 import '../l10n/app_strings.dart';
 import '../models/quran.dart';
+import '../models/shareable.dart';
+import '../screens/share_sheet.dart';
 import '../services/quran_service.dart';
 import '../theme/app_theme.dart';
 import '../util/arabic.dart';
@@ -108,6 +110,13 @@ class VerseRow extends StatelessWidget {
                         ..showSnackBar(
                             SnackBar(content: Text(s.duaCopied)));
                     },
+                  ),
+                  IconButton(
+                    visualDensity: VisualDensity.compact,
+                    icon: const Icon(Icons.ios_share, size: 18),
+                    tooltip: s.share,
+                    onPressed: () =>
+                        showSharePreview(context, Shareable.verse(verse)),
                   ),
                 ],
               ),

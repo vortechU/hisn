@@ -2,6 +2,7 @@ import 'package:adhan/adhan.dart';
 import 'package:dua_app/l10n/app_strings.dart';
 import 'package:dua_app/models/sunnah_day.dart';
 import 'package:dua_app/services/backup_service.dart';
+import 'package:dua_app/services/share_io.dart';
 import 'package:dua_app/l10n/locale_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -85,6 +86,15 @@ void main() {
         for (final b in FastingBar.values) {
           expect(s.fastingBar(b), isNotEmpty);
         }
+        for (final e in ShareCaptureError.values) {
+          expect(s.shareImageFailed(e), isNotEmpty);
+        }
+        expect(s.share, isNotEmpty);
+        expect(s.shareAsImage, isNotEmpty);
+        expect(s.shareAsText, isNotEmpty);
+        // The two share buttons sit side by side; identical labels would make
+        // the choice meaningless.
+        expect(s.shareAsImage, isNot(s.shareAsText));
         for (final r in FastingRuling.values) {
           expect(s.fastingRuling(r), isNotEmpty);
         }

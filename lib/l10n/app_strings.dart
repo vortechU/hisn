@@ -6,10 +6,11 @@ import 'package:provider/provider.dart';
 import '../i18n/strings.g.dart';
 import '../models/sunnah_day.dart';
 import '../services/backup_service.dart';
+import '../services/share_io.dart';
 import 'locale_controller.dart';
 
 /// Bump this when shipping a build so the About screen confirms what's running.
-const String kAppVersion = '1.13.0';
+const String kAppVersion = '1.14.0';
 
 /// UI strings facade. The actual text lives in per-language files under
 /// `lib/i18n/` (`en.i18n.json`, `ar.i18n.json`, `id.i18n.json`) and is compiled
@@ -452,6 +453,15 @@ class AppStrings {
         month: _t.hijriMonths[(day.hijriMonth - 1).clamp(0, 11)],
         year: day.hijriYear,
       );
+
+  // ---- sharing ----
+  String get share => _t.share;
+  String get shareAsImage => _t.shareAsImage;
+  String get shareAsText => _t.shareAsText;
+  String shareImageFailed(ShareCaptureError error) => switch (error) {
+        ShareCaptureError.notReady => _t.shareImageFailedNotReady,
+        ShareCaptureError.unsupported => _t.shareImageFailedUnsupported,
+      };
 
   // ---- Islamic calendar: sunnah fasts & occasions ----
   String get secCalendar => _t.secCalendar;

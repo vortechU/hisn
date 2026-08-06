@@ -430,6 +430,11 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get notifFastTitle => 'Puasa besok';
 	@override String notifFastBody({required Object name}) => 'Besok ${name} — puasa yang disunnahkan.';
 	@override String get notifOccasionBody => 'Besok, insyaAllah.';
+	@override String get share => 'Bagikan';
+	@override String get shareAsImage => 'Bagikan kartu';
+	@override String get shareAsText => 'Bagikan teks';
+	@override String get shareImageFailedNotReady => 'Kartu belum siap diambil — teksnya dibagikan sebagai gantinya.';
+	@override String get shareImageFailedUnsupported => 'Perangkat ini tidak dapat membuat gambar — teksnya dibagikan sebagai gantinya.';
 }
 
 /// The flat map containing all translations for locale <id>.
@@ -813,6 +818,11 @@ extension on TranslationsId {
 			'notifFastTitle' => 'Puasa besok',
 			'notifFastBody' => ({required Object name}) => 'Besok ${name} — puasa yang disunnahkan.',
 			'notifOccasionBody' => 'Besok, insyaAllah.',
+			'share' => 'Bagikan',
+			'shareAsImage' => 'Bagikan kartu',
+			'shareAsText' => 'Bagikan teks',
+			'shareImageFailedNotReady' => 'Kartu belum siap diambil — teksnya dibagikan sebagai gantinya.',
+			'shareImageFailedUnsupported' => 'Perangkat ini tidak dapat membuat gambar — teksnya dibagikan sebagai gantinya.',
 			_ => null,
 		};
 	}

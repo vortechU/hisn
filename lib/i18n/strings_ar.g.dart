@@ -430,6 +430,11 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get notifFastTitle => 'صيام غدًا';
 	@override String notifFastBody({required Object name}) => 'غدًا ${name} — صيام من السنة.';
 	@override String get notifOccasionBody => 'غدًا إن شاء الله.';
+	@override String get share => 'مشاركة';
+	@override String get shareAsImage => 'مشاركة كبطاقة';
+	@override String get shareAsText => 'مشاركة كنص';
+	@override String get shareImageFailedNotReady => 'لم تكن البطاقة جاهزة — تتم مشاركة النص بدلاً من ذلك.';
+	@override String get shareImageFailedUnsupported => 'تعذّر إنشاء صورة على هذا الجهاز — تتم مشاركة النص بدلاً من ذلك.';
 }
 
 /// The flat map containing all translations for locale <ar>.
@@ -813,6 +818,11 @@ extension on TranslationsAr {
 			'notifFastTitle' => 'صيام غدًا',
 			'notifFastBody' => ({required Object name}) => 'غدًا ${name} — صيام من السنة.',
 			'notifOccasionBody' => 'غدًا إن شاء الله.',
+			'share' => 'مشاركة',
+			'shareAsImage' => 'مشاركة كبطاقة',
+			'shareAsText' => 'مشاركة كنص',
+			'shareImageFailedNotReady' => 'لم تكن البطاقة جاهزة — تتم مشاركة النص بدلاً من ذلك.',
+			'shareImageFailedUnsupported' => 'تعذّر إنشاء صورة على هذا الجهاز — تتم مشاركة النص بدلاً من ذلك.',
 			_ => null,
 		};
 	}

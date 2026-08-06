@@ -389,5 +389,10 @@
   "fastingRemindersSub": "تذكير مساء اليوم السابق للصيام المسنون",
   "notifFastTitle": "صيام غدًا",
   "notifFastBody": "غدًا $name — صيام من السنة.",
-  "notifOccasionBody": "غدًا إن شاء الله."
+  "notifOccasionBody": "غدًا إن شاء الله.",
+  "share": "مشاركة",
+  "shareAsImage": "مشاركة كبطاقة",
+  "shareAsText": "مشاركة كنص",
+  "shareImageFailedNotReady": "لم تكن البطاقة جاهزة — تتم مشاركة النص بدلاً من ذلك.",
+  "shareImageFailedUnsupported": "تعذّر إنشاء صورة على هذا الجهاز — تتم مشاركة النص بدلاً من ذلك."
 }

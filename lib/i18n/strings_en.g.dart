@@ -1073,6 +1073,21 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
 	/// en: 'Tomorrow, in sha' Allah.'
 	String get notifOccasionBody => 'Tomorrow, in sha\' Allah.';
+
+	/// en: 'Share'
+	String get share => 'Share';
+
+	/// en: 'Share card'
+	String get shareAsImage => 'Share card';
+
+	/// en: 'Share text'
+	String get shareAsText => 'Share text';
+
+	/// en: 'The card wasn't ready to capture — sharing the text instead.'
+	String get shareImageFailedNotReady => 'The card wasn\'t ready to capture — sharing the text instead.';
+
+	/// en: 'This device couldn't make an image — sharing the text instead.'
+	String get shareImageFailedUnsupported => 'This device couldn\'t make an image — sharing the text instead.';
 }
 
 /// The flat map containing all translations for locale <en>.
@@ -1456,6 +1471,11 @@ extension on Translations {
 			'notifFastTitle' => 'Fasting tomorrow',
 			'notifFastBody' => ({required Object name}) => 'Tomorrow is ${name} — a fast from the Sunnah.',
 			'notifOccasionBody' => 'Tomorrow, in sha\' Allah.',
+			'share' => 'Share',
+			'shareAsImage' => 'Share card',
+			'shareAsText' => 'Share text',
+			'shareImageFailedNotReady' => 'The card wasn\'t ready to capture — sharing the text instead.',
+			'shareImageFailedUnsupported' => 'This device couldn\'t make an image — sharing the text instead.',
 			_ => null,
 		};
 	}

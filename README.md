@@ -45,6 +45,11 @@ the content is authentic but intentionally small, and it's built to grow.
   Allahu Akbar, Tahlil, Istighfar, Salawat…), an animated progress ring, set tracking,
   and haptic feedback. Counts persist between launches.
 - **Bookmarks** — save any dua to the *Saved* tab for quick access.
+- **Share** — send a dua or a verse out as a card set in the app's own hand, or as
+  plain text. The card is previewed before it goes, at a fixed size that ignores the
+  reader's text-size setting so the image comes out the same everywhere. **The source
+  is on the card and in the accompanying message** — a passage that leaves without its
+  reference is the thing this app exists not to produce.
 - **Mushaf reader** — the Madani Mushaf page by page in the King Fahd (QCF v4) page
   fonts, swiped right-to-left like the printed copy, with a go-to-verse jump and
   pinch-to-fullscreen. The page keeps its own proportions at any orientation:
