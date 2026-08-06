@@ -82,13 +82,46 @@ void main() {
       final quran = QuranRepository();
       await quran.loadIndex();
       final verse = await quran.verse(112, 1);
-      final shareable = Shareable.verse(verse!);
+      final shareable = Shareable.verse(verse!, 'en');
 
       expect(shareable.transliteration, isNull);
       expect(shareable.translation, isNull);
       expect(shareable.arabic, isNotEmpty);
       expect(shareable.reference, contains('112:1'));
       expect(shareable.asText(), endsWith(shareable.reference));
+    });
+
+    test('a verse cites the surah in the language it was read in', () async {
+      final quran = QuranRepository();
+      await quran.loadIndex();
+      final verse = (await quran.verse(112, 1))!;
+
+      expect(Shareable.verse(verse, 'en').reference,
+          '${verse.surah.translit} 112:1');
+      // An Arabic reader sends the Arabic name, not a Latin spelling of it.
+      final arabic = Shareable.verse(verse, 'ar');
+      expect(arabic.reference, '${verse.surah.name} 112:1');
+      expect(arabic.reference, isNot(matches(RegExp('[A-Za-z]'))));
+    });
+
+    test('an Arabic dua drops both rendering lines', () async {
+      final repo = DuaRepository();
+      await repo.load();
+      final dua = repo.duasForCategory('morning').first;
+
+      final arabic = Shareable.dua(dua, 'ar');
+      // Neither says anything to a reader who has the Arabic itself.
+      expect(arabic.transliteration, isNull);
+      expect(arabic.translation, isNull);
+      // What is left is the dua and its source, both in Arabic — so a shared
+      // card carries no Latin at all.
+      expect(arabic.asText(), '${dua.arabic}\n\n— ${dua.referenceFor('ar')}');
+      expect(arabic.asText(), isNot(matches(RegExp('[A-Za-z]'))));
+
+      // English is untouched.
+      final english = Shareable.dua(dua, 'en');
+      expect(english.translation, dua.translation);
+      expect(english.reference, dua.reference);
     });
 
     test('a dua keeps its repeat count and drops empty fields', () async {

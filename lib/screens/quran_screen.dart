@@ -158,7 +158,8 @@ class _ContinueBanner extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${s.surahWord} ${surah.translit} · ${s.juzLabel(surah.juz)}',
+                        '${s.surahWord} ${surah.nameFor(s.ar)} · '
+                        '${s.juzLabel(surah.juz)}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.titleSmall,
@@ -166,9 +167,13 @@ class _ContinueBanner extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(width: 12),
-                ArabicText(surah.name,
-                    fontSize: 22, color: ms.rubric, height: 1.5),
+                // In Arabic the line above already names the surah in Arabic;
+                // repeating it here would set the same word twice.
+                if (!s.ar) ...[
+                  const SizedBox(width: 12),
+                  ArabicText(surah.name,
+                      fontSize: 22, color: ms.rubric, height: 1.5),
+                ],
               ],
             ),
           ),
@@ -179,7 +184,7 @@ class _ContinueBanner extends StatelessWidget {
 }
 
 /// One sūrah in the register: its number in a khātam medallion, its name in
-/// Latin and Arabic, and where it sits in the revelation.
+/// the reader's script, and where it sits in the revelation.
 class _SurahTile extends StatelessWidget {
   const _SurahTile({required this.surah, required this.onTap});
 
@@ -207,7 +212,21 @@ class _SurahTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(surah.translit, style: theme.textTheme.titleSmall),
+                    // The name leads the entry in whichever script the reader
+                    // is in: Arabic takes the title slot outright rather than
+                    // sitting behind a transliteration they don't read.
+                    if (s.ar)
+                      ArabicText(
+                        surah.name,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: ms.rubric,
+                        textAlign: TextAlign.start,
+                        height: 1.5,
+                        maxLines: 1,
+                      )
+                    else
+                      Text(surah.translit, style: theme.textTheme.titleSmall),
                     const SizedBox(height: 1),
                     Text(
                       '${s.revelationLabel(surah.revelation)} · '
@@ -219,9 +238,11 @@ class _SurahTile extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 10),
-              ArabicText(surah.name,
-                  fontSize: 21, color: ms.rubric, height: 1.5),
+              if (!s.ar) ...[
+                const SizedBox(width: 10),
+                ArabicText(surah.name,
+                    fontSize: 21, color: ms.rubric, height: 1.5),
+              ],
             ],
           ),
         ),

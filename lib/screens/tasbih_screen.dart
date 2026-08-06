@@ -7,6 +7,7 @@ import '../l10n/app_strings.dart';
 import '../models/dhikr.dart';
 import '../services/tasbih_controller.dart';
 import '../theme/app_theme.dart';
+import '../util/arabic.dart';
 import '../widgets/arabic_text.dart';
 import '../widgets/ornament.dart';
 
@@ -82,21 +83,25 @@ class _TasbihScreenState extends State<TasbihScreen> {
                       textAlign: TextAlign.center,
                       color: ms.rubric,
                     ),
-                    const SizedBox(height: 6),
-                    Text(
-                      dhikr.transliteration,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontStyle: FontStyle.italic,
-                        color: theme.colorScheme.onSurfaceVariant,
+                    // Both lines render the phrase for someone who can't read
+                    // it; in Arabic the phrase above them already did.
+                    if (!s.ar) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        dhikr.transliteration,
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontStyle: FontStyle.italic,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      dhikr.translation,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodyMedium,
-                    ),
+                      const SizedBox(height: 3),
+                      Text(
+                        dhikr.translation,
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                    ],
                     const SizedBox(height: 26),
                     ProgressRosette(
                       fraction: dhikr.target == 0 ? 0 : count / dhikr.target,
@@ -186,6 +191,7 @@ class _PhraseSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final ms = ManuscriptTheme.of(context);
+    final s = AppStrings.of(context);
 
     return Container(
       decoration: BoxDecoration(
@@ -215,7 +221,12 @@ class _PhraseSelector extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    phrases[index].transliteration,
+                    // In Arabic the tab is the phrase itself (bare, so the
+                    // harakat don't crowd a 48px strip) rather than a Latin
+                    // spelling of it.
+                    s.ar
+                        ? stripHarakat(phrases[index].arabic)
+                        : phrases[index].transliteration,
                     style: theme.textTheme.titleSmall?.copyWith(
                       color: active
                           ? ms.rubric

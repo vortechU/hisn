@@ -76,6 +76,26 @@ void main() {
     });
   });
 
+  group('surah naming', () {
+    test('an Arabic interface never falls back to the Latin name', () {
+      // The bug this pins: the surah register showed "Al-Baqara" in Arabic,
+      // because `translit` was the only name any screen asked for.
+      for (final surah in repo.surahs) {
+        final arabic = surah.nameFor(true);
+        expect(arabic, surah.name, reason: 'surah ${surah.number}');
+        expect(arabic, isNot(surah.translit), reason: 'surah ${surah.number}');
+        // No Latin letters anywhere in what an Arabic reader is shown.
+        expect(arabic, isNot(matches(RegExp('[A-Za-z]'))),
+            reason: 'surah ${surah.number}');
+      }
+    });
+
+    test('every other language keeps the transliteration', () {
+      final baqara = repo.surahByNumber(2)!;
+      expect(baqara.nameFor(false), 'Al-Baqara');
+    });
+  });
+
   group('single verse lookup', () {
     test('finds a verse by surah and number', () async {
       final verse = await repo.verse(2, 255);

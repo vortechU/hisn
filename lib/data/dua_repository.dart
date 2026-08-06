@@ -49,10 +49,17 @@ class DuaRepository {
     _loaded = true;
   }
 
-  /// Languages that ship a translation overlay file
-  /// (`assets/data/duas.<lang>.json`). The Arabic dua text is never translated —
-  /// only the `translation` (meaning) and `virtue` fields are overlaid.
-  static const _overlayLangs = ['id'];
+  /// Languages that ship an overlay file (`assets/data/duas.<lang>.json`).
+  ///
+  /// The Arabic dua text is never translated — only the `translation`
+  /// (meaning), `virtue` and `reference` fields are overlaid, and a file may
+  /// carry any subset of them. The Arabic overlay deliberately omits
+  /// `translation`: the dua is already in Arabic, so the card drops that line
+  /// rather than rendering the Arabic back into Arabic.
+  static const _overlayLangs = ['id', 'ar'];
+
+  /// The overlaid fields, in the order they are read out of each entry.
+  static const _overlayFields = ['translation', 'virtue', 'reference'];
 
   /// Loads each available overlay into `{ langCode: { duaId: {field: text} } }`.
   /// A missing or empty overlay file is skipped silently, so shipping before the
@@ -74,21 +81,29 @@ class DuaRepository {
     return result;
   }
 
-  /// Attaches any non-empty localized translation/virtue to [dua].
+  /// Attaches any non-empty localized field to [dua].
+  ///
+  /// A field missing from an entry leaves that language falling back to the
+  /// English original, so an overlay can be filled in a field at a time.
   Dua _applyOverlays(
       Dua dua, Map<String, Map<String, Map<String, dynamic>>> overlays) {
-    final translations = <String, String>{};
-    final virtues = <String, String>{};
+    final byField = {for (final f in _overlayFields) f: <String, String>{}};
     overlays.forEach((lang, byId) {
       final entry = byId[dua.id];
       if (entry == null) return;
-      final t = entry['translation'] as String?;
-      final v = entry['virtue'] as String?;
-      if (t != null && t.trim().isNotEmpty) translations[lang] = t;
-      if (v != null && v.trim().isNotEmpty) virtues[lang] = v;
+      for (final field in _overlayFields) {
+        final value = entry[field] as String?;
+        if (value != null && value.trim().isNotEmpty) {
+          byField[field]![lang] = value;
+        }
+      }
     });
-    if (translations.isEmpty && virtues.isEmpty) return dua;
-    return dua.withLocalized(translations: translations, virtues: virtues);
+    if (byField.values.every((m) => m.isEmpty)) return dua;
+    return dua.withLocalized(
+      translations: byField['translation'],
+      virtues: byField['virtue'],
+      references: byField['reference'],
+    );
   }
 
   DuaCategory? categoryById(String id) {
@@ -108,10 +123,16 @@ class DuaRepository {
   /// translation, reference, and the Arabic text. Arabic matching ignores
   /// harakat and folds letter variants, so a query typed without diacritics
   /// still matches.
-  List<Dua> search(String query) => searchIn(_duas, query);
+  ///
+  /// [langCode] adds the meaning and the source as the reader actually sees
+  /// them, so words typed in the interface language find the dua they were
+  /// read on.
+  List<Dua> search(String query, {String langCode = 'en'}) =>
+      searchIn(_duas, query, langCode: langCode);
 
   /// Same matching logic, runnable over any dua list (e.g. custom duas).
-  static List<Dua> searchIn(List<Dua> duas, String query) {
+  static List<Dua> searchIn(List<Dua> duas, String query,
+      {String langCode = 'en'}) {
     final raw = query.trim();
     final q = raw.toLowerCase();
     if (q.isEmpty) return const [];
@@ -121,8 +142,13 @@ class DuaRepository {
       return dua.title.toLowerCase().contains(q) ||
           dua.transliteration.toLowerCase().contains(q) ||
           dua.translation.toLowerCase().contains(q) ||
+          dua.translationFor(langCode).toLowerCase().contains(q) ||
           dua.reference.toLowerCase().contains(q) ||
+          dua.referenceFor(langCode).toLowerCase().contains(q) ||
           (arabicQuery && normalizeArabic(dua.arabic).contains(qn)) ||
+          // An Arabic source typed loosely — "ابي داود" for "أبي داود".
+          (arabicQuery &&
+              normalizeArabic(dua.referenceFor(langCode)).contains(qn)) ||
           (arabicQuery &&
               dua.titleArabic != null &&
               normalizeArabic(dua.titleArabic!).contains(qn));

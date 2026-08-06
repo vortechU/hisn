@@ -36,9 +36,6 @@ class ShareCard extends StatelessWidget {
     final theme = Theme.of(context);
     final ms = ManuscriptTheme.of(context);
     final s = AppStrings.of(context);
-    final heading = s.ar && passage.titleArabic != null
-        ? null
-        : passage.title;
 
     return MediaQuery(
       // Pin the scaler: see the class comment.
@@ -67,7 +64,7 @@ class ShareCard extends StatelessWidget {
                           color: ms.rubric,
                         )
                       : Text(
-                          heading ?? '',
+                          passage.title ?? '',
                           textAlign: TextAlign.center,
                           style: theme.textTheme.titleSmall
                               ?.copyWith(color: ms.rubric),

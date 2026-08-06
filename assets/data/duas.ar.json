@@ -1,0 +1,237 @@
+{
+  "_meta": {
+    "status": "DRAFT — requires review by a qualified person before release",
+    "scope": "Arabic rendering of the SOURCE and the VIRTUE only. No translation field: the dua text is already Arabic, so the card drops the meaning line entirely in an Arabic interface.",
+    "source": "Collection names and hadith numbering as they appear in the Arabic editions; virtues follow the wording of Hisn al-Muslim (Sa'id al-Qahtani)."
+  },
+  "morning_ayat_kursi": {
+    "reference": "القرآن الكريم، البقرة: ٢٥٥",
+    "virtue": "من قرأها حين يُصبح أُجير من الجن حتى يُمسي."
+  },
+  "morning_muawwidhat": {
+    "reference": "سنن أبي داود ٥٠٨٢، الترمذي ٣٥٧٥",
+    "virtue": "من قرأهنّ ثلاث مرات حين يُصبح وحين يُمسي كفَتْه من كل شيء."
+  },
+  "morning_sayyidul_istighfar": {
+    "reference": "صحيح البخاري ٦٣٠٦",
+    "virtue": "من قالها من النهار موقنًا بها فمات من يومه قبل أن يُمسي فهو من أهل الجنة."
+  },
+  "morning_ushhiduka": {
+    "reference": "سنن أبي داود ٥٠٦٩",
+    "virtue": "من قالها أربع مرات حين يُصبح أو حين يُمسي أعتقه الله من النار."
+  },
+  "morning_asbahna": {
+    "reference": "صحيح مسلم ٢٧٢٣"
+  },
+  "morning_bika_asbahna": {
+    "reference": "سنن الترمذي ٣٣٩١"
+  },
+  "morning_fitrah": {
+    "reference": "مسند أحمد ١٥٣٦٧"
+  },
+  "morning_afiyah": {
+    "reference": "سنن أبي داود ٥٠٩٠"
+  },
+  "morning_afwa_afiyah": {
+    "reference": "سنن أبي داود ٥٠٧٤، ابن ماجه ٣٨٧١"
+  },
+  "morning_ya_hayyu": {
+    "reference": "النسائي، عمل اليوم والليلة ٥٧٥ (حسن)"
+  },
+  "morning_alimal_ghayb": {
+    "reference": "سنن أبي داود ٥٠٦٧، الترمذي ٣٣٩٢"
+  },
+  "morning_hasbiyallah": {
+    "reference": "سنن أبي داود ٥٠٨١",
+    "virtue": "من قالها سبع مرات حين يُصبح وحين يُمسي كفاه الله ما أهمّه."
+  },
+  "morning_bismillah_la_yadurr": {
+    "reference": "سنن أبي داود ٥٠٨٨، الترمذي ٣٣٨٨",
+    "virtue": "من قالها ثلاث مرات لم تُصبه فجأةُ بلاء."
+  },
+  "morning_radeetu": {
+    "reference": "سنن أبي داود ٥٠٧٢، الترمذي ٣٣٨٩",
+    "virtue": "من قالها ثلاث مرات حين يُصبح وحين يُمسي كان حقًّا على الله أن يُرضيه يوم القيامة."
+  },
+  "morning_ma_asbaha_nimah": {
+    "reference": "سنن أبي داود ٥٠٧٣",
+    "virtue": "من قالها فقد أدّى شكر يومه."
+  },
+  "morning_salah_nabi": {
+    "reference": "الطبراني، المعجم الأوسط (حسن)",
+    "virtue": "من صلّى على النبي ﷺ عشرًا حين يُصبح وعشرًا حين يُمسي أدركته شفاعته يوم القيامة."
+  },
+  "morning_tahlil_100": {
+    "reference": "صحيح البخاري ٣٢٩٣، مسلم ٢٦٩١",
+    "virtue": "من قالها مائة مرة في يوم كانت له عدل عشر رقاب، وكُتبت له مائة حسنة، ومُحيت عنه مائة سيئة، وكانت له حِرزًا من الشيطان يومه ذلك."
+  },
+  "morning_subhanallah_adada": {
+    "reference": "صحيح مسلم ٢٧٢٦",
+    "virtue": "كلمات لو وُزنت بكل ما قيل من الذكر منذ الصباح لرجحتهنّ."
+  },
+  "morning_subhanallah_bihamdihi": {
+    "reference": "صحيح مسلم ٢٦٩٢",
+    "virtue": "من قالها مائة مرة في اليوم حُطّت خطاياه وإن كانت مثل زبد البحر."
+  },
+  "evening_amsayna": {
+    "reference": "صحيح مسلم ٢٧٢٣"
+  },
+  "evening_muawwidhat": {
+    "reference": "سنن أبي داود ٥٠٨٢، الترمذي ٣٥٧٥",
+    "virtue": "من قرأهنّ ثلاث مرات حين يُصبح وحين يُمسي كفَتْه من كل شيء."
+  },
+  "evening_sayyidul_istighfar": {
+    "reference": "صحيح البخاري ٦٣٠٦",
+    "virtue": "من قالها من الليل موقنًا بها فمات من ليلته قبل أن يُصبح فهو من أهل الجنة."
+  },
+  "evening_ushhiduka": {
+    "reference": "سنن أبي داود ٥٠٦٩",
+    "virtue": "من قالها أربع مرات حين يُصبح أو حين يُمسي أعتقه الله من النار."
+  },
+  "evening_bika_amsayna": {
+    "reference": "سنن الترمذي ٣٣٩١"
+  },
+  "evening_fitrah": {
+    "reference": "مسند أحمد ١٥٣٦٧"
+  },
+  "evening_afiyah": {
+    "reference": "سنن أبي داود ٥٠٩٠"
+  },
+  "evening_afwa_afiyah": {
+    "reference": "سنن أبي داود ٥٠٧٤، ابن ماجه ٣٨٧١"
+  },
+  "evening_ya_hayyu": {
+    "reference": "النسائي، عمل اليوم والليلة ٥٧٥ (حسن)"
+  },
+  "evening_alimal_ghayb": {
+    "reference": "سنن أبي داود ٥٠٦٧، الترمذي ٣٣٩٢"
+  },
+  "evening_audhu_kalimat": {
+    "reference": "صحيح مسلم ٢٧٠٩",
+    "virtue": "من قالها ثلاث مرات حين يُمسي لم يضرّه شيء تلك الليلة."
+  },
+  "evening_hasbiyallah": {
+    "reference": "سنن أبي داود ٥٠٨١",
+    "virtue": "من قالها سبع مرات حين يُصبح وحين يُمسي كفاه الله ما أهمّه."
+  },
+  "evening_bismillah_la_yadurr": {
+    "reference": "سنن أبي داود ٥٠٨٨، الترمذي ٣٣٨٨",
+    "virtue": "من قالها ثلاث مرات لم تُصبه فجأةُ بلاء."
+  },
+  "evening_radeetu": {
+    "reference": "سنن أبي داود ٥٠٧٢، الترمذي ٣٣٨٩",
+    "virtue": "من قالها ثلاث مرات حين يُصبح وحين يُمسي كان حقًّا على الله أن يُرضيه يوم القيامة."
+  },
+  "evening_ma_amsa_nimah": {
+    "reference": "سنن أبي داود ٥٠٧٣"
+  },
+  "evening_salah_nabi": {
+    "reference": "الطبراني، المعجم الأوسط (حسن)",
+    "virtue": "من صلّى على النبي ﷺ عشرًا حين يُصبح وعشرًا حين يُمسي أدركته شفاعته يوم القيامة."
+  },
+  "evening_subhanallah_bihamdihi": {
+    "reference": "صحيح مسلم ٢٦٩٢",
+    "virtue": "من قالها مائة مرة حُطّت خطاياه وإن كانت مثل زبد البحر."
+  },
+  "salah_istighfar_salam": {
+    "reference": "صحيح مسلم ٥٩١"
+  },
+  "salah_tahlil": {
+    "reference": "صحيح البخاري ٨٤٤، مسلم ٥٩٣"
+  },
+  "salah_subhanallah": {
+    "reference": "صحيح مسلم ٥٩٧"
+  },
+  "salah_alhamdulillah": {
+    "reference": "صحيح مسلم ٥٩٧"
+  },
+  "salah_allahu_akbar": {
+    "reference": "صحيح مسلم ٥٩٧",
+    "virtue": "من تمّم المائة بالتهليل غُفرت خطاياه وإن كانت مثل زبد البحر."
+  },
+  "salah_ayat_kursi": {
+    "reference": "القرآن الكريم، البقرة: ٢٥٥؛ النسائي (تُقرأ دبر كل صلاة)",
+    "virtue": "من قرأها دبر كل صلاة مكتوبة لم يمنعه من دخول الجنة إلا أن يموت."
+  },
+  "sleep_ayat_kursi": {
+    "reference": "صحيح البخاري ٢٣١١",
+    "virtue": "من قرأها إذا أوى إلى فراشه لم يزل عليه من الله حافظ، ولا يقربه شيطان حتى يُصبح."
+  },
+  "sleep_bismika": {
+    "reference": "صحيح البخاري ٦٣٢٤"
+  },
+  "sleep_aslamtu": {
+    "reference": "صحيح البخاري ٢٤٧",
+    "virtue": "من قالها فمات من ليلته مات على الفطرة."
+  },
+  "sleep_qini": {
+    "reference": "سنن أبي داود ٥٠٤٥"
+  },
+  "waking_alhamdulillah_ahyana": {
+    "reference": "صحيح البخاري ٦٣١٢"
+  },
+  "waking_afani": {
+    "reference": "سنن الترمذي ٣٤٠١"
+  },
+  "daily_before_eating": {
+    "reference": "سنن أبي داود ٣٧٦٧"
+  },
+  "daily_after_eating": {
+    "reference": "سنن أبي داود ٤٠٢٣، الترمذي ٣٤٥٨",
+    "virtue": "من قالها بعد الطعام غُفر له ما تقدّم من ذنبه."
+  },
+  "daily_leaving_home": {
+    "reference": "سنن أبي داود ٥٠٩٥، الترمذي ٣٤٢٦",
+    "virtue": "يُقال له: هُديتَ وكُفيتَ ووُقيتَ، وتنحّى عنه الشيطان."
+  },
+  "daily_entering_bathroom": {
+    "reference": "صحيح البخاري ١٤٢، مسلم ٣٧٥"
+  },
+  "daily_leaving_bathroom": {
+    "reference": "سنن أبي داود ٣٠، الترمذي ٧"
+  },
+  "forgiveness_astaghfirullah_azim": {
+    "reference": "سنن أبي داود ١٥١٧، الترمذي ٣٥٧٧",
+    "virtue": "من قالها غُفر له وإن كان فرّ من الزحف."
+  },
+  "forgiveness_rabbi_ghfirli": {
+    "reference": "سنن أبي داود ١٥١٦، الترمذي ٣٤٣٤"
+  },
+  "forgiveness_yunus": {
+    "reference": "القرآن الكريم، الأنبياء: ٨٧؛ الترمذي ٣٥٠٥",
+    "virtue": "ما دعا بها مسلم في شيء قط إلا استجاب الله له."
+  },
+  "distress_hamm_hazan": {
+    "reference": "صحيح البخاري ٦٣٦٩"
+  },
+  "distress_karb": {
+    "reference": "صحيح البخاري ٦٣٤٦، مسلم ٢٧٣٠"
+  },
+  "distress_rahmataka_arju": {
+    "reference": "سنن أبي داود ٥٠٩٠"
+  },
+  "distress_hasbunallah": {
+    "reference": "القرآن الكريم، آل عمران: ١٧٣؛ صحيح البخاري ٤٥٦٣",
+    "virtue": "قالها إبراهيم عليه السلام حين أُلقي في النار، وقالها النبي ﷺ والمؤمنون."
+  },
+  "travel_setting_off": {
+    "reference": "صحيح مسلم ١٣٤٢"
+  },
+  "travel_stopping": {
+    "reference": "صحيح مسلم ٢٧٠٨",
+    "virtue": "من نزل منزلًا فقالها لم يضرّه شيء حتى يرتحل."
+  },
+  "travel_returning": {
+    "reference": "صحيح البخاري ١٧٩٧، مسلم ١٣٤٤"
+  },
+  "mosque_after_adhan": {
+    "reference": "صحيح البخاري ٦١٤",
+    "virtue": "من قالها بعد الأذان حلّت له الشفاعة يوم القيامة."
+  },
+  "mosque_entering": {
+    "reference": "صحيح مسلم ٧١٣"
+  },
+  "mosque_leaving": {
+    "reference": "صحيح مسلم ٧١٣"
+  }
+}

@@ -39,26 +39,40 @@ class Shareable {
   final int repeat;
 
   /// A dua, rendered into the language the interface is currently in.
-  factory Shareable.dua(Dua dua, String langCode) => Shareable(
-        arabic: dua.arabic,
-        reference: dua.reference,
-        title: dua.title,
-        titleArabic: dua.titleArabic,
-        transliteration:
-            dua.transliteration.isEmpty ? null : dua.transliteration,
-        translation: _orNull(dua.translationFor(langCode)),
-        repeat: dua.repeat,
-      );
+  ///
+  /// In Arabic both rendering lines are dropped. A transliteration spells the
+  /// Arabic out in Latin letters and the translation carries its meaning —
+  /// neither says anything to a reader who has the Arabic itself right above
+  /// them, and the app ships no Arabic translation to put there instead.
+  factory Shareable.dua(Dua dua, String langCode) {
+    final arabicUi = langCode == _arabicCode;
+    return Shareable(
+      arabic: dua.arabic,
+      reference: dua.referenceFor(langCode),
+      title: dua.title,
+      titleArabic: dua.titleArabic,
+      transliteration:
+          arabicUi ? null : _orNull(dua.transliteration),
+      translation: arabicUi ? null : _orNull(dua.translationFor(langCode)),
+      repeat: dua.repeat,
+    );
+  }
 
   /// A single verse. Carries no transliteration or translation: the app ships
   /// neither for the Qur'an, and inventing one to fill the card would be the
   /// same mistake as inventing a source.
-  factory Shareable.verse(PageVerse verse) => Shareable(
-        arabic: verse.ayah.text,
-        reference: '${verse.surah.translit} ${verse.reference}',
-        title: verse.surah.translit,
-        titleArabic: verse.surah.name,
-      );
+  factory Shareable.verse(PageVerse verse, String langCode) {
+    final name = verse.surah.nameFor(langCode == _arabicCode);
+    return Shareable(
+      arabic: verse.ayah.text,
+      reference: '$name ${verse.reference}',
+      title: name,
+      titleArabic: verse.surah.name,
+    );
+  }
+
+  /// The language code the Arabic interface runs under (see `AppLang.ar`).
+  static const String _arabicCode = 'ar';
 
   static String? _orNull(String? value) =>
       (value == null || value.trim().isEmpty) ? null : value;

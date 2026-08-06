@@ -17,6 +17,7 @@ class Dua {
     this.virtue,
     this.localizedTranslations = const {},
     this.localizedVirtues = const {},
+    this.localizedReferences = const {},
   });
 
   final String id;
@@ -42,11 +43,19 @@ class Dua {
 
   /// Per-language overrides of [translation], keyed by language code ('id',
   /// 'ar', …). Sourced from `assets/data/duas.<lang>.json` and attached at load
-  /// time. The Arabic dua text itself is never localized — only its meaning.
+  /// time. The Arabic dua text itself is never localized — only what is said
+  /// about it.
   final Map<String, String> localizedTranslations;
 
   /// Per-language overrides of [virtue], keyed by language code.
   final Map<String, String> localizedVirtues;
+
+  /// Per-language overrides of [reference], keyed by language code.
+  ///
+  /// The source is a proper noun, not prose — "Sahih al-Bukhari 6306" is a
+  /// Latin transliteration of a book whose name an Arabic reader knows as
+  /// "صحيح البخاري ٦٣٠٦". It is overlaid rather than translated.
+  final Map<String, String> localizedReferences;
 
   /// The translation (meaning) for [langCode], falling back to the English
   /// [translation] when no localized version exists.
@@ -57,10 +66,15 @@ class Dua {
   String? virtueFor(String langCode) =>
       localizedVirtues[langCode] ?? virtue;
 
-  /// A copy with localized translation/virtue overlays attached.
+  /// The source for [langCode], falling back to the base [reference].
+  String referenceFor(String langCode) =>
+      localizedReferences[langCode] ?? reference;
+
+  /// A copy with localized translation/virtue/reference overlays attached.
   Dua withLocalized({
     Map<String, String>? translations,
     Map<String, String>? virtues,
+    Map<String, String>? references,
   }) =>
       Dua(
         id: id,
@@ -75,6 +89,7 @@ class Dua {
         virtue: virtue,
         localizedTranslations: translations ?? localizedTranslations,
         localizedVirtues: virtues ?? localizedVirtues,
+        localizedReferences: references ?? localizedReferences,
       );
 
   /// True for duas the user added themselves (kept in [CustomDuaService]).

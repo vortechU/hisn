@@ -309,8 +309,8 @@ class _MushafScreenState extends State<MushafScreen> {
                 elevation: 0,
                 title: ValueListenableBuilder<int>(
                   valueListenable: _currentPage,
-                  builder: (context, page, _) =>
-                      Text('${s.surahWord} ${repo.surahForPage(page).translit}'),
+                  builder: (context, page, _) => Text('${s.surahWord} '
+                      '${repo.surahForPage(page).nameFor(s.ar)}'),
                 ),
                 actions: [
                   IconButton(
@@ -699,12 +699,15 @@ class _GoToAyahSheetState extends State<_GoToAyahSheet> {
                       child: Row(
                         children: [
                           Expanded(
-                            child: Text('${su.number} · ${su.translit}',
+                            child: Text('${su.number} · ${su.nameFor(s.ar)}',
                                 overflow: TextOverflow.ellipsis,
                                 style: theme.textTheme.bodyLarge),
                           ),
-                          ArabicText(su.name,
-                              fontSize: 17, color: ms.rubric, height: 1.5),
+                          // Already named in Arabic on the left in an Arabic
+                          // interface — don't set it twice.
+                          if (!s.ar)
+                            ArabicText(su.name,
+                                fontSize: 17, color: ms.rubric, height: 1.5),
                         ],
                       ),
                     ),

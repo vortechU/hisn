@@ -128,15 +128,16 @@ class _SavedPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('${s.surahWord} ${surah.translit}',
+                        Text('${s.surahWord} ${surah.nameFor(s.ar)}',
                             style: theme.textTheme.titleSmall),
                         Text(s.juzLabel(surah.juz),
                             style: theme.textTheme.bodySmall),
                       ],
                     ),
                   ),
-                  ArabicText(surah.name,
-                      fontSize: 20, color: ms.rubric, height: 1.5),
+                  if (!s.ar)
+                    ArabicText(surah.name,
+                        fontSize: 20, color: ms.rubric, height: 1.5),
                   IconButton(
                     icon: const Icon(Icons.bookmark_remove_outlined, size: 20),
                     color: theme.colorScheme.error,

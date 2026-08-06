@@ -24,9 +24,9 @@ class DisplaySettings extends ChangeNotifier {
   static const _kArabicFont = 'display_arabic_font';
   static const _kReadingTheme = 'display_reading_theme';
 
-  /// Discrete, layout-safe text-size steps.
+  /// Discrete, layout-safe text-size steps. Their labels are localized —
+  /// see `AppStrings.fontScaleLabels`.
   static const List<double> fontScaleSteps = [0.9, 1.0, 1.15, 1.3];
-  static const List<String> fontScaleLabels = ['Small', 'Default', 'Large', 'X-Large'];
 
   double _fontScale = 1.0;
   bool _showTransliteration = true;

@@ -95,6 +95,7 @@ flutter:
   assets:
     - assets/data/duas.json
     - assets/data/duas.id.json
+    - assets/data/duas.ar.json
     - assets/data/categories.json
     - assets/data/tasbih.json
     - assets/data/quran/

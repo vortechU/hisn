@@ -68,7 +68,7 @@ class VerseRow extends StatelessWidget {
                   Expanded(
                     child: Text(
                       showSurahName
-                          ? '${verse.surah.translit} · ${verse.reference}'
+                          ? '${verse.surah.nameFor(s.ar)} · ${verse.reference}'
                           : verse.reference,
                       style: theme.textTheme.labelSmall,
                     ),
@@ -103,7 +103,8 @@ class VerseRow extends StatelessWidget {
                     onPressed: () {
                       Clipboard.setData(ClipboardData(
                         text: '${verse.ayah.text}\n'
-                            '(${verse.surah.translit} ${verse.reference})',
+                            '(${verse.surah.nameFor(s.ar)} '
+                            '${verse.reference})',
                       ));
                       ScaffoldMessenger.of(context)
                         ..hideCurrentSnackBar()
@@ -115,8 +116,8 @@ class VerseRow extends StatelessWidget {
                     visualDensity: VisualDensity.compact,
                     icon: const Icon(Icons.ios_share, size: 18),
                     tooltip: s.share,
-                    onPressed: () =>
-                        showSharePreview(context, Shareable.verse(verse)),
+                    onPressed: () => showSharePreview(
+                        context, Shareable.verse(verse, s.lang.name)),
                   ),
                 ],
               ),

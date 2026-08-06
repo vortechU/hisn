@@ -30,6 +30,12 @@ class Surah {
 
   bool get isMeccan => revelation == 'meccan';
 
+  /// The name to show in the active language: the Arabic script when the app
+  /// is in Arabic, the Latin transliteration otherwise. [translit] and
+  /// [meaning] are both English-facing, so an Arabic interface must never fall
+  /// back to them.
+  String nameFor(bool arabic) => arabic ? name : translit;
+
   factory Surah.fromJson(Map<String, dynamic> json) => Surah(
         number: json['number'] as int,
         name: json['name'] as String,

@@ -21,6 +21,10 @@ import 'ornament.dart';
 /// virtue, source, and the actions. Nothing that belongs to the apparatus is
 /// allowed to sit above the text it annotates.
 ///
+/// In an Arabic interface the transliteration and translation drop out
+/// regardless of the display settings: both exist to render the Arabic for
+/// someone who can't read it, and the Arabic is already set above them.
+///
 /// When [onCount] is provided the card enters "read & count" mode: the whole
 /// card becomes a tap target that advances [count] toward the dua's repetition
 /// target, and the head mark fills as the target is reached.
@@ -53,9 +57,10 @@ class DuaCard extends StatelessWidget {
 
   void _copy(BuildContext context) {
     final lang = AppStrings.read(context).lang.name;
-    final text = '${dua.arabic}\n\n${dua.transliteration}\n\n'
-        '${dua.translationFor(lang)}\n\n— ${dua.reference}';
-    Clipboard.setData(ClipboardData(text: text));
+    // Same body the share sheet sends, so what is copied and what is shared
+    // can't drift apart — including which rendering lines the language keeps.
+    Clipboard.setData(
+        ClipboardData(text: Shareable.dua(dua, lang).asText()));
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
@@ -141,7 +146,7 @@ class DuaCard extends StatelessWidget {
             // The text itself.
             ArabicText(dua.arabic, block: true),
 
-            if (display.showTransliteration) ...[
+            if (display.showTransliteration && !s.ar) ...[
               const SizedBox(height: 14),
               Text(
                 dua.transliteration,
@@ -152,7 +157,7 @@ class DuaCard extends StatelessWidget {
                 ),
               ),
             ],
-            if (display.showTranslation) ...[
+            if (display.showTranslation && !s.ar) ...[
               const SizedBox(height: 10),
               Text(dua.translationFor(s.lang.name),
                   style: theme.textTheme.bodyLarge),
@@ -165,7 +170,7 @@ class DuaCard extends StatelessWidget {
             ],
             const SizedBox(height: 14),
             _Colophon(
-              reference: dua.reference,
+              reference: dua.referenceFor(s.lang.name),
               onCopy: () => _copy(context),
               onShare: () => showSharePreview(
                   context, Shareable.dua(dua, s.lang.name)),

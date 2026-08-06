@@ -69,23 +69,29 @@ class DisplaySettingsScreen extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 8),
-          SwitchListTile(
-            secondary: const Icon(Icons.translate, size: 20),
-            title: Text(s.showTransliteration),
-            subtitle: Text(s.showTransliterationSub),
-            value: display.showTransliteration,
-            onChanged: (value) =>
-                context.read<DisplaySettings>().setShowTransliteration(value),
-          ),
-          SwitchListTile(
-            secondary: const Icon(Icons.subtitles_outlined, size: 20),
-            title: Text(s.showTranslation),
-            subtitle: Text(s.showTranslationSub),
-            value: display.showTranslation,
-            onChanged: (value) =>
-                context.read<DisplaySettings>().setShowTranslation(value),
-          ),
+          // Both lines are hidden outright in an Arabic interface (see
+          // [DuaCard]), so their switches would be controls that change
+          // nothing. The stored values are left untouched and come back with
+          // the setting if the reader switches language again.
+          if (!s.ar) ...[
+            const SizedBox(height: 8),
+            SwitchListTile(
+              secondary: const Icon(Icons.translate, size: 20),
+              title: Text(s.showTransliteration),
+              subtitle: Text(s.showTransliterationSub),
+              value: display.showTransliteration,
+              onChanged: (value) =>
+                  context.read<DisplaySettings>().setShowTransliteration(value),
+            ),
+            SwitchListTile(
+              secondary: const Icon(Icons.subtitles_outlined, size: 20),
+              title: Text(s.showTranslation),
+              subtitle: Text(s.showTranslationSub),
+              value: display.showTranslation,
+              onChanged: (value) =>
+                  context.read<DisplaySettings>().setShowTranslation(value),
+            ),
+          ],
         ],
       ),
     );

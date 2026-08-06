@@ -30,13 +30,14 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final s = AppStrings.of(context);
+    final lang = s.lang.name;
     final results = [
-      ...context.read<DuaRepository>().search(_query),
+      ...context.read<DuaRepository>().search(_query, langCode: lang),
       ...DuaRepository.searchIn(
-          context.read<CustomDuaService>().duas, _query),
+          context.read<CustomDuaService>().duas, _query, langCode: lang),
     ];
     final hasQuery = _query.trim().isNotEmpty;
-    final s = AppStrings.of(context);
 
     return Scaffold(
       appBar: AppBar(
