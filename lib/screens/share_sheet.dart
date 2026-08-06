@@ -46,41 +46,49 @@ class _SharePreviewSheetState extends State<SharePreviewSheet> {
   final GlobalKey _cardKey = GlobalKey();
   bool _busy = false;
 
-  Future<void> _shareImage() async {
-    final s = AppStrings.read(context);
-    final messenger = ScaffoldMessenger.of(context);
-    final navigator = Navigator.of(context);
-
+  /// Run [action] with the buttons disabled, always re-enabling them.
+  ///
+  /// The `finally` is the point. A spinner that never stops is the worst
+  /// failure this sheet can have — it looks like the app hung, and it hides
+  /// whatever actually went wrong. Whatever throws, the buttons come back.
+  Future<void> _guard(Future<void> Function() action) async {
+    if (_busy) return;
     setState(() => _busy = true);
-    final (png, error) = await widget.io.capture(_cardKey);
-    if (!mounted) return;
-
-    if (png == null) {
-      setState(() => _busy = false);
-      // Falling back to text rather than dead-ending: the passage is still
-      // shareable, only the picture of it isn't.
-      messenger
-        ..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(content: Text(s.shareImageFailed(error!))));
-      await widget.io.shareText(widget.passage);
-      if (mounted) navigator.pop();
-      return;
+    try {
+      await action();
+    } finally {
+      if (mounted) setState(() => _busy = false);
     }
-
-    await widget.io.shareImage(png, passage: widget.passage);
-    if (!mounted) return;
-    setState(() => _busy = false);
-    navigator.pop();
   }
 
-  Future<void> _shareText() async {
-    final navigator = Navigator.of(context);
-    setState(() => _busy = true);
-    await widget.io.shareText(widget.passage);
-    if (!mounted) return;
-    setState(() => _busy = false);
-    navigator.pop();
-  }
+  Future<void> _shareImage() => _guard(() async {
+        final s = AppStrings.read(context);
+        final messenger = ScaffoldMessenger.of(context);
+        final navigator = Navigator.of(context);
+
+        final (png, error) = await widget.io.capture(_cardKey);
+        if (!mounted) return;
+
+        if (png == null) {
+          // Falling back to text rather than dead-ending: the passage is still
+          // shareable, only the picture of it isn't.
+          messenger
+            ..hideCurrentSnackBar()
+            ..showSnackBar(SnackBar(content: Text(s.shareImageFailed(error!))));
+          await widget.io.shareText(widget.passage);
+          if (mounted) navigator.pop();
+          return;
+        }
+
+        await widget.io.shareImage(png, passage: widget.passage);
+        if (mounted) navigator.pop();
+      });
+
+  Future<void> _shareText() => _guard(() async {
+        final navigator = Navigator.of(context);
+        await widget.io.shareText(widget.passage);
+        if (mounted) navigator.pop();
+      });
 
   @override
   Widget build(BuildContext context) {

@@ -42,17 +42,31 @@ class ShareIo {
     if (object is! RenderRepaintBoundary) {
       return (null, ShareCaptureError.notReady);
     }
-    // A boundary that still needs paint would rasterise as blank.
-    if (object.debugNeedsPaint) {
-      await Future<void>.delayed(const Duration(milliseconds: 32));
-    }
     try {
-      final image = await object.toImage(pixelRatio: pixelRatio);
+      // Straight to the rasteriser, with no readiness check first.
+      //
+      // There is nothing useful to check. The card is on screen and the user
+      // has just pressed a button on the same sheet, so it has painted; and
+      // if it somehow hasn't, `toImage` says so by throwing, which the catch
+      // below already turns into the text fallback.
+      //
+      // Two attempts at being clever here both ended in a hung future. Asking
+      // `debugNeedsPaint` throws a LateInitializationError in release builds,
+      // because it assigns its result inside an `assert` — invisible in tests,
+      // which run with asserts on. Awaiting `endOfFrame` instead deadlocks
+      // wherever nothing pumps the next frame. The timeout below is the only
+      // guard worth keeping.
+      final image = await object
+          .toImage(pixelRatio: pixelRatio)
+          .timeout(const Duration(seconds: 15));
       final data = await image.toByteData(format: ui.ImageByteFormat.png);
       image.dispose();
       if (data == null) return (null, ShareCaptureError.unsupported);
       return (data.buffer.asUint8List(), null);
     } catch (_) {
+      // Anything at all — a rasteriser that can't, an out-of-memory refusal on
+      // a very tall card, a timeout. The caller still has the text to fall
+      // back on, and a spinner that never stops is the one outcome to rule out.
       return (null, ShareCaptureError.unsupported);
     }
   }

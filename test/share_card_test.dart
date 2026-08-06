@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -7,6 +10,7 @@ import 'package:dua_app/data/dua_repository.dart';
 import 'package:dua_app/data/quran_repository.dart';
 import 'package:dua_app/l10n/locale_controller.dart';
 import 'package:dua_app/models/shareable.dart';
+import 'package:dua_app/screens/share_sheet.dart';
 import 'package:dua_app/services/display_settings.dart';
 import 'package:dua_app/services/share_io.dart';
 import 'package:dua_app/theme/app_palette.dart';
@@ -37,6 +41,17 @@ void main() {
             data: MediaQueryData(textScaler: TextScaler.linear(textScale)),
             child: Scaffold(body: Center(child: child)),
           ),
+        ),
+      );
+
+  Widget sheetHost(Widget child) => MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => LocaleController(prefs)),
+          ChangeNotifierProvider(create: (_) => DisplaySettings(prefs)),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light(AppPalettes.fallback),
+          home: Scaffold(body: child),
         ),
       );
 
@@ -153,4 +168,51 @@ void main() {
       expect(error, ShareCaptureError.notReady);
     });
   });
+
+  // The failure the user actually sees when any of this goes wrong is a
+  // spinner that never stops: the app looks hung, and whatever really broke is
+  // hidden behind it. These pin the recovery, not the cause.
+  group('the preview sheet always comes back', () {
+    testWidgets('when the rasteriser reports failure, it falls back to text',
+        (tester) async {
+      final io = _FailingIo();
+      await tester.pumpWidget(
+          sheetHost(SharePreviewSheet(passage: passage, io: io)));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Share card'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 200));
+
+      expect(io.textShared, isTrue, reason: 'the passage should still go out');
+      // The symptom the user reported: a spinner that never stopped. The
+      // buttons must come back whether or not the picture could be made.
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+      final button = tester.widget<FilledButton>(find.byType(FilledButton));
+      expect(button.onPressed, isNotNull, reason: 'the button must re-enable');
+    });
+
+  });
+}
+
+/// Capture fails the way a real device would: politely, with a reason.
+class _FailingIo extends ShareIo {
+  _FailingIo();
+
+  bool textShared = false;
+
+  @override
+  Future<(Uint8List?, ShareCaptureError?)> capture(GlobalKey key) async =>
+      (null, ShareCaptureError.unsupported);
+
+  @override
+  Future<bool> shareText(Shareable passage, {ui.Rect? origin}) async {
+    textShared = true;
+    return true;
+  }
+
+  @override
+  Future<bool> shareImage(Uint8List png,
+          {required Shareable passage, ui.Rect? origin}) async =>
+      throw StateError('should not be reached');
 }

@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:ui' show Rect;
 
 import 'package:file_selector/file_selector.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -69,12 +70,32 @@ class BackupIo {
   Future<(Backup?, BackupError?)> pick() async {
     final file = await openFile();
     if (file == null) return (null, null);
+    return read(file);
+  }
 
+  /// Decode an already-picked file and parse it.
+  ///
+  /// Split out from [pick] so the decoding can be tested against the kind of
+  /// [XFile] the Android picker actually returns — a byte-backed one, which is
+  /// where this went wrong before.
+  @visibleForTesting
+  Future<(Backup?, BackupError?)> read(XFile file) async {
     final String raw;
     try {
-      raw = await file.readAsString(encoding: utf8);
+      // Bytes, then decode here — NOT `readAsString(encoding: utf8)`.
+      //
+      // On Android the picker hands back an `XFile.fromData`, and cross_file's
+      // `readAsString` takes a shortcut for byte-backed files: it calls
+      // `String.fromCharCodes`, which reads each byte as a UTF-16 code unit
+      // and *silently ignores the encoding argument*. Every non-ASCII
+      // character then comes back as mojibake — Arabic worst of all, since
+      // none of it is ASCII. Decoding the bytes ourselves is the only way to
+      // be sure which encoding was actually applied.
+      raw = utf8.decode(await file.readAsBytes());
     } catch (_) {
-      // Binary, or not UTF-8 — a picked image, say.
+      // Binary, or not UTF-8 — a picked image, say. (utf8.decode throws on
+      // malformed input, which is the point: the shortcut above never could,
+      // so a wrong file used to sail through and produce nonsense.)
       return (null, BackupError.malformed);
     }
     return service.parse(raw);

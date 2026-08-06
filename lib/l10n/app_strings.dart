@@ -10,7 +10,7 @@ import '../services/share_io.dart';
 import 'locale_controller.dart';
 
 /// Bump this when shipping a build so the About screen confirms what's running.
-const String kAppVersion = '1.14.0';
+const String kAppVersion = '1.14.1';
 
 /// UI strings facade. The actual text lives in per-language files under
 /// `lib/i18n/` (`en.i18n.json`, `ar.i18n.json`, `id.i18n.json`) and is compiled
