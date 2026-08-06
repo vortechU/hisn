@@ -4,6 +4,7 @@ import android.content.Intent
 import android.hardware.GeomagneticField
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
@@ -14,12 +15,19 @@ class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
-        // Magnetic declination (true-north correction for the Qibla compass),
-        // computed by Android's built-in World Magnetic Model. No dependency.
+        // The live compass: heading, tilt, and how believable the reading is.
+        EventChannel(flutterEngine.dartExecutor.binaryMessenger, Compass.CHANNEL)
+            .setStreamHandler(Compass(this))
+
+        // The Earth's field where the user is standing, from Android's built-in
+        // World Magnetic Model. Two numbers come out of it: the declination
+        // that turns a magnetic heading into a true one, and the field strength
+        // the phone *should* be reading — which is how a compass sitting next
+        // to something magnetic can be caught.
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, geomagChannelName)
             .setMethodCallHandler { call, result ->
                 when (call.method) {
-                    "declination" -> {
+                    "field" -> {
                         val lat = call.argument<Double>("lat") ?: 0.0
                         val lng = call.argument<Double>("lng") ?: 0.0
                         val alt = call.argument<Double>("alt") ?: 0.0
@@ -29,7 +37,14 @@ class MainActivity : FlutterActivity() {
                             alt.toFloat(),
                             System.currentTimeMillis()
                         )
-                        result.success(field.declination.toDouble())
+                        result.success(
+                            mapOf(
+                                "declination" to field.declination.toDouble(),
+                                // The model works in nanotesla, the sensor in
+                                // microtesla. Match the sensor.
+                                "strength" to field.fieldStrength.toDouble() / 1000.0
+                            )
+                        )
                     }
                     else -> result.notImplemented()
                 }

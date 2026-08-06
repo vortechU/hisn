@@ -32,7 +32,11 @@ the content is authentic but intentionally small, and it's built to grow.
 - **Search** — full-text search across every dua (title, transliteration, translation,
   source, and Arabic).
 - **Qibla compass** — a live compass pointing to the Ka'bah using the device magnetometer
-  and the Qibla bearing for the current location (needs a device with a compass sensor).
+  and the Qibla bearing for the current location (needs a device with a magnetometer).
+  The heading is corrected from magnetic to **true** north with the World Magnetic Model,
+  and every reading is checked before it is shown: a phone that is tilted too far, whose
+  magnetometer is uncalibrated, or that is sitting near metal gets told what is wrong
+  instead of a confident needle pointing the wrong way.
 - **Display options** — adjustable text size and toggles to show/hide the transliteration
   and translation lines (e.g. for Arabic-only reading).
 - **Adhkar library** — duas grouped into categories (Morning, Evening, After Prayer,

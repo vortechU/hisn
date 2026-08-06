@@ -2,23 +2,35 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_compass/flutter_compass.dart';
 import 'package:provider/provider.dart';
 
 import '../l10n/app_strings.dart';
+import '../services/compass.dart';
 import '../services/geomag.dart';
 import '../services/prayer_service.dart';
 import '../theme/app_theme.dart';
+import '../util/angles.dart';
 
-/// A live compass that points toward the Qibla (the Ka'bah in Makkah), using
-/// the device magnetometer and the Qibla bearing for the current location.
+/// A live compass pointing toward the Qibla (the Ka'bah in Makkah), from the
+/// device magnetometer and the Qibla bearing for the current location.
 ///
-/// The raw magnetometer heading is noisy, so we apply an exponential low-pass
-/// filter (smoothing it on the shortest angular path so the 359°→0° wrap
-/// doesn't cause a jump). This removes the visible left/right wobble.
+/// Two corrections stand between a magnetometer and a Qibla, and the screen
+/// gets neither of them for free:
 ///
-/// This is a self-contained widget (no Scaffold) so it can be embedded inside
-/// the combined "Prayer & Qibla" page above the prayer-times list.
+/// * The sensor reads **magnetic** north; the Qibla bearing is measured from
+///   **true** north. The gap between them — the declination — runs to twenty
+///   degrees in some places, and is applied here from the World Magnetic Model.
+/// * A magnetometer that is uncalibrated, tilted, or sitting near metal is
+///   wrong in a way that looks exactly like being right: the needle is just as
+///   steady. So each reading is checked against [CompassTrust], and when it
+///   fails the screen says which of the three it is instead of quietly
+///   pointing somewhere.
+///
+/// The raw heading is noisy, so it is smoothed along the shortest angular path
+/// (see [smoothAngle]) to take out the visible left/right wobble.
+///
+/// Self-contained (no Scaffold) so it can sit inside the combined
+/// "Prayer & Qibla" page above the prayer-times list.
 class QiblaCompass extends StatefulWidget {
   const QiblaCompass({super.key});
 
@@ -26,37 +38,34 @@ class QiblaCompass extends StatefulWidget {
   State<QiblaCompass> createState() => _QiblaCompassState();
 }
 
-class _QiblaCompassState extends State<QiblaCompass> {
-  /// Smoothed heading, in degrees [0,360). Null until the first reading.
-  /// This is the *magnetic* heading straight from the sensor.
+class _QiblaCompassState extends State<QiblaCompass> with WidgetsBindingObserver {
+  /// Smoothed *magnetic* heading in degrees [0,360). Null until the first
+  /// reading arrives.
   double? _heading;
 
-  /// Magnetic declination at the current location (degrees, east-positive).
-  /// Added to the magnetic heading to get a true-north heading, so the needle
-  /// lines up with the Qibla bearing (which is measured from true north).
-  double _declination = 0;
-  double? _declLat;
-  double? _declLng;
+  /// The most recent reading, kept whole for its tilt, accuracy and field
+  /// strength — the three things that say whether [_heading] means anything.
+  CompassReading? _reading;
 
-  /// Last reported sensor accuracy in degrees of heading error (lower is
-  /// better; Android buckets it as 15/30/45 and reports null when the sensor
-  /// is unreliable or the status is unknown).
-  double? _accuracy;
+  /// The Earth's field where the user is standing. Null while it is still
+  /// being fetched, or if it can't be had at all.
+  GeomagneticField? _field;
+  double? _fieldLat;
+  double? _fieldLng;
 
-  StreamSubscription<CompassEvent>? _sub;
+  /// Set when the platform says there is no magnetometer behind the channel.
+  bool _unavailable = false;
 
-  /// Whether this device exposes a compass stream at all.
-  bool get _hasSensor => FlutterCompass.events != null;
+  StreamSubscription<CompassReading>? _sub;
 
-  /// Smoothing factor: lower = steadier but slower to catch up.
+  /// Smoothing factor: lower is steadier but slower to catch up.
   static const _alpha = 0.18;
 
   @override
   void initState() {
     super.initState();
-    // Subscribe once so setState only fires on real sensor events (not on
-    // every rebuild) — avoids a feedback loop and keeps the needle steady.
-    _sub = FlutterCompass.events?.listen(_onEvent);
+    WidgetsBinding.instance.addObserver(this);
+    _subscribe();
     // The startup location attempt runs only once and can fail (indoors, slow
     // GPS). Without real coordinates the Qibla bearing is meaningless, so
     // re-try every time the compass is opened.
@@ -67,53 +76,70 @@ class _QiblaCompassState extends State<QiblaCompass> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _sub?.cancel();
     super.dispose();
   }
 
-  void _onEvent(CompassEvent event) {
-    final raw = event.heading;
-    if (raw == null) return;
-
-    final prev = _heading;
-    double next;
-    if (prev == null) {
-      next = raw;
-    } else {
-      // Shortest signed delta in [-180,180] so the wrap-around is handled.
-      final delta = (raw - prev + 540) % 360 - 180;
-      next = (prev + _alpha * delta) % 360;
-      if (next < 0) next += 360;
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Three sensors at 20 Hz are not free, and nobody is reading the needle
+    // while the app is away. Let go of them and take them up again on return.
+    if (state == AppLifecycleState.resumed) {
+      if (_sub == null && !_unavailable) setState(_subscribe);
+    } else if (state == AppLifecycleState.paused) {
+      _sub?.cancel();
+      _sub = null;
     }
+  }
+
+  /// Listen once, so setState fires on real sensor events rather than on every
+  /// rebuild — no feedback loop, and a steady needle.
+  void _subscribe() {
+    if (_sub != null) return;
+    final readings = DeviceCompass.readings;
+    if (readings == null) {
+      _unavailable = true;
+      return;
+    }
+    _sub = readings.listen(
+      _onReading,
+      onError: (_) {
+        if (mounted) setState(() => _unavailable = true);
+      },
+    );
+  }
+
+  void _onReading(CompassReading reading) {
+    final previous = _heading;
+    final next = previous == null
+        ? normalizeDegrees(reading.heading)
+        : smoothAngle(previous, reading.heading, _alpha);
 
     if (!mounted) return;
     setState(() {
       _heading = next;
-      _accuracy = event.accuracy;
+      _reading = reading;
     });
   }
 
-  /// Fetch the declination for [lat],[lng] once per location change.
-  void _ensureDeclination(double lat, double lng) {
-    if (_declLat == lat && _declLng == lng) return;
-    _declLat = lat;
-    _declLng = lng;
-    Geomag.declination(lat, lng).then((value) {
-      if (mounted) setState(() => _declination = value);
+  /// Fetch the field for [lat],[lng] once per location change.
+  void _ensureField(double lat, double lng) {
+    if (_fieldLat == lat && _fieldLng == lng) return;
+    _fieldLat = lat;
+    _fieldLng = lng;
+    Geomag.at(lat, lng).then((value) {
+      if (mounted) setState(() => _field = value);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final prayer = context.watch<PrayerService>();
-    _ensureDeclination(prayer.latitude, prayer.longitude);
-    final qibla = prayer.qiblaDirection;
-    // Correct the magnetic reading to true north before comparing to the Qibla.
-    final heading =
-        _heading == null ? null : (_heading! + _declination) % 360;
+    _ensureField(prayer.latitude, prayer.longitude);
     final s = AppStrings.of(context);
 
-    if (!_hasSensor) return const _Unavailable();
+    if (_unavailable) return const _Unavailable();
     // Still on the Makkah fallback: there is no real bearing to show, so ask
     // for a location instead of confidently pointing the needle at nonsense.
     if (!prayer.hasKnownLocation) {
@@ -122,33 +148,39 @@ class _QiblaCompassState extends State<QiblaCompass> {
         onRetry: () => context.read<PrayerService>().refreshLocation(),
       );
     }
-    if (heading == null) {
+
+    final magnetic = _heading;
+    final reading = _reading;
+    if (magnetic == null || reading == null) {
       return const SizedBox(
         height: 320,
         child: Center(child: CircularProgressIndicator()),
       );
     }
+
     return _Compass(
-      heading: heading,
-      qibla: qibla,
+      fix: QiblaFix.of(
+        magneticHeading: magnetic,
+        qibla: prayer.qiblaDirection,
+        reading: reading,
+        field: _field,
+      ),
+      qibla: prayer.qiblaDirection,
       location: s.place(prayer.locationLabel),
-      accuracy: _accuracy,
     );
   }
 }
 
 class _Compass extends StatelessWidget {
   const _Compass({
-    required this.heading,
+    required this.fix,
     required this.qibla,
     required this.location,
-    this.accuracy,
   });
 
-  final double heading;
+  final QiblaFix fix;
   final double qibla;
   final String location;
-  final double? accuracy;
 
   @override
   Widget build(BuildContext context) {
@@ -157,20 +189,18 @@ class _Compass extends StatelessWidget {
     final ms = ManuscriptTheme.of(context);
     final s = AppStrings.of(context);
 
-    // Offset of the Qibla from where the device currently points, in [-180,180].
-    var offset = (qibla - heading) % 360;
-    if (offset > 180) offset -= 360;
-    if (offset < -180) offset += 360;
-    final aligned = offset.abs() < 5;
-    final accent = aligned ? ms.rubric : ms.gilt;
+    final fault = fix.fault;
+    final aligned = fix.aligned;
+    // A muted needle for a reading that can't be trusted: the dial stays put so
+    // nothing jumps, but it stops looking like an answer.
+    final accent = fault != null
+        ? scheme.onSurfaceVariant
+        : aligned
+            ? ms.rubric
+            : ms.gilt;
 
-    // Accuracy is degrees of heading error; null means the platform flagged
-    // the sensor as unreliable. Anything worse than the "medium" bucket (30°)
-    // means the magnetometer needs calibration — a figure-8 wave fixes it.
-    final needsCalibration = accuracy == null || accuracy! > 30;
-
-    final headingRad = heading * math.pi / 180;
-    final qiblaRad = (qibla - heading) * math.pi / 180;
+    final headingRad = fix.heading * math.pi / 180;
+    final qiblaRad = fix.offset * math.pi / 180;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -180,22 +210,15 @@ class _Compass extends StatelessWidget {
         const SizedBox(height: 2),
         Text(s.qiblaFromNorth(qibla.toStringAsFixed(0)),
             style: theme.textTheme.titleMedium),
-        if (needsCalibration)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.gesture, size: 15, color: ms.gilt),
-                const SizedBox(width: 6),
-                Flexible(
-                  child: Text(s.calibrateHint,
-                      style: theme.textTheme.bodySmall
-                          ?.copyWith(color: ms.gilt)),
-                ),
-              ],
-            ),
+        const SizedBox(height: 2),
+        // Which north the needle is actually on. Small, but it is the whole
+        // difference between a Qibla and a bearing that is merely nearby.
+        Text(
+          fix.corrected ? s.qiblaTrueNorth : s.qiblaMagneticOnly,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: fix.corrected ? scheme.onSurfaceVariant : ms.gilt,
           ),
+        ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 18),
           child: SizedBox(
@@ -234,17 +257,67 @@ class _Compass extends StatelessWidget {
             ),
           ),
         ),
-        Text(
-          aligned
-              ? s.facingQibla
-              : offset > 0
-                  ? s.turnRight(offset.abs().toStringAsFixed(0))
-                  : s.turnLeft(offset.abs().toStringAsFixed(0)),
-          textAlign: TextAlign.center,
-          style: theme.textTheme.titleMedium?.copyWith(color: accent),
-        ),
+        if (fault != null)
+          _FaultNote(fault: fault)
+        else
+          Text(
+            aligned
+                ? s.facingQibla
+                : fix.offset > 0
+                    ? s.turnRight(fix.offset.abs().toStringAsFixed(0))
+                    : s.turnLeft(fix.offset.abs().toStringAsFixed(0)),
+            textAlign: TextAlign.center,
+            style: theme.textTheme.titleMedium?.copyWith(color: accent),
+          ),
         const SizedBox(height: 6),
       ],
+    );
+  }
+}
+
+/// What to do about a reading that can't be trusted, standing where the turn
+/// instruction would otherwise be.
+///
+/// It replaces that instruction rather than sitting beside it. "Turn right 40°"
+/// next to "this compass is wrong" leaves the reader to work out which of the
+/// two to believe, and they opened the compass to be told.
+class _FaultNote extends StatelessWidget {
+  const _FaultNote({required this.fault});
+
+  final CompassFault fault;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final ms = ManuscriptTheme.of(context);
+    final s = AppStrings.of(context);
+
+    final (IconData icon, String message) = switch (fault) {
+      CompassFault.interference => (
+          Icons.warning_amber_rounded,
+          s.qiblaInterference,
+        ),
+      CompassFault.uncalibrated => (Icons.gesture, s.calibrateHint),
+      CompassFault.tilted => (Icons.phone_android, s.qiblaHoldFlat),
+    };
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 17, color: ms.gilt),
+          const SizedBox(width: 7),
+          Flexible(
+            child: Text(
+              message,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium?.copyWith(color: ms.gilt),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

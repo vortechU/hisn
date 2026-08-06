@@ -248,8 +248,12 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String turnRight({required Object degrees}) => 'استدر يمينًا ${degrees}°';
 	@override String turnLeft({required Object degrees}) => 'استدر يسارًا ${degrees}°';
 	@override String get calibrateHint => 'حرّك الجهاز على شكل ٨ للمعايرة';
+	@override String get qiblaHoldFlat => 'ضع الهاتف مسطّحًا لقراءة البوصلة';
+	@override String get qiblaInterference => 'ابتعد عن المعادن أو المغناطيس';
+	@override String get qiblaTrueNorth => 'مصحّحة إلى الشمال الحقيقي';
+	@override String get qiblaMagneticOnly => 'الشمال المغناطيسي — لا يتوفّر تصحيح';
 	@override String get compassUnavailable => 'البوصلة غير متاحة';
-	@override String get compassUnavailableBody => 'لا يحتوي هذا الجهاز على مستشعر بوصلة، أو يحتاج إلى معايرة. جرّب تحريكه على شكل الرقم ٨.';
+	@override String get compassUnavailableBody => 'لا يحتوي هذا الجهاز على مستشعر مغناطيسي، لذا لا يمكن عرض مؤشّر قبلة مباشر.';
 	@override String get qiblaNoLocation => 'الموقع مطلوب';
 	@override String get qiblaNoLocationBody => 'لا يمكن حساب اتجاه القبلة قبل معرفة موقعك. فعّل خدمات الموقع، أو اختر مدينتك من الإعدادات.';
 	@override String get placeYourLocation => 'موقعك';
@@ -646,8 +650,12 @@ extension on TranslationsAr {
 			'turnRight' => ({required Object degrees}) => 'استدر يمينًا ${degrees}°',
 			'turnLeft' => ({required Object degrees}) => 'استدر يسارًا ${degrees}°',
 			'calibrateHint' => 'حرّك الجهاز على شكل ٨ للمعايرة',
+			'qiblaHoldFlat' => 'ضع الهاتف مسطّحًا لقراءة البوصلة',
+			'qiblaInterference' => 'ابتعد عن المعادن أو المغناطيس',
+			'qiblaTrueNorth' => 'مصحّحة إلى الشمال الحقيقي',
+			'qiblaMagneticOnly' => 'الشمال المغناطيسي — لا يتوفّر تصحيح',
 			'compassUnavailable' => 'البوصلة غير متاحة',
-			'compassUnavailableBody' => 'لا يحتوي هذا الجهاز على مستشعر بوصلة، أو يحتاج إلى معايرة. جرّب تحريكه على شكل الرقم ٨.',
+			'compassUnavailableBody' => 'لا يحتوي هذا الجهاز على مستشعر مغناطيسي، لذا لا يمكن عرض مؤشّر قبلة مباشر.',
 			'qiblaNoLocation' => 'الموقع مطلوب',
 			'qiblaNoLocationBody' => 'لا يمكن حساب اتجاه القبلة قبل معرفة موقعك. فعّل خدمات الموقع، أو اختر مدينتك من الإعدادات.',
 			'placeYourLocation' => 'موقعك',

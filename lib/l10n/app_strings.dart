@@ -10,7 +10,7 @@ import '../services/share_io.dart';
 import 'locale_controller.dart';
 
 /// Bump this when shipping a build so the About screen confirms what's running.
-const String kAppVersion = '1.15.0';
+const String kAppVersion = '1.15.1';
 
 /// UI strings facade. The actual text lives in per-language files under
 /// `lib/i18n/` (`en.i18n.json`, `ar.i18n.json`, `id.i18n.json`) and is compiled
@@ -341,6 +341,10 @@ class AppStrings {
   String turnRight(String degrees) => _t.turnRight(degrees: degrees);
   String turnLeft(String degrees) => _t.turnLeft(degrees: degrees);
   String get calibrateHint => _t.calibrateHint;
+  String get qiblaHoldFlat => _t.qiblaHoldFlat;
+  String get qiblaInterference => _t.qiblaInterference;
+  String get qiblaTrueNorth => _t.qiblaTrueNorth;
+  String get qiblaMagneticOnly => _t.qiblaMagneticOnly;
   String get compassUnavailable => _t.compassUnavailable;
   String get compassUnavailableBody => _t.compassUnavailableBody;
   String get qiblaNoLocation => _t.qiblaNoLocation;

@@ -621,11 +621,23 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// en: 'Move in a figure-8 to calibrate'
 	String get calibrateHint => 'Move in a figure-8 to calibrate';
 
+	/// en: 'Lay the phone flat to read the compass'
+	String get qiblaHoldFlat => 'Lay the phone flat to read the compass';
+
+	/// en: 'Move away from metal or magnets'
+	String get qiblaInterference => 'Move away from metal or magnets';
+
+	/// en: 'Corrected to true north'
+	String get qiblaTrueNorth => 'Corrected to true north';
+
+	/// en: 'Magnetic north — no correction available'
+	String get qiblaMagneticOnly => 'Magnetic north — no correction available';
+
 	/// en: 'Compass unavailable'
 	String get compassUnavailable => 'Compass unavailable';
 
-	/// en: 'This device has no compass sensor, or it needs calibration. Try moving it in a figure-8 motion.'
-	String get compassUnavailableBody => 'This device has no compass sensor, or it needs calibration. Try moving it in a figure-8 motion.';
+	/// en: 'This device has no magnetometer, so a live Qibla needle can't be shown.'
+	String get compassUnavailableBody => 'This device has no magnetometer, so a live Qibla needle can\'t be shown.';
 
 	/// en: 'Location needed'
 	String get qiblaNoLocation => 'Location needed';
@@ -1299,8 +1311,12 @@ extension on Translations {
 			'turnRight' => ({required Object degrees}) => 'Turn right ${degrees}°',
 			'turnLeft' => ({required Object degrees}) => 'Turn left ${degrees}°',
 			'calibrateHint' => 'Move in a figure-8 to calibrate',
+			'qiblaHoldFlat' => 'Lay the phone flat to read the compass',
+			'qiblaInterference' => 'Move away from metal or magnets',
+			'qiblaTrueNorth' => 'Corrected to true north',
+			'qiblaMagneticOnly' => 'Magnetic north — no correction available',
 			'compassUnavailable' => 'Compass unavailable',
-			'compassUnavailableBody' => 'This device has no compass sensor, or it needs calibration. Try moving it in a figure-8 motion.',
+			'compassUnavailableBody' => 'This device has no magnetometer, so a live Qibla needle can\'t be shown.',
 			'qiblaNoLocation' => 'Location needed',
 			'qiblaNoLocationBody' => 'The Qibla direction can\'t be calculated until your location is known. Turn on location services, or choose your city in Settings.',
 			'placeYourLocation' => 'Your location',

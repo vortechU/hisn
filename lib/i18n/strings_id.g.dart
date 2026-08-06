@@ -248,8 +248,12 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String turnRight({required Object degrees}) => 'Putar kanan ${degrees}°';
 	@override String turnLeft({required Object degrees}) => 'Putar kiri ${degrees}°';
 	@override String get calibrateHint => 'Gerakkan membentuk angka 8 untuk kalibrasi';
+	@override String get qiblaHoldFlat => 'Letakkan ponsel mendatar untuk membaca kompas';
+	@override String get qiblaInterference => 'Menjauhlah dari logam atau magnet';
+	@override String get qiblaTrueNorth => 'Dikoreksi ke utara sejati';
+	@override String get qiblaMagneticOnly => 'Utara magnetis — koreksi tidak tersedia';
 	@override String get compassUnavailable => 'Kompas tidak tersedia';
-	@override String get compassUnavailableBody => 'Perangkat ini tidak memiliki sensor kompas, atau perlu kalibrasi. Coba gerakkan membentuk angka 8.';
+	@override String get compassUnavailableBody => 'Perangkat ini tidak memiliki magnetometer, sehingga penunjuk kiblat langsung tidak dapat ditampilkan.';
 	@override String get qiblaNoLocation => 'Lokasi diperlukan';
 	@override String get qiblaNoLocationBody => 'Arah kiblat belum dapat dihitung sebelum lokasi Anda diketahui. Aktifkan layanan lokasi, atau pilih kota Anda di Pengaturan.';
 	@override String get placeYourLocation => 'Lokasi Anda';
@@ -646,8 +650,12 @@ extension on TranslationsId {
 			'turnRight' => ({required Object degrees}) => 'Putar kanan ${degrees}°',
 			'turnLeft' => ({required Object degrees}) => 'Putar kiri ${degrees}°',
 			'calibrateHint' => 'Gerakkan membentuk angka 8 untuk kalibrasi',
+			'qiblaHoldFlat' => 'Letakkan ponsel mendatar untuk membaca kompas',
+			'qiblaInterference' => 'Menjauhlah dari logam atau magnet',
+			'qiblaTrueNorth' => 'Dikoreksi ke utara sejati',
+			'qiblaMagneticOnly' => 'Utara magnetis — koreksi tidak tersedia',
 			'compassUnavailable' => 'Kompas tidak tersedia',
-			'compassUnavailableBody' => 'Perangkat ini tidak memiliki sensor kompas, atau perlu kalibrasi. Coba gerakkan membentuk angka 8.',
+			'compassUnavailableBody' => 'Perangkat ini tidak memiliki magnetometer, sehingga penunjuk kiblat langsung tidak dapat ditampilkan.',
 			'qiblaNoLocation' => 'Lokasi diperlukan',
 			'qiblaNoLocationBody' => 'Arah kiblat belum dapat dihitung sebelum lokasi Anda diketahui. Aktifkan layanan lokasi, atau pilih kota Anda di Pengaturan.',
 			'placeYourLocation' => 'Lokasi Anda',
