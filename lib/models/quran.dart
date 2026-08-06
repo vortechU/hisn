@@ -141,16 +141,101 @@ class MushafPage {
       );
 }
 
+/// One surah's verses rendered into a single language.
+///
+/// Stored positionally — index `i` holds ayah `i + 1` — because the generator
+/// verifies the count against the surah index before writing, so the position
+/// is already known to be sound and a map of numbers would only cost space.
+class SurahTranslation {
+  const SurahTranslation({
+    required this.number,
+    required this.lang,
+    required this.ayahs,
+  });
+
+  final int number;
+
+  /// The interface language this rendering belongs to (`AppLang.name`).
+  final String lang;
+  final List<String> ayahs;
+
+  /// The meaning of ayah [number] (1-based), or null if it is out of range.
+  String? forAyah(int number) =>
+      (number >= 1 && number <= ayahs.length) ? ayahs[number - 1] : null;
+
+  factory SurahTranslation.fromJson(Map<String, dynamic> json) =>
+      SurahTranslation(
+        number: json['number'] as int,
+        lang: json['lang'] as String,
+        ayahs: (json['ayahs'] as List).cast<String>(),
+      );
+}
+
+/// Which translation the app bundles for a language, and who made it.
+///
+/// Written by the same tool run that generates the verse files, so the credit
+/// shown in the app cannot drift from the edition actually shipped. The
+/// translations are licensed for non-commercial use only — see TERMS.md §6.
+class QuranEdition {
+  const QuranEdition({
+    required this.lang,
+    required this.id,
+    required this.name,
+    required this.translator,
+    required this.credit,
+    required this.source,
+    required this.sourceUrl,
+  });
+
+  final String lang;
+
+  /// The upstream identifier, e.g. `en.hilali`.
+  final String id;
+  final String name;
+  final String translator;
+
+  /// The short citation, for places too tight for [translator] — the foot of a
+  /// share card, mainly.
+  final String credit;
+  final String source;
+  final String sourceUrl;
+
+  factory QuranEdition.fromJson(Map<String, dynamic> json) => QuranEdition(
+        lang: json['lang'] as String,
+        id: json['id'] as String,
+        name: json['name'] as String,
+        translator: json['translator'] as String,
+        credit: json['credit'] as String,
+        source: json['source'] as String,
+        sourceUrl: json['sourceUrl'] as String,
+      );
+}
+
 /// A verse together with the surah it belongs to.
 ///
 /// The mushaf pages are glyph runs with no verse identity in them, so anything
 /// that needs to name a verse — bookmarking it, showing its meaning — joins the
 /// page to the surah files on the page number they both carry.
 class PageVerse {
-  const PageVerse({required this.surah, required this.ayah});
+  const PageVerse({
+    required this.surah,
+    required this.ayah,
+    this.translation,
+    this.translationCredit,
+  });
 
   final Surah surah;
   final Ayah ayah;
+
+  /// The verse's meaning in the language it was loaded for, or null — either
+  /// because none was asked for, or because the language has no bundled
+  /// edition. Arabic never has one: the text above it is already Arabic.
+  final String? translation;
+
+  /// Who rendered [translation]. Carried on the verse rather than looked up
+  /// where it's displayed, so a meaning can't be shown — or shared out of the
+  /// app — without the translator that produced it coming along.
+  final String? translationCredit;
 
   /// The conventional citation, e.g. `2:255`.
   String get reference => '${surah.number}:${ayah.number}';

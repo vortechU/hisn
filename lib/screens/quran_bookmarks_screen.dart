@@ -65,7 +65,8 @@ class _SavedVerse extends StatelessWidget {
     if (parsed == null) return const SizedBox.shrink();
 
     return FutureBuilder<PageVerse?>(
-      future: repo.verse(parsed.$1, parsed.$2),
+      future: repo.verse(parsed.$1, parsed.$2,
+          lang: AppStrings.of(context).lang.name),
       builder: (context, snap) {
         final verse = snap.data;
         // Reserve nothing while loading: the rows resolve within a frame or two

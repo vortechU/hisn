@@ -16,6 +16,7 @@ class Shareable {
     this.titleArabic,
     this.transliteration,
     this.translation,
+    this.translationCredit,
     this.repeat = 1,
   });
 
@@ -34,6 +35,11 @@ class Shareable {
   final String? titleArabic;
   final String? transliteration;
   final String? translation;
+
+  /// Who rendered [translation], when it came from a named edition rather than
+  /// from the app's own content. A translation is a source like any other, so
+  /// it does not leave the app without the person who made it.
+  final String? translationCredit;
 
   /// How many times the dua is repeated. 1 (the default) is not shown.
   final int repeat;
@@ -58,16 +64,24 @@ class Shareable {
     );
   }
 
-  /// A single verse. Carries no transliteration or translation: the app ships
-  /// neither for the Qur'an, and inventing one to fill the card would be the
-  /// same mistake as inventing a source.
+  /// A single verse, with its meaning when the interface language has a
+  /// bundled edition.
+  ///
+  /// Never a transliteration: the app ships none for the Qur'an, and inventing
+  /// one to fill the card would be the same mistake as inventing a source. In
+  /// Arabic the meaning is dropped too — the verse above it is already Arabic.
   factory Shareable.verse(PageVerse verse, String langCode) {
-    final name = verse.surah.nameFor(langCode == _arabicCode);
+    final arabicUi = langCode == _arabicCode;
+    final name = verse.surah.nameFor(arabicUi);
+    final translation = arabicUi ? null : _orNull(verse.translation);
     return Shareable(
       arabic: verse.ayah.text,
       reference: '$name ${verse.reference}',
       title: name,
       titleArabic: verse.surah.name,
+      translation: translation,
+      translationCredit:
+          translation == null ? null : _orNull(verse.translationCredit),
     );
   }
 
@@ -87,6 +101,9 @@ class Shareable {
     if (transliteration != null) buffer.write('\n\n$transliteration');
     if (translation != null) buffer.write('\n\n$translation');
     buffer.write('\n\n— $reference');
+    if (translationCredit != null) {
+      buffer.write('\n($translationCredit)');
+    }
     return buffer.toString();
   }
 }

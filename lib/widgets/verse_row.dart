@@ -6,6 +6,7 @@ import '../l10n/app_strings.dart';
 import '../models/quran.dart';
 import '../models/shareable.dart';
 import '../screens/share_sheet.dart';
+import '../services/display_settings.dart';
 import '../services/quran_service.dart';
 import '../theme/app_theme.dart';
 import '../util/arabic.dart';
@@ -41,6 +42,10 @@ class VerseRow extends StatelessWidget {
     final ms = ManuscriptTheme.of(context);
     final quran = context.watch<QuranService>();
     final saved = quran.isVerseBookmarked(verse.key);
+    // The same preference that governs a dua's meaning: one reader's choice
+    // about whether they want the rendering, not two.
+    final showTranslation =
+        context.select<DisplaySettings, bool>((d) => d.showTranslation);
 
     return Material(
       type: MaterialType.transparency,
@@ -125,6 +130,16 @@ class VerseRow extends StatelessWidget {
               // `block` anchors a short verse to the right rather than leaving
               // it adrift on the left.
               ArabicText(verse.ayah.text, block: true),
+              // The meaning, set below the verse and quieter than it. Absent
+              // in Arabic, where the text above is already the language being
+              // read.
+              if (showTranslation && verse.translation != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  verse.translation!,
+                  style: theme.textTheme.bodyMedium?.copyWith(height: 1.45),
+                ),
+              ],
             ],
           ),
         ),

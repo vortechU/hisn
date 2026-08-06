@@ -43,3 +43,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Cached upstream data for tool/gen_quran_translations.py (re-downloadable)
+tool/.cache/

@@ -92,6 +92,18 @@ class ShareCard extends StatelessWidget {
                       Text(passage.translation!,
                           style: theme.textTheme.bodyLarge),
                     ],
+                    // The translator, set small and directly under their work.
+                    // The card is going somewhere the app isn't, so the person
+                    // who rendered the meaning travels with it.
+                    if (passage.translationCredit != null) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        passage.translationCredit!,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 16),
                     Container(height: Ms.hair, color: ms.rule),
                     const SizedBox(height: 9),

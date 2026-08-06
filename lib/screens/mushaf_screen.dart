@@ -576,7 +576,7 @@ class _PageVersesSheet extends StatelessWidget {
             const RuleDivider(indent: Ms.margin),
             Flexible(
               child: FutureBuilder<List<PageVerse>>(
-                future: repo.versesOnPage(page),
+                future: repo.versesOnPage(page, lang: s.lang.name),
                 builder: (context, snap) {
                   if (!snap.hasData) {
                     return Padding(

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../data/quran_repository.dart';
 import '../../l10n/app_strings.dart';
+import '../../models/quran.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/ornament.dart';
 import 'settings_common.dart';
@@ -8,9 +11,10 @@ import 'settings_common.dart';
 /// The colophon: what the app is, and — as a printed book does on its last
 /// leaf — what it was set in.
 ///
-/// The typeface credits are not decoration. Every face bundled here ships
-/// under the SIL Open Font License, which asks that the fonts be identified;
-/// listing them is both the honest thing and the licence-respecting one.
+/// The credits here are not decoration. Every face bundled ships under the SIL
+/// Open Font License, which asks that the fonts be identified, and the verse
+/// translations are used by permission of the projects that produced them;
+/// listing both is the honest thing and the licence-respecting one.
 class AboutSettingsScreen extends StatelessWidget {
   const AboutSettingsScreen({super.key});
 
@@ -55,44 +59,80 @@ class AboutSettingsScreen extends StatelessWidget {
             ),
           ),
           const SettingsSectionHeader('Set in'),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: Ms.margin),
-            decoration: BoxDecoration(
-              border: Border.all(color: ms.rule),
-              borderRadius: BorderRadius.circular(Ms.rPanel),
-            ),
-            child: Column(
-              children: [
-                for (var i = 0; i < _typefaces.length; i++)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 13, vertical: 10),
-                    decoration: BoxDecoration(
-                      border: i == 0
-                          ? null
-                          : Border(top: BorderSide(color: ms.rule)),
-                    ),
-                    child: Row(
+          const _CreditPanel(_typefaces),
+
+          // The verse meanings. Loaded from the manifest the translation files
+          // are generated with, so what is credited here is necessarily the
+          // edition that actually shipped.
+          FutureBuilder<List<QuranEdition>>(
+            future: context.read<QuranRepository>().loadEditions(),
+            builder: (context, snap) {
+              final editions = snap.data;
+              if (editions == null || editions.isEmpty) {
+                return const SizedBox.shrink();
+              }
+              return Column(
+                children: [
+                  const SettingsSectionHeader('Verse meanings'),
+                  _CreditPanel([
+                    for (final e in editions)
+                      (e.name, e.translator, e.source),
+                  ]),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// A ruled panel of credits: what it is, who made it, under what terms.
+class _CreditPanel extends StatelessWidget {
+  const _CreditPanel(this.rows);
+
+  /// Name, who produced it, and the licence or source it comes under.
+  final List<(String, String, String)> rows;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final ms = ManuscriptTheme.of(context);
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: Ms.margin),
+      decoration: BoxDecoration(
+        border: Border.all(color: ms.rule),
+        borderRadius: BorderRadius.circular(Ms.rPanel),
+      ),
+      child: Column(
+        children: [
+          for (var i = 0; i < rows.length; i++)
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+              decoration: BoxDecoration(
+                border:
+                    i == 0 ? null : Border(top: BorderSide(color: ms.rule)),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(_typefaces[i].$1,
-                                  style: theme.textTheme.titleSmall),
-                              Text(_typefaces[i].$2,
-                                  style: theme.textTheme.bodySmall),
-                            ],
-                          ),
-                        ),
-                        Text(_typefaces[i].$3,
-                            style: theme.textTheme.labelSmall),
+                        Text(rows[i].$1, style: theme.textTheme.titleSmall),
+                        Text(rows[i].$2, style: theme.textTheme.bodySmall),
                       ],
                     ),
                   ),
-              ],
+                  const SizedBox(width: 10),
+                  Text(rows[i].$3, style: theme.textTheme.labelSmall),
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );

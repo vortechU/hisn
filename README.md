@@ -58,6 +58,15 @@ the content is authentic but intentionally small, and it's built to grow.
   text, each with its citation, so a particular āyah can be read, copied, or saved.
   Saved verses are kept apart from saved pages: one records an āyah worth returning
   to, the other records where reading stopped.
+- **Verse meanings** — each verse carries its meaning in the interface language:
+  *The Noble Qur'an* (Hilali & Khan) in English, the Kementerian Agama rendering in
+  Indonesian, both from the [Tanzil Project](https://tanzil.net). An Arabic interface
+  shows none — the verse above it is already Arabic. The mushaf page itself stays a
+  facsimile; the meanings live in the verse list beside it, never interleaved into
+  the glyph page. **The translator travels with the meaning**, onto the share card
+  and into the shared text, on the same principle the citation does.
+  > These translations are licensed for **non-commercial use only**, which binds the
+  > whole app for as long as it ships them. See [TERMS.md](TERMS.md) §6.
 - **Backup & restore** — writes everything the app knows (streak and history, saved
   duas, your own duas, Quran bookmarks, and all settings) to a single readable JSON
   file, handed to the system share sheet so it can go to Drive, Files, or yourself.
