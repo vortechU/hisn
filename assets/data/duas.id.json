@@ -122,11 +122,11 @@
     "virtue": "Menyempurnakan bilangan seratus dengan tahlil menghapus dosa-dosa meskipun sebanyak buih di lautan."
   },
   "salah_ayat_kursi": {
-    "translation": "Allah, tidak ada tuhan yang berhak disembah selain Dia, Yang Maha Hidup lagi Maha Berdiri sendiri (mengurus makhluk-Nya)…",
+    "translation": "Allah, tidak ada tuhan yang berhak disembah selain Dia, Yang Maha Hidup lagi Maha Berdiri sendiri (mengurus makhluk-Nya). Dia tidak mengantuk dan tidak tidur. Milik-Nya apa yang ada di langit dan apa yang ada di bumi. Siapakah yang dapat memberi syafaat di sisi-Nya tanpa izin-Nya? Dia mengetahui apa yang di hadapan mereka dan apa yang di belakang mereka, dan mereka tidak mengetahui sesuatu pun dari ilmu-Nya kecuali apa yang Dia kehendaki. Kursi-Nya meliputi langit dan bumi, dan Dia tidak merasa berat memelihara keduanya. Dialah Yang Maha Tinggi lagi Maha Agung.",
     "virtue": "Tidak ada yang menghalangi antara orang yang membacanya setelah setiap salat wajib dengan surga kecuali kematian."
   },
   "sleep_ayat_kursi": {
-    "translation": "Allah, tidak ada tuhan yang berhak disembah selain Dia, Yang Maha Hidup lagi Maha Berdiri sendiri (mengurus makhluk-Nya)…",
+    "translation": "Allah, tidak ada tuhan yang berhak disembah selain Dia, Yang Maha Hidup lagi Maha Berdiri sendiri (mengurus makhluk-Nya). Dia tidak mengantuk dan tidak tidur. Milik-Nya apa yang ada di langit dan apa yang ada di bumi. Siapakah yang dapat memberi syafaat di sisi-Nya tanpa izin-Nya? Dia mengetahui apa yang di hadapan mereka dan apa yang di belakang mereka, dan mereka tidak mengetahui sesuatu pun dari ilmu-Nya kecuali apa yang Dia kehendaki. Kursi-Nya meliputi langit dan bumi, dan Dia tidak merasa berat memelihara keduanya. Dialah Yang Maha Tinggi lagi Maha Agung.",
     "virtue": "Siapa membacanya ketika hendak tidur, senantiasa ada penjaga dari Allah yang menjaganya, dan setan tidak akan mendekatinya hingga pagi."
   },
   "sleep_bismika": {
@@ -233,5 +233,89 @@
   "evening_salah_nabi": {
     "translation": "Ya Allah, limpahkanlah selawat dan salam kepada Nabi kami Muhammad.",
     "virtue": "Siapa bersalawat kepada Nabi sepuluh kali pada pagi dan sepuluh kali pada petang, ia akan memperoleh syafaat beliau pada hari kiamat."
+  },
+  "salah_la_ilaha_wahdahu": {
+    "translation": "Tidak ada tuhan yang berhak disembah selain Allah semata, tiada sekutu bagi-Nya. Milik-Nya kerajaan dan bagi-Nya segala puji. Dia menghidupkan dan mematikan, dan Dia Mahakuasa atas segala sesuatu. Tidak ada daya dan kekuatan kecuali dengan (pertolongan) Allah. Tidak ada tuhan yang berhak disembah selain Allah, dan kami tidak menyembah kecuali kepada-Nya. Bagi-Nya nikmat, bagi-Nya karunia, dan bagi-Nya pujian yang baik. Tidak ada tuhan yang berhak disembah selain Allah, dengan memurnikan ketaatan bagi-Nya, sekalipun orang-orang kafir membencinya."
+  },
+  "salah_ilman_nafian": {
+    "translation": "Ya Allah, aku memohon kepada-Mu ilmu yang bermanfaat, rezeki yang baik, dan amal yang diterima.",
+    "virtue": "Diucapkan Nabi ﷺ setelah salam dari shalat Subuh."
+  },
+  "salah_muawwidhat": {
+    "translation": "Surah al-Ikhlas, al-Falaq, dan an-Nas (Al-Qur'an 112–114), dibaca sekali setelah setiap shalat, dan tiga kali setelah Subuh dan Maghrib."
+  },
+  "daily_entering_home": {
+    "translation": "Dengan nama Allah kami masuk, dan dengan nama Allah kami keluar, dan kepada Allah Tuhan kami, kami bertawakal.",
+    "virtue": "Kemudian hendaklah ia mengucapkan salam kepada keluarganya."
+  },
+  "daily_wearing_new_clothes": {
+    "translation": "Ya Allah, bagi-Mu segala puji. Engkau telah memberiku pakaian ini. Aku memohon kepada-Mu kebaikannya dan kebaikan untuk apa ia dibuat, dan aku berlindung kepada-Mu dari keburukannya dan keburukan untuk apa ia dibuat."
+  },
+  "daily_marketplace": {
+    "translation": "Tidak ada tuhan yang berhak disembah selain Allah semata, tiada sekutu bagi-Nya. Milik-Nya kerajaan dan bagi-Nya segala puji. Dia menghidupkan dan mematikan, dan Dia Maha Hidup, tidak mati. Di tangan-Nya segala kebaikan, dan Dia Mahakuasa atas segala sesuatu.",
+    "virtue": "Siapa mengucapkannya di pasar, Allah mencatat baginya sejuta kebaikan, menghapus sejuta keburukan, dan membangunkan baginya sebuah rumah di surga."
+  },
+  "daily_anger": {
+    "translation": "Aku berlindung kepada Allah dari setan yang terkutuk.",
+    "virtue": "Nabi ﷺ bersabda bahwa marah itu dari setan; siapa yang marah dalam keadaan berdiri hendaklah ia duduk, dan jika dalam keadaan duduk hendaklah ia berbaring."
+  },
+  "daily_jazakallah_khayr": {
+    "translation": "Semoga Allah membalasmu dengan kebaikan.",
+    "virtue": "Siapa yang diucapkan kepadanya kalimat ini, sungguh ia telah diberi pujian yang sempurna."
+  },
+  "daily_seeing_afflicted": {
+    "translation": "Segala puji bagi Allah yang telah menyelamatkanku dari apa yang Dia timpakan kepadamu, dan yang telah melebihkanku atas banyak makhluk yang Dia ciptakan.",
+    "virtue": "Diucapkan secara pelan, tidak didengar oleh orang yang tertimpa musibah; siapa mengucapkannya tidak akan ditimpa musibah tersebut."
+  },
+  "distress_musibah": {
+    "translation": "Sesungguhnya kami milik Allah dan sesungguhnya kepada-Nya kami kembali. Ya Allah, berilah aku pahala dalam musibahku ini dan gantikanlah untukku dengan yang lebih baik darinya.",
+    "virtue": "Siapa mengucapkannya ketika tertimpa musibah, Allah akan memberinya pahala atasnya dan menggantikan untuknya dengan yang lebih baik."
+  },
+  "distress_debt": {
+    "translation": "Ya Allah, cukupkanlah aku dengan yang halal dari-Mu sehingga aku tidak butuh kepada yang haram, dan cukupkanlah aku dengan karunia-Mu sehingga aku tidak butuh kepada selain-Mu."
+  },
+  "distress_against_oppressor": {
+    "translation": "Ya Allah, sesungguhnya kami menjadikan-Mu di leher-leher mereka (sebagai penghalang), dan kami berlindung kepada-Mu dari kejahatan mereka.",
+    "virtue": "Diucapkan Nabi ﷺ ketika mengkhawatirkan suatu kaum (musuh)."
+  },
+  "forgiveness_rabbana_zalamna": {
+    "translation": "Ya Tuhan kami, kami telah menzalimi diri kami sendiri, dan jika Engkau tidak mengampuni kami serta memberi rahmat kepada kami, niscaya kami termasuk orang-orang yang merugi.",
+    "virtue": "Doa Nabi Adam dan Hawa setelah melakukan kesalahan."
+  },
+  "forgiveness_rabbana_la_tuakhidhna": {
+    "translation": "Ya Tuhan kami, janganlah Engkau hukum kami jika kami lupa atau kami tersalah. Ya Tuhan kami, janganlah Engkau bebankan kepada kami beban yang berat sebagaimana Engkau bebankan kepada orang-orang sebelum kami. Ya Tuhan kami, janganlah Engkau pikulkan kepada kami apa yang tidak sanggup kami memikulnya. Maafkanlah kami, ampunilah kami, dan rahmatilah kami. Engkaulah Pelindung kami, maka tolonglah kami terhadap kaum yang kafir."
+  },
+  "forgiveness_rabbanaghfirlana": {
+    "translation": "Ya Tuhan kami, sesungguhnya kami telah beriman, maka ampunilah dosa-dosa kami dan peliharalah kami dari siksa neraka."
+  },
+  "mosque_going": {
+    "translation": "Ya Allah, jadikanlah cahaya di hatiku, cahaya di lisanku, cahaya di pendengaranku, cahaya di penglihatanku, cahaya dari atasku, cahaya dari bawahku, cahaya dari kananku, cahaya dari kiriku, cahaya dari depanku, cahaya dari belakangku, dan jadikanlah bagiku cahaya.",
+    "virtue": "Bagian dari doa Nabi ﷺ ketika keluar menuju masjid pada malam hari."
+  },
+  "mosque_adhan_response_hayya": {
+    "translation": "Tidak ada daya dan kekuatan kecuali dengan (pertolongan) Allah.",
+    "virtue": "Diucapkan sebagai ganti mengikuti ucapan muazin pada kalimat 'Hayya 'alash-shalah' dan 'Hayya 'alal-falah'; adapun lafal azan yang lain diikuti sebagaimana diucapkan muazin."
+  },
+  "sleep_tasbih_fatima": {
+    "translation": "Mahasuci Allah (33 kali), segala puji bagi Allah (33 kali), Allah Mahabesar (34 kali).",
+    "virtue": "Diajarkan Nabi ﷺ kepada Fathimah radhiyallahu 'anha sebagai ganti seorang pembantu; dan itu lebih baik baginya daripada seorang pembantu."
+  },
+  "sleep_three_quls": {
+    "translation": "Membaca Surah al-Ikhlas, al-Falaq, dan an-Nas, lalu meniup kedua telapak tangan setelah membacanya, kemudian mengusapkannya ke bagian tubuh yang terjangkau, dimulai dari kepala dan wajah, sebanyak tiga kali.",
+    "virtue": "Nabi ﷺ melakukan hal itu setiap malam sebelum tidur."
+  },
+  "sleep_night_fear": {
+    "translation": "Aku berlindung dengan kalimat-kalimat Allah yang sempurna dari kemurkaan-Nya dan siksa-Nya, dari keburukan hamba-hamba-Nya, dan dari bisikan-bisikan setan serta kehadiran mereka.",
+    "virtue": "Dibacakan untuk anak kecil atau diri sendiri ketika terkejut atau takut saat tidur."
+  },
+  "travel_entering_town": {
+    "translation": "Ya Allah, aku memohon kepada-Mu kebaikannya, kebaikan penduduknya, dan kebaikan yang ada padanya, dan aku berlindung kepada-Mu dari keburukannya, keburukan penduduknya, dan keburukan yang ada padanya."
+  },
+  "travel_ascending_descending": {
+    "translation": "Para sahabat mengucapkan takbir (Allahu Akbar) setiap kali melewati jalan yang menanjak, dan tasbih (Subhanallah) setiap kali melewati jalan yang menurun."
+  },
+  "travel_astawdiuka": {
+    "translation": "Aku titipkan kepada Allah agamamu, amanahmu, dan penutup amalmu.",
+    "virtue": "Diucapkan Nabi ﷺ kepada orang yang hendak bepergian."
   }
 }

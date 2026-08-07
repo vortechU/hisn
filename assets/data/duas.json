@@ -5,8 +5,8 @@
     "title": "Ayat al-Kursi",
     "titleArabic": "آيَةُ الْكُرْسِيِّ",
     "arabic": "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَن ذَا الَّذِي يَشْفَعُ عِندَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ",
-    "transliteration": "Allahu la ilaha illa huwal-Hayyul-Qayyum, la ta'khudhuhu sinatun wa la nawm...",
-    "translation": "Allah! There is no deity except Him, the Ever-Living, the Sustainer of all existence. Neither drowsiness overtakes Him nor sleep...",
+    "transliteration": "Allahu la ilaha illa huwal-Hayyul-Qayyum, la ta'khudhuhu sinatun wa la nawm, lahu ma fis-samawati wa ma fil-ard, man dhal-ladhi yashfa'u 'indahu illa bi-idhnih, ya'lamu ma bayna aydihim wa ma khalfahum, wa la yuhituna bishay'im-min 'ilmihi illa bima sha'a, wasi'a kursiyyuhus-samawati wal-ard, wa la ya'uduhu hifzuhuma, wa huwal-'Aliyyul-'Azim",
+    "translation": "Allah! There is no deity except Him, the Ever-Living, the Sustainer of all existence. Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth. Who is it that can intercede with Him except by His permission? He knows what is before them and what will be after them, and they encompass nothing of His knowledge except what He wills. His Kursi extends over the heavens and the earth, and their preservation tires Him not. And He is the Most High, the Most Great.",
     "reference": "Qur'an 2:255",
     "repeat": 1,
     "virtue": "Whoever recites it in the morning is protected from the jinn until evening."
@@ -477,21 +477,55 @@
     "categoryId": "after_salah",
     "title": "Ayat al-Kursi",
     "titleArabic": "آيَةُ الْكُرْسِيِّ",
-    "arabic": "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ",
-    "transliteration": "Allahu la ilaha illa huwal-Hayyul-Qayyum...",
-    "translation": "Allah! There is no deity except Him, the Ever-Living, the Sustainer of existence...",
+    "arabic": "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَن ذَا الَّذِي يَشْفَعُ عِندَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ",
+    "transliteration": "Allahu la ilaha illa huwal-Hayyul-Qayyum, la ta'khudhuhu sinatun wa la nawm, lahu ma fis-samawati wa ma fil-ard, man dhal-ladhi yashfa'u 'indahu illa bi-idhnih, ya'lamu ma bayna aydihim wa ma khalfahum, wa la yuhituna bishay'im-min 'ilmihi illa bima sha'a, wasi'a kursiyyuhus-samawati wal-ard, wa la ya'uduhu hifzuhuma, wa huwal-'Aliyyul-'Azim",
+    "translation": "Allah! There is no deity except Him, the Ever-Living, the Sustainer of existence. Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth. Who is it that can intercede with Him except by His permission? He knows what is before them and what will be after them, and they encompass nothing of His knowledge except what He wills. His Kursi extends over the heavens and the earth, and their preservation tires Him not. And He is the Most High, the Most Great.",
     "reference": "Qur'an 2:255; an-Nasa'i (recited after each prayer)",
     "repeat": 1,
     "virtue": "Nothing stands between whoever recites it after every obligatory prayer and Paradise except death."
+  },
+  {
+    "id": "salah_la_ilaha_wahdahu",
+    "categoryId": "after_salah",
+    "title": "Sincere devotion after Fajr and Maghrib",
+    "titleArabic": "لَا إِلَهَ إِلَّا اللَّهُ مُخْلِصِينَ لَهُ الدِّينَ",
+    "arabic": "لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، يُحْيِي وَيُمِيتُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ، لَا إِلَهَ إِلَّا اللَّهُ، وَلَا نَعْبُدُ إِلَّا إِيَّاهُ، لَهُ النِّعْمَةُ وَلَهُ الْفَضْلُ وَلَهُ الثَّنَاءُ الْحَسَنُ، لَا إِلَهَ إِلَّا اللَّهُ مُخْلِصِينَ لَهُ الدِّينَ وَلَوْ كَرِهَ الْكَافِرُونَ",
+    "transliteration": "La ilaha illallahu wahdahu la sharika lah, lahul-mulku wa lahul-hamd, yuhyi wa yumitu wa huwa 'ala kulli shay'in qadir, la hawla wa la quwwata illa billah, la ilaha illallah, wa la na'budu illa iyyah, lahun-ni'matu wa lahul-fadlu wa lahuth-thana'ul-hasan, la ilaha illallahu mukhlisina lahud-dina wa law karihal-kafirun",
+    "translation": "There is no deity but Allah alone, without partner. His is the dominion and His is all praise. He gives life and causes death, and He is over all things competent. There is no might nor power except with Allah. There is no deity but Allah, and we worship none but Him. His is the favour, His is the grace, and His is the excellent praise. There is no deity but Allah, sincere in devotion to Him alone, even though the disbelievers dislike it.",
+    "reference": "Sahih Muslim 594",
+    "repeat": 1
+  },
+  {
+    "id": "salah_ilman_nafian",
+    "categoryId": "after_salah",
+    "title": "Beneficial knowledge after Fajr",
+    "titleArabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا",
+    "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلًا مُتَقَبَّلًا",
+    "transliteration": "Allahumma inni as'aluka 'ilman nafi'an, wa rizqan tayyiban, wa 'amalan mutaqabbala",
+    "translation": "O Allah, I ask You for beneficial knowledge, good provision, and deeds that are accepted.",
+    "reference": "Sunan Ibn Majah 925",
+    "repeat": 1,
+    "virtue": "Said by the Prophet ﷺ after the salam of the Fajr prayer."
+  },
+  {
+    "id": "salah_muawwidhat",
+    "categoryId": "after_salah",
+    "title": "Al-Ikhlas and al-Mu'awwidhatayn after prayer",
+    "titleArabic": "الْإِخْلَاصُ وَالْمُعَوِّذَتَانِ بَعْدَ الصَّلَاةِ",
+    "arabic": "قُلْ هُوَ اللَّهُ أَحَدٌ، اللَّهُ الصَّمَدُ، لَمْ يَلِدْ وَلَمْ يُولَدْ، وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ ۞ قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ، مِنْ شَرِّ مَا خَلَقَ، وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ، وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ، وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ ۞ قُلْ أَعُوذُ بِرَبِّ النَّاسِ، مَلِكِ النَّاسِ، إِلَهِ النَّاسِ، مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ، الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ، مِنَ الْجِنَّةِ وَالنَّاسِ",
+    "transliteration": "Qul huwallahu ahad... Qul a'udhu bi-Rabbil-falaq... Qul a'udhu bi-Rabbin-nas...",
+    "translation": "Surah al-Ikhlas, al-Falaq, and an-Nas (Qur'an 112–114), recited once after each prayer, and three times after Fajr and Maghrib.",
+    "reference": "Sunan Abi Dawud 1523, an-Nasa'i (graded hasan)",
+    "repeat": 1
   },
   {
     "id": "sleep_ayat_kursi",
     "categoryId": "sleep",
     "title": "Ayat al-Kursi before sleep",
     "titleArabic": "آيَةُ الْكُرْسِيِّ",
-    "arabic": "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ",
-    "transliteration": "Allahu la ilaha illa huwal-Hayyul-Qayyum...",
-    "translation": "Allah! There is no deity except Him, the Ever-Living, the Sustainer of existence...",
+    "arabic": "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَن ذَا الَّذِي يَشْفَعُ عِندَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ",
+    "transliteration": "Allahu la ilaha illa huwal-Hayyul-Qayyum, la ta'khudhuhu sinatun wa la nawm, lahu ma fis-samawati wa ma fil-ard, man dhal-ladhi yashfa'u 'indahu illa bi-idhnih, ya'lamu ma bayna aydihim wa ma khalfahum, wa la yuhituna bishay'im-min 'ilmihi illa bima sha'a, wasi'a kursiyyuhus-samawati wal-ard, wa la ya'uduhu hifzuhuma, wa huwal-'Aliyyul-'Azim",
+    "translation": "Allah! There is no deity except Him, the Ever-Living, the Sustainer of existence. Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth. Who is it that can intercede with Him except by His permission? He knows what is before them and what will be after them, and they encompass nothing of His knowledge except what He wills. His Kursi extends over the heavens and the earth, and their preservation tires Him not. And He is the Most High, the Most Great.",
     "reference": "Sahih al-Bukhari 2311",
     "repeat": 1,
     "virtue": "Whoever recites it on going to bed has a guardian from Allah, and no devil draws near until morning."
@@ -529,6 +563,42 @@
     "translation": "O Allah, protect me from Your punishment on the Day You resurrect Your servants.",
     "reference": "Sunan Abi Dawud 5045",
     "repeat": 3
+  },
+  {
+    "id": "sleep_tasbih_fatima",
+    "categoryId": "sleep",
+    "title": "Tasbih before sleep (Fatimah's tasbih)",
+    "titleArabic": "تَسْبِيحُ فَاطِمَةَ عِنْدَ النَّوْمِ",
+    "arabic": "سُبْحَانَ اللَّهِ (ثَلَاثًا وَثَلَاثِينَ)، وَالْحَمْدُ لِلَّهِ (ثَلَاثًا وَثَلَاثِينَ)، وَاللَّهُ أَكْبَرُ (أَرْبَعًا وَثَلَاثِينَ)",
+    "transliteration": "Subhanallah (x33), Alhamdulillah (x33), Allahu Akbar (x34)",
+    "translation": "Glory be to Allah (33 times), all praise is for Allah (33 times), Allah is the Greatest (34 times).",
+    "reference": "Sahih al-Bukhari 3705, Muslim 2727",
+    "repeat": 1,
+    "virtue": "The Prophet ﷺ taught this to Fatimah in place of a servant; better for her than a servant."
+  },
+  {
+    "id": "sleep_three_quls",
+    "categoryId": "sleep",
+    "title": "The three Quls before sleep",
+    "titleArabic": "الْمُعَوِّذَاتُ عِنْدَ النَّوْمِ",
+    "arabic": "قُلْ هُوَ اللَّهُ أَحَدٌ ۞ قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۞ قُلْ أَعُوذُ بِرَبِّ النَّاسِ",
+    "transliteration": "Qul huwallahu ahad, Qul a'udhu bi-Rabbil-falaq, Qul a'udhu bi-Rabbin-nas",
+    "translation": "Recite Surah al-Ikhlas, al-Falaq, and an-Nas, blowing into the cupped hands after each, then wiping them over whatever can be reached of the body, starting with the head and face, three times.",
+    "reference": "Sahih al-Bukhari 5017",
+    "repeat": 3,
+    "virtue": "The Prophet ﷺ used to do this every night before sleeping."
+  },
+  {
+    "id": "sleep_night_fear",
+    "categoryId": "sleep",
+    "title": "If startled or afraid at night",
+    "titleArabic": "دُعَاءُ الْفَزَعِ فِي النَّوْمِ",
+    "arabic": "أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ غَضَبِهِ وَعِقَابِهِ، وَشَرِّ عِبَادِهِ، وَمِنْ هَمَزَاتِ الشَّيَاطِينِ وَأَنْ يَحْضُرُونِ",
+    "transliteration": "A'udhu bikalimatil-lahit-tammati min ghadabihi wa 'iqabihi, wa sharri 'ibadihi, wa min hamazatish-shayatini wa an yahdurun",
+    "translation": "I seek refuge in the perfect words of Allah from His anger and punishment, from the evil of His servants, and from the whisperings of devils and their presence.",
+    "reference": "Sunan Abi Dawud 3893, Tirmidhi 3528 (graded hasan)",
+    "repeat": 1,
+    "virtue": "Recited for a child or oneself when startled or afraid at night."
   },
   {
     "id": "waking_alhamdulillah_ahyana",
@@ -610,6 +680,77 @@
     "repeat": 1
   },
   {
+    "id": "daily_entering_home",
+    "categoryId": "daily",
+    "title": "Entering the home",
+    "titleArabic": "دُعَاءُ دُخُولِ الْمَنْزِلِ",
+    "arabic": "بِسْمِ اللَّهِ وَلَجْنَا، وَبِسْمِ اللَّهِ خَرَجْنَا، وَعَلَى اللَّهِ رَبِّنَا تَوَكَّلْنَا",
+    "transliteration": "Bismillahi walajna, wa bismillahi kharajna, wa 'ala Rabbina tawakkalna",
+    "translation": "In the name of Allah we enter, and in the name of Allah we leave, and upon Allah our Lord we place our trust.",
+    "reference": "Sunan Abi Dawud 5096",
+    "repeat": 1,
+    "virtue": "Then one should greet the family with the salam."
+  },
+  {
+    "id": "daily_wearing_new_clothes",
+    "categoryId": "daily",
+    "title": "Wearing new clothes",
+    "titleArabic": "دُعَاءُ لُبْسِ الثَّوْبِ الْجَدِيدِ",
+    "arabic": "اللَّهُمَّ لَكَ الْحَمْدُ أَنْتَ كَسَوْتَنِيهِ، أَسْأَلُكَ خَيْرَهُ وَخَيْرَ مَا صُنِعَ لَهُ، وَأَعُوذُ بِكَ مِنْ شَرِّهِ وَشَرِّ مَا صُنِعَ لَهُ",
+    "transliteration": "Allahumma lakal-hamdu anta kasawtanih, as'aluka khayrahu wa khayra ma suni'a lah, wa a'udhu bika min sharrihi wa sharri ma suni'a lah",
+    "translation": "O Allah, praise be to You. You have clothed me with this. I ask You for its good and the good for which it was made, and I seek refuge in You from its evil and the evil for which it was made.",
+    "reference": "Sunan Abi Dawud 4020, Tirmidhi 1767 (graded hasan)",
+    "repeat": 1
+  },
+  {
+    "id": "daily_marketplace",
+    "categoryId": "daily",
+    "title": "Entering the marketplace",
+    "titleArabic": "دُعَاءُ دُخُولِ السُّوقِ",
+    "arabic": "لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، يُحْيِي وَيُمِيتُ، وَهُوَ حَيٌّ لَا يَمُوتُ، بِيَدِهِ الْخَيْرُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",
+    "transliteration": "La ilaha illallahu wahdahu la sharika lah, lahul-mulku wa lahul-hamd, yuhyi wa yumit, wa huwa hayyun la yamut, biyadihil-khayr, wa huwa 'ala kulli shay'in qadir",
+    "translation": "There is no deity but Allah alone, without partner. His is the dominion and His is all praise. He gives life and causes death, and He is Ever-Living and does not die. In His hand is all good, and He is over all things competent.",
+    "reference": "Sunan at-Tirmidhi 3428 (graded hasan)",
+    "repeat": 1,
+    "virtue": "Whoever says it in the marketplace, Allah records for him a million good deeds, erases from him a million bad deeds, and builds for him a house in Paradise."
+  },
+  {
+    "id": "daily_anger",
+    "categoryId": "daily",
+    "title": "When angry",
+    "titleArabic": "دُعَاءُ الْغَضَبِ",
+    "arabic": "أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ",
+    "transliteration": "A'udhu billahi minash-shaytanir-rajim",
+    "translation": "I seek refuge in Allah from Satan, the accursed.",
+    "reference": "Sahih al-Bukhari 6115, Muslim 2610",
+    "repeat": 1,
+    "virtue": "The Prophet ﷺ said anger is from the devil; whoever feels it should sit down if standing, or lie down if sitting."
+  },
+  {
+    "id": "daily_jazakallah_khayr",
+    "categoryId": "daily",
+    "title": "Thanking someone who has done you good",
+    "titleArabic": "الدُّعَاءُ لِمَنْ صَنَعَ إِلَيْكَ مَعْرُوفًا",
+    "arabic": "جَزَاكَ اللَّهُ خَيْرًا",
+    "transliteration": "Jazakallahu khayran",
+    "translation": "May Allah reward you with good.",
+    "reference": "Sunan at-Tirmidhi 2035 (graded hasan)",
+    "repeat": 1,
+    "virtue": "Whoever this is said to has been thanked to the fullest."
+  },
+  {
+    "id": "daily_seeing_afflicted",
+    "categoryId": "daily",
+    "title": "Seeing someone afflicted with a trial",
+    "titleArabic": "دُعَاءُ رُؤْيَةِ الْمُبْتَلَى",
+    "arabic": "الْحَمْدُ لِلَّهِ الَّذِي عَافَانِي مِمَّا ابْتَلَاكَ بِهِ، وَفَضَّلَنِي عَلَى كَثِيرٍ مِمَّنْ خَلَقَ تَفْضِيلًا",
+    "transliteration": "Alhamdu lillahil-ladhi 'afani mimmab-talaka bihi wa faddalani 'ala kathirin mimman khalaqa tafdila",
+    "translation": "All praise is for Allah who has spared me from that which He has afflicted you with, and who has favoured me greatly above much of what He has created.",
+    "reference": "Sunan at-Tirmidhi 3431 (graded hasan)",
+    "repeat": 1,
+    "virtue": "Said quietly, not heard by the afflicted person; whoever says it will never be afflicted with that trial."
+  },
+  {
     "id": "forgiveness_astaghfirullah_azim",
     "categoryId": "forgiveness",
     "title": "The forgiveness that wipes out sins",
@@ -643,6 +784,40 @@
     "reference": "Qur'an 21:87; Tirmidhi 3505",
     "repeat": 1,
     "virtue": "No Muslim ever supplicates with it for anything but Allah answers him."
+  },
+  {
+    "id": "forgiveness_rabbana_zalamna",
+    "categoryId": "forgiveness",
+    "title": "The supplication of Adam",
+    "titleArabic": "دُعَاءُ آدَمَ عَلَيْهِ السَّلَامُ",
+    "arabic": "رَبَّنَا ظَلَمْنَا أَنْفُسَنَا وَإِنْ لَمْ تَغْفِرْ لَنَا وَتَرْحَمْنَا لَنَكُونَنَّ مِنَ الْخَاسِرِينَ",
+    "transliteration": "Rabbana zalamna anfusana wa in lam taghfir lana wa tarhamna lanakunanna minal-khasirin",
+    "translation": "Our Lord, we have wronged ourselves, and if You do not forgive us and have mercy upon us, we will surely be among the losers.",
+    "reference": "Qur'an 7:23",
+    "repeat": 1,
+    "virtue": "The supplication of Adam and Hawwa' (Eve) after their error."
+  },
+  {
+    "id": "forgiveness_rabbana_la_tuakhidhna",
+    "categoryId": "forgiveness",
+    "title": "Rabbana la tu'akhidhna",
+    "titleArabic": "رَبَّنَا لَا تُؤَاخِذْنَا",
+    "arabic": "رَبَّنَا لَا تُؤَاخِذْنَا إِنْ نَسِينَا أَوْ أَخْطَأْنَا، رَبَّنَا وَلَا تَحْمِلْ عَلَيْنَا إِصْرًا كَمَا حَمَلْتَهُ عَلَى الَّذِينَ مِنْ قَبْلِنَا، رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِ، وَاعْفُ عَنَّا وَاغْفِرْ لَنَا وَارْحَمْنَا، أَنْتَ مَوْلَانَا فَانْصُرْنَا عَلَى الْقَوْمِ الْكَافِرِينَ",
+    "transliteration": "Rabbana la tu'akhidhna in nasina aw akhta'na, Rabbana wa la tahmil 'alayna isran kama hamaltahu 'alal-ladhina min qablina, Rabbana wa la tuhammilna ma la taqata lana bih, wa'fu 'anna waghfir lana warhamna, anta Mawlana fansurna 'alal-qawmil-kafirin",
+    "translation": "Our Lord, do not hold us accountable if we forget or make a mistake. Our Lord, do not lay upon us a burden like that which You laid upon those before us. Our Lord, do not burden us with what we have no strength to bear. Pardon us, forgive us, and have mercy on us. You are our Protector, so give us victory over the disbelieving people.",
+    "reference": "Qur'an 2:286",
+    "repeat": 1
+  },
+  {
+    "id": "forgiveness_rabbanaghfirlana",
+    "categoryId": "forgiveness",
+    "title": "Our Lord, we have believed",
+    "titleArabic": "رَبَّنَا إِنَّنَا آمَنَّا",
+    "arabic": "رَبَّنَا إِنَّنَا آمَنَّا فَاغْفِرْ لَنَا ذُنُوبَنَا وَقِنَا عَذَابَ النَّارِ",
+    "transliteration": "Rabbana innana amanna faghfir lana dhunubana wa qina 'adhaban-nar",
+    "translation": "Our Lord, indeed we have believed, so forgive us our sins and protect us from the punishment of the Fire.",
+    "reference": "Qur'an 3:16",
+    "repeat": 1
   },
   {
     "id": "distress_hamm_hazan",
@@ -690,6 +865,41 @@
     "virtue": "The saying of Ibrahim when cast into the fire, and of the Prophet ﷺ and the believers."
   },
   {
+    "id": "distress_musibah",
+    "categoryId": "distress",
+    "title": "At a calamity or loss",
+    "titleArabic": "دُعَاءُ الْمُصِيبَةِ",
+    "arabic": "إِنَّا لِلَّهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ، اللَّهُمَّ أْجُرْنِي فِي مُصِيبَتِي وَأَخْلِفْ لِي خَيْرًا مِنْهَا",
+    "transliteration": "Inna lillahi wa inna ilayhi raji'un, Allahumma'-jurni fi musibati wa akhlif li khayran minha",
+    "translation": "Indeed we belong to Allah, and indeed to Him we will return. O Allah, reward me for my affliction and compensate me with what is better than it.",
+    "reference": "Sahih Muslim 918",
+    "repeat": 1,
+    "virtue": "Whoever says it at a calamity, Allah rewards him for it and compensates him with better than what he lost."
+  },
+  {
+    "id": "distress_debt",
+    "categoryId": "distress",
+    "title": "For relief from debt",
+    "titleArabic": "دُعَاءُ الِاسْتِعَانَةِ عَلَى قَضَاءِ الدَّيْنِ",
+    "arabic": "اللَّهُمَّ اكْفِنِي بِحَلَالِكَ عَنْ حَرَامِكَ، وَأَغْنِنِي بِفَضْلِكَ عَمَّنْ سِوَاكَ",
+    "transliteration": "Allahumma-kfini bihalalika 'an haramik, wa aghnini bifadlika 'amman siwak",
+    "translation": "O Allah, suffice me with what You have made lawful instead of what You have forbidden, and make me independent of all others besides You by Your grace.",
+    "reference": "Sunan at-Tirmidhi 3563 (graded hasan)",
+    "repeat": 1
+  },
+  {
+    "id": "distress_against_oppressor",
+    "categoryId": "distress",
+    "title": "Against an oppressor or a feared enemy",
+    "titleArabic": "دُعَاءُ الْخَوْفِ مِنَ الظَّالِمِ",
+    "arabic": "اللَّهُمَّ إِنَّا نَجْعَلُكَ فِي نُحُورِهِمْ، وَنَعُوذُ بِكَ مِنْ شُرُورِهِمْ",
+    "transliteration": "Allahumma inna naj'aluka fi nuhurihim, wa na'udhu bika min shururihim",
+    "translation": "O Allah, we place You against their throats, and we seek refuge in You from their evils.",
+    "reference": "Sunan Abi Dawud 1537",
+    "repeat": 1,
+    "virtue": "Said by the Prophet ﷺ against an enemy he feared."
+  },
+  {
     "id": "travel_setting_off",
     "categoryId": "travel",
     "title": "Setting off on a journey",
@@ -724,6 +934,40 @@
     "repeat": 1
   },
   {
+    "id": "travel_entering_town",
+    "categoryId": "travel",
+    "title": "Entering a town or village",
+    "titleArabic": "دُعَاءُ دُخُولِ الْقَرْيَةِ",
+    "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَهَا وَخَيْرَ أَهْلِهَا وَخَيْرَ مَا فِيهَا، وَأَعُوذُ بِكَ مِنْ شَرِّهَا وَشَرِّ أَهْلِهَا وَشَرِّ مَا فِيهَا",
+    "transliteration": "Allahumma inni as'aluka khayraha wa khayra ahliha wa khayra ma fiha, wa a'udhu bika min sharriha wa sharri ahliha wa sharri ma fiha",
+    "translation": "O Allah, I ask You for its good, the good of its people, and the good in it, and I seek refuge in You from its evil, the evil of its people, and the evil in it.",
+    "reference": "Ibn Hibban (graded sahih by al-Albani)",
+    "repeat": 1
+  },
+  {
+    "id": "travel_ascending_descending",
+    "categoryId": "travel",
+    "title": "Ascending and descending on a journey",
+    "titleArabic": "التَّكْبِيرُ عِنْدَ الصُّعُودِ وَالتَّسْبِيحُ عِنْدَ الْهُبُوطِ",
+    "arabic": "اللَّهُ أَكْبَرُ (عِنْدَ الصُّعُودِ)، سُبْحَانَ اللَّهِ (عِنْدَ الْهُبُوطِ)",
+    "transliteration": "Allahu Akbar (when ascending), Subhanallah (when descending)",
+    "translation": "The Companions would say the takbir (Allahu Akbar) whenever the path went uphill, and the tasbih (Subhanallah) whenever it went downhill.",
+    "reference": "Sahih al-Bukhari 2993",
+    "repeat": 1
+  },
+  {
+    "id": "travel_astawdiuka",
+    "categoryId": "travel",
+    "title": "Bidding farewell to a traveller",
+    "titleArabic": "دُعَاءُ تَوْدِيعِ الْمُسَافِرِ",
+    "arabic": "أَسْتَوْدِعُ اللَّهَ دِينَكَ وَأَمَانَتَكَ وَآخِرَ عَمَلِكَ",
+    "transliteration": "Astawdi'ullaha dinaka wa amanataka wa akhira 'amalik",
+    "translation": "I entrust to Allah your religion, your trust, and the last of your deeds.",
+    "reference": "Sunan at-Tirmidhi 3443 (graded hasan)",
+    "repeat": 1,
+    "virtue": "Said by the Prophet ﷺ to one setting out on a journey."
+  },
+  {
     "id": "mosque_after_adhan",
     "categoryId": "mosque",
     "title": "After the adhan",
@@ -756,5 +1000,29 @@
     "translation": "O Allah, I ask You from Your bounty.",
     "reference": "Sahih Muslim 713",
     "repeat": 1
+  },
+  {
+    "id": "mosque_going",
+    "categoryId": "mosque",
+    "title": "Going out to the mosque",
+    "titleArabic": "دُعَاءُ الذَّهَابِ إِلَى الْمَسْجِدِ",
+    "arabic": "اللَّهُمَّ اجْعَلْ فِي قَلْبِي نُورًا، وَفِي لِسَانِي نُورًا، وَفِي سَمْعِي نُورًا، وَفِي بَصَرِي نُورًا، وَمِنْ فَوْقِي نُورًا، وَمِنْ تَحْتِي نُورًا، وَعَنْ يَمِينِي نُورًا، وَعَنْ شِمَالِي نُورًا، وَمِنْ أَمَامِي نُورًا، وَمِنْ خَلْفِي نُورًا، وَاجْعَلْ لِي نُورًا",
+    "transliteration": "Allahumma-j'al fi qalbi nuran, wa fi lisani nuran, wa fi sam'i nuran, wa fi basari nuran, wa min fawqi nuran, wa min tahti nuran, wa 'an yamini nuran, wa 'an shimali nuran, wa min amami nuran, wa min khalfi nuran, waj'al li nuran",
+    "translation": "O Allah, place light in my heart, light on my tongue, light in my hearing, light in my sight, light above me, light below me, light on my right, light on my left, light in front of me, light behind me, and grant me light.",
+    "reference": "Sahih al-Bukhari 6316, Muslim 763",
+    "repeat": 1,
+    "virtue": "Part of the Prophet ﷺ's supplication when he went out to the mosque at night."
+  },
+  {
+    "id": "mosque_adhan_response_hayya",
+    "categoryId": "mosque",
+    "title": "Responding to 'Come to prayer'",
+    "titleArabic": "إِجَابَةُ حَيَّ عَلَى الصَّلَاةِ",
+    "arabic": "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ",
+    "transliteration": "La hawla wa la quwwata illa billah",
+    "translation": "There is no might nor power except with Allah.",
+    "reference": "Sahih Muslim 385",
+    "repeat": 1,
+    "virtue": "Said in place of repeating the mu'adhin at 'Hayya 'ala-salah' and 'Hayya 'alal-falah'; the rest of the adhan is repeated word for word."
   }
 ]

@@ -233,5 +233,89 @@
   },
   "mosque_leaving": {
     "reference": "صحيح مسلم ٧١٣"
+  },
+  "salah_la_ilaha_wahdahu": {
+    "reference": "صحيح مسلم ٥٩٤"
+  },
+  "salah_ilman_nafian": {
+    "reference": "سنن ابن ماجه ٩٢٥",
+    "virtue": "كان النبي صلى الله عليه وسلم يقولها إذا سلّم من صلاة الفجر."
+  },
+  "salah_muawwidhat": {
+    "reference": "سنن أبي داود ١٥٢٣، النسائي (حسن)"
+  },
+  "daily_entering_home": {
+    "reference": "سنن أبي داود ٥٠٩٦",
+    "virtue": "ثم يُسلّم على أهله."
+  },
+  "daily_wearing_new_clothes": {
+    "reference": "سنن أبي داود ٤٠٢٠، الترمذي ١٧٦٧ (حسن)"
+  },
+  "daily_marketplace": {
+    "reference": "سنن الترمذي ٣٤٢٨ (حسن)",
+    "virtue": "من قالها في السوق كتب الله له ألف ألف حسنة، ومحا عنه ألف ألف سيئة، وبنى له بيتًا في الجنة."
+  },
+  "daily_anger": {
+    "reference": "صحيح البخاري ٦١١٥، مسلم ٢٦١٠",
+    "virtue": "قال النبي صلى الله عليه وسلم: إن الغضب من الشيطان، فمن وجده وهو قائم فليجلس، ومن وجده وهو جالس فليضطجع."
+  },
+  "daily_jazakallah_khayr": {
+    "reference": "سنن الترمذي ٢٠٣٥ (حسن)",
+    "virtue": "من قيلت له فقد أُبلغ في الثناء."
+  },
+  "daily_seeing_afflicted": {
+    "reference": "سنن الترمذي ٣٤٣١ (حسن)",
+    "virtue": "تُقال سرًّا ولا يسمعها المبتلى؛ من قالها لم يصبه ذلك البلاء."
+  },
+  "distress_musibah": {
+    "reference": "صحيح مسلم ٩١٨",
+    "virtue": "من قالها عند المصيبة أجره الله فيها وأخلف له خيرًا منها."
+  },
+  "distress_debt": {
+    "reference": "سنن الترمذي ٣٥٦٣ (حسن)"
+  },
+  "distress_against_oppressor": {
+    "reference": "سنن أبي داود ١٥٣٧",
+    "virtue": "كان النبي صلى الله عليه وسلم يقولها إذا خاف قومًا."
+  },
+  "forgiveness_rabbana_zalamna": {
+    "reference": "القرآن الكريم، الأعراف: ٢٣",
+    "virtue": "دعاء آدم وحواء عليهما السلام بعد الخطيئة."
+  },
+  "forgiveness_rabbana_la_tuakhidhna": {
+    "reference": "القرآن الكريم، البقرة: ٢٨٦"
+  },
+  "forgiveness_rabbanaghfirlana": {
+    "reference": "القرآن الكريم، آل عمران: ١٦"
+  },
+  "mosque_going": {
+    "reference": "صحيح البخاري ٦٣١٦، مسلم ٧٦٣",
+    "virtue": "من دعاء النبي صلى الله عليه وسلم إذا خرج إلى المسجد ليلًا."
+  },
+  "mosque_adhan_response_hayya": {
+    "reference": "صحيح مسلم ٣٨٥",
+    "virtue": "تُقال بدلًا من ترديد قول المؤذن عند حي على الصلاة وحي على الفلاح، وما عداهما يُردَّد كما يقوله المؤذن."
+  },
+  "sleep_tasbih_fatima": {
+    "reference": "صحيح البخاري ٣٧٠٥، مسلم ٢٧٢٧",
+    "virtue": "علّمه النبي صلى الله عليه وسلم فاطمة رضي الله عنها بدلًا من خادم؛ وهو خير لها من خادم."
+  },
+  "sleep_three_quls": {
+    "reference": "صحيح البخاري ٥٠١٧",
+    "virtue": "كان النبي صلى الله عليه وسلم يفعل ذلك كل ليلة قبل أن ينام."
+  },
+  "sleep_night_fear": {
+    "reference": "سنن أبي داود ٣٨٩٣، الترمذي ٣٥٢٨ (حسن)",
+    "virtue": "تُقال للصبي أو لمن فزع من النوم."
+  },
+  "travel_entering_town": {
+    "reference": "ابن حبان (صححه الألباني)"
+  },
+  "travel_ascending_descending": {
+    "reference": "صحيح البخاري ٢٩٩٣"
+  },
+  "travel_astawdiuka": {
+    "reference": "سنن الترمذي ٣٤٤٣ (حسن)",
+    "virtue": "كان النبي صلى الله عليه وسلم يقولها لمن أراد سفرًا."
   }
 }
