@@ -23,6 +23,7 @@ import 'services/tasbih_controller.dart';
 import 'services/theme_controller.dart';
 import 'theme/app_theme.dart';
 import 'util/app_navigator.dart';
+import 'widgets/home_widget_link.dart';
 
 /// The dua ids in [categoryId] that count toward the daily streak — everything
 /// except the long 100× dhikr (see [MuhassanService.highRepeatThreshold]), so a
@@ -149,13 +150,28 @@ class _DuaAppState extends State<DuaApp> {
               (notifications ?? NotificationService(prefs, repository))
                 ..bind(prayer, adhan, progress, calendar),
         ),
-        ChangeNotifierProxyProvider3<PrayerService, LocaleController,
-            SunnahCalendarService, PrayerWidgetService>(
-          // Eager so the home-screen widget is refreshed at launch.
+        // The home-screen widgets draw from most of the app at once: where you
+        // are, which language and scheme, how far through today's adhkar. The
+        // tasbih phrase is bound by reading rather than watching — choosing a
+        // new one pushes for itself (see TasbihController.select), and its
+        // count changes on every tap, which would otherwise re-push the whole
+        // payload each time a bead was told.
+        ChangeNotifierProxyProvider6<
+            PrayerService,
+            LocaleController,
+            SunnahCalendarService,
+            ThemeController,
+            DisplaySettings,
+            DuaProgressService,
+            PrayerWidgetService>(
+          // Eager so the home-screen widgets are refreshed at launch.
           lazy: false,
-          create: (_) => PrayerWidgetService(),
-          update: (_, prayer, locale, calendar, widget) =>
-              (widget ?? PrayerWidgetService())..bind(prayer, locale, calendar),
+          create: (_) => PrayerWidgetService(repository),
+          update: (context, prayer, locale, calendar, theme, display, progress,
+                  widget) =>
+              (widget ?? PrayerWidgetService(repository))
+                ..bind(prayer, locale, calendar, theme, display, progress,
+                    context.read<TasbihController>()),
         ),
       ],
       // DisplaySettings joins the theme because the Latin faces carry no
@@ -188,9 +204,11 @@ class _DuaAppState extends State<DuaApp> {
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            home: (prefs.getBool(OnboardingScreen.seenKey) ?? false)
-                ? const HomeScreen()
-                : OnboardingScreen(prefs: prefs),
+            home: HomeWidgetLink(
+              child: (prefs.getBool(OnboardingScreen.seenKey) ?? false)
+                  ? const HomeScreen()
+                  : OnboardingScreen(prefs: prefs),
+            ),
           );
         },
       ),

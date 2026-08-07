@@ -18,17 +18,14 @@ import '../widgets/ornament.dart';
 /// which is what a hand on a string of beads gives you.
 ///
 /// Light haptics on each tap, a stronger pulse when a full set completes.
-class TasbihScreen extends StatefulWidget {
+///
+/// Which phrase is being counted lives in [TasbihController] rather than here,
+/// because the home-screen tasbih widget shows it too — and because a counter
+/// that forgot your dhikr between visits was a small unkindness.
+class TasbihScreen extends StatelessWidget {
   const TasbihScreen({super.key});
 
-  @override
-  State<TasbihScreen> createState() => _TasbihScreenState();
-}
-
-class _TasbihScreenState extends State<TasbihScreen> {
-  int _selected = 0;
-
-  Future<void> _count(Dhikr dhikr) async {
+  Future<void> _count(BuildContext context, Dhikr dhikr) async {
     final completed = await context
         .read<TasbihController>()
         .increment(dhikr.id, dhikr.target);
@@ -46,7 +43,11 @@ class _TasbihScreenState extends State<TasbihScreen> {
     final dhikrList = context.read<DuaRepository>().dhikr;
     final controller = context.watch<TasbihController>();
     final s = AppStrings.of(context);
-    final dhikr = dhikrList[_selected];
+    // Falls back to the first preset when nothing has been chosen yet, or when
+    // a stored choice no longer matches anything in the collection.
+    final selected = dhikrList.indexWhere((d) => d.id == controller.selectedId);
+    final index = selected < 0 ? 0 : selected;
+    final dhikr = dhikrList[index];
     final count = controller.countFor(dhikr.id);
     final laps = controller.lapsFor(dhikr.id);
 
@@ -66,13 +67,14 @@ class _TasbihScreenState extends State<TasbihScreen> {
         children: [
           _PhraseSelector(
             phrases: dhikrList,
-            selected: _selected,
-            onSelect: (i) => setState(() => _selected = i),
+            selected: index,
+            onSelect: (i) =>
+                context.read<TasbihController>().select(dhikrList[i]),
           ),
           Expanded(
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTap: () => _count(dhikr),
+              onTap: () => _count(context, dhikr),
               child: SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(Ms.margin, 20, Ms.margin, 28),
                 child: Column(

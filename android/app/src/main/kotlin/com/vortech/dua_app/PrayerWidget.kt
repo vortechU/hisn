@@ -55,10 +55,13 @@ object PrayerWidget {
         editor.apply()
     }
 
-    /** Redraw every instance of both widget sizes. */
+    /** Redraw every instance of every Hisn widget. */
     fun refresh(context: Context) {
         refreshProvider(context, PrayerWidgetProvider::class.java)
         refreshProvider(context, PrayerWidgetSmallProvider::class.java)
+        refreshProvider(context, TasbihWidgetProvider::class.java)
+        refreshProvider(context, AdhkarWidgetProvider::class.java)
+        refreshProvider(context, AyahWidgetProvider::class.java)
     }
 
     private fun refreshProvider(context: Context, cls: Class<*>) {

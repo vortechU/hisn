@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Arabic names for the widgets, matching the terms the app itself uses:
+    الأذكار, المسبحة, الصلاة (see lib/i18n/ar.i18n.json).
+-->
+<resources>
+    <string name="widget_prayer_label">حصن — أوقات الصلاة</string>
+    <string name="widget_prayer_description">صلوات اليوم الخمس، مع تمييز الصلاة التالية.</string>
+
+    <string name="widget_prayer_small_label">حصن — الصلاة التالية</string>
+    <string name="widget_prayer_small_description">الصلاة التالية والوقت المتبقّي لها.</string>
+
+    <string name="widget_tasbih_label">حصن — المسبحة</string>
+    <string name="widget_tasbih_description">اضغط لتسبّح دون فتح التطبيق.</string>
+
+    <string name="widget_adhkar_label">حصن — أذكار الآن</string>
+    <string name="widget_adhkar_description">أذكار هذا الوقت من اليوم، وما أتممته منها.</string>
+
+    <string name="widget_ayah_label">حصن — آية اليوم</string>
+    <string name="widget_ayah_description">آية أو دعاء يتغيّر كل يوم.</string>
+</resources>

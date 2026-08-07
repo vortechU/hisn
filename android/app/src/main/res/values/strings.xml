@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Widget names and descriptions, as they appear in the launcher's widget
+    picker.
+
+    These are Android resources rather than app strings: the picker reads them
+    while the app is not running, so slang cannot supply them. Translations live
+    in values-ar and values-in alongside.
+-->
+<resources>
+    <string name="widget_prayer_label">Hisn — Prayer times</string>
+    <string name="widget_prayer_description">Today\'s five prayers, with the next one marked.</string>
+
+    <string name="widget_prayer_small_label">Hisn — Next prayer</string>
+    <string name="widget_prayer_small_description">The next prayer and a live countdown to it.</string>
+
+    <string name="widget_tasbih_label">Hisn — Tasbih</string>
+    <string name="widget_tasbih_description">Tap to count dhikr without opening the app.</string>
+
+    <string name="widget_adhkar_label">Hisn — Adhkar now</string>
+    <string name="widget_adhkar_description">The adhkar for this part of the day, and your progress through them.</string>
+
+    <string name="widget_ayah_label">Hisn — Verse of the day</string>
+    <string name="widget_ayah_description">A verse or supplication, changing each day.</string>
+</resources>

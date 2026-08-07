@@ -1,6 +1,5 @@
 package com.vortech.dua_app
 
-import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
@@ -11,10 +10,16 @@ import java.util.Date
 import java.util.Locale
 
 /**
- * The larger widget: the five daily prayer times with the next one highlighted.
+ * The larger widget: the five daily prayer times with the next one marked.
+ *
  * Times are computed natively (see [PrayerWidget.compute]) so it stays correct
  * on its own — Android re-runs [onUpdate] every ~30 min, and the app / adhan
  * alarm nudge it on changes.
+ *
+ * The next prayer is marked the way the app marks an active choice: a wash of
+ * the rubric behind the cell and a rule under it, rather than a filled pill.
+ * Colour alone would not survive a colour-blind reader or a busy wallpaper;
+ * the rule carries the same information as a shape.
  */
 class PrayerWidgetProvider : AppWidgetProvider() {
 
@@ -29,42 +34,47 @@ class PrayerWidgetProvider : AppWidgetProvider() {
 
     private fun buildViews(context: Context): RemoteViews {
         val data = PrayerWidget.compute(context)
+        val ms = WidgetTheme.of(context)
         val views = RemoteViews(context.packageName, R.layout.prayer_widget)
 
-        views.setOnClickPendingIntent(R.id.widget_root, launchIntent(context))
-        views.setTextViewText(R.id.widget_location, data.label)
-        views.setTextViewText(R.id.widget_hijri, data.hijri)
+        WidgetChrome.applySheet(views, ms)
+        WidgetChrome.open(context, WidgetChrome.ROUTE_PRAYER)?.let {
+            views.setOnClickPendingIntent(R.id.widget_root, it)
+        }
 
-        val nameIds = intArrayOf(
-            R.id.name_fajr, R.id.name_dhuhr, R.id.name_asr,
-            R.id.name_maghrib, R.id.name_isha,
-        )
-        val timeIds = intArrayOf(
-            R.id.time_fajr, R.id.time_dhuhr, R.id.time_asr,
-            R.id.time_maghrib, R.id.time_isha,
-        )
-        val cellIds = intArrayOf(
-            R.id.cell_fajr, R.id.cell_dhuhr, R.id.cell_asr,
-            R.id.cell_maghrib, R.id.cell_isha,
-        )
-        for (i in nameIds.indices) views.setTextViewText(nameIds[i], data.names[i])
+        views.setTextViewText(R.id.widget_location, data.label)
+        views.setTextColor(R.id.widget_location, ms.ink)
+        views.setTextViewText(R.id.widget_hijri, data.hijri)
+        views.setTextColor(R.id.widget_hijri, ms.muted)
+        views.setInt(R.id.widget_header_rule, "setBackgroundColor", ms.rule)
+
+        for (i in NAME_IDS.indices) {
+            views.setTextViewText(NAME_IDS[i], data.names[i])
+        }
 
         val times = data.times
         if (times == null) {
-            for (id in timeIds) views.setTextViewText(id, "—")
+            // No location yet: draw the table empty rather than guessing, and
+            // leave every cell unmarked so nothing reads as "next".
+            for (i in NAME_IDS.indices) {
+                views.setTextViewText(TIME_IDS[i], EM_DASH)
+                views.setTextColor(NAME_IDS[i], ms.muted)
+                views.setTextColor(TIME_IDS[i], ms.muted)
+                views.setInt(CELL_IDS[i], "setBackgroundColor", TRANSPARENT)
+                views.setInt(MARK_IDS[i], "setBackgroundColor", TRANSPARENT)
+            }
             return views
         }
 
         val formatter = SimpleDateFormat("h:mm", Locale.US)
+        val wash = WidgetTheme.fade(ms.rubric, 0.10f)
         for (i in times.indices) {
-            views.setTextViewText(timeIds[i], format(times[i], formatter, data.am, data.pm))
-            val highlight = i == data.nextIndex
-            views.setInt(
-                cellIds[i], "setBackgroundResource",
-                if (highlight) R.drawable.widget_cell_highlight else 0,
-            )
-            views.setTextColor(nameIds[i], if (highlight) NAME_ON else NAME_OFF)
-            views.setTextColor(timeIds[i], if (highlight) TIME_ON else TIME_OFF)
+            views.setTextViewText(TIME_IDS[i], format(times[i], formatter, data.am, data.pm))
+            val next = i == data.nextIndex
+            views.setInt(CELL_IDS[i], "setBackgroundColor", if (next) wash else TRANSPARENT)
+            views.setInt(MARK_IDS[i], "setBackgroundColor", if (next) ms.rubric else TRANSPARENT)
+            views.setTextColor(NAME_IDS[i], if (next) ms.rubric else ms.muted)
+            views.setTextColor(TIME_IDS[i], if (next) ms.rubric else ms.ink)
         }
         return views
     }
@@ -75,19 +85,25 @@ class PrayerWidgetProvider : AppWidgetProvider() {
         return "${fmt.format(date)} $marker"
     }
 
-    private fun launchIntent(context: Context): PendingIntent? {
-        val launch = context.packageManager
-            .getLaunchIntentForPackage(context.packageName) ?: return null
-        return PendingIntent.getActivity(
-            context, 0, launch,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
-        )
-    }
-
     private companion object {
-        const val NAME_ON = 0xFFFFD98A.toInt()
-        const val NAME_OFF = 0xFF9DB9C7.toInt()
-        const val TIME_ON = 0xFFFFFFFF.toInt()
-        const val TIME_OFF = 0xFFE6F0F4.toInt()
+        const val TRANSPARENT = 0x00000000
+        const val EM_DASH = "—"
+
+        val NAME_IDS = intArrayOf(
+            R.id.name_fajr, R.id.name_dhuhr, R.id.name_asr,
+            R.id.name_maghrib, R.id.name_isha,
+        )
+        val TIME_IDS = intArrayOf(
+            R.id.time_fajr, R.id.time_dhuhr, R.id.time_asr,
+            R.id.time_maghrib, R.id.time_isha,
+        )
+        val CELL_IDS = intArrayOf(
+            R.id.cell_fajr, R.id.cell_dhuhr, R.id.cell_asr,
+            R.id.cell_maghrib, R.id.cell_isha,
+        )
+        val MARK_IDS = intArrayOf(
+            R.id.mark_fajr, R.id.mark_dhuhr, R.id.mark_asr,
+            R.id.mark_maghrib, R.id.mark_isha,
+        )
     }
 }

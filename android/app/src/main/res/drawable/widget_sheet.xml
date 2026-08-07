@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The page a widget is drawn on.
+
+    Set as an ImageView src and recoloured at runtime with setColorFilter, which
+    is SRC_ATOP: it replaces the RGB outright and keeps only the source alpha.
+    That is what lets one drawable serve all six palettes in both brightnesses
+    on minSdk 21, where background tint lists (API 31) are not available.
+
+    The authored colour is Emerald's light paper, so the widget picker's preview
+    shows the app's default scheme rather than a white slab.
+
+    The 20dp radius is larger than the app's own near-square panels on purpose:
+    from Android 12 the launcher clips widgets to its own corner radius, and a
+    3dp corner would simply be shaved off. The manuscript squareness is carried
+    by the ruled frame inside instead — see widget_jadwal.xml.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#F7F2E6" />
+    <corners android:radius="20dp" />
+</shape>

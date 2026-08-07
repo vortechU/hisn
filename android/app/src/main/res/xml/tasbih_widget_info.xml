@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    updatePeriodMillis is 0 on purpose: nothing about this widget changes with
+    time. It redraws when it is tapped and when the app pushes a new phrase, so
+    a periodic wake-up would cost battery to draw the same thing again.
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="110dp"
+    android:minHeight="110dp"
+    android:targetCellWidth="2"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="0"
+    android:description="@string/widget_tasbih_description"
+    android:initialLayout="@layout/tasbih_widget"
+    android:previewLayout="@layout/tasbih_widget"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen" />

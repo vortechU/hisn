@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Updated on the ordinary half-hourly tick: the set it shows turns over at
+    prayer boundaries, which this recomputes natively on each redraw.
+-->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:minWidth="250dp"
     android:minHeight="110dp"
     android:targetCellWidth="4"
     android:targetCellHeight="2"
     android:updatePeriodMillis="1800000"
-    android:description="@string/widget_prayer_description"
-    android:initialLayout="@layout/prayer_widget"
-    android:previewLayout="@layout/prayer_widget"
+    android:description="@string/widget_adhkar_description"
+    android:initialLayout="@layout/adhkar_widget"
+    android:previewLayout="@layout/adhkar_widget"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen" />

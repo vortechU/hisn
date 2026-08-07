@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The jadwal: the ruled frame that borders a manuscript text block.
+
+    Two rules — an outer and a hairline inner separated by a narrow gutter —
+    the same pair JadwalFrame draws in the app, and the reason neither the app
+    nor these widgets need a drop shadow.
+
+    Recoloured at runtime by setColorFilter, so the rule colour Flutter pushes
+    must be *opaque* (already composited over the sheet). SRC_ATOP blends a
+    translucent filter colour toward the authored one instead of thinning it,
+    which would leave every palette's rules looking subtly wrong.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" />
+            <stroke android:width="1dp" android:color="#9A8F7C" />
+            <corners android:radius="5dp" />
+        </shape>
+    </item>
+    <item
+        android:left="3dp"
+        android:top="3dp"
+        android:right="3dp"
+        android:bottom="3dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" />
+            <stroke android:width="1dp" android:color="#9A8F7C" />
+            <corners android:radius="3dp" />
+        </shape>
+    </item>
+</layer-list>

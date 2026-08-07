@@ -1,72 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--
+    The compact widget: the next prayer, and how long is left.
+
+    The prayer name carries two slots — a plain TextView and an ImageView. In a
+    Latin interface the TextView is used; in an Arabic one the provider draws
+    the name in the app's own Arabic face (see WidgetArabic) and shows the image
+    instead, because at this size the system's substituted naskh is obvious next
+    to the app it came from. The TextView stays as the fallback for when the
+    font cannot be loaded.
+
+    Rows are kept to four and sized against the 110dp minimum height: apparatus
+    line, name, countdown, time. There is no room for a fifth at the smallest
+    size a launcher will allow this widget to be.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_root_small"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@drawable/widget_background"
-    android:gravity="center_vertical"
-    android:padding="14dp">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/small_hijri"
+    <ImageView
+        android:id="@+id/widget_ground"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#7FA6B8"
-        android:textSize="11sp"
-        android:maxLines="1"
-        android:ellipsize="end" />
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:contentDescription="@null"
+        android:src="@drawable/widget_sheet" />
 
-    <TextView
-        android:id="@+id/small_next_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:textColor="#FFD98A"
-        android:textSize="10sp"
-        android:letterSpacing="0.12"
-        android:maxLines="1"
-        android:text="NEXT" />
+    <ImageView
+        android:id="@+id/widget_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="7dp"
+        android:scaleType="fitXY"
+        android:contentDescription="@null"
+        android:src="@drawable/widget_jadwal" />
 
-    <TextView
-        android:id="@+id/small_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:textColor="#FFFFFF"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:maxLines="1"
-        android:ellipsize="end"
-        android:text="—" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:padding="14dp">
 
-    <TextView
-        android:id="@+id/small_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#C7DCE6"
-        android:textSize="13sp"
-        android:maxLines="1"
-        android:text="—" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:baselineAligned="false"
+            android:gravity="center_vertical">
 
-    <Chronometer
-        android:id="@+id/small_countdown"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:textColor="#FFD98A"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:maxLines="1" />
+            <TextView
+                android:id="@+id/small_next_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#9C7B2E"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.14"
+                android:maxLines="1"
+                android:text="NEXT" />
 
-    <TextView
-        android:id="@+id/small_countdown_static"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:textColor="#FFD98A"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:maxLines="1"
-        android:visibility="gone" />
-</LinearLayout>
+            <TextView
+                android:id="@+id/small_hijri"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:gravity="end"
+                android:textColor="#6B6459"
+                android:textSize="9sp"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/small_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:textColor="#0C5A4C"
+            android:textSize="19sp"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="—" />
+
+        <ImageView
+            android:id="@+id/small_name_arabic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitStart"
+            android:visibility="gone"
+            android:contentDescription="@null" />
+
+        <Chronometer
+            android:id="@+id/small_countdown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textColor="#221E18"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:maxLines="1" />
+
+        <TextView
+            android:id="@+id/small_countdown_static"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textColor="#221E18"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/small_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#6B6459"
+            android:textSize="11sp"
+            android:maxLines="1"
+            android:text="—" />
+    </LinearLayout>
+</FrameLayout>

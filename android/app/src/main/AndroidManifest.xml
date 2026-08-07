@@ -91,7 +91,7 @@
         <receiver
             android:name=".PrayerWidgetProvider"
             android:exported="false"
-            android:label="Hisn — Prayer times">
+            android:label="@string/widget_prayer_label">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -103,13 +103,58 @@
         <receiver
             android:name=".PrayerWidgetSmallProvider"
             android:exported="false"
-            android:label="Hisn — Next prayer">
+            android:label="@string/widget_prayer_small_label">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/prayer_widget_small_info" />
+        </receiver>
+
+        <!-- The tasbih counter. Alone among the widgets this one writes: its
+             taps land in the app's own preference store so the home screen and
+             the Tasbih screen keep a single count (see FlutterPrefs). The
+             counting broadcast is an explicit intent back to this receiver,
+             which needs no intent-filter and no export. -->
+        <receiver
+            android:name=".TasbihWidgetProvider"
+            android:exported="false"
+            android:label="@string/widget_tasbih_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/tasbih_widget_info" />
+        </receiver>
+
+        <!-- The adhkar set belonging to this part of the day. Which set that is
+             is recomputed natively from the prayer times on every redraw, so it
+             turns over without the app being opened. -->
+        <receiver
+            android:name=".AdhkarWidgetProvider"
+            android:exported="false"
+            android:label="@string/widget_adhkar_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/adhkar_widget_info" />
+        </receiver>
+
+        <!-- A verse or supplication, picked from a pushed pool by the date. -->
+        <receiver
+            android:name=".AyahWidgetProvider"
+            android:exported="false"
+            android:label="@string/widget_ayah_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/ayah_widget_info" />
         </receiver>
     </application>
     <!-- Required to query activities that can process text, see:

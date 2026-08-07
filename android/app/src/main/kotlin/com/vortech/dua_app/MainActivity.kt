@@ -12,8 +12,35 @@ class MainActivity : FlutterActivity() {
     private val geomagChannelName = "hisn/geomag"
     private val widgetChannelName = "hisn/widget"
 
+    /**
+     * Where a home-screen widget asked the app to open.
+     *
+     * Held rather than delivered straight away because a cold launch reaches
+     * here long before Flutter is ready to navigate; Dart collects it with
+     * `consumeRoute` once its navigator exists. A warm launch takes the other
+     * path — [onNewIntent] pushes it, since nothing will ask again.
+     */
+    private var pendingRoute: String? = null
+    private var widgetChannel: MethodChannel? = null
+
+    /**
+     * A widget tapped while the app is already running. The engine is live, so
+     * hand the route over immediately instead of waiting to be asked.
+     */
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        val route = intent.getStringExtra(WidgetChrome.EXTRA_ROUTE) ?: return
+        val channel = widgetChannel
+        if (channel != null) {
+            channel.invokeMethod("route", route)
+        } else {
+            pendingRoute = route
+        }
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        pendingRoute = intent?.getStringExtra(WidgetChrome.EXTRA_ROUTE)
 
         // The live compass: heading, tilt, and how believable the reading is.
         EventChannel(flutterEngine.dartExecutor.binaryMessenger, Compass.CHANNEL)
@@ -85,20 +112,31 @@ class MainActivity : FlutterActivity() {
                 }
             }
 
-        // Home-screen prayer widget: store the latest config/labels and redraw.
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, widgetChannelName)
-            .setMethodCallHandler { call, result ->
-                when (call.method) {
-                    "update" -> {
-                        @Suppress("UNCHECKED_CAST")
-                        val data = call.argument<Map<String, String>>("data")
-                            ?: emptyMap()
-                        PrayerWidget.save(applicationContext, data)
-                        PrayerWidget.refresh(applicationContext)
-                        result.success(null)
-                    }
-                    else -> result.notImplemented()
+        // Home-screen widgets: store the latest config/labels and redraw.
+        val widget = MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            widgetChannelName,
+        )
+        widgetChannel = widget
+        widget.setMethodCallHandler { call, result ->
+            when (call.method) {
+                "update" -> {
+                    @Suppress("UNCHECKED_CAST")
+                    val data = call.argument<Map<String, String>>("data")
+                        ?: emptyMap()
+                    PrayerWidget.save(applicationContext, data)
+                    PrayerWidget.refresh(applicationContext)
+                    result.success(null)
                 }
+                // The destination a widget tap asked for, if this launch came
+                // from one. Cleared as it is handed over so a later restore
+                // (a rotation, say) does not navigate a second time.
+                "consumeRoute" -> {
+                    result.success(pendingRoute)
+                    pendingRoute = null
+                }
+                else -> result.notImplemented()
             }
+        }
     }
 }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Indonesian names for the widgets, matching the terms the app itself uses:
+    Zikir, Tasbih, Salat (see lib/i18n/id.i18n.json).
+
+    The folder is values-in, not values-id: Android still resolves Indonesian
+    under the language's old ISO code.
+-->
+<resources>
+    <string name="widget_prayer_label">Hisn — Waktu salat</string>
+    <string name="widget_prayer_description">Lima salat hari ini, dengan yang berikutnya ditandai.</string>
+
+    <string name="widget_prayer_small_label">Hisn — Salat berikutnya</string>
+    <string name="widget_prayer_small_description">Salat berikutnya dan hitung mundur menuju waktunya.</string>
+
+    <string name="widget_tasbih_label">Hisn — Tasbih</string>
+    <string name="widget_tasbih_description">Ketuk untuk berzikir tanpa membuka aplikasi.</string>
+
+    <string name="widget_adhkar_label">Hisn — Zikir sekarang</string>
+    <string name="widget_adhkar_description">Zikir untuk waktu ini, beserta progres Anda.</string>
+
+    <string name="widget_ayah_label">Hisn — Ayat harian</string>
+    <string name="widget_ayah_description">Ayat atau doa yang berganti setiap hari.</string>
+</resources>

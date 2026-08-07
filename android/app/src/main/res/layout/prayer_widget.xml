@@ -1,207 +1,279 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--
+    The five daily prayers, ruled as a table on a manuscript page.
+
+    Every colour here is a placeholder in Emerald light — the widget picker
+    renders this file cold, with no provider running, so the authored values are
+    what the preview shows. PrayerWidgetProvider replaces all of them at runtime
+    from the palette Flutter pushed.
+
+    The prayer names are plain TextViews even in an Arabic interface, unlike the
+    larger Arabic in the other widgets: at 10sp the system naskh and Amiri are
+    near enough indistinguishable, and five rendered bitmaps would spend a real
+    share of the ~1 MB update budget to prove it.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@drawable/widget_background"
-    android:padding="14dp">
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/widget_ground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:contentDescription="@null"
+        android:src="@drawable/widget_sheet" />
+
+    <ImageView
+        android:id="@+id/widget_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="7dp"
+        android:scaleType="fitXY"
+        android:contentDescription="@null"
+        android:src="@drawable/widget_jadwal" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:baselineAligned="false"
-        android:gravity="center_vertical">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="15dp">
 
-        <TextView
-            android:id="@+id/widget_location"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textColor="#B8D4E0"
-            android:textSize="13sp"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:text="Hisn" />
+            android:orientation="horizontal"
+            android:baselineAligned="false"
+            android:gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/widget_hijri"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:textColor="#7FA6B8"
-            android:textSize="12sp"
-            android:maxLines="1"
-            android:ellipsize="end" />
+            <TextView
+                android:id="@+id/widget_location"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#221E18"
+                android:textSize="12sp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:text="Hisn" />
+
+            <TextView
+                android:id="@+id/widget_hijri"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textColor="#6B6459"
+                android:textSize="11sp"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+
+        <!-- The rule that separates the heading from the table it heads. -->
+        <View
+            android:id="@+id/widget_header_rule"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="7dp"
+            android:background="#9A8F7C" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:baselineAligned="false"
+            android:weightSum="5">
+
+            <LinearLayout
+                android:id="@+id/cell_fajr"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingTop="7dp"
+                android:paddingBottom="5dp">
+
+                <TextView
+                    android:id="@+id/name_fajr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#6B6459"
+                    android:textSize="10sp"
+                    android:maxLines="1"
+                    android:text="Fajr" />
+
+                <TextView
+                    android:id="@+id/time_fajr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:textColor="#221E18"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:maxLines="1"
+                    android:text="—" />
+
+                <View
+                    android:id="@+id/mark_fajr"
+                    android:layout_width="16dp"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#00000000" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cell_dhuhr"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingTop="7dp"
+                android:paddingBottom="5dp">
+
+                <TextView
+                    android:id="@+id/name_dhuhr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#6B6459"
+                    android:textSize="10sp"
+                    android:maxLines="1"
+                    android:text="Dhuhr" />
+
+                <TextView
+                    android:id="@+id/time_dhuhr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:textColor="#221E18"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:maxLines="1"
+                    android:text="—" />
+
+                <View
+                    android:id="@+id/mark_dhuhr"
+                    android:layout_width="16dp"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#00000000" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cell_asr"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingTop="7dp"
+                android:paddingBottom="5dp">
+
+                <TextView
+                    android:id="@+id/name_asr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#6B6459"
+                    android:textSize="10sp"
+                    android:maxLines="1"
+                    android:text="Asr" />
+
+                <TextView
+                    android:id="@+id/time_asr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:textColor="#221E18"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:maxLines="1"
+                    android:text="—" />
+
+                <View
+                    android:id="@+id/mark_asr"
+                    android:layout_width="16dp"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#00000000" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cell_maghrib"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingTop="7dp"
+                android:paddingBottom="5dp">
+
+                <TextView
+                    android:id="@+id/name_maghrib"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#6B6459"
+                    android:textSize="10sp"
+                    android:maxLines="1"
+                    android:text="Maghrib" />
+
+                <TextView
+                    android:id="@+id/time_maghrib"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:textColor="#221E18"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:maxLines="1"
+                    android:text="—" />
+
+                <View
+                    android:id="@+id/mark_maghrib"
+                    android:layout_width="16dp"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#00000000" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cell_isha"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingTop="7dp"
+                android:paddingBottom="5dp">
+
+                <TextView
+                    android:id="@+id/name_isha"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#6B6459"
+                    android:textSize="10sp"
+                    android:maxLines="1"
+                    android:text="Isha" />
+
+                <TextView
+                    android:id="@+id/time_isha"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:textColor="#221E18"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:maxLines="1"
+                    android:text="—" />
+
+                <View
+                    android:id="@+id/mark_isha"
+                    android:layout_width="16dp"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#00000000" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal"
-        android:baselineAligned="false"
-        android:weightSum="5">
-
-        <LinearLayout
-            android:id="@+id/cell_fajr"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_marginEnd="2dp"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp">
-
-            <TextView
-                android:id="@+id/name_fajr"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#9DB9C7"
-                android:textSize="11sp"
-                android:maxLines="1"
-                android:text="Fajr" />
-
-            <TextView
-                android:id="@+id/time_fajr"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:textColor="#E6F0F4"
-                android:textSize="13sp"
-                android:textStyle="bold"
-                android:maxLines="1"
-                android:text="—" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/cell_dhuhr"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_marginEnd="2dp"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp">
-
-            <TextView
-                android:id="@+id/name_dhuhr"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#9DB9C7"
-                android:textSize="11sp"
-                android:maxLines="1"
-                android:text="Dhuhr" />
-
-            <TextView
-                android:id="@+id/time_dhuhr"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:textColor="#E6F0F4"
-                android:textSize="13sp"
-                android:textStyle="bold"
-                android:maxLines="1"
-                android:text="—" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/cell_asr"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_marginEnd="2dp"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp">
-
-            <TextView
-                android:id="@+id/name_asr"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#9DB9C7"
-                android:textSize="11sp"
-                android:maxLines="1"
-                android:text="Asr" />
-
-            <TextView
-                android:id="@+id/time_asr"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:textColor="#E6F0F4"
-                android:textSize="13sp"
-                android:textStyle="bold"
-                android:maxLines="1"
-                android:text="—" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/cell_maghrib"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_marginEnd="2dp"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp">
-
-            <TextView
-                android:id="@+id/name_maghrib"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#9DB9C7"
-                android:textSize="11sp"
-                android:maxLines="1"
-                android:text="Maghrib" />
-
-            <TextView
-                android:id="@+id/time_maghrib"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:textColor="#E6F0F4"
-                android:textSize="13sp"
-                android:textStyle="bold"
-                android:maxLines="1"
-                android:text="—" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/cell_isha"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp">
-
-            <TextView
-                android:id="@+id/name_isha"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#9DB9C7"
-                android:textSize="11sp"
-                android:maxLines="1"
-                android:text="Isha" />
-
-            <TextView
-                android:id="@+id/time_isha"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:textColor="#E6F0F4"
-                android:textSize="13sp"
-                android:textStyle="bold"
-                android:maxLines="1"
-                android:text="—" />
-        </LinearLayout>
-    </LinearLayout>
-</LinearLayout>
+</FrameLayout>

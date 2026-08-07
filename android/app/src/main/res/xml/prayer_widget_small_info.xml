@@ -5,6 +5,7 @@
     android:targetCellWidth="2"
     android:targetCellHeight="2"
     android:updatePeriodMillis="1800000"
+    android:description="@string/widget_prayer_small_description"
     android:initialLayout="@layout/prayer_widget_small"
     android:previewLayout="@layout/prayer_widget_small"
     android:resizeMode="horizontal|vertical"
