@@ -200,7 +200,7 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get showTransliteration => 'Tampilkan transliterasi';
 	@override String get showTransliterationSub => 'Baris pelafalan huruf Latin';
 	@override String get showTranslation => 'Tampilkan terjemahan';
-	@override String get showTranslationSub => 'Makna dalam bahasa Inggris';
+	@override String get showTranslationSub => 'Makna dalam bahasa Indonesia';
 	@override String get aboutBody => 'Pendamping Doa & Zikir · prototipe\nWaktu salat via pustaka Adhan.';
 	@override String get automatic => 'OTOMATIS';
 	@override String get useDeviceLocation => 'Gunakan lokasi perangkat saya';
@@ -602,7 +602,7 @@ extension on TranslationsId {
 			'showTransliteration' => 'Tampilkan transliterasi',
 			'showTransliterationSub' => 'Baris pelafalan huruf Latin',
 			'showTranslation' => 'Tampilkan terjemahan',
-			'showTranslationSub' => 'Makna dalam bahasa Inggris',
+			'showTranslationSub' => 'Makna dalam bahasa Indonesia',
 			'aboutBody' => 'Pendamping Doa & Zikir · prototipe\nWaktu salat via pustaka Adhan.',
 			'automatic' => 'OTOMATIS',
 			'useDeviceLocation' => 'Gunakan lokasi perangkat saya',
