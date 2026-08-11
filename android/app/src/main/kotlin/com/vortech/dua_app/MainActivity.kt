@@ -6,11 +6,25 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
+import java.util.concurrent.Executors
+import java.util.concurrent.RejectedExecutionException
 
 class MainActivity : FlutterActivity() {
     private val channelName = "hisn/adhan"
     private val geomagChannelName = "hisn/geomag"
     private val widgetChannelName = "hisn/widget"
+
+    /**
+     * Where the home-screen widgets are brought up to date.
+     *
+     * A method channel handler runs on the main thread, and this particular
+     * piece of work is a preference write plus a query and a broadcast per
+     * provider — all of it Binder traffic, none of it anything Flutter is
+     * waiting on. Doing it inline meant an app mid-scroll paid for a widget
+     * redraw it could not see. Single-threaded so successive pushes still land
+     * in the order they were sent, which the merge semantics rely on.
+     */
+    private val widgetWork = Executors.newSingleThreadExecutor()
 
     /**
      * Where a home-screen widget asked the app to open.
@@ -36,6 +50,12 @@ class MainActivity : FlutterActivity() {
         } else {
             pendingRoute = route
         }
+    }
+
+    override fun onDestroy() {
+        // Lets whatever push is in flight finish; refuses any that arrive after.
+        widgetWork.shutdown()
+        super.onDestroy()
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -124,8 +144,21 @@ class MainActivity : FlutterActivity() {
                     @Suppress("UNCHECKED_CAST")
                     val data = call.argument<Map<String, String>>("data")
                         ?: emptyMap()
-                    PrayerWidget.save(applicationContext, data)
-                    PrayerWidget.refresh(applicationContext)
+                    // Answered straight away: Dart has nothing to do with the
+                    // outcome, and holding the reply open would only keep the
+                    // caller's await alive for work happening off-screen.
+                    val context = applicationContext
+                    val push = Runnable {
+                        PrayerWidget.save(context, data)
+                        PrayerWidget.refresh(context)
+                    }
+                    try {
+                        widgetWork.execute(push)
+                    } catch (_: RejectedExecutionException) {
+                        // A push that raced the activity's teardown. Rare, and
+                        // better done here than dropped.
+                        push.run()
+                    }
                     result.success(null)
                 }
                 // The destination a widget tap asked for, if this launch came

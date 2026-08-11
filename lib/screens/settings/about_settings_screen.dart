@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import '../../data/quran_repository.dart';
 import '../../l10n/app_strings.dart';
 import '../../models/quran.dart';
+import '../../services/display_settings.dart';
 import '../../theme/app_theme.dart';
+import '../../util/arabic.dart';
 import '../../widgets/ornament.dart';
 import 'settings_common.dart';
 
@@ -61,9 +63,10 @@ class AboutSettingsScreen extends StatelessWidget {
           const SettingsSectionHeader('Set in'),
           const _CreditPanel(_typefaces),
 
-          // The verse meanings. Loaded from the manifest the translation files
-          // are generated with, so what is credited here is necessarily the
-          // edition that actually shipped.
+          // The verse meanings — the translations, and the Arabic tafsir.
+          // Loaded from the manifest the meaning files are generated with, so
+          // what is credited here is necessarily the edition that actually
+          // shipped.
           FutureBuilder<List<QuranEdition>>(
             future: context.read<QuranRepository>().loadEditions(),
             builder: (context, snap) {
@@ -123,8 +126,10 @@ class _CreditPanel extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(rows[i].$1, style: theme.textTheme.titleSmall),
-                        Text(rows[i].$2, style: theme.textTheme.bodySmall),
+                        _Credited(rows[i].$1,
+                            style: theme.textTheme.titleSmall),
+                        _Credited(rows[i].$2,
+                            style: theme.textTheme.bodySmall),
                       ],
                     ),
                   ),
@@ -134,6 +139,34 @@ class _CreditPanel extends StatelessWidget {
               ),
             ),
         ],
+      ),
+    );
+  }
+}
+
+/// One line of a credit, set in whichever script it is written in.
+///
+/// Most of what is credited here is a Latin proper noun and takes the panel's
+/// own type. The tafsir is not — its title and the body that compiled it are
+/// Arabic, and putting them through a Latin face would leave them to whatever
+/// the system happened to fall back to, set left-to-right.
+class _Credited extends StatelessWidget {
+  const _Credited(this.text, {this.style});
+
+  final String text;
+  final TextStyle? style;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!isArabicScript(text)) return Text(text, style: style);
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Text(
+        text,
+        style: style?.copyWith(
+          fontFamily: context.read<DisplaySettings>().arabicFontFamily,
+          height: 1.6,
+        ),
       ),
     );
   }

@@ -89,8 +89,21 @@ class ShareCard extends StatelessWidget {
                     ],
                     if (passage.translation != null) ...[
                       const SizedBox(height: 10),
-                      Text(passage.translation!,
-                          style: theme.textTheme.bodyLarge),
+                      // An Arabic meaning is a tafsir, and wants Arabic type
+                      // and a right-to-left line — set below the verse and
+                      // smaller than it, so the card still reads as a verse
+                      // with an explanation rather than two blocks of Arabic.
+                      if (passage.translationIsArabic)
+                        ArabicText(
+                          passage.translation!,
+                          block: true,
+                          fontSize: 17,
+                          height: 1.75,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        )
+                      else
+                        Text(passage.translation!,
+                            style: theme.textTheme.bodyLarge),
                     ],
                     // The translator, set small and directly under their work.
                     // The card is going somewhere the app isn't, so the person

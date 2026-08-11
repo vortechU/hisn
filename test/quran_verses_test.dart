@@ -14,6 +14,69 @@ void main() {
     await repo.loadIndex();
   });
 
+  // Damage that no count and no schema would catch: the text keeps the right
+  // length and the right shape, and only a reader of Arabic sees that a word
+  // has come apart. The bundled text arrived with 2,418 of these — a space
+  // between a tanween and the silent alef after it — plus a fragment of the
+  // Bismillah welded to the front of Al-Qadr. See tool/repair_quran_text.py.
+  group('the text is whole', () {
+    // The base letters: hamza through ghain, fa through ya, and the alef
+    // wasla. Everything else — harakat, pause marks, the sajda sign —
+    // decorates a word rather than being part of one.
+    final notALetter = RegExp(r'[^ء-غف-يٱ]');
+
+    test('no word is split before its silent alef', () async {
+      // Arabic has no one-letter word spelled with a bare alef or alef
+      // maqsura, so a token that reduces to one is the tail of the word in
+      // front of it, stranded by a space — and rendered detached, because
+      // shaping joins letters only within a word.
+      final split = <String>[];
+      for (final surah in repo.surahs) {
+        final detail = await repo.loadSurah(surah.number);
+        for (final ayah in detail.ayahs) {
+          for (final token in ayah.text.split(' ')) {
+            final bare = token.replaceAll(notALetter, '');
+            if (bare == 'ا' || bare == 'ى') {
+              split.add('${surah.number}:${ayah.number}');
+            }
+          }
+        }
+      }
+
+      expect(split, isEmpty,
+          reason: '${split.length} split word(s), first at ${split.take(3)}');
+    });
+
+    test('the words that carried the split read whole', () async {
+      // Pinned by their joined spelling, so a regeneration that loses the
+      // repair fails here rather than shipping.
+      for (final (surah, ayah, word) in const [
+        (4, 8, 'مَّعۡرُوفࣰا'),
+        (4, 9, 'قَوۡلࣰا'),
+        (2, 2, 'هُدࣰى'),
+      ]) {
+        final verse = await repo.verse(surah, ayah);
+        expect(verse!.ayah.text, contains(word), reason: '$surah:$ayah');
+      }
+    });
+
+    test('Al-Qadr opens on its own first word', () async {
+      // 97:1 began with the tail of the Bismillah welded to it — the verse
+      // opened on "ٱلرَّحِيمِ" run into its real first word. The Bismillah is
+      // drawn as a header above the surah; it is not part of a verse.
+      //
+      // Asserted on the letters rather than by matching a literal: this text
+      // writes a hamza as a carrier plus a combining mark, so a precomposed
+      // "إ" typed here would not equal the one in the data.
+      final verse = await repo.verse(97, 1);
+      final words = verse!.ayah.text.split(' ');
+
+      expect(words, hasLength(5));
+      // إنا — alef, nun, alef. With the remnant it read الرحيمانا.
+      expect(words.first.replaceAll(notALetter, ''), 'انا');
+    });
+  });
+
   group('verses on a page', () {
     test('page 1 is the whole of Al-Fatiha', () async {
       final verses = await repo.versesOnPage(1);

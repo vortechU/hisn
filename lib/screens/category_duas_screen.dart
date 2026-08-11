@@ -39,8 +39,6 @@ class _CategoryDuasScreenState extends State<CategoryDuasScreen> {
   DuaProgressService get _progress => context.read<DuaProgressService>();
 
   int _countOf(Dua dua) => _progress.countOf(dua.id);
-  bool _isComplete(Dua dua) => _countOf(dua) >= dua.repeat;
-  int get _completedCount => _duas.where(_isComplete).length;
 
   void _tap(Dua dua) {
     final current = _countOf(dua);
@@ -62,82 +60,31 @@ class _CategoryDuasScreenState extends State<CategoryDuasScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Subscribe so the list + progress rule rebuild whenever a count changes.
-    context.watch<DuaProgressService>();
-    final theme = Theme.of(context);
-    final ms = ManuscriptTheme.of(context);
+    // Deliberately *not* watching [DuaProgressService] here. A tap would then
+    // rebuild the whole page — the head, the list, and with it every card
+    // currently on screen — when the only things that actually changed are the
+    // tally and the one block that was tapped. Those two subscribe for
+    // themselves, just below, so a tap costs two small rebuilds instead of a
+    // screenful.
     final visuals = CategoryVisuals.of(widget.category.id);
     final tint = visuals.color(context);
-    final allDone = _completedCount == _duas.length && _duas.isNotEmpty;
     final s = AppStrings.of(context);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.category.titleFor(s.ar)),
         actions: [
-          if (_completedCount > 0)
-            IconButton(
-              icon: const Icon(Icons.restart_alt),
-              tooltip: s.resetProgress,
-              onPressed: _resetAll,
-            ),
+          _ResetAction(duas: _duas, onReset: _resetAll),
           const SizedBox(width: 6),
         ],
       ),
       body: Column(
         children: [
-          // The head of the session: the set's name in Arabic, its mark, and
-          // the tally of blocks finished — the page's one dominant element.
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(Ms.margin, 0, Ms.margin, 12),
-            decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(color: ms.rule)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(allDone ? Icons.check : visuals.icon,
-                        size: 24, color: allDone ? ms.gilt : tint),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (!s.ar)
-                            ArabicText(widget.category.titleArabic,
-                                fontSize: 21,
-                                color: tint,
-                                textAlign: TextAlign.start,
-                                height: 1.5,
-                                maxLines: 1),
-                          Text(
-                            allDone ? s.setComplete : s.tapEachDua,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.bodySmall,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Cartouche(
-                      label: '$_completedCount / ${_duas.length}',
-                      color: allDone ? ms.gilt : tint,
-                      filled: allDone,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 11),
-                ProgressRule(
-                  value: _duas.isEmpty ? 0 : _completedCount / _duas.length,
-                  color: allDone ? ms.gilt : tint,
-                ),
-              ],
-            ),
+          _SessionHead(
+            category: widget.category,
+            duas: _duas,
+            icon: visuals.icon,
+            tint: tint,
           ),
           Expanded(
             child: ListView.builder(
@@ -146,16 +93,131 @@ class _CategoryDuasScreenState extends State<CategoryDuasScreen> {
               itemCount: _duas.length,
               itemBuilder: (context, index) {
                 final dua = _duas[index];
-                return DuaCard(
-                  dua: dua,
-                  count: _countOf(dua),
-                  onCount: () => _tap(dua),
-                );
+                return _CountedDuaCard(dua: dua, onCount: () => _tap(dua));
               },
             ),
           ),
         ],
       ),
     );
+  }
+}
+
+/// How many of [duas] are finished, subscribing the caller to that number
+/// alone.
+///
+/// A tap that leaves the tally where it was — the second of a dua's ten
+/// repetitions, say — rebuilds nothing here.
+int _completedCount(BuildContext context, List<Dua> duas) =>
+    context.select<DuaProgressService, int>(
+        (p) => duas.where((d) => p.countOf(d.id) >= d.repeat).length);
+
+/// The head of the session: the set's name in Arabic, its mark, and the tally
+/// of blocks finished — the page's one dominant element.
+class _SessionHead extends StatelessWidget {
+  const _SessionHead({
+    required this.category,
+    required this.duas,
+    required this.icon,
+    required this.tint,
+  });
+
+  final DuaCategory category;
+  final List<Dua> duas;
+  final IconData icon;
+  final Color tint;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final ms = ManuscriptTheme.of(context);
+    final s = AppStrings.of(context);
+    final completed = _completedCount(context, duas);
+    final allDone = completed == duas.length && duas.isNotEmpty;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(Ms.margin, 0, Ms.margin, 12),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: ms.rule)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(allDone ? Icons.check : icon,
+                  size: 24, color: allDone ? ms.gilt : tint),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (!s.ar)
+                      ArabicText(category.titleArabic,
+                          fontSize: 21,
+                          color: tint,
+                          textAlign: TextAlign.start,
+                          height: 1.5,
+                          maxLines: 1),
+                    Text(
+                      allDone ? s.setComplete : s.tapEachDua,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              Cartouche(
+                label: '$completed / ${duas.length}',
+                color: allDone ? ms.gilt : tint,
+                filled: allDone,
+              ),
+            ],
+          ),
+          const SizedBox(height: 11),
+          ProgressRule(
+            value: duas.isEmpty ? 0 : completed / duas.length,
+            color: allDone ? ms.gilt : tint,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// The "start the set again" action, shown once anything has been finished.
+class _ResetAction extends StatelessWidget {
+  const _ResetAction({required this.duas, required this.onReset});
+
+  final List<Dua> duas;
+  final VoidCallback onReset;
+
+  @override
+  Widget build(BuildContext context) {
+    if (_completedCount(context, duas) == 0) return const SizedBox.shrink();
+    return IconButton(
+      icon: const Icon(Icons.restart_alt),
+      tooltip: AppStrings.of(context).resetProgress,
+      onPressed: onReset,
+    );
+  }
+}
+
+/// One block in the session, subscribed to its own count and nothing else.
+class _CountedDuaCard extends StatelessWidget {
+  const _CountedDuaCard({required this.dua, required this.onCount});
+
+  final Dua dua;
+  final VoidCallback onCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final count =
+        context.select<DuaProgressService, int>((p) => p.countOf(dua.id));
+    return DuaCard(dua: dua, count: count, onCount: onCount);
   }
 }

@@ -35,6 +35,11 @@ class _PrayerHeaderState extends State<PrayerHeader> {
       if (context.read<PrayerService>().nextPrayer(now) == null) {
         context.read<PrayerService>().refresh();
       }
+      // Everything this plate shows is drawn to the minute — the clock, the
+      // countdown, the elapsed rule. Rebuilding it on the other fifty-nine
+      // ticks redraws the same picture, and this plate sits at the head of the
+      // app's busiest scroll.
+      if (now.minute == _now.minute && now.hour == _now.hour) return;
       setState(() => _now = now);
     });
   }

@@ -63,11 +63,12 @@ class QuranRepository {
   final Map<String, SurahTranslation> _transCache = {};
   List<QuranEdition>? _editions;
 
-  /// The translations bundled with the app, one per language.
+  /// The meaning editions bundled with the app, one per language — a
+  /// translation for English and Indonesian, the Muyassar tafsir for Arabic.
   ///
   /// Generated alongside the verse files, so this is also the authority on
-  /// which languages have a translation at all — rather than a list kept in
-  /// Dart that could fall out of step with what actually shipped.
+  /// which languages have a meaning at all — rather than a list kept in Dart
+  /// that could fall out of step with what actually shipped.
   Future<List<QuranEdition>> loadEditions() async {
     final cached = _editions;
     if (cached != null) return cached;
@@ -88,11 +89,11 @@ class QuranRepository {
     return null;
   }
 
-  /// A surah's verses in [lang], or null if the language has no edition.
+  /// A surah's meanings in [lang], or null if the language has no edition.
   ///
   /// The absence check runs off [loadEditions] rather than a caught exception,
-  /// so "Arabic has no translation" stays a fast expected answer while a
-  /// genuinely missing or malformed file still throws and gets noticed.
+  /// so an untranslated interface language stays a fast expected answer while
+  /// a genuinely missing or malformed file still throws and gets noticed.
   Future<SurahTranslation?> loadTranslation(int surah, String lang) async {
     if (await editionFor(lang) == null) return null;
     final key = '$lang:$surah';
@@ -131,8 +132,8 @@ class QuranRepository {
   /// record the page each verse falls on. The page's own surah list says which
   /// files to consult, keeping this to one or two loads (both cached) rather
   /// than a scan of all 114.
-  /// Pass [lang] to carry each verse's meaning along; omit it for the Arabic
-  /// interface, or anywhere the meaning isn't going to be shown.
+  /// Pass [lang] to carry each verse's meaning along; omit it anywhere the
+  /// meaning isn't going to be shown.
   Future<List<PageVerse>> versesOnPage(int page, {String? lang}) async {
     final mushaf = await loadPage(page);
     final numbers = mushaf.surahs.isNotEmpty
@@ -158,6 +159,7 @@ class QuranRepository {
             ayah: ayah,
             translation: meaning,
             translationCredit: meaning == null ? null : edition!.credit,
+            translationKind: meaning == null ? null : edition!.kind,
           ));
         }
       }
@@ -182,6 +184,7 @@ class QuranRepository {
           ayah: a,
           translation: meaning,
           translationCredit: meaning == null ? null : edition!.credit,
+          translationKind: meaning == null ? null : edition!.kind,
         );
       }
     }

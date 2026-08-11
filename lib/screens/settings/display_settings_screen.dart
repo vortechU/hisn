@@ -69,12 +69,12 @@ class DisplaySettingsScreen extends StatelessWidget {
               ],
             ),
           ),
-          // Both lines are hidden outright in an Arabic interface (see
-          // [DuaCard]), so their switches would be controls that change
-          // nothing. The stored values are left untouched and come back with
+          const SizedBox(height: 8),
+          // The transliteration line is hidden outright in an Arabic interface
+          // (see [DuaCard]), so its switch would be a control that changes
+          // nothing. The stored value is left untouched and comes back with
           // the setting if the reader switches language again.
-          if (!s.ar) ...[
-            const SizedBox(height: 8),
+          if (!s.ar)
             SwitchListTile(
               secondary: const Icon(Icons.translate, size: 20),
               title: Text(s.showTransliteration),
@@ -83,15 +83,17 @@ class DisplaySettingsScreen extends StatelessWidget {
               onChanged: (value) =>
                   context.read<DisplaySettings>().setShowTransliteration(value),
             ),
-            SwitchListTile(
-              secondary: const Icon(Icons.subtitles_outlined, size: 20),
-              title: Text(s.showTranslation),
-              subtitle: Text(s.showTranslationSub),
-              value: display.showTranslation,
-              onChanged: (value) =>
-                  context.read<DisplaySettings>().setShowTranslation(value),
-            ),
-          ],
+          // The meaning line stays in every language, Arabic included — there
+          // it governs the Muyassar tafsir under the verses rather than a
+          // translation, which is why the Arabic strings name it that way.
+          SwitchListTile(
+            secondary: const Icon(Icons.subtitles_outlined, size: 20),
+            title: Text(s.showTranslation),
+            subtitle: Text(s.showTranslationSub),
+            value: display.showTranslation,
+            onChanged: (value) =>
+                context.read<DisplaySettings>().setShowTranslation(value),
+          ),
         ],
       ),
     );

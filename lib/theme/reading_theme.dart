@@ -7,6 +7,21 @@ import 'app_theme.dart';
 /// whatever the active theme provides.
 enum ReadingTheme { system, sepia, night }
 
+/// Derived themes, hung off the base theme they were derived from.
+///
+/// [ReadingThemeX.apply] is called by every dua card on every build, and a
+/// screen of cards rebuilds on every tap — but the answer only changes when the
+/// app's own theme does. Deriving it is not cheap: `copyWith` rebuilds a
+/// hundred-odd fields and `textTheme.apply` re-inks fifteen styles, so the
+/// uncached version was constructing a full [ThemeData] per visible card per
+/// frame.
+///
+/// An [Expando] rather than a map because it keys on the base theme's identity
+/// and lets the entry go when that theme does — a palette or brightness change
+/// replaces the base instance, and nothing has to remember to evict the old
+/// one.
+final _derived = Expando<Map<ReadingTheme, ThemeData>>('reading themes');
+
 class _ReadingColors {
   const _ReadingColors(this.surface, this.onSurface, this.onSurfaceVariant);
   final Color surface;
@@ -56,6 +71,10 @@ extension ReadingThemeX on ReadingTheme {
     final colors = _colors;
     if (colors == null) return base;
 
+    final cache = _derived[base] ??= <ReadingTheme, ThemeData>{};
+    final cached = cache[this];
+    if (cached != null) return cached;
+
     final scheme = base.colorScheme.copyWith(
       surface: colors.surface,
       onSurface: colors.onSurface,
@@ -64,7 +83,7 @@ extension ReadingThemeX on ReadingTheme {
     final ms = base.extension<ManuscriptTheme>()!;
     final rule = Color.lerp(colors.onSurface, colors.surface, 0.62)!;
 
-    return base.copyWith(
+    return cache[this] = base.copyWith(
       colorScheme: scheme,
       cardColor: colors.surface,
       cardTheme: base.cardTheme.copyWith(color: colors.surface),

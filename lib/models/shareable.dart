@@ -17,6 +17,7 @@ class Shareable {
     this.transliteration,
     this.translation,
     this.translationCredit,
+    this.translationIsArabic = false,
     this.repeat = 1,
   });
 
@@ -40,6 +41,11 @@ class Shareable {
   /// from the app's own content. A translation is a source like any other, so
   /// it does not leave the app without the person who made it.
   final String? translationCredit;
+
+  /// Whether [translation] is Arabic prose — the tafsir the Arabic interface
+  /// carries — so the card sets it in Arabic type, right-to-left, instead of
+  /// the Latin body face.
+  final bool translationIsArabic;
 
   /// How many times the dua is repeated. 1 (the default) is not shown.
   final int repeat;
@@ -68,12 +74,14 @@ class Shareable {
   /// bundled edition.
   ///
   /// Never a transliteration: the app ships none for the Qur'an, and inventing
-  /// one to fill the card would be the same mistake as inventing a source. In
-  /// Arabic the meaning is dropped too — the verse above it is already Arabic.
+  /// one to fill the card would be the same mistake as inventing a source. The
+  /// meaning travels whatever language it is in — in Arabic that is the
+  /// Muyassar tafsir, which says something the verse above it does not, unlike
+  /// a translation of Arabic into Arabic.
   factory Shareable.verse(PageVerse verse, String langCode) {
     final arabicUi = langCode == _arabicCode;
     final name = verse.surah.nameFor(arabicUi);
-    final translation = arabicUi ? null : _orNull(verse.translation);
+    final translation = _orNull(verse.translation);
     return Shareable(
       arabic: verse.ayah.text,
       reference: '$name ${verse.reference}',
@@ -82,6 +90,7 @@ class Shareable {
       translation: translation,
       translationCredit:
           translation == null ? null : _orNull(verse.translationCredit),
+      translationIsArabic: translation != null && verse.translationIsArabic,
     );
   }
 

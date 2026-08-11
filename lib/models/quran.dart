@@ -171,15 +171,34 @@ class SurahTranslation {
       );
 }
 
-/// Which translation the app bundles for a language, and who made it.
+/// What kind of meaning an edition carries.
+///
+/// Not a cosmetic distinction: a translation is set in the language it renders
+/// into, a tafsir in Arabic script and right-to-left, and the two are named
+/// differently to the reader.
+enum QuranEditionKind {
+  /// The verse carried into another language.
+  translation,
+
+  /// The verse explained in Arabic — what the Arabic interface gets, because
+  /// rendering Arabic into Arabic would say nothing.
+  tafsir;
+
+  static QuranEditionKind fromName(String? name) =>
+      name == 'tafsir' ? QuranEditionKind.tafsir : QuranEditionKind.translation;
+}
+
+/// Which edition of the meanings the app bundles for a language, and who made
+/// it.
 ///
 /// Written by the same tool run that generates the verse files, so the credit
 /// shown in the app cannot drift from the edition actually shipped. The
-/// translations are licensed for non-commercial use only — see TERMS.md §6.
+/// editions are licensed for non-commercial use only — see TERMS.md §6.
 class QuranEdition {
   const QuranEdition({
     required this.lang,
     required this.id,
+    required this.kind,
     required this.name,
     required this.translator,
     required this.credit,
@@ -191,7 +210,12 @@ class QuranEdition {
 
   /// The upstream identifier, e.g. `en.hilali`.
   final String id;
+
+  /// Whether this edition translates the verse or explains it.
+  final QuranEditionKind kind;
   final String name;
+
+  /// Who produced it — a translator, or the body that compiled the tafsir.
   final String translator;
 
   /// The short citation, for places too tight for [translator] — the foot of a
@@ -203,6 +227,7 @@ class QuranEdition {
   factory QuranEdition.fromJson(Map<String, dynamic> json) => QuranEdition(
         lang: json['lang'] as String,
         id: json['id'] as String,
+        kind: QuranEditionKind.fromName(json['kind'] as String?),
         name: json['name'] as String,
         translator: json['translator'] as String,
         credit: json['credit'] as String,
@@ -222,6 +247,7 @@ class PageVerse {
     required this.ayah,
     this.translation,
     this.translationCredit,
+    this.translationKind,
   });
 
   final Surah surah;
@@ -229,13 +255,23 @@ class PageVerse {
 
   /// The verse's meaning in the language it was loaded for, or null — either
   /// because none was asked for, or because the language has no bundled
-  /// edition. Arabic never has one: the text above it is already Arabic.
+  /// edition. In Arabic this is the Muyassar tafsir rather than a translation;
+  /// see [translationKind].
   final String? translation;
 
   /// Who rendered [translation]. Carried on the verse rather than looked up
   /// where it's displayed, so a meaning can't be shown — or shared out of the
   /// app — without the translator that produced it coming along.
   final String? translationCredit;
+
+  /// Whether [translation] renders the verse or explains it, or null when
+  /// there is no meaning. Carried for the same reason as the credit: the text
+  /// alone doesn't say which it is, and the two are set differently.
+  final QuranEditionKind? translationKind;
+
+  /// Whether the meaning is Arabic prose — so it wants Arabic type and a
+  /// right-to-left line, not the interface's Latin body face.
+  bool get translationIsArabic => translationKind == QuranEditionKind.tafsir;
 
   /// The conventional citation, e.g. `2:255`.
   String get reference => '${surah.number}:${ayah.number}';

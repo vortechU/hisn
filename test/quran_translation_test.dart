@@ -6,17 +6,20 @@ import 'package:dua_app/services/display_settings.dart';
 import 'package:dua_app/services/quran_service.dart';
 import 'package:dua_app/theme/app_palette.dart';
 import 'package:dua_app/theme/app_theme.dart';
+import 'package:dua_app/theme/arabic_fonts.dart';
+import 'package:dua_app/util/arabic.dart';
 import 'package:dua_app/widgets/verse_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// The verse translations, and the join that attaches them to the mushaf.
+/// The verse meanings — translations for English and Indonesian, the Muyassar
+/// tafsir for Arabic — and the join that attaches them to the mushaf.
 ///
-/// The join is the risky part. A translation that is off by one verse would
-/// put every meaning on its neighbour, and nothing on screen would look wrong
-/// — the Arabic would be right, the citation would be right, and only someone
+/// The join is the risky part. An edition that is off by one verse would put
+/// every meaning on its neighbour, and nothing on screen would look wrong —
+/// the Arabic would be right, the citation would be right, and only someone
 /// who reads both languages would ever notice. So the alignment is asserted
 /// here against the app's own surah index rather than trusted.
 void main() {
@@ -30,12 +33,11 @@ void main() {
   });
 
   group('bundled editions', () {
-    test('every translated language names its edition and translator',
-        () async {
+    test('every interface language names its edition and translator', () async {
       final editions = await repo.loadEditions();
 
       expect(editions, isNotEmpty);
-      expect(editions.map((e) => e.lang).toSet(), {'en', 'id'});
+      expect(editions.map((e) => e.lang).toSet(), {'en', 'id', 'ar'});
       for (final e in editions) {
         expect(e.name, isNotEmpty, reason: e.lang);
         expect(e.translator, isNotEmpty, reason: e.lang);
@@ -46,11 +48,21 @@ void main() {
       }
     });
 
-    test('Arabic has no edition, by design', () async {
-      // The verse above the meaning is already Arabic; rendering Arabic into
-      // Arabic is the one case where a translation is not an improvement.
-      expect(await repo.editionFor('ar'), isNull);
-      expect(await repo.loadTranslation(1, 'ar'), isNull);
+    test('Arabic gets a tafsir where the others get a translation', () async {
+      // Rendering Arabic into Arabic would say nothing, so the Arabic
+      // interface is given the verse explained instead of restated. The kind
+      // is what tells the app to set it in Arabic type rather than Latin.
+      final arabic = await repo.editionFor('ar');
+
+      expect(arabic, isNotNull);
+      expect(arabic!.id, 'ar.muyassar');
+      expect(arabic.kind, QuranEditionKind.tafsir);
+      expect(isArabicScript(arabic.credit), isTrue);
+
+      for (final lang in const ['en', 'id']) {
+        expect((await repo.editionFor(lang))!.kind,
+            QuranEditionKind.translation, reason: lang);
+      }
     });
 
     test('an unknown language is absent rather than an error', () async {
@@ -63,9 +75,9 @@ void main() {
     test('every surah has exactly as many meanings as it has verses',
         () async {
       // The guard against a truncated or reordered regeneration. Checked for
-      // all 114 surahs in both languages, because a gap anywhere shifts every
+      // all 114 surahs in every language, because a gap anywhere shifts every
       // verse after it.
-      for (final lang in const ['en', 'id']) {
+      for (final lang in const ['en', 'id', 'ar']) {
         for (final surah in repo.surahs) {
           final translation = await repo.loadTranslation(surah.number, lang);
           expect(translation, isNotNull,
@@ -82,7 +94,7 @@ void main() {
       // Control characters are how the upstream damage showed up; if a future
       // regeneration reintroduces any, it surfaces here rather than on screen.
       final control = RegExp(r'[\x00-\x08\x0b-\x1f\x7f-\x9f]');
-      for (final lang in const ['en', 'id']) {
+      for (final lang in const ['en', 'id', 'ar']) {
         for (final surah in repo.surahs) {
           final t = (await repo.loadTranslation(surah.number, lang))!;
           for (var i = 0; i < t.ayahs.length; i++) {
@@ -109,11 +121,56 @@ void main() {
         ('en', 114, 1, 'mankind'),
         ('id', 1, 1, 'Dengan menyebut nama Allah'),
         ('id', 112, 1, 'Maha Esa'),
+        ('ar', 2, 255, 'لا تأخذه سِنَة'), // Ayat al-Kursi, explained
+        ('ar', 18, 10, 'الكهف'),
+        ('ar', 114, 1, 'أعوذ وأعتصم برب الناس'),
       ];
 
       for (final (lang, surah, ayah, fragment) in anchors) {
         final text = (await repo.loadTranslation(surah, lang))!.forAyah(ayah);
         expect(text, contains(fragment), reason: '$lang $surah:$ayah');
+      }
+    });
+
+    test('no word in the tafsir is split by a stray space', () async {
+      // The same defect the verse text carried, and the Muyassar had one of
+      // its own at 9:39 ("إذ ا" for "إذا"). Arabic has no one-letter word
+      // spelled with a bare alef, so a token that reduces to one is a word
+      // that has come apart — invisible to every other check here, and plain
+      // to anyone reading it.
+      // Hamza through ghain, fa through ya, and the alef wasla. Written as
+      // escapes because the class has to include the hamza carriers (أ إ ؤ ئ)
+      // that the tafsir uses and the Quran text does not — leaving them out
+      // reduces a real word like "أى" to a bare alef maqsura.
+      final notALetter = RegExp(r'[^ء-غف-يٱ]');
+      final split = <String>[];
+      for (final surah in repo.surahs) {
+        final t = (await repo.loadTranslation(surah.number, 'ar'))!;
+        for (var i = 0; i < t.ayahs.length; i++) {
+          for (final token in t.ayahs[i].split(' ')) {
+            final bare = token.replaceAll(notALetter, '');
+            if (bare == 'ا' || bare == 'ى') {
+              split.add('${surah.number}:${i + 1}');
+            }
+          }
+        }
+      }
+
+      expect(split, isEmpty,
+          reason: '${split.length} split word(s), first at ${split.take(3)}');
+    });
+
+    test('the tafsir explains the verse rather than repeating it', () async {
+      // The failure this rules out is bundling the Quran text itself as the
+      // Arabic "meaning": both are Arabic, so nothing else here would notice.
+      // Checked across a whole surah, not a lucky verse.
+      final tafsir = (await repo.loadTranslation(36, 'ar'))!;
+      final detail = await repo.loadSurah(36);
+
+      for (final ayah in detail.ayahs) {
+        final meaning = tafsir.forAyah(ayah.number)!;
+        expect(normalizeArabic(meaning), isNot(normalizeArabic(ayah.text)),
+            reason: '36:${ayah.number} repeats the verse');
       }
     });
 
@@ -190,11 +247,19 @@ void main() {
       expect(verses.every((v) => v.translationCredit == null), isTrue);
     });
 
-    test('Arabic gets the verses but no meanings', () async {
+    test('Arabic gets the tafsir, marked as one', () async {
       final verses = await repo.versesOnPage(1, lang: 'ar');
 
       expect(verses, hasLength(7));
-      expect(verses.every((v) => v.translation == null), isTrue);
+      for (final v in verses) {
+        expect(v.translation, isNotNull, reason: v.reference);
+        expect(v.translationCredit, isNotEmpty, reason: v.reference);
+        // The flag the reader and the share card set their type from — an
+        // unmarked tafsir would come out in the Latin body face, left-to-right.
+        expect(v.translationKind, QuranEditionKind.tafsir,
+            reason: v.reference);
+        expect(v.translationIsArabic, isTrue, reason: v.reference);
+      }
     });
 
     test('each verse gets its own meaning, not its neighbour\'s', () async {
@@ -235,12 +300,13 @@ void main() {
       expect(verse.translationCredit, isNotEmpty);
     });
 
-    test('drops both outside a translated language', () async {
-      final verse = await repo.verse(2, 255, lang: 'ar');
+    test('drops both outside a language the app has an edition for', () async {
+      final verse = await repo.verse(2, 255, lang: 'fr');
 
       expect(verse, isNotNull);
       expect(verse!.translation, isNull);
       expect(verse.translationCredit, isNull);
+      expect(verse.translationKind, isNull);
     });
 
     test('is still null outside the Quran, language or not', () async {
@@ -271,13 +337,23 @@ void main() {
       expect(Shareable.verse(verse, 'en').transliteration, isNull);
     });
 
-    test('an Arabic share carries no meaning and no credit', () async {
+    test('an Arabic share carries the tafsir, marked as Arabic', () async {
       final verse = (await repo.verse(112, 1, lang: 'ar'))!;
       final shareable = Shareable.verse(verse, 'ar');
 
-      expect(shareable.translation, isNull);
-      expect(shareable.translationCredit, isNull);
       expect(shareable.arabic, isNotEmpty);
+      expect(shareable.translation, verse.translation);
+      expect(shareable.translationCredit, isNotEmpty);
+      // Without the flag the card would set Arabic prose in the Latin body
+      // face and lay it out left-to-right.
+      expect(shareable.translationIsArabic, isTrue);
+      expect(shareable.asText(), contains(shareable.translation!));
+    });
+
+    test('a translated share is not marked as Arabic', () async {
+      final verse = (await repo.verse(112, 1, lang: 'en'))!;
+
+      expect(Shareable.verse(verse, 'en').translationIsArabic, isFalse);
     });
 
     test('a credit is never sent without the meaning it belongs to', () async {
@@ -345,13 +421,31 @@ void main() {
       expect(find.text(verse.ayah.text), findsOneWidget);
     });
 
-    testWidgets('an Arabic interface shows the verse alone', (tester) async {
+    testWidgets('an Arabic interface shows the tafsir under the verse',
+        (tester) async {
       final verse = (await repo.verse(112, 1, lang: 'ar'))!;
 
       await pumpRow(tester, verse, lang: AppLang.ar);
 
-      expect(verse.translation, isNull);
       expect(find.text(verse.ayah.text), findsOneWidget);
+      expect(find.text(verse.translation!), findsOneWidget);
+    });
+
+    testWidgets('the tafsir is set in Arabic type, right-to-left',
+        (tester) async {
+      // Set in the Latin body face it would render in whatever the system
+      // happened to fall back to — and read left-to-right, which for Arabic
+      // puts the sentence back to front.
+      final verse = (await repo.verse(112, 1, lang: 'ar'))!;
+
+      await pumpRow(tester, verse, lang: AppLang.ar);
+
+      final text = tester.widget<Text>(find.text(verse.translation!));
+      expect(text.style?.fontFamily, ArabicFonts.fallback.family);
+      expect(
+        Directionality.of(tester.element(find.text(verse.translation!))),
+        TextDirection.rtl,
+      );
     });
   });
 }

@@ -30,6 +30,15 @@ String normalizeArabic(String text) {
   return t;
 }
 
+// Any letter from the Arabic block. Enough to tell a name written in Arabic
+// from one written in Latin letters — which is all the callers need, and why
+// this doesn't try to cover every RTL script the app doesn't ship.
+final RegExp _arabicLetter = RegExp('[ء-ي]');
+
+/// Whether [text] is written in Arabic script, so it wants Arabic type and a
+/// right-to-left line rather than the interface's Latin body face.
+bool isArabicScript(String text) => _arabicLetter.hasMatch(text);
+
 const List<String> _arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
 
 /// Renders an integer with Arabic-Indic digits (e.g. 255 → "٢٥٥"), as used for

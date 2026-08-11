@@ -15,6 +15,7 @@ import 'package:dua_app/services/display_settings.dart';
 import 'package:dua_app/services/share_io.dart';
 import 'package:dua_app/theme/app_palette.dart';
 import 'package:dua_app/theme/app_theme.dart';
+import 'package:dua_app/theme/arabic_fonts.dart';
 import 'package:dua_app/widgets/share_card.dart';
 
 /// The PNG signature. A capture that returns something else isn't an image.
@@ -25,9 +26,21 @@ void main() {
 
   late SharedPreferences prefs;
 
+  /// A verse with the Arabic tafsir attached, read here rather than inside the
+  /// widget test: asset loading is real async, and a `testWidgets` body runs
+  /// in fake time where it would never complete.
+  late Shareable tafsirPassage;
+
   setUpAll(() async {
     SharedPreferences.setMockInitialValues({});
     prefs = await SharedPreferences.getInstance();
+
+    final quran = QuranRepository();
+    await quran.loadIndex();
+    // The longest verse in the Qur'an, so the longest tafsir the card can be
+    // asked to hold — past 1,400 characters.
+    tafsirPassage = Shareable.verse((await quran.verse(2, 282, lang: 'ar'))!,
+        'ar');
   });
 
   Widget host(Widget child, {double textScale = 1.0}) => MultiProvider(
@@ -160,6 +173,28 @@ void main() {
       expect(find.text('Al-Fatihah 1:1'), findsOneWidget);
       expect(find.text(passage.arabic), findsOneWidget);
       expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('sets an Arabic meaning in Arabic type, right-to-left',
+        (tester) async {
+      // The tafsir is the longest thing the card can be asked to hold. It has
+      // to wrap down the card rather than out of its fixed width, and it has
+      // to be set as Arabic: in the Latin body face it would fall back to
+      // whatever the system had, laid out left-to-right.
+      //
+      // Hosted in a scroll view, as the share sheet hosts it — a card this
+      // tall is expected (2:282 is already taller than a screen in English)
+      // and the sheet scrolls it rather than shrinking it.
+      await tester.pumpWidget(host(
+          SingleChildScrollView(child: ShareCard(passage: tafsirPassage))));
+      await tester.pump(const Duration(milliseconds: 100));
+
+      expect(tester.takeException(), isNull);
+      expect(tester.getSize(find.byType(ShareCard)).width, ShareCard.width);
+      final meaning = find.text(tafsirPassage.translation!);
+      expect(tester.widget<Text>(meaning).style?.fontFamily,
+          ArabicFonts.fallback.family);
+      expect(Directionality.of(tester.element(meaning)), TextDirection.rtl);
     });
   });
 

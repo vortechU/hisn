@@ -17,6 +17,15 @@ class DuaRepository {
   List<Dua> _duas = const [];
   List<Dhikr> _dhikr = const [];
 
+  /// Lookups built once at load, because the screens ask for them constantly:
+  /// the table of contents counts every category on each build, the bookmarks
+  /// screen resolves a list of ids, and the widget payload walks three
+  /// categories every time a count changes. Each of those was a linear scan of
+  /// the whole collection, per question asked.
+  Map<String, DuaCategory> _categoryById = const {};
+  Map<String, Dua> _duaById = const {};
+  Map<String, List<Dua>> _duasByCategory = const {};
+
   bool _loaded = false;
 
   List<DuaCategory> get categories => _categories;
@@ -46,7 +55,21 @@ class DuaRepository {
         .map((e) => Dhikr.fromJson(e as Map<String, dynamic>))
         .toList(growable: false);
 
+    _index();
     _loaded = true;
+  }
+
+  void _index() {
+    _categoryById = {for (final c in _categories) c.id: c};
+    _duaById = {for (final d in _duas) d.id: d};
+    final byCategory = <String, List<Dua>>{};
+    for (final dua in _duas) {
+      (byCategory[dua.categoryId] ??= <Dua>[]).add(dua);
+    }
+    _duasByCategory = {
+      for (final entry in byCategory.entries)
+        entry.key: List<Dua>.unmodifiable(entry.value),
+    };
   }
 
   /// Languages that ship an overlay file (`assets/data/duas.<lang>.json`).
@@ -106,18 +129,13 @@ class DuaRepository {
     );
   }
 
-  DuaCategory? categoryById(String id) {
-    for (final category in _categories) {
-      if (category.id == id) return category;
-    }
-    return null;
-  }
+  DuaCategory? categoryById(String id) => _categoryById[id];
 
   List<Dua> duasForCategory(String categoryId) =>
-      _duas.where((d) => d.categoryId == categoryId).toList(growable: false);
+      _duasByCategory[categoryId] ?? const [];
 
   int countForCategory(String categoryId) =>
-      _duas.where((d) => d.categoryId == categoryId).length;
+      _duasByCategory[categoryId]?.length ?? 0;
 
   /// Case-insensitive search across title (English & Arabic), transliteration,
   /// translation, reference, and the Arabic text. Arabic matching ignores
@@ -155,12 +173,7 @@ class DuaRepository {
     }).toList(growable: false);
   }
 
-  Dua? duaById(String id) {
-    for (final dua in _duas) {
-      if (dua.id == id) return dua;
-    }
-    return null;
-  }
+  Dua? duaById(String id) => _duaById[id];
 
   List<Dua> duasByIds(Iterable<String> ids) =>
       ids.map(duaById).whereType<Dua>().toList(growable: false);

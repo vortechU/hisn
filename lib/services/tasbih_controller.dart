@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -23,6 +25,30 @@ class TasbihController extends ChangeNotifier {
   static const _selectedKey = 'tasbih_selected';
 
   final SharedPreferences _prefs;
+
+  Timer? _widgetRefresh;
+
+  /// Ask the home-screen widget to redraw, once the beads have stopped moving.
+  ///
+  /// A redraw is not free on the native side: it crosses the method channel,
+  /// writes the preference store, and broadcasts to every widget provider,
+  /// each of which re-renders its Arabic to a bitmap. Counting is a rhythm —
+  /// several taps a second, for a hundred repetitions — and doing all of that
+  /// per bead put it squarely in the way of the tap it was reporting. The
+  /// widget only needs the number the hand came to rest on.
+  void _refreshWidgetSoon() {
+    _widgetRefresh?.cancel();
+    _widgetRefresh = Timer(
+      const Duration(milliseconds: 600),
+      AdhanWidgetBridge.refresh,
+    );
+  }
+
+  @override
+  void dispose() {
+    _widgetRefresh?.cancel();
+    super.dispose();
+  }
 
   int countFor(String dhikrId) => _prefs.getInt('$_countPrefix$dhikrId') ?? 0;
 
@@ -59,19 +85,23 @@ class TasbihController extends ChangeNotifier {
   /// a full set (so the UI can fire stronger haptics / feedback).
   Future<bool> increment(String dhikrId, int target) async {
     final next = countFor(dhikrId) + 1;
-    var completedSet = false;
+    final completedSet = next >= target;
 
-    if (next >= target) {
-      completedSet = true;
-      await _prefs.setInt('$_countPrefix$dhikrId', 0);
-      await _prefs.setInt('$_lapPrefix$dhikrId', lapsFor(dhikrId) + 1);
-    } else {
-      await _prefs.setInt('$_countPrefix$dhikrId', next);
-    }
+    // `shared_preferences` updates its in-memory copy synchronously and only
+    // the disk write is asynchronous, so the new count is already readable
+    // here. Telling the screen first, and settling the write after, takes a
+    // platform round trip out from between the bead and the finger.
+    final writes = completedSet
+        ? [
+            _prefs.setInt('$_countPrefix$dhikrId', 0),
+            _prefs.setInt('$_lapPrefix$dhikrId', lapsFor(dhikrId) + 1),
+          ]
+        : [_prefs.setInt('$_countPrefix$dhikrId', next)];
 
     notifyListeners();
     // The widget draws from the same keys, so it is now showing a stale count.
-    await AdhanWidgetBridge.refresh();
+    _refreshWidgetSoon();
+    await Future.wait(writes);
     return completedSet;
   }
 
@@ -79,7 +109,7 @@ class TasbihController extends ChangeNotifier {
     await _prefs.remove('$_countPrefix$dhikrId');
     await _prefs.remove('$_lapPrefix$dhikrId');
     notifyListeners();
-    await AdhanWidgetBridge.refresh();
+    _refreshWidgetSoon();
   }
 
   /// Re-read the store from disk.

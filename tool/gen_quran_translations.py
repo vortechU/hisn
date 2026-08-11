@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
-"""Generates the Quran translation overlays under assets/data/quran/trans/.
+"""Generates the Quran meaning overlays under assets/data/quran/trans/.
 
-The mushaf pages are glyph runs with no verse identity, so a translation can
-only ever be joined to them through the surah files — which means the join is
-only as trustworthy as the alignment between this data and the app's own surah
-index. A translation silently off by one verse is worse than no translation at
-all: every meaning would be attached to its neighbour, and nothing on screen
-would look wrong. So this tool refuses to write anything until the downloaded
+One edition per interface language: a translation where the reader does not
+have the Arabic, and — for the Arabic interface — a tafsir, which explains the
+verse in the language it was revealed in rather than rendering it into another.
+
+The mushaf pages are glyph runs with no verse identity, so a meaning can only
+ever be joined to them through the surah files — which means the join is only
+as trustworthy as the alignment between this data and the app's own surah
+index. An edition silently off by one verse is worse than no edition at all:
+every meaning would be attached to its neighbour, and nothing on screen would
+look wrong. So this tool refuses to write anything until the downloaded
 edition matches assets/data/quran/surahs.json exactly — same 114 surahs, same
 ayah count in each, no gaps and no duplicates.
 
@@ -15,10 +19,10 @@ plain `txt` form. Plain `txt` is one verse per line with no identifiers, so a
 single dropped line would shift every subsequent verse undetectably; the
 identified form makes that failure loud.
 
-LICENCE — the translations Tanzil hosts are offered for NON-COMMERCIAL use
-only. This is stricter than the Quran text itself (CC-BY 3.0) and it binds the
-whole app: bundling this data means Hisn cannot become paid or ad-supported
-without re-sourcing it. See TERMS.md section 6.
+LICENCE — the editions Tanzil hosts are offered for NON-COMMERCIAL use only.
+This is stricter than the Quran text itself (CC-BY 3.0) and it binds the whole
+app: bundling this data means Hisn cannot become paid or ad-supported without
+re-sourcing it. See TERMS.md section 6.
 
 Re-runnable. Downloads each edition to tool/.cache/ (gitignored) on first run
 and reuses it after, so regenerating is offline and reproducible.
@@ -30,6 +34,7 @@ import json
 import os
 import re
 import sys
+import unicodedata
 import urllib.request
 
 # Windows consoles default to cp1252 and die on the first non-ASCII character.
@@ -47,13 +52,20 @@ DOWNLOAD = 'https://tanzil.net/trans/?transID={id}&type=txt-2'
 
 TOTAL_AYAHS = 6236
 
-# The editions the app bundles. `lang` matches AppLang.name on the Dart side;
-# Arabic deliberately has no entry — the text is already Arabic, so an Arabic
-# interface drops the meaning line rather than rendering Arabic into Arabic.
+# The editions the app bundles, one per interface language — `lang` matches
+# AppLang.name on the Dart side.
+#
+# `kind` is what the reader is actually being given, and the app renders the
+# two differently. A `translation` carries the verse into another language and
+# is set in that language's own type; a `tafsir` explains it in Arabic and is
+# set in Arabic script, right-to-left. Arabic gets the second kind for the
+# obvious reason: rendering Arabic into Arabic would say nothing, but
+# explaining it does.
 EDITIONS = [
     {
         'lang': 'en',
         'id': 'en.hilali',
+        'kind': 'translation',
         'name': 'The Noble Qur’an',
         'translator': 'Muhammad Taqi-ud-Din al-Hilali '
                       'and Muhammad Muhsin Khan',
@@ -64,9 +76,20 @@ EDITIONS = [
     {
         'lang': 'id',
         'id': 'id.indonesian',
+        'kind': 'translation',
         'name': 'Al-Qur’an dan Terjemahannya',
         'translator': 'Kementerian Agama Republik Indonesia',
         'credit': 'Kemenag RI',
+    },
+    {
+        'lang': 'ar',
+        'id': 'ar.muyassar',
+        'kind': 'tafsir',
+        # Tanzil's own metadata spells this with a Persian ye (المیسر); the
+        # name is written here in Arabic letters as the printed edition has it.
+        'name': 'التفسير الميسر',
+        'translator': 'مجمع الملك فهد لطباعة المصحف الشريف',
+        'credit': 'التفسير الميسر',
     },
 ]
 
@@ -99,6 +122,36 @@ REPAIRS = {
 # has not seen before. Legitimate non-ASCII (accents, curly quotes) is fine and
 # deliberately not caught here — control characters are the corruption class.
 CONTROL_RE = re.compile(r'[\x00-\x08\x0b-\x1f\x7f-\x9f]')
+
+# Typos in the upstream text itself, as opposed to damage done to it in
+# transit. Corrected one verse at a time, by exact string, and the run fails if
+# a correction no longer matches — so a fixed upstream is noticed rather than
+# silently patched forever.
+#
+#   ar.muyassar 9:39 — "إذ ا استُنْفروا" for "إذا استُنْفروا". A space inside the
+#                      word, which stops the lam-alef... here the alef simply
+#                      detaches, and the sentence reads as two words that
+#                      aren't. Arabic has no one-letter word "ا", so there is
+#                      exactly one reading.
+TYPOS = {
+    ('ar.muyassar', 9, 39): ('إذ ا استُنْفروا', 'إذا استُنْفروا'),
+}
+
+def fragments(text):
+    """Tokens that are a lone alef or alef maqsura, whatever marks sit on them.
+
+    Arabic has no one-letter word spelled that way, so such a token means a
+    space has landed inside a word — the 9:39 typo above, and the same defect
+    that had the bundled Quran text rendering a detached alef (see
+    tool/repair_quran_text.py). Category `Lo` is the test rather than a
+    codepoint range, so harakat and pause marks fall away on their own.
+    """
+    found = []
+    for token in text.split(' '):
+        letters = [c for c in token if unicodedata.category(c) == 'Lo']
+        if letters in (['ا'], ['ى']):
+            found.append(token)
+    return found
 
 
 def fetch(edition):
@@ -163,6 +216,42 @@ def parse(text, edition):
     return verses
 
 
+def correct(verses, edition):
+    """Applies this edition's declared typo corrections, and refuses damage.
+
+    Each correction has to fire exactly once: if upstream fixes a typo, the
+    stale entry fails the run rather than sitting in the table forever. The
+    fragment sweep afterwards is the general guard — it catches a space landing
+    inside an Arabic word anywhere, including somewhere this table has never
+    heard of.
+    """
+    applied = 0
+    for (edition_id, surah, ayah), (bad, good) in sorted(TYPOS.items()):
+        if edition_id != edition['id']:
+            continue
+        text = verses[surah][ayah]
+        if bad not in text:
+            raise SystemExit(
+                '{0}: the declared correction for {1}:{2} no longer matches '
+                '({3!r} is not in the verse) — upstream has changed; check it '
+                'and update TYPOS'.format(edition_id, surah, ayah, bad))
+        verses[surah][ayah] = text.replace(bad, good)
+        applied += 1
+
+    if edition['kind'] == 'tafsir':
+        broken = [(s, a, fragments(t))
+                  for s, ayahs in sorted(verses.items())
+                  for a, t in sorted(ayahs.items()) if fragments(t)]
+        if broken:
+            raise SystemExit(
+                '{0}: {1} verse(s) have a space inside a word, leaving a lone '
+                'alef — first at {2}:{3} ({4}). Add a TYPOS entry for each '
+                'before regenerating.'.format(
+                    edition['id'], len(broken), broken[0][0], broken[0][1],
+                    broken[0][2]))
+    return applied
+
+
 def check(verses, index, edition):
     """Fails loudly unless the edition lines up with the app's surah index."""
     expected = {s['number']: s['ayahCount'] for s in index}
@@ -221,12 +310,16 @@ def main():
     for edition in EDITIONS:
         print('{0} ({1})'.format(edition['id'], edition['lang']))
         verses = parse(repair(fetch(edition), edition), edition)
+        corrected = correct(verses, edition)
         check(verses, index, edition)
         count = write(verses, index, edition)
-        print('  {0} surahs, {1} verses'.format(count, TOTAL_AYAHS))
+        print('  {0} surahs, {1} verses{2}'.format(
+            count, TOTAL_AYAHS,
+            ', {0} correction(s)'.format(corrected) if corrected else ''))
         manifest.append({
             'lang': edition['lang'],
             'id': edition['id'],
+            'kind': edition['kind'],
             'name': edition['name'],
             'translator': edition['translator'],
             'credit': edition['credit'],

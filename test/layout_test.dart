@@ -34,7 +34,9 @@ import 'package:dua_app/services/dua_progress_service.dart';
 import 'package:dua_app/services/favorites_service.dart';
 import 'package:dua_app/services/muhassan_service.dart';
 import 'package:dua_app/services/prayer_service.dart';
+import 'package:dua_app/models/quran.dart';
 import 'package:dua_app/models/shareable.dart';
+import 'package:dua_app/widgets/verse_row.dart';
 import 'package:dua_app/services/quran_service.dart';
 import 'package:dua_app/services/sunnah_calendar_service.dart';
 import 'package:dua_app/services/tasbih_controller.dart';
@@ -84,6 +86,11 @@ void main() {
   late QuranRepository quran;
   late SharedPreferences prefs;
 
+  /// 2:282 with each language's meaning attached. Read here rather than in the
+  /// test bodies: asset loading is real async, and awaiting it before the
+  /// first pump of a `testWidgets` body would never complete.
+  final longestVerse = <AppLang, PageVerse>{};
+
   setUpAll(() async {
     SharedPreferences.setMockInitialValues({
       // Populated lists exercise far more layout than empty states do.
@@ -94,6 +101,9 @@ void main() {
     repo = DuaRepository();
     quran = QuranRepository();
     await Future.wait([repo.load(), quran.loadIndex()]);
+    for (final lang in AppLang.values) {
+      longestVerse[lang] = (await quran.verse(2, 282, lang: lang.name))!;
+    }
   });
 
   Widget host(Widget child, {required Brightness brightness,
@@ -223,6 +233,31 @@ void main() {
       await renders(tester, const MushafScreen(startPage: 2),
           size: const Size(812, 375), lang: AppLang.ar);
     });
+  });
+
+  // The verse rows the reader lists a page's verses in. Rendered directly
+  // because they live in a bottom sheet, and scrolled the way that sheet
+  // scrolls them — 2:282 is the longest verse in the Qur'an and runs many
+  // screens deep in any language, so height is not the risk here. The risk is
+  // across: a medallion, a citation and three buttons in one row, on a narrow
+  // phone at a large text scale. The Arabic case carries the tafsir, which is
+  // longer than a translation by an order of magnitude.
+  group('a verse row renders without overflow', () {
+    for (final lang in AppLang.values) {
+      testWidgets('${lang.name} — narrow phone, large text', (tester) async {
+        await renders(
+          tester,
+          Scaffold(
+            body: SingleChildScrollView(
+              child: VerseRow(verse: longestVerse[lang]!),
+            ),
+          ),
+          size: const Size(320, 640),
+          textScale: 1.3,
+          lang: lang,
+        );
+      });
+    }
   });
 
   group('renders without overflow', () {

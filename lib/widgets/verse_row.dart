@@ -130,15 +130,26 @@ class VerseRow extends StatelessWidget {
               // `block` anchors a short verse to the right rather than leaving
               // it adrift on the left.
               ArabicText(verse.ayah.text, block: true),
-              // The meaning, set below the verse and quieter than it. Absent
-              // in Arabic, where the text above is already the language being
-              // read.
+              // The meaning, set below the verse and quieter than it — a
+              // translation, or in Arabic the Muyassar tafsir. The tafsir is
+              // Arabic prose, so it takes Arabic type and a right-to-left
+              // line, at a size that keeps the verse itself the larger of the
+              // two.
               if (showTranslation && verse.translation != null) ...[
                 const SizedBox(height: 8),
-                Text(
-                  verse.translation!,
-                  style: theme.textTheme.bodyMedium?.copyWith(height: 1.45),
-                ),
+                if (verse.translationIsArabic)
+                  ArabicText(
+                    verse.translation!,
+                    block: true,
+                    fontSize: 18,
+                    height: 1.75,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  )
+                else
+                  Text(
+                    verse.translation!,
+                    style: theme.textTheme.bodyMedium?.copyWith(height: 1.45),
+                  ),
               ],
             ],
           ),

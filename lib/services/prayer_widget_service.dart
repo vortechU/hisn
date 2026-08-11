@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:adhan/adhan.dart';
+import 'package:flutter/foundation.dart' show mapEquals;
 import 'package:flutter/material.dart';
 
 import '../data/dua_repository.dart';
@@ -80,10 +81,19 @@ class PrayerWidgetService extends ChangeNotifier {
     super.dispose();
   }
 
+  /// The payload as it was last sent, so an unchanged one can be dropped.
+  ///
+  /// [bind] fires on any of half a dozen notifications, most of which move
+  /// nothing a widget draws — a location refresh that lands on the same
+  /// coordinates, a settings screen opening. Each of those otherwise cost a
+  /// method channel hop, a preference write per key, and a broadcast to five
+  /// providers that then re-render their Arabic to bitmaps.
+  Map<String, String>? _lastPushed;
+
   Future<void> _push() async {
     final s = AppStrings(_lang);
     final prayer = _prayer;
-    await AdhanWidgetBridge.update({
+    final data = <String, String>{
       // The prayer config is the only section that can be unavailable — a
       // location may not have resolved yet. The rest goes regardless, so a
       // tasbih or verse widget is not left blank waiting on a GPS fix it has
@@ -93,7 +103,10 @@ class PrayerWidgetService extends ChangeNotifier {
       ..._adhkar(s),
       ..._tasbihPhrase(),
       'ayah_pool': _versePool(s),
-    });
+    };
+    if (_lastPushed != null && mapEquals(_lastPushed, data)) return;
+    _lastPushed = data;
+    await AdhanWidgetBridge.update(data);
   }
 
   // ---- payload sections ----
@@ -208,8 +221,19 @@ class PrayerWidgetService extends ChangeNotifier {
   /// that arrives ellipsized is worse than one that is not offered. Picked at an
   /// even stride through the collection rather than from the front, so the pool
   /// spans the whole book instead of whichever category sorts first.
+  ///
+  /// Kept once per language: nothing but the reading language moves it, while
+  /// the payload around it is rebuilt whenever a count or a colour changes.
+  /// Scanning and sorting the whole collection, then encoding a few kilobytes
+  /// of JSON, for an answer that was the same as last time is the most
+  /// expensive thing this class does.
+  final Map<String, String> _poolCache = {};
+
   String _versePool(AppStrings s) {
     final lang = s.lang.name;
+    final cached = _poolCache[lang];
+    if (cached != null) return cached;
+
     final short = _repository.duas
         .where((d) => d.arabic.length >= 12 && d.arabic.length <= 110)
         .toList()
@@ -225,7 +249,7 @@ class PrayerWidgetService extends ChangeNotifier {
         's': short[i].referenceFor(lang),
       });
     }
-    return jsonEncode(pool);
+    return _poolCache[lang] = jsonEncode(pool);
   }
 
   static String _hex(Color color) =>

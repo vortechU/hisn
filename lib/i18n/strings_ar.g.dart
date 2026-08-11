@@ -199,8 +199,8 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	];
 	@override String get showTransliteration => 'إظهار النطق اللاتيني';
 	@override String get showTransliterationSub => 'سطر النطق بالحروف اللاتينية';
-	@override String get showTranslation => 'إظهار الترجمة';
-	@override String get showTranslationSub => 'المعنى بالإنجليزية';
+	@override String get showTranslation => 'إظهار التفسير';
+	@override String get showTranslationSub => 'التفسير الميسر تحت آيات المصحف';
 	@override String get aboutBody => 'رفيق الأدعية والأذكار · نموذج أولي\nمواقيت الصلاة عبر مكتبة Adhan.';
 	@override String get automatic => 'تلقائي';
 	@override String get useDeviceLocation => 'استخدام موقع جهازي';
@@ -601,8 +601,8 @@ extension on TranslationsAr {
 			'fontScaleLabels.3' => 'كبير جدًا',
 			'showTransliteration' => 'إظهار النطق اللاتيني',
 			'showTransliterationSub' => 'سطر النطق بالحروف اللاتينية',
-			'showTranslation' => 'إظهار الترجمة',
-			'showTranslationSub' => 'المعنى بالإنجليزية',
+			'showTranslation' => 'إظهار التفسير',
+			'showTranslationSub' => 'التفسير الميسر تحت آيات المصحف',
 			'aboutBody' => 'رفيق الأدعية والأذكار · نموذج أولي\nمواقيت الصلاة عبر مكتبة Adhan.',
 			'automatic' => 'تلقائي',
 			'useDeviceLocation' => 'استخدام موقع جهازي',

@@ -6,7 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:timezone/data/latest_all.dart' as tzdata;
+// The ten-year dataset rather than `latest_all`. Decoding the full history of
+// every zone back to the nineteenth century costs the best part of a tenth of
+// a second on a phone, and carries about a megabyte of code, to schedule
+// notifications that never reach further than a fortnight ahead. Every zone is
+// still present — only the history is trimmed.
+import 'package:timezone/data/latest_10y.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
 
 import '../data/dua_repository.dart';
@@ -46,6 +51,12 @@ class NotificationService extends ChangeNotifier {
       FlutterLocalNotificationsPlugin();
 
   static const _kMaster = 'notif_master_enabled';
+
+  /// Whether the last run left anything scheduled with the OS.
+  ///
+  /// Read at launch to decide whether [reschedule] has to set the plugin up at
+  /// all — see the early return there.
+  static const _kOutstanding = 'notif_outstanding';
   static const _kLanguage = 'app_language';
   static String _keyFor(Prayer p) => 'notif_prayer_${p.name}';
 
@@ -225,6 +236,27 @@ class NotificationService extends ChangeNotifier {
     await reschedule();
   }
 
+  /// Whether [reschedule] has anything to do.
+  ///
+  /// [reschedule] runs at every launch, wanted or not, and setting the plugin
+  /// up means decoding the timezone database on the main isolate — right as
+  /// the first frames are being drawn. When nothing is switched on, and
+  /// nothing is left over from a run when something was, that whole cost buys
+  /// nothing.
+  ///
+  /// A missing flag is read as "something might be outstanding". On an install
+  /// predating it, reminders may well be scheduled with the OS, and leaving
+  /// them ringing after they were switched off is far worse than paying for
+  /// one more launch.
+  bool get hasReminderWork {
+    if (_masterEnabled ||
+        _dailyRemembrance ||
+        (_calendar?.remindersEnabled ?? false)) {
+      return true;
+    }
+    return _prefs.getBool(_kOutstanding) ?? true;
+  }
+
   /// Cancel and re-create the rolling window of scheduled notifications — the
   /// prayer-time reminders, the morning/evening adhkar reminders, and the
   /// night-before sunnah-fasting reminders.
@@ -233,15 +265,21 @@ class NotificationService extends ChangeNotifier {
     final prayer = _prayer;
     if (prayer == null) return;
 
+    final remembranceOn = _dailyRemembrance;
+    final fastingOn = _calendar?.remindersEnabled ?? false;
+    final nothingOn = !_masterEnabled && !remembranceOn && !fastingOn;
+
+    if (!hasReminderWork) return;
+
     await _ensureInitialized();
     await _plugin.cancelAll();
 
-    final remembranceOn = _dailyRemembrance;
-    final fastingOn = _calendar?.remindersEnabled ?? false;
-    if (!_masterEnabled && !remembranceOn && !fastingOn) {
+    if (nothingOn) {
       await AdhanScheduler.cancelAll();
+      await _prefs.setBool(_kOutstanding, false);
       return;
     }
+    await _prefs.setBool(_kOutstanding, true);
 
     final now = DateTime.now();
     final s = AppStrings(_lang);

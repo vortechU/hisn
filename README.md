@@ -38,7 +38,9 @@ the content is authentic but intentionally small, and it's built to grow.
   magnetometer is uncalibrated, or that is sitting near metal gets told what is wrong
   instead of a confident needle pointing the wrong way.
 - **Display options** — adjustable text size and toggles to show/hide the transliteration
-  and translation lines (e.g. for Arabic-only reading).
+  and meaning lines (e.g. for Arabic-only reading). In an Arabic interface the
+  transliteration switch is hidden, having nothing left to govern, and the meaning
+  switch governs the tafsir under the verses.
 - **Adhkar library** — duas grouped into categories (Morning, Evening, After Prayer,
   Before Sleep, Upon Waking, Everyday Life). Each dua shows Arabic, transliteration,
   translation, repetition count, source reference, and (where relevant) its virtue.
@@ -64,12 +66,16 @@ the content is authentic but intentionally small, and it's built to grow.
   to, the other records where reading stopped.
 - **Verse meanings** — each verse carries its meaning in the interface language:
   *The Noble Qur'an* (Hilali & Khan) in English, the Kementerian Agama rendering in
-  Indonesian, both from the [Tanzil Project](https://tanzil.net). An Arabic interface
-  shows none — the verse above it is already Arabic. The mushaf page itself stays a
-  facsimile; the meanings live in the verse list beside it, never interleaved into
-  the glyph page. **The translator travels with the meaning**, onto the share card
-  and into the shared text, on the same principle the citation does.
-  > These translations are licensed for **non-commercial use only**, which binds the
+  Indonesian, and in Arabic *at-Tafsīr al-Muyassar* (التفسير الميسر) from the King Fahd
+  Complex — a tafsir rather than a translation, because rendering Arabic into Arabic
+  would say nothing but explaining it does. All three from the
+  [Tanzil Project](https://tanzil.net). The tafsir is set in Arabic type and
+  right-to-left, smaller than the verse it explains, so the āyah stays the larger of
+  the two. The mushaf page itself stays a facsimile; the meanings live in the verse
+  list beside it, never interleaved into the glyph page. **The translator travels with
+  the meaning**, onto the share card and into the shared text, on the same principle
+  the citation does.
+  > These editions are licensed for **non-commercial use only**, which binds the
   > whole app for as long as it ships them. See [TERMS.md](TERMS.md) §6.
 - **Backup & restore** — writes everything the app knows (streak and history, saved
   duas, your own duas, Quran bookmarks, and all settings) to a single readable JSON
