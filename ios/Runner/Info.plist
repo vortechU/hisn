@@ -53,6 +53,13 @@
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
+	<!-- Lets the hands-free adhkar recitation keep playing with the app
+	     backgrounded and the screen off, and puts it on the lock screen and in
+	     Control Centre. Untested on device — this project has no iOS build. -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>

@@ -2,14 +2,20 @@ package com.vortech.dua_app
 
 import android.content.Intent
 import android.hardware.GeomagneticField
-import io.flutter.embedding.android.FlutterActivity
+import com.ryanheise.audioservice.AudioServiceActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import java.util.concurrent.Executors
 import java.util.concurrent.RejectedExecutionException
 
-class MainActivity : FlutterActivity() {
+/**
+ * [AudioServiceActivity] rather than `FlutterActivity`: it is a FlutterActivity
+ * that keeps the engine alive in a cache so the hands-free adhkar recitation
+ * survives the activity being destroyed — the phone going to sleep in a pocket
+ * mid-set. Nothing else about this activity changes.
+ */
+class MainActivity : AudioServiceActivity() {
     private val channelName = "hisn/adhan"
     private val geomagChannelName = "hisn/geomag"
     private val widgetChannelName = "hisn/widget"

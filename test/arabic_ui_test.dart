@@ -12,6 +12,7 @@ import 'package:dua_app/screens/mushaf_screen.dart';
 import 'package:dua_app/screens/quran_bookmarks_screen.dart';
 import 'package:dua_app/screens/quran_screen.dart';
 import 'package:dua_app/screens/tasbih_screen.dart';
+import 'package:dua_app/services/adhkar_audio_library.dart';
 import 'package:dua_app/services/custom_dua_service.dart';
 import 'package:dua_app/services/display_settings.dart';
 import 'package:dua_app/services/dua_progress_service.dart';
@@ -56,6 +57,16 @@ void main() {
         providers: [
           Provider<DuaRepository>.value(value: repo),
           Provider<QuranRepository>.value(value: quran),
+          // Every morning/evening dua claimed as recorded, so the Arabic
+          // interface renders the listening affordances too.
+          Provider<AdhkarAudioLibrary>.value(
+            value: AdhkarAudioLibrary.forTest({
+              for (final id in ['morning', 'evening']
+                  .expand((c) => repo.duasForCategory(c))
+                  .map((d) => d.id))
+                id: 'assets/audio/adhkar/$id.m4a',
+            }),
+          ),
           ChangeNotifierProvider(create: (_) => QuranService(prefs)),
           ChangeNotifierProvider(
               create: (_) => LocaleController(prefs)..setLang(AppLang.ar)),

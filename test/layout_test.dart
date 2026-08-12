@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dua_app/data/dua_repository.dart';
 import 'package:dua_app/data/quran_repository.dart';
 import 'package:dua_app/l10n/locale_controller.dart';
+import 'package:dua_app/screens/adhkar_player_screen.dart';
 import 'package:dua_app/screens/adhkar_screen.dart';
 import 'package:dua_app/screens/category_duas_screen.dart';
 import 'package:dua_app/screens/custom_duas_screen.dart';
@@ -27,7 +28,10 @@ import 'package:dua_app/screens/settings_screen.dart';
 import 'package:dua_app/screens/streak_stats_screen.dart';
 import 'package:dua_app/screens/sunnah_calendar_screen.dart';
 import 'package:dua_app/screens/tasbih_screen.dart';
+import 'package:dua_app/services/adhkar_audio_handler.dart';
+import 'package:dua_app/services/adhkar_audio_library.dart';
 import 'package:dua_app/services/backup_service.dart';
+import 'package:dua_app/services/listen_settings.dart';
 import 'package:dua_app/services/custom_dua_service.dart';
 import 'package:dua_app/services/display_settings.dart';
 import 'package:dua_app/services/dua_progress_service.dart';
@@ -85,6 +89,8 @@ void main() {
   late DuaRepository repo;
   late QuranRepository quran;
   late SharedPreferences prefs;
+  late AdhkarAudioLibrary audioLibrary;
+  final audio = AdhkarAudioHandler();
 
   /// 2:282 with each language's meaning attached. Read here rather than in the
   /// test bodies: asset loading is real async, and awaiting it before the
@@ -104,6 +110,12 @@ void main() {
     for (final lang in AppLang.values) {
       longestVerse[lang] = (await quran.verse(2, 282, lang: lang.name))!;
     }
+    audioLibrary = AdhkarAudioLibrary.forTest({
+      for (final id in ['morning', 'evening']
+          .expand((c) => repo.duasForCategory(c))
+          .map((d) => d.id))
+        id: 'assets/audio/adhkar/$id.m4a',
+    });
   });
 
   Widget host(Widget child, {required Brightness brightness,
@@ -114,6 +126,16 @@ void main() {
         Provider<DuaRepository>.value(value: repo),
         Provider<QuranRepository>.value(value: quran),
         Provider<SharedPreferences>.value(value: prefs),
+        // Recitation is claimed for every morning and evening dua so the
+        // listening affordances — the AppBar mark on a set, the headphone on
+        // the "read now" rubric — are actually laid out here. An empty library
+        // would hide them and quietly stop testing them.
+        Provider<AdhkarAudioLibrary>.value(value: audioLibrary),
+        // The handler constructs without a platform behind it — just_audio
+        // defers that until a source is set — which is enough to lay the
+        // listening screen out in its idle state.
+        ChangeNotifierProvider<AdhkarAudioHandler>.value(value: audio),
+        ChangeNotifierProvider(create: (_) => ListenSettings(prefs)),
         ChangeNotifierProvider(create: (_) => QuranService(prefs)),
         ChangeNotifierProvider(create: (_) => LocaleController(prefs)..setLang(lang)),
         ChangeNotifierProvider(create: (_) => CustomDuaService(prefs)),
@@ -323,6 +345,39 @@ void main() {
               palette: palette, brightness: brightness);
         }
       }
+    });
+
+    // The listening screen, in its idle state — the head, the empty page and
+    // the transport. Idle is all a widget test can reach: there is no media
+    // session here for a real recitation to run in, so [start] never gets past
+    // loading a source. The layouts that matter (a long Arabic block under a
+    // fixed head and a fixed transport, at large text on a narrow phone) are
+    // exercised by the reading screen above, which sets the same block.
+    testWidgets('listening — every set, every language', (tester) async {
+      for (final lang in AppLang.values) {
+        for (final id in ['morning', 'evening']) {
+          await renders(
+            tester,
+            AdhkarPlayerScreen(
+              category: repo.categoryById(id)!,
+              duas: repo.duasForCategory(id),
+            ),
+            lang: lang,
+          );
+        }
+      }
+    });
+
+    testWidgets('listening — narrow, large text', (tester) async {
+      await renders(
+        tester,
+        AdhkarPlayerScreen(
+          category: repo.categoryById('morning')!,
+          duas: repo.duasForCategory('morning'),
+        ),
+        size: const Size(320, 640),
+        textScale: 1.3,
+      );
     });
   });
 }

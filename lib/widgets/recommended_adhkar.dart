@@ -6,7 +6,11 @@ import 'package:provider/provider.dart';
 
 import '../data/dua_repository.dart';
 import '../l10n/app_strings.dart';
+import '../models/dua.dart';
+import '../models/dua_category.dart';
+import '../screens/adhkar_player_screen.dart';
 import '../screens/category_duas_screen.dart';
+import '../services/adhkar_audio_library.dart';
 import '../services/prayer_service.dart';
 import '../theme/app_theme.dart';
 import '../theme/category_visuals.dart';
@@ -83,7 +87,8 @@ class _RecommendedAdhkarState extends State<RecommendedAdhkar> {
     if (category == null) return const SizedBox.shrink();
 
     final visuals = CategoryVisuals.of(category.id);
-    final count = repo.countForCategory(category.id);
+    final duas = repo.duasForCategory(category.id);
+    final count = duas.length;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(Ms.margin, 18, Ms.margin, 2),
@@ -115,6 +120,11 @@ class _RecommendedAdhkarState extends State<RecommendedAdhkar> {
                             ?.copyWith(color: ms.gilt)),
                     const SizedBox(width: 8),
                     Rosette(size: 12, color: ms.gilt, lobes: visuals.lobes),
+                    const Spacer(),
+                    // Listening is the other way into the same set, so it sits
+                    // on the rubric rather than replacing the tap that opens
+                    // it — the band still reads as one instruction.
+                    _ListenMark(category: category, duas: duas),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -181,6 +191,36 @@ class _RecommendedAdhkarState extends State<RecommendedAdhkar> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The headphone mark on the rubric: have this set recited aloud instead of
+/// reading it. Hidden when nothing in the set is recorded.
+class _ListenMark extends StatelessWidget {
+  const _ListenMark({required this.category, required this.duas});
+
+  final DuaCategory category;
+  final List<Dua> duas;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!context.read<AdhkarAudioLibrary>().canPlay(duas)) {
+      return const SizedBox.shrink();
+    }
+    final ms = ManuscriptTheme.of(context);
+    return IconButton(
+      icon: const Icon(Icons.headset_outlined, size: 19),
+      color: ms.rubric,
+      visualDensity: VisualDensity.compact,
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(minWidth: 34, minHeight: 26),
+      tooltip: AppStrings.of(context).listenAction,
+      onPressed: () => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => AdhkarPlayerScreen(category: category, duas: duas),
         ),
       ),
     );

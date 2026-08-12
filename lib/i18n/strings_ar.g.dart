@@ -150,6 +150,32 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get resetProgress => 'إعادة التقدّم';
 	@override String get setComplete => 'اكتملت — تقبّل الله';
 	@override String get tapEachDua => 'اضغط كل دعاء لعدّ تكراره';
+	@override String get listenAction => 'استماع';
+	@override String get listenStart => 'تشغيل الورد';
+	@override String get listenRestart => 'البدء من جديد';
+	@override String get listenHint => 'قيد التشغيل — يمكنك إقفال الهاتف';
+	@override String get listenIdleTitle => 'لا شيء قيد التشغيل';
+	@override String get listenIdleBody => 'شغّل الورد ليُتلى جهرًا، ويُحصى من تلقاء نفسه.';
+	@override String get listenMissingOne => 'دعاء واحد بلا تسجيل بعد';
+	@override String listenMissingOther({required Object n}) => '${n} أدعية بلا تسجيل بعد';
+	@override String get listenPrevious => 'الذكر السابق';
+	@override String get listenNext => 'الذكر التالي';
+	@override String get listenPause => 'إيقاف مؤقّت';
+	@override String get listenResume => 'متابعة';
+	@override String get secListen => 'الاستماع';
+	@override String get listenSub => 'تلاوة دون استخدام اليدين';
+	@override String get listenGap => 'السكتة بين التكرارات';
+	@override List<String> get listenGapLabels => [
+		'بلا',
+		'ثانية',
+		'ثانيتان',
+		'٣ ثوانٍ',
+	];
+	@override String get listenAppendix => 'تلاوة الأذكار المئوية';
+	@override String get listenAppendixSub => 'التهليل والتسبيح مئة مرة، يُلحقان بآخر الورد. نحو عشرين دقيقة.';
+	@override String get listenKeepScreenOn => 'إبقاء الشاشة مضاءة';
+	@override String get listenKeepScreenOnSub => 'للمتابعة واليدان مشغولتان. وإن أُطفئت، ينام الهاتف والتلاوة مستمرّة.';
+	@override String get listenReciter => 'القارئ';
 	@override String get duaCopied => 'تم نسخ الدعاء';
 	@override String get removeBookmark => 'إزالة الحفظ';
 	@override String get bookmark => 'حفظ';
@@ -558,6 +584,30 @@ extension on TranslationsAr {
 			'resetProgress' => 'إعادة التقدّم',
 			'setComplete' => 'اكتملت — تقبّل الله',
 			'tapEachDua' => 'اضغط كل دعاء لعدّ تكراره',
+			'listenAction' => 'استماع',
+			'listenStart' => 'تشغيل الورد',
+			'listenRestart' => 'البدء من جديد',
+			'listenHint' => 'قيد التشغيل — يمكنك إقفال الهاتف',
+			'listenIdleTitle' => 'لا شيء قيد التشغيل',
+			'listenIdleBody' => 'شغّل الورد ليُتلى جهرًا، ويُحصى من تلقاء نفسه.',
+			'listenMissingOne' => 'دعاء واحد بلا تسجيل بعد',
+			'listenMissingOther' => ({required Object n}) => '${n} أدعية بلا تسجيل بعد',
+			'listenPrevious' => 'الذكر السابق',
+			'listenNext' => 'الذكر التالي',
+			'listenPause' => 'إيقاف مؤقّت',
+			'listenResume' => 'متابعة',
+			'secListen' => 'الاستماع',
+			'listenSub' => 'تلاوة دون استخدام اليدين',
+			'listenGap' => 'السكتة بين التكرارات',
+			'listenGapLabels.0' => 'بلا',
+			'listenGapLabels.1' => 'ثانية',
+			'listenGapLabels.2' => 'ثانيتان',
+			'listenGapLabels.3' => '٣ ثوانٍ',
+			'listenAppendix' => 'تلاوة الأذكار المئوية',
+			'listenAppendixSub' => 'التهليل والتسبيح مئة مرة، يُلحقان بآخر الورد. نحو عشرين دقيقة.',
+			'listenKeepScreenOn' => 'إبقاء الشاشة مضاءة',
+			'listenKeepScreenOnSub' => 'للمتابعة واليدان مشغولتان. وإن أُطفئت، ينام الهاتف والتلاوة مستمرّة.',
+			'listenReciter' => 'القارئ',
 			'duaCopied' => 'تم نسخ الدعاء',
 			'removeBookmark' => 'إزالة الحفظ',
 			'bookmark' => 'حفظ',

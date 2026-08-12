@@ -357,6 +357,73 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// en: 'Tap each dua to count its repetitions'
 	String get tapEachDua => 'Tap each dua to count its repetitions';
 
+	/// en: 'Listen'
+	String get listenAction => 'Listen';
+
+	/// en: 'Play the set'
+	String get listenStart => 'Play the set';
+
+	/// en: 'Start again from the top'
+	String get listenRestart => 'Start again from the top';
+
+	/// en: 'Playing — you can lock your phone'
+	String get listenHint => 'Playing — you can lock your phone';
+
+	/// en: 'Nothing playing'
+	String get listenIdleTitle => 'Nothing playing';
+
+	/// en: 'Play the set and it will be recited aloud, counting itself as it goes.'
+	String get listenIdleBody => 'Play the set and it will be recited aloud, counting itself as it goes.';
+
+	/// en: '1 dua has no recording yet'
+	String get listenMissingOne => '1 dua has no recording yet';
+
+	/// en: '$n duas have no recording yet'
+	String listenMissingOther({required Object n}) => '${n} duas have no recording yet';
+
+	/// en: 'Previous dhikr'
+	String get listenPrevious => 'Previous dhikr';
+
+	/// en: 'Next dhikr'
+	String get listenNext => 'Next dhikr';
+
+	/// en: 'Pause'
+	String get listenPause => 'Pause';
+
+	/// en: 'Resume'
+	String get listenResume => 'Resume';
+
+	/// en: 'Listening'
+	String get secListen => 'Listening';
+
+	/// en: 'Hands-free recitation'
+	String get listenSub => 'Hands-free recitation';
+
+	/// en: 'Pause between repetitions'
+	String get listenGap => 'Pause between repetitions';
+
+	List<String> get listenGapLabels => [
+		'None',
+		'1 sec',
+		'2 sec',
+		'3 sec',
+	];
+
+	/// en: 'Recite the long dhikr'
+	String get listenAppendix => 'Recite the long dhikr';
+
+	/// en: 'The 100× tahlil and tasbih, added to the end of the set. About 20 minutes.'
+	String get listenAppendixSub => 'The 100× tahlil and tasbih, added to the end of the set. About 20 minutes.';
+
+	/// en: 'Keep the screen on'
+	String get listenKeepScreenOn => 'Keep the screen on';
+
+	/// en: 'For following along while your hands are busy. Off, the phone sleeps and keeps reciting.'
+	String get listenKeepScreenOnSub => 'For following along while your hands are busy. Off, the phone sleeps and keeps reciting.';
+
+	/// en: 'Reciter'
+	String get listenReciter => 'Reciter';
+
 	/// en: 'Dua copied'
 	String get duaCopied => 'Dua copied';
 
@@ -1219,6 +1286,30 @@ extension on Translations {
 			'resetProgress' => 'Reset progress',
 			'setComplete' => 'Set complete — taqabbal Allah',
 			'tapEachDua' => 'Tap each dua to count its repetitions',
+			'listenAction' => 'Listen',
+			'listenStart' => 'Play the set',
+			'listenRestart' => 'Start again from the top',
+			'listenHint' => 'Playing — you can lock your phone',
+			'listenIdleTitle' => 'Nothing playing',
+			'listenIdleBody' => 'Play the set and it will be recited aloud, counting itself as it goes.',
+			'listenMissingOne' => '1 dua has no recording yet',
+			'listenMissingOther' => ({required Object n}) => '${n} duas have no recording yet',
+			'listenPrevious' => 'Previous dhikr',
+			'listenNext' => 'Next dhikr',
+			'listenPause' => 'Pause',
+			'listenResume' => 'Resume',
+			'secListen' => 'Listening',
+			'listenSub' => 'Hands-free recitation',
+			'listenGap' => 'Pause between repetitions',
+			'listenGapLabels.0' => 'None',
+			'listenGapLabels.1' => '1 sec',
+			'listenGapLabels.2' => '2 sec',
+			'listenGapLabels.3' => '3 sec',
+			'listenAppendix' => 'Recite the long dhikr',
+			'listenAppendixSub' => 'The 100× tahlil and tasbih, added to the end of the set. About 20 minutes.',
+			'listenKeepScreenOn' => 'Keep the screen on',
+			'listenKeepScreenOnSub' => 'For following along while your hands are busy. Off, the phone sleeps and keeps reciting.',
+			'listenReciter' => 'Reciter',
 			'duaCopied' => 'Dua copied',
 			'removeBookmark' => 'Remove bookmark',
 			'bookmark' => 'Bookmark',

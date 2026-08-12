@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Tells R8's resource shrinker to keep these even though nothing in the app
+    holds a static R.drawable.* reference to them.
+
+    audio_service builds the adhkar-recitation notification's transport
+    buttons (play/pause/skip/stop) by looking these up dynamically from its
+    own compiled code — context.getResources().getIdentifier("audio_service_pause",
+    "drawable", …) — which the shrinker's reachability analysis cannot see. It
+    then treats every one of them as unused and strips it, so the notification
+    build throws "You must specify an icon resource id to build a CustomAction"
+    on every playback-state update, and no notification (and so no lock-screen
+    session) is ever shown. Confirmed on a release build (flutter build apk,
+    release mode): zero audio_service_* drawables made it into the APK before
+    this file existed. The exact same failure mode that AdhanPlayerService.play()
+    guards against for the adhan's raw audio, by resolving R.raw statically
+    instead of by name.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@drawable/audio_service_play_arrow,@drawable/audio_service_pause,@drawable/audio_service_stop,@drawable/audio_service_skip_next,@drawable/audio_service_skip_previous,@drawable/audio_service_fast_forward,@drawable/audio_service_fast_rewind" />

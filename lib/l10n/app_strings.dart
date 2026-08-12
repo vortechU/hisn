@@ -194,6 +194,31 @@ class AppStrings {
   String get setComplete => _t.setComplete;
   String get tapEachDua => _t.tapEachDua;
 
+  // ---- hands-free listening ----
+  String get listenAction => _t.listenAction;
+  String get listenStart => _t.listenStart;
+  String get listenRestart => _t.listenRestart;
+  String get listenHint => _t.listenHint;
+  String get listenIdleTitle => _t.listenIdleTitle;
+  String get listenIdleBody => _t.listenIdleBody;
+  String listenMissing(int n) =>
+      n == 1 ? _t.listenMissingOne : _t.listenMissingOther(n: n);
+  String get listenPrevious => _t.listenPrevious;
+  String get listenNext => _t.listenNext;
+  String get listenPause => _t.listenPause;
+  String get listenResume => _t.listenResume;
+  String get secListen => _t.secListen;
+  String get listenSub => _t.listenSub;
+  String get listenGap => _t.listenGap;
+
+  /// Label for a pause length, indexed by [ListenSettings.gapChoices].
+  String listenGapLabel(int index) => _t.listenGapLabels[index];
+  String get listenAppendix => _t.listenAppendix;
+  String get listenAppendixSub => _t.listenAppendixSub;
+  String get listenKeepScreenOn => _t.listenKeepScreenOn;
+  String get listenKeepScreenOnSub => _t.listenKeepScreenOnSub;
+  String get listenReciter => _t.listenReciter;
+
   // ---- dua card ----
   String get duaCopied => _t.duaCopied;
   String get removeBookmark => _t.removeBookmark;

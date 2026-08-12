@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dua_app/data/dua_repository.dart';
 import 'package:dua_app/l10n/locale_controller.dart';
 import 'package:dua_app/screens/category_duas_screen.dart';
+import 'package:dua_app/services/adhkar_audio_library.dart';
 import 'package:dua_app/services/custom_dua_service.dart';
 import 'package:dua_app/services/display_settings.dart';
 import 'package:dua_app/services/dua_progress_service.dart';
@@ -50,6 +51,10 @@ void main() {
           providers: [
             Provider<DuaRepository>.value(value: repo),
             Provider<SharedPreferences>.value(value: prefs),
+            // Nothing recorded: this group measures what a *tap* rebuilds, and
+            // an extra AppBar action would only add noise to that count.
+            Provider<AdhkarAudioLibrary>.value(
+                value: AdhkarAudioLibrary.empty()),
             ChangeNotifierProvider(create: (_) => LocaleController(prefs)),
             ChangeNotifierProvider(create: (_) => CustomDuaService(prefs)),
             ChangeNotifierProvider(create: (_) => FavoritesService(prefs)),

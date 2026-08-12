@@ -44,6 +44,16 @@ dependencies:
   timezone: ^0.10.0
   flutter_timezone: ^5.1.0
   audioplayers: ^6.1.0
+  # Hands-free adhkar playback. audioplayers stays for the adhan preview (a
+  # one-shot with no transport), but a recited session needs a real media
+  # session — lock-screen, headphone and car controls, and a foreground service
+  # that keeps the process alive with the screen off. just_audio drives the
+  # playlist; audio_service supplies the session. Since audio_service 0.18 the
+  # handler runs in the *same isolate* as the UI, which is what lets playback
+  # write straight into DuaProgressService/MuhassanService with no channel and
+  # no second copy of today's progress.
+  just_audio: ^0.9.42
+  audio_service: ^0.18.15
   geocoding: ^4.0.0
   slang_flutter: ^4.15.0
   hijri: ^3.0.1
@@ -107,7 +117,14 @@ flutter:
     - assets/data/quran/trans/id/
     - assets/data/quran/trans/ar/
     - assets/data/mushaf/
+    - assets/data/adhkar_audio.json
     - assets/audio/
+    # Recitation of the morning & evening adhkar, one file per unique Arabic
+    # text (assets/data/adhkar_audio.json maps dua ids onto them). Kept as
+    # Flutter assets rather than Android res/raw deliberately: flutter_assets is
+    # invisible to resource shrinking, so these can't be stripped the way the
+    # adhan nearly was (see AdhanPlayerService.play).
+    - assets/audio/adhkar/
 
   fonts:
     # Latin text faces. Crimson Pro carries content (headings, prose,

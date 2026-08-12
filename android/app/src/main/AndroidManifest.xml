@@ -84,6 +84,30 @@
             android:exported="false"
             android:foregroundServiceType="mediaPlayback" />
 
+        <!-- Hands-free adhkar. Unlike the adhan above — a one-shot with no
+             transport — a recited set is a real media session: the lock
+             screen, headset buttons, Bluetooth and a car head unit all drive
+             it, and the foreground service is what keeps the process (and so
+             the counter that advances with the audio) alive with the screen
+             off. Supplied by audio_service; the two players are independent
+             and the OS arbitrates focus between them. -->
+        <service
+            android:name="com.ryanheise.audioservice.AudioService"
+            android:exported="true"
+            android:foregroundServiceType="mediaPlayback">
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
+        <!-- Routes headset / steering-wheel media buttons into that session. -->
+        <receiver
+            android:name="com.ryanheise.audioservice.MediaButtonReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
+
         <!-- Home-screen widget showing the five daily prayer times. Times are
              computed natively (Adhan), so it stays accurate while the app is
              closed; Flutter pushes the location + settings via the hisn/widget

@@ -9,10 +9,13 @@ import 'l10n/locale_controller.dart';
 import 'screens/home_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'services/adhan_audio.dart';
+import 'services/adhkar_audio_handler.dart';
+import 'services/adhkar_audio_library.dart';
 import 'services/custom_dua_service.dart';
 import 'services/display_settings.dart';
 import 'services/dua_progress_service.dart';
 import 'services/favorites_service.dart';
+import 'services/listen_settings.dart';
 import 'services/muhassan_service.dart';
 import 'services/notification_service.dart';
 import 'services/prayer_service.dart';
@@ -63,11 +66,21 @@ class DuaApp extends StatefulWidget {
     required this.repository,
     required this.quran,
     required this.prefs,
+    this.audioLibrary,
+    this.audio,
   });
 
   final DuaRepository repository;
   final QuranRepository quran;
   final SharedPreferences prefs;
+
+  /// Which adhkar have a recitation bundled. Null (or empty) hides every
+  /// listening affordance in the app.
+  final AdhkarAudioLibrary? audioLibrary;
+
+  /// The media session, built once in `main`. Null where the platform has
+  /// none — tests, desktop, web.
+  final AdhkarAudioHandler? audio;
 
   @override
   State<DuaApp> createState() => _DuaAppState();
@@ -81,6 +94,10 @@ class _DuaAppState extends State<DuaApp> {
   bool _rebuilding = false;
 
   Future<void> _reload() async {
+    // A session in progress is writing into the very services about to be
+    // replaced. Stop it first, so a restore doesn't have a recitation counting
+    // into a store that is being overwritten underneath it.
+    await widget.audio?.stop();
     // The old and the new tree must not exist at once: [appNavigatorKey] is a
     // GlobalKey, and two MaterialApps holding it in the same frame is a
     // duplicate-key error. Blanking for a frame guarantees the old one is
@@ -130,6 +147,15 @@ class _DuaAppState extends State<DuaApp> {
         ChangeNotifierProvider(create: (_) => ThemeController(prefs)),
         ChangeNotifierProvider(create: (_) => DuaProgressService(prefs)),
         ChangeNotifierProvider(create: (_) => TasbihController(prefs)),
+        ChangeNotifierProvider(create: (_) => ListenSettings(prefs)),
+        // What is recorded, and the session that plays it. Both are `.value`:
+        // they outlive this tree (the handler is a process-wide singleton) and
+        // must not be disposed when a restore discards the providers.
+        Provider<AdhkarAudioLibrary>.value(
+            value: widget.audioLibrary ?? AdhkarAudioLibrary.empty()),
+        if (widget.audio != null)
+          ChangeNotifierProvider<AdhkarAudioHandler>.value(
+              value: widget.audio!),
         ChangeNotifierProvider(
           create: (_) => MuhassanService(prefs)
             ..setEssential(

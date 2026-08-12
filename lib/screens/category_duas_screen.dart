@@ -6,6 +6,7 @@ import '../data/dua_repository.dart';
 import '../l10n/app_strings.dart';
 import '../models/dua.dart';
 import '../models/dua_category.dart';
+import '../services/adhkar_audio_library.dart';
 import '../services/dua_progress_service.dart';
 import '../services/muhassan_service.dart';
 import '../theme/app_theme.dart';
@@ -13,6 +14,7 @@ import '../theme/category_visuals.dart';
 import '../widgets/arabic_text.dart';
 import '../widgets/dua_card.dart';
 import '../widgets/ornament.dart';
+import 'adhkar_player_screen.dart';
 
 /// Every dua in a category, read as a session: tap a block to advance through
 /// its repetitions, with the set's progress ruled across the head of the page.
@@ -74,6 +76,7 @@ class _CategoryDuasScreenState extends State<CategoryDuasScreen> {
       appBar: AppBar(
         title: Text(widget.category.titleFor(s.ar)),
         actions: [
+          _ListenAction(category: widget.category, duas: _duas),
           _ResetAction(duas: _duas, onReset: _resetAll),
           const SizedBox(width: 6),
         ],
@@ -184,6 +187,33 @@ class _SessionHead extends StatelessWidget {
             color: allDone ? ms.gilt : tint,
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Hands the set over to be recited aloud.
+///
+/// Absent unless something in this category is actually recorded, which is
+/// what keeps the feature invisible in a build that ships without the audio.
+class _ListenAction extends StatelessWidget {
+  const _ListenAction({required this.category, required this.duas});
+
+  final DuaCategory category;
+  final List<Dua> duas;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!context.read<AdhkarAudioLibrary>().canPlay(duas)) {
+      return const SizedBox.shrink();
+    }
+    return IconButton(
+      icon: const Icon(Icons.headset_outlined),
+      tooltip: AppStrings.of(context).listenAction,
+      onPressed: () => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => AdhkarPlayerScreen(category: category, duas: duas),
+        ),
       ),
     );
   }

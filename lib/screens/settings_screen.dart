@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../l10n/app_strings.dart';
+import '../services/adhkar_audio_library.dart';
 import '../services/prayer_service.dart';
 import '../services/prayer_settings.dart';
 import '../services/theme_controller.dart';
@@ -12,6 +13,7 @@ import 'settings/appearance_settings_screen.dart';
 import 'settings/backup_settings_screen.dart';
 import 'settings/display_settings_screen.dart';
 import 'settings/language_settings_screen.dart';
+import 'settings/listen_settings_screen.dart';
 import 'settings/notifications_settings_screen.dart';
 import 'settings/prayer_times_settings_screen.dart';
 import 'sunnah_calendar_screen.dart';
@@ -47,6 +49,11 @@ class SettingsScreen extends StatelessWidget {
           s.paletteName(theme.palette.id), (_) => const AppearanceSettingsScreen()),
       _Entry(Icons.format_size, s.secDisplay, s.textSize,
           (_) => const DisplaySettingsScreen()),
+      // Only when something is recorded — otherwise this section would settle
+      // the behaviour of a feature the build doesn't have.
+      if (context.read<AdhkarAudioLibrary>().hasAnyAudio)
+        _Entry(Icons.headset_outlined, s.secListen, s.listenSub,
+            (_) => const ListenSettingsScreen()),
       _Entry(Icons.translate_outlined, s.secLanguage, s.currentLanguage,
           (_) => const LanguageSettingsScreen()),
       _Entry(Icons.backup_outlined, s.secBackup, s.backupSub,

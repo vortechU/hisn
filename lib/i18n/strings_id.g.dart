@@ -150,6 +150,32 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get resetProgress => 'Atur ulang progres';
 	@override String get setComplete => 'Selesai — taqabbalallah';
 	@override String get tapEachDua => 'Ketuk tiap doa untuk menghitung pengulangannya';
+	@override String get listenAction => 'Dengarkan';
+	@override String get listenStart => 'Putar rangkaian';
+	@override String get listenRestart => 'Mulai lagi dari awal';
+	@override String get listenHint => 'Sedang diputar — ponsel boleh dikunci';
+	@override String get listenIdleTitle => 'Tidak ada yang diputar';
+	@override String get listenIdleBody => 'Putar rangkaiannya dan doa akan dibacakan, menghitung sendiri sambil berjalan.';
+	@override String get listenMissingOne => '1 doa belum ada rekamannya';
+	@override String listenMissingOther({required Object n}) => '${n} doa belum ada rekamannya';
+	@override String get listenPrevious => 'Zikir sebelumnya';
+	@override String get listenNext => 'Zikir berikutnya';
+	@override String get listenPause => 'Jeda';
+	@override String get listenResume => 'Lanjutkan';
+	@override String get secListen => 'Mendengarkan';
+	@override String get listenSub => 'Bacaan tanpa menyentuh layar';
+	@override String get listenGap => 'Jeda antar pengulangan';
+	@override List<String> get listenGapLabels => [
+		'Tanpa',
+		'1 dtk',
+		'2 dtk',
+		'3 dtk',
+	];
+	@override String get listenAppendix => 'Bacakan zikir 100×';
+	@override String get listenAppendixSub => 'Tahlil dan tasbih 100×, ditambahkan di akhir rangkaian. Sekitar 20 menit.';
+	@override String get listenKeepScreenOn => 'Biarkan layar menyala';
+	@override String get listenKeepScreenOnSub => 'Untuk menyimak sambil tangan sibuk. Jika mati, ponsel tidur dan bacaan tetap berjalan.';
+	@override String get listenReciter => 'Qari';
 	@override String get duaCopied => 'Doa disalin';
 	@override String get removeBookmark => 'Hapus penanda';
 	@override String get bookmark => 'Tandai';
@@ -558,6 +584,30 @@ extension on TranslationsId {
 			'resetProgress' => 'Atur ulang progres',
 			'setComplete' => 'Selesai — taqabbalallah',
 			'tapEachDua' => 'Ketuk tiap doa untuk menghitung pengulangannya',
+			'listenAction' => 'Dengarkan',
+			'listenStart' => 'Putar rangkaian',
+			'listenRestart' => 'Mulai lagi dari awal',
+			'listenHint' => 'Sedang diputar — ponsel boleh dikunci',
+			'listenIdleTitle' => 'Tidak ada yang diputar',
+			'listenIdleBody' => 'Putar rangkaiannya dan doa akan dibacakan, menghitung sendiri sambil berjalan.',
+			'listenMissingOne' => '1 doa belum ada rekamannya',
+			'listenMissingOther' => ({required Object n}) => '${n} doa belum ada rekamannya',
+			'listenPrevious' => 'Zikir sebelumnya',
+			'listenNext' => 'Zikir berikutnya',
+			'listenPause' => 'Jeda',
+			'listenResume' => 'Lanjutkan',
+			'secListen' => 'Mendengarkan',
+			'listenSub' => 'Bacaan tanpa menyentuh layar',
+			'listenGap' => 'Jeda antar pengulangan',
+			'listenGapLabels.0' => 'Tanpa',
+			'listenGapLabels.1' => '1 dtk',
+			'listenGapLabels.2' => '2 dtk',
+			'listenGapLabels.3' => '3 dtk',
+			'listenAppendix' => 'Bacakan zikir 100×',
+			'listenAppendixSub' => 'Tahlil dan tasbih 100×, ditambahkan di akhir rangkaian. Sekitar 20 menit.',
+			'listenKeepScreenOn' => 'Biarkan layar menyala',
+			'listenKeepScreenOnSub' => 'Untuk menyimak sambil tangan sibuk. Jika mati, ponsel tidur dan bacaan tetap berjalan.',
+			'listenReciter' => 'Qari',
 			'duaCopied' => 'Doa disalin',
 			'removeBookmark' => 'Hapus penanda',
 			'bookmark' => 'Tandai',
