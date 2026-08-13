@@ -180,22 +180,48 @@ class MushafScreen extends StatefulWidget {
   State<MushafScreen> createState() => _MushafScreenState();
 }
 
-class _MushafScreenState extends State<MushafScreen> {
+class _MushafScreenState extends State<MushafScreen>
+    with SingleTickerProviderStateMixin {
   late final PageController _controller;
   // Drives the AppBar (title + bookmark) only. Updating it on swipe rebuilds
   // those two widgets — not the PageView — so the heavy page bodies are never
   // rebuilt by a page change.
   late final ValueNotifier<int> _currentPage;
 
-  // Fullscreen (immersive) reading: entered by pinching outwards on the page,
-  // left by pinching inwards or pressing back.
-  bool _fullscreen = false;
+  /// How far the page is zoomed: 0 is the framed page under the bar, 1 is the
+  /// glyph block alone, edge to edge, with the apparatus — bar, running head,
+  /// gold frame, folio — gone and its space given to the text.
+  ///
+  /// While two fingers are down this is written straight from the pinch, so the
+  /// page follows the fingers and can be taken back mid-way; on release it
+  /// settles to whichever end is nearer.
+  late final AnimationController _zoom = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 240),
+  );
+
+  /// Where the zoom stood when the current pinch began, so a pinch that starts
+  /// part-way through carries on from there rather than from zero.
+  double _zoomAtPinchStart = 0;
+
+  /// Whether the system bars are currently hidden.
+  bool _immersive = false;
+
+  /// The display's own insets, read while the bars are still up.
+  ///
+  /// Hiding them zeroes MediaQuery's padding, so laying the page out against a
+  /// live reading would jerk it upwards the instant they went. The page keeps
+  /// these in both states instead: that strip is a notch's worth of glass on
+  /// many phones, and in portrait it buys no font size anyway — the fit is
+  /// bound by the width, not the height.
+  EdgeInsets _safeInsets = EdgeInsets.zero;
 
   int get _total => QuranRepository.totalPages;
 
   @override
   void initState() {
     super.initState();
+    _zoom.addListener(_syncSystemBars);
     // Reading sessions are long and mostly touch-free; keep the screen awake
     // while the mushaf is open.
     WakelockPlus.enable();
@@ -211,21 +237,73 @@ class _MushafScreenState extends State<MushafScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Only while the bars are up: once they are hidden this reads as zero, and
+    // taking that would move the page out from under itself.
+    if (!_immersive) _safeInsets = MediaQuery.viewPaddingOf(context);
+  }
+
+  @override
   void dispose() {
     WakelockPlus.disable();
-    if (_fullscreen) {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    }
+    if (_immersive) _showSystemBars();
+    _zoom.dispose();
     _controller.dispose();
     _currentPage.dispose();
     super.dispose();
   }
 
-  void _setFullscreen(bool value) {
-    if (_fullscreen == value) return;
-    setState(() => _fullscreen = value);
-    SystemChrome.setEnabledSystemUIMode(
-      value ? SystemUiMode.immersiveSticky : SystemUiMode.edgeToEdge,
+  /// Hides the bars once the zoom is all the way in, and brings them back as
+  /// soon as it starts coming out again. Tied to the zoom rather than to the
+  /// gesture so every route out — pinch, back button, leaving the screen —
+  /// goes through the one place.
+  void _syncSystemBars() {
+    if (!_immersive && _zoom.value >= 1) {
+      _immersive = true;
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    } else if (_immersive && _zoom.value < 0.9) {
+      _immersive = false;
+      _showSystemBars();
+    }
+  }
+
+  /// Puts the status and navigation bars back.
+  ///
+  /// The bars have to be asked for by name here. Setting the mode to
+  /// `edgeToEdge` on its own leaves `immersiveSticky`'s hide standing on
+  /// current Android, which is why the page could come back out of the zoom
+  /// while the status bar stayed gone — and why the first swipe home was
+  /// swallowed by the system revealing the bars instead. Listing every overlay
+  /// is what lifts it; `edgeToEdge` then returns the app to drawing behind
+  /// them, where it was before the reader was opened.
+  void _showSystemBars() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: SystemUiOverlay.values);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  }
+
+  /// Drives the zoom from a live pinch: spreading the fingers by the full
+  /// [_PinchDetector.outFactor] takes it all the way in, closing them by
+  /// [_PinchDetector.inFactor] all the way back out, and anything less lands
+  /// in between.
+  void _onPinch(double ratio) {
+    final travel = ratio >= 1
+        ? (ratio - 1) / (_PinchDetector.outFactor - 1)
+        : -(1 - ratio) / (1 - _PinchDetector.inFactor);
+    _zoom.value = (_zoomAtPinchStart + travel).clamp(0.0, 1.0);
+  }
+
+  /// Runs the zoom to the nearer end when the fingers leave, at a speed set by
+  /// how far it still has to go, so a nearly-finished pinch doesn't crawl.
+  void _settleZoom() {
+    final target = _zoom.value >= 0.5 ? 1.0 : 0.0;
+    final remaining = (target - _zoom.value).abs();
+    if (remaining == 0) return;
+    _zoom.animateTo(
+      target,
+      duration: Duration(milliseconds: (240 * remaining).round().clamp(90, 240)),
+      curve: Curves.easeOutCubic,
     );
   }
 
@@ -292,87 +370,138 @@ class _MushafScreenState extends State<MushafScreen> {
     final s = AppStrings.of(context);
     final inks = _MushafInk.of(context);
 
-    // In fullscreen, the first back press restores the normal chrome instead
-    // of leaving the reader.
-    return PopScope(
-      canPop: !_fullscreen,
-      onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) _setFullscreen(false);
-      },
-      child: Scaffold(
-        backgroundColor: inks.paper,
-        appBar: _fullscreen
-            ? null
-            : AppBar(
-                backgroundColor: inks.paper,
-                foregroundColor: inks.ink,
-                elevation: 0,
-                title: ValueListenableBuilder<int>(
-                  valueListenable: _currentPage,
-                  builder: (context, page, _) => Text('${s.surahWord} '
-                      '${repo.surahForPage(page).nameFor(s.ar)}'),
-                ),
-                actions: [
-                  IconButton(
-                    icon: const Icon(Icons.format_list_bulleted),
-                    tooltip: s.versesOnThisPage,
-                    onPressed: _openPageVerses,
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.my_location),
-                    tooltip: s.goToAyah,
-                    onPressed: _openGoToAyah,
-                  ),
-                  // Rebuilds on page change (current page) and on bookmark
-                  // toggles only — never drags the PageView into a rebuild.
-                  ValueListenableBuilder<int>(
-                    valueListenable: _currentPage,
-                    builder: (context, page, _) => Consumer<QuranService>(
-                      builder: (context, quran, _) {
-                        final bookmarked = quran.isBookmarked(page);
-                        return IconButton(
-                          icon: Icon(
-                              bookmarked
-                                  ? Icons.bookmark
-                                  : Icons.bookmark_border,
-                              color: bookmarked ? inks.gold : inks.ink),
-                          tooltip:
-                              bookmarked ? s.removeBookmark : s.bookmark,
-                          onPressed: () => quran.toggleBookmark(page),
-                        );
-                      },
+    final bar = AppBar(
+      backgroundColor: inks.paper,
+      foregroundColor: inks.ink,
+      elevation: 0,
+      title: ValueListenableBuilder<int>(
+        valueListenable: _currentPage,
+        builder: (context, page, _) => Text('${s.surahWord} '
+            '${repo.surahForPage(page).nameFor(s.ar)}'),
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.format_list_bulleted),
+          tooltip: s.versesOnThisPage,
+          onPressed: _openPageVerses,
+        ),
+        IconButton(
+          icon: const Icon(Icons.my_location),
+          tooltip: s.goToAyah,
+          onPressed: _openGoToAyah,
+        ),
+        // Rebuilds on page change (current page) and on bookmark toggles
+        // only — never drags the PageView into a rebuild.
+        ValueListenableBuilder<int>(
+          valueListenable: _currentPage,
+          builder: (context, page, _) => Consumer<QuranService>(
+            builder: (context, quran, _) {
+              final bookmarked = quran.isBookmarked(page);
+              return IconButton(
+                icon: Icon(
+                    bookmarked ? Icons.bookmark : Icons.bookmark_border,
+                    color: bookmarked ? inks.gold : inks.ink),
+                tooltip: bookmarked ? s.removeBookmark : s.bookmark,
+                onPressed: () => quran.toggleBookmark(page),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+
+    final scaffold = Scaffold(
+      backgroundColor: inks.paper,
+      // The bar is laid over the pages rather than given to the Scaffold: as a
+      // Scaffold appBar its height is fixed at build time, so shrinking it
+      // through the zoom would mean rebuilding the whole Scaffold — PageView
+      // and all — on every frame of the gesture. Over the top it fades and
+      // slides on its own, and each page opens the space it leaves by itself.
+      body: Stack(
+        children: [
+          // The mushaf is always read right-to-left, like the printed Qur'an. A
+          // horizontal PageView derives its swipe direction from the ambient
+          // Directionality, which MaterialApp.locale flips to LTR for English
+          // and other non-Arabic languages — that would reverse the page turn.
+          // Pin this subtree to RTL so paging stays right-to-left in every UI
+          // language.
+          Positioned.fill(
+            child: Directionality(
+              textDirection: TextDirection.rtl,
+              child: _PinchDetector(
+                onPinchStart: () => _zoomAtPinchStart = _zoom.value,
+                onPinch: _onPinch,
+                onPinchEnd: _settleZoom,
+                child: PageView.builder(
+                  controller: _controller,
+                  reverse: true,
+                  itemCount: _total,
+                  onPageChanged: _onPageChanged,
+                  // Pre-builds the adjacent page (one viewport of cache extent)
+                  // so its glyph layout and raster are done before a swipe
+                  // reveals it.
+                  allowImplicitScrolling: true,
+                  // RepaintBoundary isolates each page's painting (gold frames,
+                  // glyphs) so a neighbour doesn't repaint during the swipe
+                  // animation.
+                  itemBuilder: (context, index) => RepaintBoundary(
+                    child: _MushafPageView(
+                      pageNumber: _total - index,
+                      zoom: _zoom,
+                      safeInsets: _safeInsets,
                     ),
                   ),
-                ],
-              ),
-        // The mushaf is always read right-to-left, like the printed Qur'an. A
-        // horizontal PageView derives its swipe direction from the ambient
-        // Directionality, which MaterialApp.locale flips to LTR for English and
-        // other non-Arabic languages — that would reverse the page turn. Pin
-        // this subtree to RTL so paging stays right-to-left in every UI
-        // language.
-        body: Directionality(
-          textDirection: TextDirection.rtl,
-          child: _PinchDetector(
-            onPinchOut: () => _setFullscreen(true),
-            onPinchIn: () => _setFullscreen(false),
-            child: PageView.builder(
-              controller: _controller,
-              reverse: true,
-              itemCount: _total,
-              onPageChanged: _onPageChanged,
-              // Pre-builds the adjacent page (one viewport of cache extent) so
-              // its glyph layout and raster are done before a swipe reveals it.
-              allowImplicitScrolling: true,
-              // RepaintBoundary isolates each page's painting (gold frames,
-              // glyphs) so a neighbour doesn't repaint during the swipe
-              // animation.
-              itemBuilder: (context, index) => RepaintBoundary(
-                child: _MushafPageView(pageNumber: _total - index),
+                ),
               ),
             ),
           ),
-        ),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: AnimatedBuilder(
+              animation: _zoom,
+              // Built once and handed through: the bar's own contents don't
+              // depend on the zoom, only its opacity and its place do.
+              child: bar,
+              builder: (context, child) {
+                final t = _zoom.value;
+                if (t >= 1) return const SizedBox.shrink();
+                return IgnorePointer(
+                  // Half-way out it is a ghost; taps there belong to the page.
+                  ignoring: t > 0.5,
+                  child: Opacity(
+                    opacity: 1 - t,
+                    child: Transform.translate(
+                      offset: Offset(
+                          0, -(_safeInsets.top + kToolbarHeight) * t),
+                      child: child,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+
+    // Zoomed in, the first back press brings the page back out instead of
+    // leaving the reader. Only the PopScope is rebuilt as the zoom runs — the
+    // scaffold below it is passed through untouched.
+    return AnimatedBuilder(
+      animation: _zoom,
+      child: scaffold,
+      builder: (context, child) => PopScope(
+        canPop: _zoom.value == 0,
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop) {
+            _zoom.animateTo(0,
+                duration: const Duration(milliseconds: 240),
+                curve: Curves.easeOutCubic);
+          }
+        },
+        child: child!,
       ),
     );
   }
@@ -382,17 +511,34 @@ class _MushafScreenState extends State<MushafScreen> {
 /// gesture arena, so the PageView's swipe keeps its normal feel. A symmetric
 /// pinch moves the fingers in opposite directions, which the PageView's drag
 /// (tracking their average) mostly cancels out — the page barely shifts.
-/// Fires at most once per gesture.
+///
+/// Reports the span as a ratio of where it started, every frame the fingers
+/// move, so the zoom can follow them rather than snapping when a threshold is
+/// crossed.
 class _PinchDetector extends StatefulWidget {
   const _PinchDetector({
-    required this.onPinchOut,
-    required this.onPinchIn,
+    required this.onPinchStart,
+    required this.onPinch,
+    required this.onPinchEnd,
     required this.child,
   });
 
-  final VoidCallback onPinchOut;
-  final VoidCallback onPinchIn;
+  /// Two fingers are down and the span has been baselined.
+  final VoidCallback onPinchStart;
+
+  /// The current span as a fraction of the baseline: >1 spreading, <1 closing.
+  final ValueChanged<double> onPinch;
+
+  /// Fewer than two fingers are left — settle wherever the pinch got to.
+  final VoidCallback onPinchEnd;
+
   final Widget child;
+
+  // Spread the fingers ~35% further apart to take the zoom all the way in;
+  // bring them ~25% closer to take it all the way back out. Asymmetric so a
+  // loose grip doesn't wander.
+  static const outFactor = 1.35;
+  static const inFactor = 0.75;
 
   @override
   State<_PinchDetector> createState() => _PinchDetectorState();
@@ -401,21 +547,23 @@ class _PinchDetector extends StatefulWidget {
 class _PinchDetectorState extends State<_PinchDetector> {
   final Map<int, Offset> _pointers = {};
   double? _startSpan;
-  bool _fired = false;
-
-  // Spread the fingers ~35% further apart → fullscreen; bring them ~25%
-  // closer → back to normal. Asymmetric so a loose grip doesn't flicker.
-  static const _outFactor = 1.35;
-  static const _inFactor = 0.75;
 
   double get _span {
     final points = _pointers.values.toList();
     return (points[0] - points[1]).distance;
   }
 
+  /// Takes the span as it stands now as the new zero. Called whenever the
+  /// number of fingers changes: a pinch that gains or loses one is a new
+  /// pinch, measured from where the last one left the page.
   void _rebaseline() {
-    _startSpan = _pointers.length == 2 ? _span : null;
-    _fired = false;
+    if (_pointers.length == 2) {
+      _startSpan = _span;
+      widget.onPinchStart();
+    } else if (_startSpan != null) {
+      _startSpan = null;
+      widget.onPinchEnd();
+    }
   }
 
   void _down(PointerDownEvent e) {
@@ -427,15 +575,8 @@ class _PinchDetectorState extends State<_PinchDetector> {
     if (!_pointers.containsKey(e.pointer)) return;
     _pointers[e.pointer] = e.position;
     final start = _startSpan;
-    if (start == null || _fired) return;
-    final ratio = _span / start;
-    if (ratio >= _outFactor) {
-      _fired = true;
-      widget.onPinchOut();
-    } else if (ratio <= _inFactor) {
-      _fired = true;
-      widget.onPinchIn();
-    }
+    if (start == null || _pointers.length != 2) return;
+    widget.onPinch(_span / start);
   }
 
   void _up(int pointer) {
@@ -457,9 +598,20 @@ class _PinchDetectorState extends State<_PinchDetector> {
 }
 
 class _MushafPageView extends StatelessWidget {
-  const _MushafPageView({required this.pageNumber});
+  const _MushafPageView({
+    required this.pageNumber,
+    required this.zoom,
+    this.safeInsets = EdgeInsets.zero,
+  });
 
   final int pageNumber;
+
+  /// 0 framed under the bar, 1 edge to edge — see [_MushafScreenState._zoom].
+  final Animation<double> zoom;
+
+  /// The display's insets, held fixed across the zoom so hiding the system
+  /// bars doesn't shift the page.
+  final EdgeInsets safeInsets;
 
   @override
   Widget build(BuildContext context) {
@@ -488,53 +640,102 @@ class _MushafPageView extends StatelessWidget {
         ? page.surahs.last.name
         : repo.surahForPage(pageNumber).name;
 
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(14, 4, 14, 2),
-        child: Column(
-          children: [
-            _RunningHead(surahName: surahName, juz: page.juz, inks: inks),
-            const SizedBox(height: 5),
-            // Double-ruled gold frame around the text, like the print.
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.all(Ms.gutter + 2),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                      color: inks.gold.withValues(alpha: 0.75),
-                      width: Ms.stroke),
-                  borderRadius: BorderRadius.circular(Ms.rPanel),
-                ),
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                        color: inks.gold.withValues(alpha: 0.4),
-                        width: Ms.hair),
-                    borderRadius: BorderRadius.circular(Ms.rSmall),
+    // The apparatus — bar, running head, the double gold rule and its gutters,
+    // the folio khātam — takes about a fifth of the width and an eighth of the
+    // height. Zooming in hands all of it to the text, which is what makes the
+    // glyphs visibly larger: the fitted font size is bound by whichever of the
+    // two the frame runs out of first, and in portrait that is the width.
+    //
+    // Every one of those pieces is interpolated rather than switched, so the
+    // page grows under the fingers instead of jumping when the pinch passes a
+    // threshold. The text is re-fitted each frame — the expensive part, the
+    // 15-line measurement, is cached per page, so this is arithmetic and a
+    // re-layout at the new size.
+    return AnimatedBuilder(
+      animation: zoom,
+      builder: (context, _) {
+        final t = zoom.value;
+        return Padding(
+          // The bar's own space, closing as it slides away.
+          padding: safeInsets.copyWith(top: safeInsets.top + kToolbarHeight * (1 - t)),
+          child: Padding(
+            padding: EdgeInsets.lerp(const EdgeInsets.fromLTRB(14, 4, 14, 2),
+                const EdgeInsets.fromLTRB(6, 4, 6, 4), t)!,
+            child: Column(
+              children: [
+                _Furling(t,
+                    child: _RunningHead(
+                        surahName: surahName, juz: page.juz, inks: inks)),
+                SizedBox(height: 5 * (1 - t)),
+                // Double-ruled gold frame around the text, like the print. Its
+                // rules thin to nothing as they fade, so the page gets the
+                // space they stood in and not just their colour.
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.all((Ms.gutter + 2) * (1 - t)),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                          color: inks.gold.withValues(alpha: 0.75 * (1 - t)),
+                          width: Ms.stroke * (1 - t)),
+                      borderRadius: BorderRadius.circular(Ms.rPanel),
+                    ),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 10 * (1 - t), vertical: 8 * (1 - t)),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                            color: inks.gold.withValues(alpha: 0.4 * (1 - t)),
+                            width: Ms.hair * (1 - t)),
+                        borderRadius: BorderRadius.circular(Ms.rSmall),
+                      ),
+                      child: _PageBody(page: page, inks: inks),
+                    ),
                   ),
-                  child: _PageBody(page: page, inks: inks),
                 ),
-              ),
-            ),
-            // The folio number, set in the khātam the printed mushaf marks it
-            // with, in Arabic-Indic digits.
-            Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: StarMedallion(
-                size: 32,
-                color: inks.gold,
-                child: ArabicText(
-                  toArabicDigits(pageNumber),
-                  fontSize: 12,
-                  color: inks.ink,
-                  height: 1.2,
+                // The folio number, set in the khātam the printed mushaf marks
+                // it with, in Arabic-Indic digits.
+                _Furling(
+                  t,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: StarMedallion(
+                      size: 32,
+                      color: inks.gold,
+                      child: ArabicText(
+                        toArabicDigits(pageNumber),
+                        fontSize: 12,
+                        color: inks.ink,
+                        height: 1.2,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// A piece of the page's apparatus on its way out: fades as it rolls up into
+/// its own top edge, giving its height back to the text as it goes.
+class _Furling extends StatelessWidget {
+  const _Furling(this.t, {required this.child});
+
+  /// 0 fully open, 1 fully gone.
+  final double t;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    if (t >= 1) return const SizedBox.shrink();
+    return ClipRect(
+      child: Align(
+        alignment: Alignment.topCenter,
+        heightFactor: 1 - t,
+        child: Opacity(opacity: 1 - t, child: child),
       ),
     );
   }

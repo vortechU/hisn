@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -254,6 +255,147 @@ void main() {
     testWidgets('landscape, Arabic', (tester) async {
       await renders(tester, const MushafScreen(startPage: 2),
           size: const Size(812, 375), lang: AppLang.ar);
+    });
+
+  });
+
+  // Pinching outwards is the reader's zoom. What makes it read as one is the
+  // page shedding its apparatus — bar, running head, gold frame, folio — and
+  // handing that space to the glyphs, so the text comes out visibly bigger. A
+  // fullscreen flag that only slid the bars away would leave the lines almost
+  // the size they already were.
+  group('the mushaf zoom', () {
+    /// The largest font size anything on screen is drawn at — always a page
+    /// glyph, since the running head and the bar title are set far smaller.
+    double glyphSize(WidgetTester tester) {
+      var largest = 0.0;
+      for (final rt in tester.widgetList<RichText>(find.byType(RichText))) {
+        rt.text.visitChildren((span) {
+          final size = span.style?.fontSize;
+          if (size != null && size > largest) largest = size;
+          return true;
+        });
+      }
+      return largest;
+    }
+
+    /// Pinches by [by] — the fraction the fingers' span changes, so 0.4 spreads
+    /// them 40% apart and -0.3 brings them 30% closer — and lets go.
+    ///
+    /// Deliberately symmetric about the centre: the PageView tracks the two
+    /// fingers' average, so a pinch must not turn the page. [holdAt] stops
+    /// part-way with the fingers still down, to look at the page mid-gesture.
+    Future<void> pinch(
+      WidgetTester tester,
+      double by, {
+      double? holdAt,
+      Future<void> Function()? whileHeld,
+    }) async {
+      const half = 60.0;
+      final centre = tester.getCenter(find.byType(PageView));
+      final left = await tester.startGesture(centre - const Offset(half, 0));
+      final right = await tester.startGesture(centre + const Offset(half, 0));
+
+      Future<void> spreadTo(double fraction) async {
+        final reach = half * (1 + by * fraction);
+        await left.moveTo(centre - Offset(reach, 0));
+        await right.moveTo(centre + Offset(reach, 0));
+        await tester.pump();
+      }
+
+      if (holdAt != null) {
+        await spreadTo(holdAt);
+        await whileHeld?.call();
+      }
+      await spreadTo(1);
+      await left.up();
+      await right.up();
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('pinching out enlarges the text', (tester) async {
+      await renders(tester, const MushafScreen(startPage: 1));
+      final framed = glyphSize(tester);
+      expect(framed, greaterThan(0));
+
+      await pinch(tester, 0.5);
+
+      expect(tester.takeException(), isNull);
+      expect(find.byType(AppBar), findsNothing);
+      expect(glyphSize(tester), greaterThan(framed * 1.1),
+          reason: 'the zoomed page should give the glyphs the frame\'s space');
+    });
+
+    // The zoom follows the fingers rather than flipping when they pass a
+    // threshold: half a pinch is half the growth, on the page, before anything
+    // is released. This is what the reader feels as smooth.
+    testWidgets('follows the fingers instead of snapping', (tester) async {
+      await renders(tester, const MushafScreen(startPage: 3));
+      final framed = glyphSize(tester);
+      var midway = 0.0;
+
+      await pinch(tester, 0.5, holdAt: 0.5, whileHeld: () async {
+        midway = glyphSize(tester);
+      });
+
+      expect(midway, greaterThan(framed),
+          reason: 'the page should already have grown with the fingers');
+      expect(midway, lessThan(glyphSize(tester)),
+          reason: 'and not have arrived before the pinch finished');
+    });
+
+    // Coming back out has to undo all of it — including the system bars. It
+    // did not: the page un-zoomed while the status bar stayed hidden, leaving
+    // the phone eating the first swipe home. Both halves are checked, since
+    // the layout returning says nothing about the bars.
+    testWidgets('pinching back in restores the page and the bars',
+        (tester) async {
+      final chrome = <String, Object?>{};
+      final calls = <String>[];
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        (call) async {
+          if (call.method.startsWith('SystemChrome.setEnabledSystemUI')) {
+            calls.add(call.method);
+            chrome[call.method] = call.arguments;
+          }
+          return null;
+        },
+      );
+      addTearDown(() => tester.binding.defaultBinaryMessenger
+          .setMockMethodCallHandler(SystemChannels.platform, null));
+
+      await renders(tester, const MushafScreen(startPage: 1));
+      final framed = glyphSize(tester);
+
+      await pinch(tester, 0.5);
+      expect(chrome['SystemChrome.setEnabledSystemUIMode'],
+          'SystemUiMode.immersiveSticky');
+
+      await pinch(tester, -0.4);
+
+      expect(tester.takeException(), isNull);
+      expect(find.byType(AppBar), findsOneWidget);
+      expect(glyphSize(tester), framed,
+          reason: 'the framed page should come back exactly as it was');
+      // Asking for the bars by name is the part that actually lifts the hide;
+      // a mode change on its own leaves the status bar gone.
+      expect(calls.last, 'SystemChrome.setEnabledSystemUIMode');
+      expect(calls, contains('SystemChrome.setEnabledSystemUIOverlays'));
+      expect(
+        calls.lastIndexOf('SystemChrome.setEnabledSystemUIOverlays'),
+        greaterThan(calls.indexOf('SystemChrome.setEnabledSystemUIMode')),
+        reason: 'the overlays must be restored after the immersive mode was set',
+      );
+      expect(chrome['SystemChrome.setEnabledSystemUIMode'],
+          'SystemUiMode.edgeToEdge');
+      expect(
+        chrome['SystemChrome.setEnabledSystemUIOverlays'],
+        containsAll(<String>[
+          'SystemUiOverlay.top',
+          'SystemUiOverlay.bottom',
+        ]),
+      );
     });
   });
 
