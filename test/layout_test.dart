@@ -268,6 +268,10 @@ void main() {
   group('the mushaf zoom', () {
     /// The largest font size anything on screen is drawn at — always a page
     /// glyph, since the running head and the bar title are set far smaller.
+    ///
+    /// This is the size the glyphs are *fitted* at, which between the two ends
+    /// of the zoom is no longer the size they appear at: the block is fitted
+    /// once and scaled. Use [blockRect] for what the reader sees.
     double glyphSize(WidgetTester tester) {
       var largest = 0.0;
       for (final rt in tester.widgetList<RichText>(find.byType(RichText))) {
@@ -278,6 +282,22 @@ void main() {
         });
       }
       return largest;
+    }
+
+    /// The text block as it lands on the glass, with the zoom's transform
+    /// applied — the block is wrapped in the snapshot that carries it.
+    ///
+    /// The neighbouring page is built too (one viewport of cache extent) and
+    /// carries a block of its own, waiting off to the side; the one being read
+    /// is the one whose centre is actually in the viewport.
+    Rect blockRect(WidgetTester tester) {
+      final viewport = tester.getRect(find.byType(PageView));
+      final blocks = find.byType(SnapshotWidget);
+      for (var i = 0; i < blocks.evaluate().length; i++) {
+        final rect = tester.getRect(blocks.at(i));
+        if (viewport.contains(rect.center)) return rect;
+      }
+      fail('no page block is on screen');
     }
 
     /// Pinches by [by] — the fraction the fingers' span changes, so 0.4 spreads
@@ -332,17 +352,38 @@ void main() {
     // is released. This is what the reader feels as smooth.
     testWidgets('follows the fingers instead of snapping', (tester) async {
       await renders(tester, const MushafScreen(startPage: 3));
-      final framed = glyphSize(tester);
-      var midway = 0.0;
+      final framed = blockRect(tester);
+      var midway = Rect.zero;
 
       await pinch(tester, 0.5, holdAt: 0.5, whileHeld: () async {
-        midway = glyphSize(tester);
+        midway = blockRect(tester);
       });
 
-      expect(midway, greaterThan(framed),
+      expect(midway.width, greaterThan(framed.width),
           reason: 'the page should already have grown with the fingers');
-      expect(midway, lessThan(glyphSize(tester)),
+      expect(midway.width, lessThan(blockRect(tester).width),
           reason: 'and not have arrived before the pinch finished');
+    });
+
+    // The reason the gesture is smooth: the text is fitted to a size once and
+    // that picture is scaled, rather than being re-fitted — and so every glyph
+    // in the page re-rasterised — on every frame of the pinch. Measured by the
+    // fitted size holding still while what the reader sees grows.
+    testWidgets('fits the glyphs once for the whole gesture', (tester) async {
+      await renders(tester, const MushafScreen(startPage: 4));
+
+      var sizeDuring = 0.0;
+      var rectDuring = Rect.zero;
+      await pinch(tester, 0.5, holdAt: 0.5, whileHeld: () async {
+        sizeDuring = glyphSize(tester);
+        rectDuring = blockRect(tester);
+      });
+
+      expect(sizeDuring, glyphSize(tester),
+          reason: 'the block should already be fitted at the size it settles '
+              'on, so the pinch never re-fits it');
+      expect(rectDuring.width, lessThan(blockRect(tester).width),
+          reason: 'and it should genuinely have been mid-gesture');
     });
 
     // Coming back out has to undo all of it — including the system bars. It

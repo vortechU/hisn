@@ -597,7 +597,84 @@ class _PinchDetectorState extends State<_PinchDetector> {
   }
 }
 
-class _MushafPageView extends StatelessWidget {
+// The page's furniture, in logical pixels. Constants rather than intrinsic
+// heights because the zoom has to know how much larger the text block can get
+// *before* it lays anything out — see [_PageGeometry]. The running head is
+// given a fixed box for the same reason; it sets one line either way.
+const double _headHeight = 30;
+const double _headGap = 5;
+const double _folioHeight = 36; // 4 of padding above a 32 medallion.
+const EdgeInsets _framedPadding = EdgeInsets.fromLTRB(14, 4, 14, 2);
+const EdgeInsets _zoomedPadding = EdgeInsets.fromLTRB(6, 4, 6, 4);
+// Rule, gutter, hairline, and the inner block's own padding — one side of the
+// double gold frame.
+const double _frameInsetX = Ms.stroke + Ms.gutter + 2 + Ms.hair + 10;
+const double _frameInsetY = Ms.stroke + Ms.gutter + 2 + Ms.hair + 8;
+
+/// Where the text block sits at each end of the zoom, worked out from the page
+/// box alone.
+///
+/// The two ends are deliberately the *same block at two sizes* rather than two
+/// independent fits: the zoomed block is the framed block scaled by [scale],
+/// which is what lets the whole gesture be a single uniform transform instead
+/// of a re-fit on every frame. In portrait the fit is bound by the width, so
+/// this costs nothing in font size — the block simply keeps its proportions
+/// instead of stretching its line spacing to the last pixel of the screen.
+@immutable
+class _PageGeometry {
+  const _PageGeometry(this.page);
+
+  /// The box the page is given, inside the display's own insets.
+  final Size page;
+
+  /// Space held for the app bar. Held whether or not the bar is showing, so
+  /// that hiding it doesn't move the page.
+  double get bar => kToolbarHeight;
+
+  Size get framedInner => Size(
+        math.max(1, page.width - _framedPadding.horizontal - 2 * _frameInsetX),
+        math.max(
+            1,
+            page.height -
+                bar -
+                _framedPadding.vertical -
+                _headHeight -
+                _headGap -
+                _folioHeight -
+                2 * _frameInsetY),
+      );
+
+  /// Everything the block can have once the furniture is out of the way.
+  Size get _free => Size(
+        page.width - _zoomedPadding.horizontal,
+        page.height - _zoomedPadding.vertical,
+      );
+
+  /// How much bigger the block gets, as one factor for both axes.
+  double get scale => math.min(
+        _free.width / framedInner.width,
+        _free.height / framedInner.height,
+      );
+
+  Size get zoomedInner => framedInner * scale;
+
+  /// The block's centre when framed — inside the frame, under the bar and the
+  /// running head, above the folio.
+  Offset get framedCentre => Offset(
+        _framedPadding.left + _frameInsetX + framedInner.width / 2,
+        bar +
+            _framedPadding.top +
+            _headHeight +
+            _headGap +
+            _frameInsetY +
+            framedInner.height / 2,
+      );
+
+  /// And when zoomed: the middle of the page.
+  Offset get zoomedCentre => page.center(Offset.zero);
+}
+
+class _MushafPageView extends StatefulWidget {
   const _MushafPageView({
     required this.pageNumber,
     required this.zoom,
@@ -614,17 +691,51 @@ class _MushafPageView extends StatelessWidget {
   final EdgeInsets safeInsets;
 
   @override
+  State<_MushafPageView> createState() => _MushafPageViewState();
+}
+
+class _MushafPageViewState extends State<_MushafPageView> {
+  /// Between the two ends the page is painted from one rasterised copy of
+  /// itself.
+  ///
+  /// Re-fitting the text to a slightly different box on every frame meant Skia
+  /// re-rasterising the whole page — some five hundred QCF outlines, on each
+  /// built page — at a size it had never seen before and would never see
+  /// again, sixty times a second. That is what made the zoom crawl. The glyphs
+  /// are now drawn once, at the size they end at, and the gesture scales that
+  /// picture; the real text comes back the moment the zoom settles.
+  final SnapshotController _snapshot = SnapshotController();
+
+  @override
+  void initState() {
+    super.initState();
+    widget.zoom.addListener(_syncSnapshot);
+  }
+
+  @override
+  void dispose() {
+    widget.zoom.removeListener(_syncSnapshot);
+    _snapshot.dispose();
+    super.dispose();
+  }
+
+  void _syncSnapshot() {
+    final t = widget.zoom.value;
+    _snapshot.allowSnapshotting = t > 0 && t < 1;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final repo = context.read<QuranRepository>();
     final inks = _MushafInk.of(context);
 
     // Already decoded (prefetched or visited before)? Render straight away —
     // no FutureBuilder, no spinner flash.
-    final cached = repo.pageIfCached(pageNumber);
+    final cached = repo.pageIfCached(widget.pageNumber);
     if (cached != null) return _buildPage(context, repo, cached, inks);
 
     return FutureBuilder<MushafPage>(
-      future: repo.loadPage(pageNumber),
+      future: repo.loadPage(widget.pageNumber),
       builder: (context, snap) {
         if (!snap.hasData) {
           return Center(child: CircularProgressIndicator(color: inks.gold));
@@ -638,108 +749,141 @@ class _MushafPageView extends StatelessWidget {
       MushafPage page, _MushafInk inks) {
     final surahName = page.surahs.isNotEmpty
         ? page.surahs.last.name
-        : repo.surahForPage(pageNumber).name;
+        : repo.surahForPage(widget.pageNumber).name;
 
-    // The apparatus — bar, running head, the double gold rule and its gutters,
-    // the folio khātam — takes about a fifth of the width and an eighth of the
-    // height. Zooming in hands all of it to the text, which is what makes the
-    // glyphs visibly larger: the fitted font size is bound by whichever of the
-    // two the frame runs out of first, and in portrait that is the width.
-    //
-    // Every one of those pieces is interpolated rather than switched, so the
-    // page grows under the fingers instead of jumping when the pinch passes a
-    // threshold. The text is re-fitted each frame — the expensive part, the
-    // 15-line measurement, is cached per page, so this is arithmetic and a
-    // re-layout at the new size.
-    return AnimatedBuilder(
-      animation: zoom,
-      builder: (context, _) {
-        final t = zoom.value;
-        return Padding(
-          // The bar's own space, closing as it slides away.
-          padding: safeInsets.copyWith(top: safeInsets.top + kToolbarHeight * (1 - t)),
-          child: Padding(
-            padding: EdgeInsets.lerp(const EdgeInsets.fromLTRB(14, 4, 14, 2),
-                const EdgeInsets.fromLTRB(6, 4, 6, 4), t)!,
-            child: Column(
-              children: [
-                _Furling(t,
-                    child: _RunningHead(
-                        surahName: surahName, juz: page.juz, inks: inks)),
-                SizedBox(height: 5 * (1 - t)),
-                // Double-ruled gold frame around the text, like the print. Its
-                // rules thin to nothing as they fade, so the page gets the
-                // space they stood in and not just their colour.
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.all((Ms.gutter + 2) * (1 - t)),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                          color: inks.gold.withValues(alpha: 0.75 * (1 - t)),
-                          width: Ms.stroke * (1 - t)),
-                      borderRadius: BorderRadius.circular(Ms.rPanel),
+    return Padding(
+      padding: widget.safeInsets,
+      child: LayoutBuilder(
+        builder: (context, c) {
+          final g = _PageGeometry(Size(c.maxWidth, c.maxHeight));
+
+          // Both of these are built once per page box and handed to the
+          // animation untouched: identical widgets skip their subtree's
+          // rebuild, so a frame of the zoom is a transform and an opacity, not
+          // fifteen lines of Arabic laid out again.
+          final furniture = _furniture(g, page, surahName, inks);
+          final body = SnapshotWidget(
+            controller: _snapshot,
+            child: _PageBody(page: page, inks: inks),
+          );
+
+          return AnimatedBuilder(
+            animation: widget.zoom,
+            builder: (context, _) {
+              final t = widget.zoom.value;
+              // The block is laid out at the size it rests at — framed at one
+              // end, zoomed at the other — and scaled to wherever the pinch
+              // has it. At both ends the scale is 1, so what the reader stops
+              // on is always the real thing, set at its own size.
+              final laidOutZoomed = t > 0;
+              final size = laidOutZoomed ? g.zoomedInner : g.framedInner;
+              final shown = 1 + (g.scale - 1) * t;
+              final centre = Offset.lerp(g.framedCentre, g.zoomedCentre, t)!;
+
+              return Stack(
+                children: [
+                  // The furniture goes early — well before the growing block
+                  // would reach the rules it is framed by.
+                  if (t < _furnitureFade)
+                    Opacity(
+                      opacity: 1 - t / _furnitureFade,
+                      // Its own boundary, so fading it re-composites a picture
+                      // that is already drawn rather than drawing it again.
+                      child: RepaintBoundary(child: furniture),
                     ),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 10 * (1 - t), vertical: 8 * (1 - t)),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                            color: inks.gold.withValues(alpha: 0.4 * (1 - t)),
-                            width: Ms.hair * (1 - t)),
-                        borderRadius: BorderRadius.circular(Ms.rSmall),
-                      ),
-                      child: _PageBody(page: page, inks: inks),
-                    ),
-                  ),
-                ),
-                // The folio number, set in the khātam the printed mushaf marks
-                // it with, in Arabic-Indic digits.
-                _Furling(
-                  t,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: StarMedallion(
-                      size: 32,
-                      color: inks.gold,
-                      child: ArabicText(
-                        toArabicDigits(pageNumber),
-                        fontSize: 12,
-                        color: inks.ink,
-                        height: 1.2,
-                      ),
+                  Positioned(
+                    left: centre.dx - size.width / 2,
+                    top: centre.dy - size.height / 2,
+                    width: size.width,
+                    height: size.height,
+                    child: Transform.scale(
+                      scale: shown / (laidOutZoomed ? g.scale : 1),
+                      child: body,
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+                ],
+              );
+            },
+          );
+        },
+      ),
     );
   }
-}
 
-/// A piece of the page's apparatus on its way out: fades as it rolls up into
-/// its own top edge, giving its height back to the text as it goes.
-class _Furling extends StatelessWidget {
-  const _Furling(this.t, {required this.child});
-
-  /// 0 fully open, 1 fully gone.
-  final double t;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    if (t >= 1) return const SizedBox.shrink();
-    return ClipRect(
-      child: Align(
-        alignment: Alignment.topCenter,
-        heightFactor: 1 - t,
-        child: Opacity(opacity: 1 - t, child: child),
+  /// The running head, the double gold frame, and the folio — everything but
+  /// the text. Laid out where it sits on the framed page and left there: it is
+  /// gone long before the block has grown enough for its position to matter.
+  Widget _furniture(_PageGeometry g, MushafPage page, String surahName,
+      _MushafInk inks) {
+    return Padding(
+      padding: EdgeInsets.only(top: g.bar),
+      child: Padding(
+        padding: _framedPadding,
+        child: Column(
+          children: [
+            SizedBox(
+              height: _headHeight,
+              // Scaled down rather than allowed to grow: the page's geometry is
+              // fixed, and a running head that pushed the text block around at
+              // a large system text size would take the zoom's arithmetic with
+              // it.
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: SizedBox(
+                  width: g.page.width - _framedPadding.horizontal,
+                  child: _RunningHead(
+                      surahName: surahName, juz: page.juz, inks: inks),
+                ),
+              ),
+            ),
+            const SizedBox(height: _headGap),
+            // Double-ruled gold frame around the text, like the print.
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(Ms.gutter + 2),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                      color: inks.gold.withValues(alpha: 0.75),
+                      width: Ms.stroke),
+                  borderRadius: BorderRadius.circular(Ms.rPanel),
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                        color: inks.gold.withValues(alpha: 0.4),
+                        width: Ms.hair),
+                    borderRadius: BorderRadius.circular(Ms.rSmall),
+                  ),
+                ),
+              ),
+            ),
+            // The folio number, set in the khātam the printed mushaf marks it
+            // with, in Arabic-Indic digits.
+            SizedBox(
+              height: _folioHeight,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: StarMedallion(
+                  size: 32,
+                  color: inks.gold,
+                  child: ArabicText(
+                    toArabicDigits(widget.pageNumber),
+                    fontSize: 12,
+                    color: inks.ink,
+                    height: 1.2,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
+
+/// How far into the zoom the page's furniture has finished fading.
+const double _furnitureFade = 0.35;
 
 /// Lists the verses printed on one mushaf page, as text.
 ///
