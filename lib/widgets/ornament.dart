@@ -60,7 +60,16 @@ class JadwalFrame extends StatelessWidget {
         (emphasis ? ms.ruleStrong : ms.rule);
     final inner = accent?.withValues(alpha: 0.32) ?? ms.rule;
 
-    Widget content = Container(
+    // Animated, because a frame's colours change under the reader: a dua
+    // reaching its count gilds its rules where it stands. Switching the ink in
+    // one frame reads as a glitch next to the page turn; easing it in reads as
+    // the mark being made. Nothing here moves — the geometry is held constant
+    // by the gutter below, and the two containers ease in step.
+    final beat = Motion.of(context, Motion.settle);
+
+    Widget content = AnimatedContainer(
+      duration: beat,
+      curve: Curves.easeOut,
       decoration: BoxDecoration(
         color: background ?? ms.paper,
         border: Border.all(color: inner, width: Ms.hair),
@@ -89,7 +98,9 @@ class JadwalFrame extends StatelessWidget {
     // the same size whether the frame is emphasised or not.
     final rule = emphasis ? Ms.stroke : Ms.hair;
 
-    return Container(
+    return AnimatedContainer(
+      duration: beat,
+      curve: Curves.easeOut,
       decoration: BoxDecoration(
         border: Border.all(color: outer, width: rule),
         borderRadius: BorderRadius.circular(Ms.rPanel),
@@ -132,57 +143,93 @@ class Rosette extends StatelessWidget {
     return SizedBox(
       width: size,
       height: size,
-      child: CustomPaint(
-        painter: _RosettePainter(tint, lobes, filled),
+      child: Stack(
+        children: [
+          // The completion ink, laid under the outline and brought up rather
+          // than switched on between one frame and the next — this mark fills
+          // while the reader is looking straight at it, as they finish a dua
+          // or a set. AnimatedOpacity holds still on its first build, so a mark
+          // that was already complete when it came on screen is simply drawn
+          // complete; only a mark that fills in front of you fades.
+          Positioned.fill(
+            child: AnimatedOpacity(
+              opacity: filled ? 1 : 0,
+              duration: Motion.of(context, Motion.settle),
+              curve: Curves.easeOut,
+              child: CustomPaint(painter: _RosetteFillPainter(tint, lobes)),
+            ),
+          ),
+          Positioned.fill(
+            child: CustomPaint(painter: _RosettePainter(tint, lobes)),
+          ),
+        ],
       ),
     );
   }
 }
 
+/// The three radii a rosette is drawn on, in one place so the outline and the
+/// ink it holds can never disagree about where the centre disc ends.
+({double ring, double lobe, double inner}) _rosetteGeometry(
+    Size size, int lobes) {
+  final outer = size.shortestSide / 2;
+  final ring = outer * 0.74;
+  // The lobe radius that makes adjacent lobes just touch on the ring.
+  final lobe = ring * math.sin(math.pi / lobes) * 1.05;
+  return (ring: ring, lobe: lobe, inner: ring - lobe * 0.35);
+}
+
 class _RosettePainter extends CustomPainter {
-  _RosettePainter(this.color, this.lobes, this.filled);
+  _RosettePainter(this.color, this.lobes);
 
   final Color color;
   final int lobes;
-  final bool filled;
 
   @override
   void paint(Canvas canvas, Size size) {
     final centre = size.center(Offset.zero);
-    final outer = size.shortestSide / 2;
-    // The lobe radius that makes adjacent lobes just touch on the ring.
-    final ring = outer * 0.74;
-    final lobe = ring * math.sin(math.pi / lobes) * 1.05;
+    final g = _rosetteGeometry(size, lobes);
 
     final stroke = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
-      ..strokeWidth = math.max(0.8, outer * 0.075)
+      ..strokeWidth = math.max(0.8, (size.shortestSide / 2) * 0.075)
       ..isAntiAlias = true;
 
     for (var i = 0; i < lobes; i++) {
       final a = (i / lobes) * 2 * math.pi - math.pi / 2;
       canvas.drawCircle(
-        centre + Offset(math.cos(a) * ring, math.sin(a) * ring),
-        lobe,
+        centre + Offset(math.cos(a) * g.ring, math.sin(a) * g.ring),
+        g.lobe,
         stroke,
       );
     }
 
-    final inner = ring - lobe * 0.35;
-    if (filled) {
-      canvas.drawCircle(
-        centre,
-        inner,
-        Paint()..color = color.withValues(alpha: 0.16),
-      );
-    }
-    canvas.drawCircle(centre, inner, stroke);
+    canvas.drawCircle(centre, g.inner, stroke);
   }
 
   @override
   bool shouldRepaint(_RosettePainter old) =>
-      old.color != color || old.lobes != lobes || old.filled != filled;
+      old.color != color || old.lobes != lobes;
+}
+
+/// The centre disc on its own, so it can be faded independently of the rules.
+class _RosetteFillPainter extends CustomPainter {
+  _RosetteFillPainter(this.color, this.lobes);
+
+  final Color color;
+  final int lobes;
+
+  @override
+  void paint(Canvas canvas, Size size) => canvas.drawCircle(
+        size.center(Offset.zero),
+        _rosetteGeometry(size, lobes).inner,
+        Paint()..color = color.withValues(alpha: 0.16),
+      );
+
+  @override
+  bool shouldRepaint(_RosetteFillPainter old) =>
+      old.color != color || old.lobes != lobes;
 }
 
 /// A round meter that illuminates as a count advances.

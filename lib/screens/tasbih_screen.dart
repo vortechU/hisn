@@ -7,6 +7,7 @@ import '../l10n/app_strings.dart';
 import '../models/dhikr.dart';
 import '../services/tasbih_controller.dart';
 import '../theme/app_theme.dart';
+import '../theme/motion.dart';
 import '../util/arabic.dart';
 import '../widgets/arabic_text.dart';
 import '../widgets/ornament.dart';
@@ -105,24 +106,28 @@ class TasbihScreen extends StatelessWidget {
                       ),
                     ],
                     const SizedBox(height: 26),
-                    ProgressRosette(
-                      fraction: dhikr.target == 0 ? 0 : count / dhikr.target,
-                      size: 244,
-                      lobes: 11,
-                      color: ms.gilt,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Numeral('$count',
-                              size: 62, weight: FontWeight.w600),
-                          const SizedBox(height: 2),
-                          Text(
-                            s.ofTarget(dhikr.target),
-                            style: theme.textTheme.labelMedium?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
+                    _Beat(
+                      id: dhikr.id,
+                      count: count,
+                      laps: laps,
+                      child: ProgressRosette(
+                        fraction: dhikr.target == 0 ? 0 : count / dhikr.target,
+                        size: 244,
+                        lobes: 11,
+                        color: ms.gilt,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _RollingNumeral('$count'),
+                            const SizedBox(height: 2),
+                            Text(
+                              s.ofTarget(dhikr.target),
+                              style: theme.textTheme.labelMedium?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -141,6 +146,128 @@ class TasbihScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// The tally figure, rolling as it changes: the new number rises into place as
+/// the one it replaces sinks away.
+///
+/// A bead moving under the thumb is the whole of what a tasbih gives back, and
+/// a numeral that simply swapped gave the tap nothing to land on — the haptic
+/// was doing all the work on its own.
+class _RollingNumeral extends StatelessWidget {
+  const _RollingNumeral(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => AnimatedSwitcher(
+        duration: Motion.of(context, Motion.quick),
+        switchInCurve: Curves.easeOut,
+        switchOutCurve: Curves.easeIn,
+        transitionBuilder: (child, animation) => FadeTransition(
+          opacity: animation,
+          child: SlideTransition(
+            position: Tween(begin: const Offset(0, 0.34), end: Offset.zero)
+                .animate(animation),
+            child: child,
+          ),
+        ),
+        // Keyed on the figure itself: that is what makes a new number a new
+        // child, and so what the switch is triggered by.
+        child: Numeral(text, key: ValueKey(text), size: 62,
+            weight: FontWeight.w600),
+      );
+}
+
+/// A short swell through whatever it wraps, each time the count moves.
+///
+/// Scale only, so nothing around it shifts: the plate holds still and the mark
+/// answers the finger. Completing a set is the one moment given a longer,
+/// deeper beat — [Motion.flourish] exists for exactly this.
+class _Beat extends StatefulWidget {
+  const _Beat({
+    required this.id,
+    required this.count,
+    required this.laps,
+    required this.child,
+  });
+
+  /// Which phrase is being counted. Switching phrases changes the numbers
+  /// below without anything having been counted, and must not read as a tap.
+  final String id;
+
+  final int count;
+  final int laps;
+  final Widget child;
+
+  @override
+  State<_Beat> createState() => _BeatState();
+}
+
+class _BeatState extends State<_Beat> with SingleTickerProviderStateMixin {
+  // Built in initState rather than lazily: under reduced motion nothing ever
+  // reads it, and a lazy field would then be constructed by `dispose` itself —
+  // creating a ticker against an element already on its way out.
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller =
+        AnimationController(vsync: this, duration: Motion.quick * 2);
+  }
+
+  /// Out and back: the swell is over before the next bead, even at speed.
+  static final _swell = TweenSequence<double>([
+    TweenSequenceItem(
+        tween: Tween(begin: 0.0, end: 1.0)
+            .chain(CurveTween(curve: Curves.easeOut)),
+        weight: 40),
+    TweenSequenceItem(
+        tween: Tween(begin: 1.0, end: 0.0)
+            .chain(CurveTween(curve: Curves.easeIn)),
+        weight: 60),
+  ]);
+
+  /// How far the swell reaches. A set completing earns nearly three times the
+  /// light tap's rise, alongside the heavier haptic.
+  double _peak = 0.035;
+
+  @override
+  void didUpdateWidget(_Beat old) {
+    super.didUpdateWidget(old);
+    // Nothing to drive if the reader has asked for stillness — the ticker
+    // would run for a frame-perfect nothing sixty times a set.
+    if (widget.id != old.id || Motion.reduced(context)) return;
+    if (widget.laps != old.laps) {
+      _peak = 0.09;
+      _controller.duration = Motion.flourish;
+      _controller.forward(from: 0);
+    } else if (widget.count != old.count) {
+      _peak = 0.035;
+      _controller.duration = Motion.quick * 2;
+      _controller.forward(from: 0);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (Motion.reduced(context)) return widget.child;
+    return AnimatedBuilder(
+      animation: _controller,
+      child: widget.child,
+      builder: (context, child) => Transform.scale(
+        scale: 1 + _swell.evaluate(_controller) * _peak,
+        child: child,
       ),
     );
   }
