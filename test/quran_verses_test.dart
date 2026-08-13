@@ -115,11 +115,17 @@ void main() {
       expect(verses.last.reference, '114:6');
     });
 
-    test('every verse carries the page it was asked for', () async {
-      for (final page in const [1, 50, 255, 300, 604]) {
+    test('a page lists what it prints, not what the surah file claims',
+        () async {
+      // The list comes from the rosettes on the page, not from the `page` field
+      // each verse carries in the surah files: the two disagree for 56 verses,
+      // and there the field is wrong (see test/mushaf_ayah_test.dart). Pages 1
+      // and 300 are ones they agree on; page 123 is not.
+      for (final page in const [1, 50, 123, 255, 300, 604]) {
         final verses = await repo.versesOnPage(page);
         expect(verses, isNotEmpty, reason: 'page $page');
-        expect(verses.every((v) => v.ayah.page == page), isTrue,
+        expect(verses.map((v) => v.reference).toList(),
+            repo.ayahKeysOnPage(page),
             reason: 'page $page');
       }
     });

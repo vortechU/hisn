@@ -76,9 +76,16 @@ class _SavedVerse extends StatelessWidget {
           children: [
             VerseRow(
               verse: verse,
+              // Opens on the verse, not merely on its page: the reader arrives
+              // with the āyah already lit. The page comes from the rosette
+              // index rather than the verse's own page field, which is a page
+              // out for 56 verses — see QuranRepository.pageOfAyah.
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (_) => MushafScreen(startPage: verse.ayah.page),
+                  builder: (_) => MushafScreen(
+                    startPage: repo.pageOfAyah(verse.surah.number, verse.ayah.number),
+                    highlightVerse: verse.key,
+                  ),
                 ),
               ),
             ),

@@ -93,6 +93,10 @@ class MushafWord {
   bool get isHeader => type == 'surah_header';
   bool get isBismillah => type == 'bismillah';
 
+  /// The rosette that closes an āyah — and, because the page carries no verse
+  /// identity of its own, the only mark on it that names one.
+  bool get isEnd => type == 'end';
+
   factory MushafWord.fromJson(Map<String, dynamic> j) => MushafWord(
         code: j['c'] as int,
         type: j['t'] as String? ?? 'word',
