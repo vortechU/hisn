@@ -126,12 +126,10 @@ class DuaCard extends StatelessWidget {
                 ),
                 if (_counting) ...[
                   const SizedBox(width: 8),
-                  Cartouche(
-                    label: _complete
-                        ? s.done
-                        : '${count ?? 0} / ${dua.repeat}',
-                    color: _complete ? ms.gilt : ms.rubric,
-                    filled: _complete,
+                  _Tally(
+                    count: count ?? 0,
+                    repeat: dua.repeat,
+                    complete: _complete,
                   ),
                 ] else if (dua.repeat > 1) ...[
                   const SizedBox(width: 8),
@@ -189,6 +187,56 @@ class DuaCard extends StatelessWidget {
         textScaler: TextScaler.linear(display.fontScale),
       ),
       child: card,
+    );
+  }
+}
+
+/// The counter in a dua's heading, held at the width of its widest state.
+///
+/// "Done" and "7 / 10" are not the same size, and the title sits right
+/// beside it in an [Expanded]: letting the counter resize as it fills takes
+/// room away from the heading, which then wraps to a second line — the card
+/// growing under the reader's thumb at the very moment they finish it. Both
+/// ends it can reach are laid out here and never painted, so the box is as
+/// wide as it will ever need to be from the first tap onwards.
+class _Tally extends StatelessWidget {
+  const _Tally({
+    required this.count,
+    required this.repeat,
+    required this.complete,
+  });
+
+  final int count;
+  final int repeat;
+  final bool complete;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = AppStrings.of(context);
+    final ms = ManuscriptTheme.of(context);
+    final tint = complete ? ms.gilt : ms.rubric;
+
+    Widget sizer(String label) => Visibility(
+          visible: false,
+          maintainSize: true,
+          maintainAnimation: true,
+          maintainState: true,
+          child: Cartouche(label: label, color: tint),
+        );
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        sizer(s.done),
+        // The longest the tally itself gets: the count never passes the target,
+        // so it never carries more digits than this.
+        sizer('$repeat / $repeat'),
+        Cartouche(
+          label: complete ? s.done : '$count / $repeat',
+          color: tint,
+          filled: complete,
+        ),
+      ],
     );
   }
 }

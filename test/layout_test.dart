@@ -41,6 +41,7 @@ import 'package:dua_app/services/muhassan_service.dart';
 import 'package:dua_app/services/prayer_service.dart';
 import 'package:dua_app/models/quran.dart';
 import 'package:dua_app/models/shareable.dart';
+import 'package:dua_app/widgets/dua_card.dart';
 import 'package:dua_app/widgets/verse_row.dart';
 import 'package:dua_app/services/quran_service.dart';
 import 'package:dua_app/services/sunnah_calendar_service.dart';
@@ -397,6 +398,67 @@ void main() {
         ]),
       );
     });
+  });
+
+  // Counting a dua marks the card complete, which gilds its frame. Nothing
+  // about that is meant to move the text: the reader is looking at the words
+  // while they tap, and a card that reflowed and grew a line under their thumb
+  // read as the app losing its place. It did move — the emphasised rule is a
+  // pixel heavier on each side, and a border grows inwards, so the block lost
+  // two pixels of width the moment it was finished and any line sitting near
+  // the edge wrapped.
+  testWidgets('finishing a dua does not reflow its card', (tester) async {
+    final dua = repo
+        .duasForCategory('morning')
+        .where((d) => d.repeat > 1)
+        // The longest heading of the set: the title sits nearest the wrap, so
+        // this is the card with the least room to absorb a shift.
+        .reduce((a, b) => b.title.length > a.title.length ? b : a);
+
+    var count = 0;
+    await tester.binding.setSurfaceSize(const Size(320, 640));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(host(
+      StatefulBuilder(
+        builder: (context, setState) => Scaffold(
+          body: SingleChildScrollView(
+            child: DuaCard(
+              dua: dua,
+              count: count,
+              onCount: () => setState(() => count++),
+            ),
+          ),
+        ),
+      ),
+      brightness: Brightness.light,
+      palette: AppPalettes.emerald,
+      // A large scale leaves the least slack of all, so a two-pixel loss shows
+      // up here first.
+      textScale: 1.3,
+      lang: AppLang.en,
+    ));
+    await tester.pump();
+
+    // The card is full-width either way; what the rule steals is the block
+    // inside it, so the text is what has to be measured.
+    final body = find.text(dua.translationFor('en'));
+    final before = tester.getSize(body);
+    final cardBefore = tester.getSize(find.byType(DuaCard));
+
+    // Tapped near the top: at this text scale the card runs past the bottom of
+    // a 640-tall phone, and its centre — where `tap` would aim — is off screen.
+    final tapPoint =
+        tester.getTopLeft(find.byType(DuaCard)) + const Offset(40, 40);
+    for (var i = 0; i < dua.repeat; i++) {
+      await tester.tapAt(tapPoint);
+      await tester.pump();
+    }
+    expect(count, dua.repeat, reason: 'the taps should have completed the dua');
+
+    expect(tester.getSize(body), before,
+        reason: 'the text block should be the same width once it is gilded');
+    expect(tester.getSize(find.byType(DuaCard)), cardBefore,
+        reason: 'and the card should not have grown a line');
   });
 
   // The verse rows the reader lists a page's verses in. Rendered directly

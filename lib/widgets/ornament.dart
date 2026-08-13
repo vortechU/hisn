@@ -81,15 +81,20 @@ class JadwalFrame extends StatelessWidget {
       );
     }
 
+    // The heavier rule is taken out of the gutter, not out of the block it
+    // frames. A border widens inwards, so letting it grow would narrow the
+    // content by the difference — and a card that gains emphasis while it is
+    // being read (a dua reaching its count) would reflow its text and pick up
+    // a line. The gutter gives the extra pixel back, leaving the inner block
+    // the same size whether the frame is emphasised or not.
+    final rule = emphasis ? Ms.stroke : Ms.hair;
+
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(
-          color: outer,
-          width: emphasis ? Ms.stroke : Ms.hair,
-        ),
+        border: Border.all(color: outer, width: rule),
         borderRadius: BorderRadius.circular(Ms.rPanel),
       ),
-      padding: const EdgeInsets.all(Ms.gutter),
+      padding: EdgeInsets.all(Ms.gutter + Ms.hair - rule),
       child: content,
     );
   }
