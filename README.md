@@ -139,6 +139,23 @@ flutter run            # on a connected Android/iOS device or emulator
 The project also has web enabled for quick previews (`flutter run -d chrome`), but it's
 designed as a mobile app.
 
+## Publishing
+
+Everything Google Play asks for lives in [`play/`](play/README.md) — the listing copy
+in all three languages, the Data safety and content-rating answers, the sensitive
+permission declarations, and the build-and-sign runbook. Start at
+[`play/README.md`](play/README.md), which also names the items that block a submission
+(the closed-testing period for personal developer accounts, and the KFGQPC font
+licence).
+
+The privacy policy and terms are served to Play from GitHub Pages, generated out of
+[`PRIVACY.md`](PRIVACY.md) and [`TERMS.md`](TERMS.md):
+
+```bash
+python tool/gen_policy_pages.py    # → docs/*.html, published at vortechu.github.io/hisn
+python tool/gen_play_graphics.py   # → play/graphics/ icon + feature graphic
+```
+
 ## Content & authenticity
 
 Duas are sourced from the Qur'an and well-known hadith collections (Bukhari, Muslim,

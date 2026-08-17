@@ -26,7 +26,14 @@ class AboutSettingsScreen extends StatelessWidget {
     ('Amiri', 'Arabic text', 'SIL OFL 1.1'),
     ('Scheherazade New', 'Arabic text', 'SIL OFL 1.1'),
     ('Noto Naskh Arabic', 'Arabic text', 'SIL OFL 1.1'),
-    ('KFGQPC Hafs (QCF v4)', 'Mushaf pages', 'KFGQPC'),
+    // Named in full rather than by its initials: this is the one face here
+    // that is not under the OFL, and the Complex's own condition for using it
+    // is that it is identified as theirs.
+    (
+      'KFGQPC Hafs (QCF v4)',
+      'Mushaf pages · King Fahd Glorious Quran Printing Complex',
+      'KFGQPC'
+    ),
     ('Crimson Pro', 'Latin text', 'SIL OFL 1.1'),
     ('Karla', 'Latin apparatus', 'SIL OFL 1.1'),
   ];

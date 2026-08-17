@@ -1,6 +1,6 @@
 # Privacy Policy — Hisn
 
-**Effective date:** [EFFECTIVE_DATE]
+**Effective date:** 13 August 2026
 
 Hisn is a dua, adhkar, Quran, Tasbih, prayer-times, and Qibla companion app. This policy explains, in plain language, what the app does and does not do with your information.
 
@@ -46,4 +46,4 @@ If this policy changes, the updated version will be published with a new effecti
 
 ## Contact
 
-Questions about this policy? Contact: [CONTACT_EMAIL]
+Questions about this policy? Contact: vordeviu@gmail.com

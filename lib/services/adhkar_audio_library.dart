@@ -4,6 +4,17 @@ import 'package:flutter/services.dart' show AssetManifest, rootBundle;
 
 import '../models/dua.dart';
 
+/// Master switch for hands-free recitation.
+///
+/// The recordings aren't finished, so the feature is held back rather than
+/// shipped half-covered: with this false the library loads empty, [hasAnyAudio]
+/// is false, no media session is started, and every listening affordance —
+/// the headphone marks, the player screen, the Listen settings section — hides
+/// itself. Turning it back on is this one line; the coverage gates below then
+/// take over again and the feature appears exactly as far as the bundled
+/// recordings reach.
+const bool kAdhkarAudioEnabled = false;
+
 /// What recitation the app actually ships, and which dua each recording belongs
 /// to.
 ///
@@ -70,6 +81,7 @@ class AdhkarAudioLibrary {
   /// bundled. A missing or malformed manifest yields an empty library — the
   /// app runs exactly as it did before the feature existed.
   static Future<AdhkarAudioLibrary> load() async {
+    if (!kAdhkarAudioEnabled) return AdhkarAudioLibrary.empty();
     try {
       final raw = await rootBundle.loadString(_manifestPath);
       final decoded = jsonDecode(raw) as Map<String, dynamic>;
