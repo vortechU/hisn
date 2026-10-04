@@ -1,4 +1,5 @@
 import 'package:adhan/adhan.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -7,6 +8,7 @@ import 'package:dua_app/services/adhan_audio.dart';
 import 'package:dua_app/services/dua_progress_service.dart';
 import 'package:dua_app/services/notification_service.dart';
 import 'package:dua_app/services/prayer_service.dart';
+import 'package:dua_app/services/prayer_settings.dart';
 import 'package:dua_app/services/sunnah_calendar_service.dart';
 
 /// Covers the iqāmah-offset persistence added to [NotificationService], and
@@ -92,6 +94,177 @@ void main() {
             await serviceWith({key: true, 'notif_outstanding': false});
         expect(service.hasReminderWork, isTrue, reason: '$key is on');
       }
+    });
+  });
+
+  /// What gets handed to the OS, worked out without the OS.
+  ///
+  /// [NotificationService.bind] fires on every dua counted, and a reschedule
+  /// that re-sends the whole window is a cancel and some fifty alarms. So it is
+  /// only sent when the plan has changed — which makes it matter that the plan
+  /// changes exactly when it should.
+  group('the reminder plan', () {
+    late DuaRepository repo;
+    final messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    // The adhan preview player is built with its service, and reaches for its
+    // plugin as it is; the plan only reads whether the adhan is on.
+    const audioChannels = [
+      MethodChannel('xyz.luan/audioplayers.global'),
+      MethodChannel('xyz.luan/audioplayers'),
+    ];
+
+    setUpAll(() async {
+      repo = DuaRepository();
+      await repo.load();
+      for (final channel in audioChannels) {
+        messenger.setMockMethodCallHandler(channel, (_) async => null);
+      }
+    });
+
+    tearDownAll(() {
+      for (final channel in audioChannels) {
+        messenger.setMockMethodCallHandler(channel, null);
+      }
+    });
+
+    /// Every kind of reminder on, the adhan with them, one iqāmah delay, in
+    /// a fixed city — as much as the plan can hold.
+    Future<(NotificationService, DuaProgressService)> everythingOn() async {
+      SharedPreferences.setMockInitialValues({
+        'notif_master_enabled': true,
+        'notif_daily_remembrance': true,
+        'notif_fasting_reminders': true,
+        'adhan_sound_enabled': true,
+        'notif_iqamah_isha': 15,
+        'prayer_location_mode': LocationMode.manual.name,
+        'prayer_lat': 31.9539,
+        'prayer_lng': 35.9106,
+        'prayer_location_label': 'Amman',
+      });
+      final prefs = await SharedPreferences.getInstance();
+      final progress = DuaProgressService(prefs);
+      final service = NotificationService(prefs, repo)
+        ..bind(PrayerService(prefs), AdhanAudioService(prefs), progress,
+            SunnahCalendarService(prefs));
+      // bind's debounce would reach for the plugin, which a unit test lacks.
+      addTearDown(service.dispose);
+      return (service, progress);
+    }
+
+    /// A minute past midnight today: the whole of today's window still ahead.
+    DateTime earlyToday() {
+      final now = DateTime.now();
+      return DateTime(now.year, now.month, now.day, 0, 1);
+    }
+
+    test('holds every kind of reminder that is on', () async {
+      final (service, _) = await everythingOn();
+      final plan = service.planAt(earlyToday(), exact: true);
+
+      final prayers = plan.reminders.where((r) => r.adhan != null);
+      expect(prayers, hasLength(15), reason: 'five prayers, three days');
+      expect(plan.adhanOn, isTrue);
+      expect(plan.reminders.where((r) => r.payload == 'adhkar:morning'),
+          isNotEmpty);
+      expect(plan.reminders.where((r) => r.payload == 'adhkar:evening'),
+          isNotEmpty);
+      // The iqāmah delay moves the reminder, not the adhan.
+      final isha = prayers.firstWhere((r) => r.adhan!.fajr == false &&
+          r.at.difference(r.adhan!.time) != Duration.zero);
+      expect(isha.at.difference(isha.adhan!.time),
+          const Duration(minutes: 15));
+    });
+
+    test('counting a dua that leaves its set unfinished changes nothing',
+        () async {
+      final (service, progress) = await everythingOn();
+      final now = earlyToday();
+      final before = service.planAt(now, exact: true);
+
+      final morning = repo.duasForCategory('morning')
+          .firstWhere((d) => d.repeat > 1 && d.repeat < 100);
+      progress.setCount(morning.id, 1);
+
+      expect(service.planAt(now, exact: true), before,
+          reason: 'this is the tap that should cost nothing');
+    });
+
+    test('finishing the morning set drops today\'s morning reminders, '
+        'and nothing else', () async {
+      final (service, progress) = await everythingOn();
+      final now = earlyToday();
+      final before = service.planAt(now, exact: true);
+
+      for (final dua in repo.duasForCategory('morning')) {
+        progress.setCount(dua.id, dua.repeat);
+      }
+      final after = service.planAt(now, exact: true);
+
+      final dropped =
+          before.reminders.toSet().difference(after.reminders.toSet());
+      expect(dropped, isNotEmpty);
+      for (final reminder in dropped) {
+        expect(reminder.payload, 'adhkar:morning');
+        expect(reminder.at.day, now.day, reason: 'tomorrow starts afresh');
+      }
+      expect(after.reminders.toSet().difference(before.reminders.toSet()),
+          isEmpty);
+    });
+
+    test('a reminder having fired since is no reason to schedule again',
+        () async {
+      // The whole of the skip rests on this: a plan made now must equal the
+      // plan made earlier today, less whatever has fired in between. Walked
+      // through the day so every prayer, ping and reminder passes once.
+      final (service, _) = await everythingOn();
+      final start = earlyToday();
+      final first = service.planAt(start, exact: true);
+
+      for (var minutes = 15; minutes < 24 * 60 - 2; minutes += 15) {
+        final later = start.add(Duration(minutes: minutes));
+        if (later.day != start.day) break; // a short day, at a DST change
+        expect(service.planAt(later, exact: true), first.after(later),
+            reason: 'at ${later.hour}:${later.minute}');
+      }
+    });
+
+    test('an adhan that has sounded is not set again', () async {
+      // Isha with a fifteen-minute iqāmah delay: for those fifteen minutes the
+      // reminder is still to come, but the adhan is not. Setting its alarm then
+      // would play it the moment it was set — a second adhan, late.
+      final (service, _) = await everythingOn();
+      final plan = service.planAt(earlyToday(), exact: true);
+      final isha = plan.reminders.firstWhere((r) =>
+          r.adhan != null && r.at.isAfter(r.adhan!.time));
+      final between = isha.adhan!.time.add(const Duration(minutes: 1));
+
+      final replanned = service.planAt(between, exact: true);
+      final stillOwed = replanned.reminders.firstWhere((r) => r.id == isha.id);
+      expect(stillOwed.at, isha.at);
+      expect(stillOwed.adhan, isNull);
+      // And the earlier plan, read at that moment, says the same.
+      expect(plan.after(between), replanned);
+    });
+
+    test('whether alarms may be exact is part of what was scheduled', () async {
+      final (service, _) = await everythingOn();
+      final now = earlyToday();
+      expect(service.planAt(now, exact: true),
+          isNot(service.planAt(now, exact: false)));
+    });
+
+    test('nothing on plans nothing', () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final service = NotificationService(prefs, repo)
+        ..bind(PrayerService(prefs), AdhanAudioService(prefs),
+            DuaProgressService(prefs), SunnahCalendarService(prefs));
+      addTearDown(service.dispose);
+
+      final plan = service.planAt(earlyToday(), exact: true);
+      expect(plan.reminders, isEmpty);
+      expect(plan.adhanOn, isFalse);
     });
   });
 }

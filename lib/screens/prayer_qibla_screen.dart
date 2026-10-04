@@ -26,6 +26,9 @@ class PrayerQiblaScreen extends StatelessWidget {
     final service = context.watch<PrayerService>();
     final now = DateTime.now();
     final next = service.nextPrayer(now);
+    // Worked out once: each read of [PrayerService.todaysPrayers] runs the
+    // astronomy for the day again.
+    final today = service.todaysPrayers;
 
     void openSchedule() => Navigator.of(context).push(
           MaterialPageRoute(builder: (_) => const PrayerScheduleScreen()),
@@ -70,12 +73,12 @@ class PrayerQiblaScreen extends StatelessWidget {
             clipBehavior: Clip.antiAlias,
             child: Column(
               children: [
-                for (var i = 0; i < service.todaysPrayers.length; i++)
+                for (var i = 0; i < today.length; i++)
                   _PrayerRow(
-                    timing: service.todaysPrayers[i],
+                    timing: today[i],
                     isNext: next != null &&
-                        next.prayer == service.todaysPrayers[i].prayer &&
-                        next.time == service.todaysPrayers[i].time,
+                        next.prayer == today[i].prayer &&
+                        next.time == today[i].time,
                     first: i == 0,
                     onTap: openSchedule,
                   ),

@@ -4,8 +4,9 @@ import 'package:flutter/services.dart';
 import 'adhan_audio.dart';
 
 /// One scheduled adhan playback at [time].
+@immutable
 class AdhanAlarm {
-  AdhanAlarm({
+  const AdhanAlarm({
     required this.id,
     required this.time,
     required this.fajr,
@@ -23,6 +24,17 @@ class AdhanAlarm {
         'fajr': fajr,
         'usage': usage,
       };
+
+  @override
+  bool operator ==(Object other) =>
+      other is AdhanAlarm &&
+      other.id == id &&
+      other.time == time &&
+      other.fajr == fajr &&
+      other.usage == usage;
+
+  @override
+  int get hashCode => Object.hash(id, time, fajr, usage);
 }
 
 /// Bridges to the native (Android) adhan player: exact alarms that start a

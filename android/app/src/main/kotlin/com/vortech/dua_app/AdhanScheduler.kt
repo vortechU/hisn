@@ -30,6 +30,9 @@ object AdhanScheduler {
             val at = (a["at"] as? Number)?.toLong() ?: continue
             val fajr = a["fajr"] as? Boolean ?: false
             val usage = a["usage"] as? String ?: "notification"
+            // An alarm set for a moment already past goes off the instant it is
+            // set: an adhan that has sounded would sound again, late.
+            if (at <= System.currentTimeMillis()) continue
             if (setAlarm(context, am, id, at, fajr, usage)) {
                 stored.put(
                     JSONObject()
