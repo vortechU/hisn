@@ -19,6 +19,10 @@ The hosted legal pages are generated from the repo's own policy files by
 
 - Privacy policy — <https://vortechu.github.io/hisn/privacy.html> (from [`PRIVACY.md`](../PRIVACY.md))
 - Terms of service — <https://vortechu.github.io/hisn/terms.html> (from [`TERMS.md`](../TERMS.md))
+- Arabic: <https://vortechu.github.io/hisn/ar/privacy.html> and
+  <https://vortechu.github.io/hisn/ar/terms.html> (from [`PRIVACY.ar.md`](../PRIVACY.ar.md)
+  and [`TERMS.ar.md`](../TERMS.ar.md)). Every page links to its counterpart.
+  Play takes one privacy URL; give it the English one.
 
 Re-run that script after editing either policy, or the hosted page goes stale
 against the committed one.

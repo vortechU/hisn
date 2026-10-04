@@ -1,10 +1,12 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Privacy Policy — Hisn</title>
 <meta name="description" content="Hisn collects no personal data: no accounts, no analytics, no advertising, no server.">
+<link rel="alternate" hreflang="en" href="https://vortechu.github.io/hisn/privacy.html">
+<link rel="alternate" hreflang="ar" href="https://vortechu.github.io/hisn/ar/privacy.html">
 <style>
 :root {
   --ground: #072c3e;
@@ -44,7 +46,8 @@ header.masthead a { color: #f7f2e6; text-decoration: none; }
 header.masthead h1 { margin: 0; font-size: 1.6rem; letter-spacing: 0.02em; }
 header.masthead p { margin: 6px 0 0; color: #cda84e; font-size: 0.95rem; }
 nav.crumbs { max-width: 46rem; margin: 0 auto; padding: 14px 20px 0; }
-nav.crumbs a { color: var(--rubric); margin-right: 14px; }
+nav.crumbs a { color: var(--rubric); margin-inline-end: 14px; }
+nav.crumbs a.lang { float: inline-end; margin: 0; }
 main { max-width: 46rem; margin: 0 auto; padding: 8px 20px 64px; }
 h1, h2, h3 { line-height: 1.3; }
 main h1 { font-size: 1.7rem; margin: 24px 0 4px; }
@@ -56,16 +59,22 @@ main h2 {
   color: var(--rubric);
 }
 a { color: var(--rubric); }
-ul { padding-left: 1.3rem; }
+ul, ol { padding-inline-start: 1.3rem; }
 li { margin: 6px 0; }
 blockquote {
   margin: 16px 0;
   padding: 10px 16px;
-  border-left: 3px solid var(--gilt);
+  border-inline-start: 3px solid var(--gilt);
   background: rgba(156, 123, 46, 0.07);
   color: var(--muted);
 }
 strong { color: var(--ink); }
+/* Georgia has no Arabic; name faces that do, the app's own first. */
+html[lang="ar"] body {
+  font-family: "Amiri", "Noto Naskh Arabic", "Traditional Arabic", "Times New Roman", serif;
+  font-size: 17px;
+  line-height: 1.9;
+}
 footer {
   max-width: 46rem;
   margin: 0 auto;
@@ -83,7 +92,7 @@ footer {
   </div>
 </header>
 <nav class="crumbs">
-  <a href="./">Home</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Service</a>
+  <a href="./">Home</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Service</a><a class="lang" hreflang="ar" lang="ar" href="ar/privacy.html">العربية</a>
 </nav>
 <main>
 <h1>Privacy Policy — Hisn</h1>

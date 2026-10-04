@@ -11,7 +11,8 @@ Run after editing either policy:
 
     python tool/gen_policy_pages.py
 
-Output: docs/index.html, docs/privacy.html, docs/terms.html, docs/.nojekyll.
+Output: docs/index.html, docs/privacy.html, docs/terms.html, docs/.nojekyll,
+and the Arabic set under docs/ar/ from PRIVACY.ar.md and TERMS.ar.md.
 Serve with GitHub Pages set to "deploy from branch: master, folder: /docs".
 
 The Markdown subset handled here is exactly what the two documents use —
@@ -76,7 +77,8 @@ header.masthead a { color: #f7f2e6; text-decoration: none; }
 header.masthead h1 { margin: 0; font-size: 1.6rem; letter-spacing: 0.02em; }
 header.masthead p { margin: 6px 0 0; color: #cda84e; font-size: 0.95rem; }
 nav.crumbs { max-width: 46rem; margin: 0 auto; padding: 14px 20px 0; }
-nav.crumbs a { color: var(--rubric); margin-right: 14px; }
+nav.crumbs a { color: var(--rubric); margin-inline-end: 14px; }
+nav.crumbs a.lang { float: inline-end; margin: 0; }
 main { max-width: 46rem; margin: 0 auto; padding: 8px 20px 64px; }
 h1, h2, h3 { line-height: 1.3; }
 main h1 { font-size: 1.7rem; margin: 24px 0 4px; }
@@ -88,16 +90,22 @@ main h2 {
   color: var(--rubric);
 }
 a { color: var(--rubric); }
-ul { padding-left: 1.3rem; }
+ul, ol { padding-inline-start: 1.3rem; }
 li { margin: 6px 0; }
 blockquote {
   margin: 16px 0;
   padding: 10px 16px;
-  border-left: 3px solid var(--gilt);
+  border-inline-start: 3px solid var(--gilt);
   background: rgba(156, 123, 46, 0.07);
   color: var(--muted);
 }
 strong { color: var(--ink); }
+/* Georgia has no Arabic; name faces that do, the app's own first. */
+html[lang="ar"] body {
+  font-family: "Amiri", "Noto Naskh Arabic", "Traditional Arabic", "Times New Roman", serif;
+  font-size: 17px;
+  line-height: 1.9;
+}
 footer {
   max-width: 46rem;
   margin: 0 auto;
@@ -108,29 +116,31 @@ footer {
 """
 
 PAGE = """<!doctype html>
-<html lang="en">
+<html lang="{lang}" dir="{dir}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{tab_title}</title>
 <meta name="description" content="{description}">
+<link rel="alternate" hreflang="en" href="{href_en}">
+<link rel="alternate" hreflang="ar" href="{href_ar}">
 <style>{css}</style>
 </head>
 <body>
 <header class="masthead">
   <div class="wrap">
     <h1><a href="./">{site}</a></h1>
-    <p>Adhkar, Quran &amp; prayer times — offline, ad-free, no accounts.</p>
+    <p>{tagline}</p>
   </div>
 </header>
 <nav class="crumbs">
-  <a href="./">Home</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Service</a>
+  <a href="./">{t_home}</a><a href="privacy.html">{t_privacy}</a><a href="terms.html">{t_terms}</a><a class="lang" hreflang="{other_lang}" lang="{other_lang}" href="{switch_href}">{switch_label}</a>
 </nav>
 <main>
 {body}
 </main>
 <footer>
-  <p>Hisn is a personal, non-commercial project. Questions: <a href="mailto:{contact}">{contact}</a></p>
+  <p>{footer_note} <a href="mailto:{contact}">{contact}</a></p>
 </footer>
 </body>
 </html>
@@ -150,6 +160,65 @@ runs on your device.</p>
 <p>Questions, corrections to the texts, or a bug to report:
 <a href="mailto:{contact}">{contact}</a>.</p>
 """.format(contact=CONTACT)
+
+INDEX_BODY_AR = """<h1>حصن</h1>
+<p>«حصن» رفيقٌ مجانيٌّ يعمل دون اتصال وبلا إعلانات، لأدعية اليوم وأذكاره،
+والقرآن الكريم برسم مصحف المدينة النبوية، والتسبيح، ومواقيت الصلاة، واتجاه القبلة.
+ليس فيه حسابات، ولا أدوات تحليل، ولا خادم خلفي — فكلّ ما يحتاجه يعمل على جهازك.</p>
+<h2>الوثائق القانونية</h2>
+<ul>
+  <li><a href="privacy.html">سياسة الخصوصية</a> — ما يفعله التطبيق بمعلوماتك وما لا يفعله (باختصار: لا يجمع شيئًا).</li>
+  <li><a href="terms.html">شروط الاستخدام</a> — الترخيص، والتنبيه المتعلّق بالمحتوى الديني، وإسناد حقوق الأطراف الثالثة.</li>
+</ul>
+<h2>التواصل</h2>
+<p>للأسئلة، أو تصحيح النصوص، أو الإبلاغ عن خلل:
+<a href="mailto:{contact}">{contact}</a>.</p>
+""".format(contact=CONTACT)
+
+SITE_URL = "https://vortechu.github.io/hisn/"
+
+# Everything on a page that is not the policy itself, per language. Each
+# language's pages live in their own folder (English at the root, where the
+# URLs Play already holds point), and the switch links to the same page in
+# the other one.
+LOCALES = {
+    "en": {
+        "dir": "ltr",
+        "folder": "",
+        "site": SITE_TITLE,
+        "tagline": "Adhkar, Quran &amp; prayer times — offline, ad-free, no accounts.",
+        "t_home": "Home",
+        "t_privacy": "Privacy Policy",
+        "t_terms": "Terms of Service",
+        "footer_note": "Hisn is a personal, non-commercial project. Questions:",
+        "switch_label": "العربية",
+        "index_title": "Hisn — Adhkar, Quran & prayer times",
+        "index_description": "Hisn — adhkar, Quran and prayer times. Offline, ad-free, no accounts.",
+        "index_body": INDEX_BODY,
+        "privacy_src": "PRIVACY.md",
+        "privacy_description": "Hisn collects no personal data: no accounts, no analytics, no advertising, no server.",
+        "terms_src": "TERMS.md",
+        "terms_description": "The licence, religious-content disclaimer, and third-party attributions for Hisn.",
+    },
+    "ar": {
+        "dir": "rtl",
+        "folder": "ar",
+        "site": "حصن",
+        "tagline": "الأذكار والقرآن الكريم ومواقيت الصلاة — دون اتصال، وبلا إعلانات، ودون حسابات.",
+        "t_home": "الرئيسية",
+        "t_privacy": "سياسة الخصوصية",
+        "t_terms": "شروط الاستخدام",
+        "footer_note": "«حصن» مشروعٌ شخصيٌّ غير تجاري. للتواصل:",
+        "switch_label": "English",
+        "index_title": "حصن — الأذكار والقرآن الكريم ومواقيت الصلاة",
+        "index_description": "حصن — الأذكار والقرآن الكريم ومواقيت الصلاة. دون اتصال، وبلا إعلانات، ودون حسابات.",
+        "index_body": INDEX_BODY_AR,
+        "privacy_src": "PRIVACY.ar.md",
+        "privacy_description": "لا يجمع «حصن» أيّ بيانات شخصية: لا حسابات، ولا تحليلات، ولا إعلانات، ولا خادم.",
+        "terms_src": "TERMS.ar.md",
+        "terms_description": "الترخيص، والتنبيه المتعلّق بالمحتوى الديني، وإسناد حقوق الأطراف الثالثة في «حصن».",
+    },
+}
 
 INLINE_LINK = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
 BOLD = re.compile(r"\*\*([^*]+)\*\*")
@@ -259,20 +328,47 @@ def write(path: Path, text: str) -> None:
     print(f"wrote {path.relative_to(ROOT)}")
 
 
-def render(source: Path, out_name: str, title: str, description: str) -> None:
-    body = markdown_to_html(io.open(source, encoding="utf-8").read())
+def page(lang: str, out_name: str, title: str, tab_title: str,
+         description: str, body: str) -> None:
+    loc = LOCALES[lang]
+    other = next(code for code in LOCALES if code != lang)
+
+    def folder_prefix(code: str) -> str:
+        return LOCALES[code]["folder"] + "/" if LOCALES[code]["folder"] else ""
+
+    # From this folder up to the root, then down into the other language's.
+    up = "../" if loc["folder"] else ""
+    folder = DOCS / loc["folder"] if loc["folder"] else DOCS
+    folder.mkdir(exist_ok=True)
     write(
-        DOCS / out_name,
+        folder / out_name,
         PAGE.format(
+            lang=lang,
+            dir=loc["dir"],
             title=title,
-            tab_title=f"{title} — {SITE_TITLE}",
-            site=SITE_TITLE,
+            tab_title=tab_title,
+            site=loc["site"],
             description=description,
             css=CSS,
             body=body,
             contact=CONTACT,
+            tagline=loc["tagline"],
+            t_home=loc["t_home"],
+            t_privacy=loc["t_privacy"],
+            t_terms=loc["t_terms"],
+            footer_note=loc["footer_note"],
+            other_lang=other,
+            switch_href=up + folder_prefix(other) + out_name,
+            switch_label=loc["switch_label"],
+            href_en=SITE_URL + folder_prefix("en") + out_name,
+            href_ar=SITE_URL + folder_prefix("ar") + out_name,
         ),
     )
+
+
+def render(lang: str, source: str, out_name: str, title: str, description: str) -> None:
+    body = markdown_to_html(io.open(ROOT / source, encoding="utf-8").read())
+    page(lang, out_name, title, f"{title} — {LOCALES[lang]['site']}", description, body)
 
 
 def main() -> int:
@@ -280,30 +376,13 @@ def main() -> int:
     # Without this GitHub runs the whole folder through Jekyll, which drops
     # files beginning with an underscore and slows every deploy for nothing.
     write(DOCS / ".nojekyll", "")
-    write(
-        DOCS / "index.html",
-        PAGE.format(
-            title="Hisn",
-            tab_title="Hisn — Adhkar, Quran & prayer times",
-            site=SITE_TITLE,
-            description="Hisn — adhkar, Quran and prayer times. Offline, ad-free, no accounts.",
-            css=CSS,
-            body=INDEX_BODY,
-            contact=CONTACT,
-        ),
-    )
-    render(
-        ROOT / "PRIVACY.md",
-        "privacy.html",
-        "Privacy Policy",
-        "Hisn collects no personal data: no accounts, no analytics, no advertising, no server.",
-    )
-    render(
-        ROOT / "TERMS.md",
-        "terms.html",
-        "Terms of Service",
-        "The licence, religious-content disclaimer, and third-party attributions for Hisn.",
-    )
+    for lang, loc in LOCALES.items():
+        page(lang, "index.html", loc["site"], loc["index_title"],
+             loc["index_description"], loc["index_body"])
+        render(lang, loc["privacy_src"], "privacy.html", loc["t_privacy"],
+               loc["privacy_description"])
+        render(lang, loc["terms_src"], "terms.html", loc["t_terms"],
+               loc["terms_description"])
     return 0
 
 
