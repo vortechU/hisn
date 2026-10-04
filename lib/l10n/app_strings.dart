@@ -167,6 +167,7 @@ class AppStrings {
   String get next => _t.next;
   String get remaining => _t.remaining;
   String get countdownNow => _t.countdownNow;
+  String get sinceAdhan => _t.sinceAdhan;
   String todaysPrayers(String location) =>
       _t.todaysPrayers(location: location);
 

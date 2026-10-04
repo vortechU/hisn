@@ -123,6 +123,10 @@ class PrayerWidgetService extends ChangeNotifier {
         'name_maghrib': s.prayerName(Prayer.maghrib),
         'name_isha': s.prayerName(Prayer.isha),
         'next_label': s.next,
+        // The compact widget counts up from an adhan for this long before it
+        // turns to the next one, as the app's header does.
+        'since_label': s.sinceAdhan,
+        'since_minutes': PrayerService.iqamaWindow.inMinutes.toString(),
         'remaining': s.remaining,
         // Localized 12-hour markers (index 0 = AM, 1 = PM).
         'am': s.ampm(9),

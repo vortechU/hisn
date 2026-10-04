@@ -11,7 +11,8 @@ import 'arabic_text.dart';
 import 'ornament.dart';
 
 /// The opening plate of the Adhkar tab: an ʿunwān carrying today's date, the
-/// hour, the prayer now in force, and the wait until the next adhan.
+/// hour, the prayer now in force, and the wait until the next adhan — or, just
+/// after an adhan, the time since it.
 ///
 /// This is the one hero surface of the screen, so it is the only block drawn
 /// with a full-strength outer rule. Tap it for the day's full schedule.
@@ -219,15 +220,26 @@ class _PrayerHeaderState extends State<PrayerHeader> {
 
   /// The wait until the next adhan, set as a ruled entry: label, name, time,
   /// and a rule that fills as the current interval elapses.
+  ///
+  /// For the first [PrayerService.iqamaWindow] after an adhan the entry turns
+  /// to the prayer just called instead, counting the minutes since it so the
+  /// iqama can be judged, and the rule fills across that window.
   Widget _nextBlock(PrayerTiming? current, PrayerTiming next, AppStrings s,
       ThemeData theme, ManuscriptTheme ms) {
-    final total =
-        current == null ? Duration.zero : next.time.difference(current.time);
     final elapsed =
         current == null ? Duration.zero : _now.difference(current.time);
+    final sinceAdhan =
+        current != null && elapsed < PrayerService.iqamaWindow;
+
+    final total = sinceAdhan
+        ? PrayerService.iqamaWindow
+        : current == null
+            ? Duration.zero
+            : next.time.difference(current.time);
     final progress = total.inSeconds <= 0
         ? 0.0
         : (elapsed.inSeconds / total.inSeconds).clamp(0.0, 1.0);
+    final shown = sinceAdhan ? current : next;
 
     return Column(
       children: [
@@ -236,13 +248,16 @@ class _PrayerHeaderState extends State<PrayerHeader> {
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(s.next.toUpperCase(), style: theme.textTheme.labelSmall),
+            Text(
+              (sinceAdhan ? s.sinceAdhan : s.next).toUpperCase(),
+              style: theme.textTheme.labelSmall,
+            ),
             const SizedBox(width: 9),
-            // The ruled label already says "next", so the name and time are set
-            // on their own — no sentence carrying the word a second time.
+            // The ruled label already says what this is, so the name and time
+            // are set on their own — no sentence carrying the word twice.
             Expanded(
               child: Text(
-                '${s.prayerName(next.prayer)}  ·  ${_clock(next.time, s)}',
+                '${s.prayerName(shown.prayer)}  ·  ${_clock(shown.time, s)}',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.titleSmall,
@@ -254,7 +269,8 @@ class _PrayerHeaderState extends State<PrayerHeader> {
                 fit: BoxFit.scaleDown,
                 alignment: AlignmentDirectional.centerEnd,
                 child: Numeral(
-                  _countdown(next.time.difference(_now), s),
+                  _countdown(
+                      sinceAdhan ? elapsed : next.time.difference(_now), s),
                   size: 16,
                   weight: FontWeight.w700,
                   serif: false,

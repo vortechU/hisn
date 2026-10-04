@@ -26,6 +26,10 @@ data class PrayerWidgetData(
     val nextIndex: Int,
     /** Actual moment of the next prayer (tomorrow's Fajr once today's all pass). */
     val nextTime: Date?,
+    /** Index (0..4) of the prayer whose adhan was last called. */
+    val lastIndex: Int,
+    /** When that adhan was called (yesterday's Isha before today's Fajr). */
+    val lastTime: Date?,
     val am: String,
     val pm: String,
 )
@@ -44,6 +48,9 @@ object PrayerWidget {
     // Must match SunnahCalendarRules.minOffset/maxOffset on the Dart side.
     private const val MIN_HIJRI_OFFSET = -2
     private const val MAX_HIJRI_OFFSET = 2
+
+    // For an install whose app has not pushed since the setting arrived.
+    private const val DEFAULT_SINCE_MINUTES = 20L
 
     fun prefs(context: Context): SharedPreferences =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -93,7 +100,7 @@ object PrayerWidget {
         val lat = p.getString("lat", null)?.toDoubleOrNull()
         val lng = p.getString("lng", null)?.toDoubleOrNull()
         if (lat == null || lng == null) {
-            return PrayerWidgetData(label, hijri, names, null, 0, null, am, pm)
+            return PrayerWidgetData(label, hijri, names, null, 0, null, 0, null, am, pm)
         }
 
         val coords = Coordinates(lat, lng)
@@ -109,17 +116,40 @@ object PrayerWidget {
         val nextTime: Date
         if (nextIndex < 0) {
             // All of today's prayers have passed — next is tomorrow's Fajr.
-            val tomorrow = Calendar.getInstance().apply {
-                time = now
-                add(Calendar.DAY_OF_MONTH, 1)
-            }.time
-            nextTime = PrayerTimes(coords, dateComponents(tomorrow), params).fajr
+            nextTime = PrayerTimes(coords, dateComponents(shiftDays(now, 1)), params).fajr
             nextIndex = 0
         } else {
             nextTime = times[nextIndex]
         }
-        return PrayerWidgetData(label, hijri, names, times, nextIndex, nextTime, am, pm)
+
+        var lastIndex = times.indexOfLast { !it.after(now) }
+        val lastTime: Date
+        if (lastIndex < 0) {
+            // Before today's Fajr — the last adhan was yesterday's Isha.
+            lastTime = PrayerTimes(coords, dateComponents(shiftDays(now, -1)), params).isha
+            lastIndex = times.lastIndex
+        } else {
+            lastTime = times[lastIndex]
+        }
+        return PrayerWidgetData(
+            label, hijri, names, times,
+            nextIndex, nextTime, lastIndex, lastTime, am, pm,
+        )
     }
+
+    /**
+     * How long after an adhan the compact widget counts up from it, as pushed
+     * by the app (`PrayerService.iqamaWindow`). Zero turns the count-up off.
+     */
+    fun sinceWindowMillis(context: Context): Long =
+        (prefs(context).getString("since_minutes", null)?.toLongOrNull()
+            ?: DEFAULT_SINCE_MINUTES).coerceAtLeast(0) * 60_000L
+
+    private fun shiftDays(date: Date, days: Int): Date =
+        Calendar.getInstance().apply {
+            time = date
+            add(Calendar.DAY_OF_MONTH, days)
+        }.time
 
     private fun dateComponents(date: Date): DateComponents {
         val c = Calendar.getInstance().apply { time = date }

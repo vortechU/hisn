@@ -306,6 +306,9 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// en: 'now'
 	String get countdownNow => 'now';
 
+	/// en: 'SINCE ADHAN'
+	String get sinceAdhan => 'SINCE ADHAN';
+
 	/// en: 'Today's prayers · $location'
 	String todaysPrayers({required Object location}) => 'Today\'s prayers · ${location}';
 
@@ -1269,6 +1272,7 @@ extension on Translations {
 			'next' => 'NEXT',
 			'remaining' => 'remaining',
 			'countdownNow' => 'now',
+			'sinceAdhan' => 'SINCE ADHAN',
 			'todaysPrayers' => ({required Object location}) => 'Today\'s prayers · ${location}',
 			'searchHint' => 'Search duas, meanings, sources…',
 			'clear' => 'Clear',

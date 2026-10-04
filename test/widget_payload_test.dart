@@ -92,7 +92,7 @@ void main() {
 
     // Prayer config — the widgets compute times from these themselves.
     for (final key in ['lat', 'lng', 'method', 'madhab', 'label', 'next_label',
-      'am', 'pm', 'hijri', 'hijri_months', 'hijri_offset']) {
+      'since_label', 'since_minutes', 'am', 'pm', 'hijri', 'hijri_months', 'hijri_offset']) {
       expect(pushed, contains(key), reason: 'prayer widgets read "$key"');
     }
     // Appearance.

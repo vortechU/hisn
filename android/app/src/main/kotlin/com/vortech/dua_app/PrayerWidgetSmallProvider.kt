@@ -1,8 +1,12 @@
 package com.vortech.dua_app
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
@@ -17,10 +21,16 @@ import java.util.Locale
 /**
  * The compact widget: the next prayer's name + time and a live countdown.
  *
- * The countdown uses a [android.widget.Chronometer] in count-down mode, which
- * ticks on its own inside the launcher (no per-second redraws). It's advanced to
- * the following prayer by the ~30-min update tick and the adhan alarm; on
- * Android < 7 (no count-down chronometer) it shows a static "Xh Ym" instead.
+ * For the first few minutes after an adhan (the app's iqama window) it turns
+ * to the prayer just called and counts up from it instead, so the wait for the
+ * iqama can be judged from the home screen, as it can in the app's header.
+ *
+ * The count uses a [android.widget.Chronometer], which ticks on its own inside
+ * the launcher (no per-second redraws), down to the next adhan or up from the
+ * last. Each draw sets a non-waking alarm for the moment it should next change
+ * — the next adhan, or the end of the window — so it turns on time without
+ * waiting for the ~30-min update tick. On Android < 7 (no count-down
+ * chronometer) it shows a static "Xh Ym" instead.
  *
  * Unlike the larger widget this builds per instance rather than once, because
  * the prayer name may be drawn as Arabic type and needs the width of the
@@ -33,9 +43,16 @@ class PrayerWidgetSmallProvider : AppWidgetProvider() {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray,
     ) {
+        val data = PrayerWidget.compute(context)
         for (id in appWidgetIds) {
-            appWidgetManager.updateAppWidget(id, buildViews(context, appWidgetManager, id))
+            appWidgetManager.updateAppWidget(id, buildViews(context, appWidgetManager, id, data))
         }
+        scheduleTurn(context, data)
+    }
+
+    override fun onDisabled(context: Context) {
+        val am = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager ?: return
+        turnIntent(context, PendingIntent.FLAG_NO_CREATE)?.let { am.cancel(it) }
     }
 
     /** Redraw on resize: the Arabic name is drawn to the widget's own width. */
@@ -47,7 +64,45 @@ class PrayerWidgetSmallProvider : AppWidgetProvider() {
     ) {
         appWidgetManager.updateAppWidget(
             appWidgetId,
-            buildViews(context, appWidgetManager, appWidgetId),
+            buildViews(context, appWidgetManager, appWidgetId, PrayerWidget.compute(context)),
+        )
+    }
+
+    /**
+     * Redraw at the next moment the widget's face changes: when the adhan it
+     * counts up from leaves the window, or else when the next one is called.
+     *
+     * The alarm does not wake the phone. A launcher nobody is looking at needs
+     * no redraw, and the alarm is delivered as soon as the screen comes on.
+     */
+    private fun scheduleTurn(context: Context, data: PrayerWidgetData) {
+        val next = data.nextTime ?: return
+        val now = System.currentTimeMillis()
+        val windowEnd = data.lastTime?.time?.plus(PrayerWidget.sinceWindowMillis(context))
+        val at = if (windowEnd != null && windowEnd > now) windowEnd else next.time
+        val am = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager ?: return
+        val pi = turnIntent(context, PendingIntent.FLAG_UPDATE_CURRENT) ?: return
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !am.canScheduleExactAlarms()) {
+                am.set(AlarmManager.RTC, at, pi)
+            } else {
+                am.setExact(AlarmManager.RTC, at, pi)
+            }
+        } catch (_: SecurityException) {
+            // Left to the ~30-min update tick.
+        }
+    }
+
+    private fun turnIntent(context: Context, flag: Int): PendingIntent? {
+        val ids = AppWidgetManager.getInstance(context)
+            ?.getAppWidgetIds(ComponentName(context, PrayerWidgetSmallProvider::class.java))
+            ?: IntArray(0)
+        val intent = Intent(context, PrayerWidgetSmallProvider::class.java).apply {
+            action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+            putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+        }
+        return PendingIntent.getBroadcast(
+            context, TURN_REQUEST, intent, flag or PendingIntent.FLAG_IMMUTABLE,
         )
     }
 
@@ -55,8 +110,8 @@ class PrayerWidgetSmallProvider : AppWidgetProvider() {
         context: Context,
         manager: AppWidgetManager,
         widgetId: Int,
+        data: PrayerWidgetData,
     ): RemoteViews {
-        val data = PrayerWidget.compute(context)
         val ms = WidgetTheme.of(context)
         val views = RemoteViews(context.packageName, R.layout.prayer_widget_small)
 
@@ -67,7 +122,7 @@ class PrayerWidgetSmallProvider : AppWidgetProvider() {
 
         views.setTextViewText(R.id.small_hijri, data.hijri)
         views.setTextColor(R.id.small_hijri, ms.muted)
-        views.setTextViewText(R.id.small_next_label, nextLabel(context))
+        views.setTextViewText(R.id.small_next_label, label(context, "next_label", "NEXT"))
         views.setTextColor(R.id.small_next_label, ms.gilt)
         views.setTextColor(R.id.small_name, ms.rubric)
         views.setTextColor(R.id.small_time, ms.muted)
@@ -84,25 +139,41 @@ class PrayerWidgetSmallProvider : AppWidgetProvider() {
             return views
         }
 
-        setName(context, manager, widgetId, views, ms, data.names[data.nextIndex])
-        val formatter = SimpleDateFormat("h:mm", Locale.US)
-        views.setTextViewText(R.id.small_time, format(next, formatter, data.am, data.pm))
+        // Just after an adhan, the prayer just called and the time since it;
+        // otherwise the next prayer and the time until it.
+        val now = System.currentTimeMillis()
+        val window = PrayerWidget.sinceWindowMillis(context)
+        val since = data.lastTime?.takeIf { now - it.time in 0 until window }
+        val shownIndex = if (since != null) data.lastIndex else data.nextIndex
+        val shownTime = since ?: next
+        if (since != null) {
+            views.setTextViewText(
+                R.id.small_next_label,
+                label(context, "since_label", "SINCE ADHAN"),
+            )
+        }
 
-        val remaining = next.time - System.currentTimeMillis()
+        setName(context, manager, widgetId, views, ms, data.names[shownIndex])
+        val formatter = SimpleDateFormat("h:mm", Locale.US)
+        views.setTextViewText(R.id.small_time, format(shownTime, formatter, data.am, data.pm))
+
+        val span = if (since != null) now - since.time else next.time - now
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             views.setViewVisibility(R.id.small_countdown, View.VISIBLE)
             views.setViewVisibility(R.id.small_countdown_static, View.GONE)
-            views.setChronometerCountDown(R.id.small_countdown, true)
-            views.setChronometer(
-                R.id.small_countdown,
-                SystemClock.elapsedRealtime() + remaining.coerceAtLeast(0),
-                null,
-                true,
-            )
+            views.setChronometerCountDown(R.id.small_countdown, since == null)
+            // A count-down's base is the moment it reaches zero; a count-up's
+            // is the moment it started from.
+            val base = if (since != null) {
+                SystemClock.elapsedRealtime() - span
+            } else {
+                SystemClock.elapsedRealtime() + span.coerceAtLeast(0)
+            }
+            views.setChronometer(R.id.small_countdown, base, null, true)
         } else {
             views.setViewVisibility(R.id.small_countdown, View.GONE)
             views.setViewVisibility(R.id.small_countdown_static, View.VISIBLE)
-            views.setTextViewText(R.id.small_countdown_static, relative(remaining))
+            views.setTextViewText(R.id.small_countdown_static, relative(span))
         }
         return views
     }
@@ -158,8 +229,8 @@ class PrayerWidgetSmallProvider : AppWidgetProvider() {
         return if (h > 0) "${h}h ${m}m" else "${m}m"
     }
 
-    private fun nextLabel(context: Context): String =
-        PrayerWidget.prefs(context).getString("next_label", "NEXT") ?: "NEXT"
+    private fun label(context: Context, key: String, fallback: String): String =
+        PrayerWidget.prefs(context).getString(key, fallback) ?: fallback
 
     private fun format(date: Date, fmt: SimpleDateFormat, am: String, pm: String): String {
         val c = Calendar.getInstance().apply { time = date }
@@ -170,5 +241,8 @@ class PrayerWidgetSmallProvider : AppWidgetProvider() {
     private companion object {
         const val EM_DASH = "—"
         const val FALLBACK_WIDTH_DP = 110
+
+        /** Request code of the redraw alarm set by [scheduleTurn]. */
+        const val TURN_REQUEST = 0x7E1D
     }
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    The compact widget: the next prayer, and how long is left.
+    The compact widget: the next prayer, and how long is left — or, for the
+    first minutes after an adhan, the prayer just called and the time since it.
 
     The prayer name carries two slots — a plain TextView and an ImageView. In a
     Latin interface the TextView is used; in an Arabic one the provider draws
