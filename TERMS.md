@@ -1,8 +1,8 @@
 # Terms of Service — Hisn
 
-**Effective date:** 13 August 2026
+**Effective date:** 4 October 2026
 
-These Terms govern your use of the Hisn application ("Hisn", "the app"). By installing or using Hisn, you agree to these Terms. If you do not agree, please do not use the app.
+These Terms govern your use of the Hisn application ("Hisn", "the app"), developed and published by **Vortech** ("the developer"). By installing or using Hisn, you agree to these Terms. If you do not agree, please do not use the app.
 
 ## 1. License
 
@@ -50,4 +50,4 @@ These Terms are governed by and construed in accordance with the laws of the **K
 
 ## 9. Contact
 
-Questions about these Terms? Contact: vordeviu@gmail.com
+Questions about these Terms? Contact Vortech at: vordeviu@gmail.com

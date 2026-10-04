@@ -1,8 +1,8 @@
 # Privacy Policy — Hisn
 
-**Effective date:** 13 August 2026
+**Effective date:** 4 October 2026
 
-Hisn is a dua, adhkar, Quran, Tasbih, prayer-times, and Qibla companion app. This policy explains, in plain language, what the app does and does not do with your information.
+Hisn is a dua, adhkar, Quran, Tasbih, prayer-times, and Qibla companion app, developed and published by **Vortech** ("the developer", "we"), an independent developer based in the Kingdom of Saudi Arabia. This policy explains, in plain language, what the app does and does not do with your information.
 
 The short version: **the developer of Hisn does not collect, store, or receive any personal data about you.** Hisn has no user accounts, no analytics, no advertising, no AI services, no crash reporting, and no backend server. Everything the app needs to work runs on your device.
 
@@ -32,6 +32,28 @@ Location is **optional**: you can instead pick a city manually and never grant l
   - Google: https://policies.google.com/privacy
   - Apple: https://www.apple.com/legal/privacy/
 
+## Backups you export
+
+Hisn can write your saved data (favorites, custom duas, bookmarks, progress, and settings) to a single backup file. The file is created **only when you ask for it**, and is handed to your device's share sheet so that **you** choose where it goes — for example your own cloud storage, a file manager, or a message to yourself. The developer never receives it. Once you send it somewhere, that destination's own privacy policy applies.
+
+## Permissions the app asks for
+
+- **Location** (optional) — for prayer times and the Qibla direction, as described above. Background location is never requested.
+- **Notifications and alarms** (optional, off by default) — to deliver the prayer and fasting reminders you switch on, and to play the adhan at prayer time.
+- **Motion sensors** — the compass reads your device's magnetometer and accelerometer on the device to point toward the Qibla. These readings are never stored or transmitted.
+
+## Data retention and deletion
+
+Because everything Hisn stores is kept on your device, **you are in full control of it**:
+
+- Data is kept on your device for as long as the app is installed, or until you remove it.
+- You can delete all of it at any time by **clearing the app's storage** (Android: Settings → Apps → Hisn → Storage → Clear storage) or by **uninstalling the app**.
+- The developer holds no copy of your data on any server, so there is nothing for the developer to retain or delete on your behalf.
+
+## Security
+
+Your data stays in the app's private storage on your device, which other apps cannot read. Hisn opens no network connections of its own; the only data that leaves your device without your direct action is the place-name lookup described above, which your operating system performs over its own secured connection.
+
 ## We do not sell, share, or track
 
 Hisn does **not** sell your data, **does not** share it with third parties for their own purposes, and **does not** use any data to track you across apps or websites. There is no advertising or profiling of any kind.
@@ -46,4 +68,4 @@ If this policy changes, the updated version will be published with a new effecti
 
 ## Contact
 
-Questions about this policy? Contact: vordeviu@gmail.com
+Questions about this policy? Contact Vortech at: vordeviu@gmail.com
