@@ -14,6 +14,7 @@ import 'package:dua_app/services/display_settings.dart';
 import 'package:dua_app/services/dua_progress_service.dart';
 import 'package:dua_app/services/favorites_service.dart';
 import 'package:dua_app/services/muhassan_service.dart';
+import 'package:dua_app/services/notification_service.dart';
 import 'package:dua_app/services/prayer_service.dart';
 import 'package:dua_app/services/prayer_widget_service.dart';
 import 'package:dua_app/services/sunnah_calendar_service.dart';
@@ -293,9 +294,10 @@ void main() {
       final progress = DuaProgressService(prefs);
       final tasbih = TasbihController(prefs);
       addTearDown(tasbih.dispose);
+      final notifications = NotificationService(prefs, repo);
 
-      void bind() => service.bind(
-          prayer, locale, calendar, theme, display, progress, tasbih);
+      void bind() => service.bind(prayer, locale, calendar, theme, display,
+          progress, tasbih, notifications);
 
       bind();
       await Future<void>.delayed(const Duration(milliseconds: 700));

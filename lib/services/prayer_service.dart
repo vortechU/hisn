@@ -117,11 +117,6 @@ class PrayerService extends ChangeNotifier {
     return current;
   }
 
-  /// How long after an adhan it is counted up from rather than the next one
-  /// counted down to — long enough to cover the usual wait for the iqama.
-  /// Shared by the Adhkar tab's header and the compact home-screen widget.
-  static const iqamaWindow = Duration(minutes: 20);
-
   /// The next upcoming adhan.
   PrayerTiming? nextPrayer(DateTime now) {
     for (final timing in _schedule) {

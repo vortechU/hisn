@@ -38,6 +38,7 @@ import 'package:dua_app/services/display_settings.dart';
 import 'package:dua_app/services/dua_progress_service.dart';
 import 'package:dua_app/services/favorites_service.dart';
 import 'package:dua_app/services/muhassan_service.dart';
+import 'package:dua_app/services/notification_service.dart';
 import 'package:dua_app/services/prayer_service.dart';
 import 'package:dua_app/models/quran.dart';
 import 'package:dua_app/models/shareable.dart';
@@ -155,6 +156,8 @@ void main() {
         ),
         ChangeNotifierProvider(create: (_) => PrayerService(prefs)),
         ChangeNotifierProvider(create: (_) => SunnahCalendarService(prefs)),
+        ChangeNotifierProvider(
+            create: (_) => NotificationService(prefs, repo)),
       ],
       child: MaterialApp(
         // Match how app.dart builds the theme: an Arabic interface gets the

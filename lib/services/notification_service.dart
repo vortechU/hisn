@@ -69,6 +69,9 @@ class NotificationService extends ChangeNotifier {
   static String _iqamahKeyFor(Prayer p) => 'notif_iqamah_${p.name}';
   static const iqamahOffsetChoices = [0, 5, 10, 15, 20, 25, 30, 45, 60];
 
+  /// The count-up used for a prayer with no iqāmah delay of its own.
+  static const defaultIqamahWindow = Duration(minutes: 20);
+
   // The single "daily remembrance" bundle toggle (morning/evening adhkar +
   // Friday & nightly sunnah reminders).
   static const _kDailyRemembrance = 'notif_daily_remembrance';
@@ -142,6 +145,21 @@ class NotificationService extends ChangeNotifier {
   bool get permissionDenied => _permissionDenied;
   bool isPrayerEnabled(Prayer prayer) => _enabled[prayer] ?? true;
   int iqamahOffset(Prayer prayer) => _iqamahOffset[prayer] ?? 0;
+
+  /// How long after [prayer]'s adhan the time since it is shown — on the
+  /// Adhkar tab's header and the compact home-screen widget — before the
+  /// countdown to the next adhan takes over.
+  ///
+  /// The prayer's iqāmah delay, while its reminder is on: that is the wait the
+  /// user has told us about. Otherwise — a reminder at the adhan itself, or
+  /// one switched off, whose delay is hidden in Settings and so cannot be
+  /// what the user expects — [defaultIqamahWindow].
+  Duration iqamahWindow(Prayer prayer) {
+    final offset = _masterEnabled && isPrayerEnabled(prayer)
+        ? iqamahOffset(prayer)
+        : 0;
+    return offset > 0 ? Duration(minutes: offset) : defaultIqamahWindow;
+  }
 
   /// Whether the daily-remembrance bundle (morning/evening adhkar + Friday &
   /// nightly sunnah reminders) is on. Independent of the prayer-time master.

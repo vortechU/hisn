@@ -49,8 +49,10 @@ object PrayerWidget {
     private const val MIN_HIJRI_OFFSET = -2
     private const val MAX_HIJRI_OFFSET = 2
 
-    // For an install whose app has not pushed since the setting arrived.
+    // For an install whose app has not pushed since the count-up arrived.
     private const val DEFAULT_SINCE_MINUTES = 20L
+
+    private val PRAYER_KEYS = listOf("fajr", "dhuhr", "asr", "maghrib", "isha")
 
     fun prefs(context: Context): SharedPreferences =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -138,12 +140,15 @@ object PrayerWidget {
     }
 
     /**
-     * How long after an adhan the compact widget counts up from it, as pushed
-     * by the app (`PrayerService.iqamaWindow`). Zero turns the count-up off.
+     * How long after the adhan of prayer [index] (0..4, Fajr to Isha) the
+     * compact widget counts up from it — that prayer's iqāmah delay, as pushed
+     * by the app (`NotificationService.iqamahWindow`).
      */
-    fun sinceWindowMillis(context: Context): Long =
-        (prefs(context).getString("since_minutes", null)?.toLongOrNull()
+    fun sinceWindowMillis(context: Context, index: Int): Long {
+        val key = "since_minutes_${PRAYER_KEYS.getOrElse(index) { PRAYER_KEYS[0] }}"
+        return (prefs(context).getString(key, null)?.toLongOrNull()
             ?: DEFAULT_SINCE_MINUTES).coerceAtLeast(0) * 60_000L
+    }
 
     private fun shiftDays(date: Date, days: Int): Date =
         Calendar.getInstance().apply {

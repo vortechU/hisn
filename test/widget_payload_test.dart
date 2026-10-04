@@ -9,6 +9,7 @@ import 'package:dua_app/data/dua_repository.dart';
 import 'package:dua_app/l10n/locale_controller.dart';
 import 'package:dua_app/services/display_settings.dart';
 import 'package:dua_app/services/dua_progress_service.dart';
+import 'package:dua_app/services/notification_service.dart';
 import 'package:dua_app/services/prayer_service.dart';
 import 'package:dua_app/services/prayer_widget_service.dart';
 import 'package:dua_app/services/sunnah_calendar_service.dart';
@@ -60,6 +61,7 @@ void main() {
     AppPalette palette = AppPalettes.emerald,
     ThemeMode mode = ThemeMode.system,
     AppLang lang = AppLang.en,
+    Map<String, Object> extra = const {},
   }) async {
     SharedPreferences.setMockInitialValues({
       // Manual mode keeps PrayerService off the geolocator in tests.
@@ -70,6 +72,7 @@ void main() {
       'theme_palette': palette.id,
       'theme_mode': mode.name,
       'app_language': lang.name,
+      ...extra,
     });
     final prefs = await SharedPreferences.getInstance();
     final service = PrayerWidgetService(repo);
@@ -81,6 +84,7 @@ void main() {
       DisplaySettings(prefs),
       DuaProgressService(prefs),
       TasbihController(prefs),
+      NotificationService(prefs, repo),
     );
     // bind() debounces by 500ms so a burst of changes results in one write.
     await Future<void>.delayed(const Duration(milliseconds: 700));
@@ -92,7 +96,7 @@ void main() {
 
     // Prayer config — the widgets compute times from these themselves.
     for (final key in ['lat', 'lng', 'method', 'madhab', 'label', 'next_label',
-      'since_label', 'since_minutes', 'am', 'pm', 'hijri', 'hijri_months', 'hijri_offset']) {
+      'since_label', 'am', 'pm', 'hijri', 'hijri_months', 'hijri_offset']) {
       expect(pushed, contains(key), reason: 'prayer widgets read "$key"');
     }
     // Appearance.
@@ -184,6 +188,42 @@ void main() {
     expect(pushed['tasbih_id'], isNotEmpty);
     expect(pushed['tasbih_arabic'], isNotEmpty);
     expect(int.tryParse(pushed['tasbih_target']!), greaterThan(0));
+  });
+
+  test('the count-up after each adhan follows its iqamah delay', () async {
+    Map<String, String> windows() => {
+          for (final p in ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'])
+            p: pushed['since_minutes_$p']!,
+        };
+
+    // No delays set: every prayer gets the default.
+    await push();
+    expect(windows().values, everyElement('20'));
+
+    // A delay set on a reminder that is on is the window for that prayer.
+    await push(extra: {
+      'notif_master_enabled': true,
+      'notif_iqamah_fajr': 30,
+      'notif_iqamah_isha': 0,
+    });
+    expect(windows(), {
+      'fajr': '30',
+      'dhuhr': '20',
+      'asr': '20',
+      'maghrib': '20',
+      'isha': '20', // "at adhan" is no window at all, so the default
+    });
+
+    // With reminders off the delays are hidden in Settings, so they are
+    // not used.
+    await push(extra: {'notif_iqamah_fajr': 30});
+    expect(pushed['since_minutes_fajr'], '20');
+    await push(extra: {
+      'notif_master_enabled': true,
+      'notif_prayer_fajr': false,
+      'notif_iqamah_fajr': 30,
+    });
+    expect(pushed['since_minutes_fajr'], '20');
   });
 
   test('Arabic changes the chrome but never the Arabic text itself', () async {

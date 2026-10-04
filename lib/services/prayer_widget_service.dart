@@ -12,6 +12,7 @@ import '../theme/app_palette.dart';
 import 'adhan_widget_bridge.dart';
 import 'display_settings.dart';
 import 'dua_progress_service.dart';
+import 'notification_service.dart';
 import 'prayer_service.dart';
 import 'sunnah_calendar_service.dart';
 import 'tasbih_controller.dart';
@@ -42,6 +43,7 @@ class PrayerWidgetService extends ChangeNotifier {
   String _arabicFontId = 'amiri';
   DuaProgressService? _progress;
   TasbihController? _tasbih;
+  NotificationService? _notifications;
 
   /// The adhkar sets the widget may show, in the order the day reaches them.
   /// Mirrored natively in `AdhkarWidgetProvider`; keep the two in step.
@@ -54,6 +56,10 @@ class PrayerWidgetService extends ChangeNotifier {
   static const _poolSize = 40;
 
   /// Wired by the provider whenever anything a widget draws from changes.
+  ///
+  /// The notification settings are listened to here rather than through the
+  /// provider, which has no slot left for a seventh dependency. They carry the
+  /// iqāmah delays the compact widget counts up through after each adhan.
   void bind(
     PrayerService prayer,
     LocaleController locale,
@@ -62,7 +68,12 @@ class PrayerWidgetService extends ChangeNotifier {
     DisplaySettings display,
     DuaProgressService progress,
     TasbihController tasbih,
+    NotificationService notifications,
   ) {
+    if (!identical(notifications, _notifications)) {
+      _notifications?.removeListener(_schedulePush);
+      _notifications = notifications..addListener(_schedulePush);
+    }
     _prayer = prayer;
     _lang = locale.lang;
     _hijriOffset = calendar.offset;
@@ -71,6 +82,10 @@ class PrayerWidgetService extends ChangeNotifier {
     _arabicFontId = display.arabicFontId;
     _progress = progress;
     _tasbih = tasbih;
+    _schedulePush();
+  }
+
+  void _schedulePush() {
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), _push);
   }
@@ -78,6 +93,7 @@ class PrayerWidgetService extends ChangeNotifier {
   @override
   void dispose() {
     _debounce?.cancel();
+    _notifications?.removeListener(_schedulePush);
     super.dispose();
   }
 
@@ -123,10 +139,11 @@ class PrayerWidgetService extends ChangeNotifier {
         'name_maghrib': s.prayerName(Prayer.maghrib),
         'name_isha': s.prayerName(Prayer.isha),
         'next_label': s.next,
-        // The compact widget counts up from an adhan for this long before it
-        // turns to the next one, as the app's header does.
+        // The compact widget counts up from each adhan for this long before
+        // it turns to the next one, as the app's header does.
         'since_label': s.sinceAdhan,
-        'since_minutes': PrayerService.iqamaWindow.inMinutes.toString(),
+        for (final p in NotificationService.notifiablePrayers)
+          'since_minutes_${p.name}': _iqamahWindow(p).inMinutes.toString(),
         'remaining': s.remaining,
         // Localized 12-hour markers (index 0 = AM, 1 = PM).
         'am': s.ampm(9),
@@ -141,6 +158,10 @@ class PrayerWidgetService extends ChangeNotifier {
         'hijri_suffix': s.hijriSuffix,
         'hijri_offset': _hijriOffset.toString(),
       };
+
+  Duration _iqamahWindow(Prayer prayer) =>
+      _notifications?.iqamahWindow(prayer) ??
+      NotificationService.defaultIqamahWindow;
 
   /// The active scheme, in both brightnesses, plus the script settings.
   ///

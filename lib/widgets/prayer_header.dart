@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../l10n/app_strings.dart';
+import '../services/notification_service.dart';
 import '../services/prayer_service.dart';
 import '../services/sunnah_calendar_service.dart';
 import '../theme/app_theme.dart';
@@ -94,6 +95,9 @@ class _PrayerHeaderState extends State<PrayerHeader> {
     final service = context.watch<PrayerService>();
     final current = service.currentPrayer(_now);
     final next = service.nextPrayer(_now);
+    final window = current == null
+        ? Duration.zero
+        : context.watch<NotificationService>().iqamahWindow(current.prayer);
     final s = AppStrings.of(context);
     final theme = Theme.of(context);
     final ms = ManuscriptTheme.of(context);
@@ -135,7 +139,7 @@ class _PrayerHeaderState extends State<PrayerHeader> {
                   ),
                   if (next != null) ...[
                     const SizedBox(height: 14),
-                    _nextBlock(current, next, s, theme, ms),
+                    _nextBlock(current, next, window, s, theme, ms),
                   ],
                 ],
               ),
@@ -221,18 +225,18 @@ class _PrayerHeaderState extends State<PrayerHeader> {
   /// The wait until the next adhan, set as a ruled entry: label, name, time,
   /// and a rule that fills as the current interval elapses.
   ///
-  /// For the first [PrayerService.iqamaWindow] after an adhan the entry turns
-  /// to the prayer just called instead, counting the minutes since it so the
-  /// iqama can be judged, and the rule fills across that window.
-  Widget _nextBlock(PrayerTiming? current, PrayerTiming next, AppStrings s,
-      ThemeData theme, ManuscriptTheme ms) {
+  /// For the first [window] after an adhan — that prayer's iqāmah delay (see
+  /// [NotificationService.iqamahWindow]) — the entry turns to the prayer just
+  /// called instead, counting the minutes since it so the iqama can be judged,
+  /// and the rule fills across that window.
+  Widget _nextBlock(PrayerTiming? current, PrayerTiming next, Duration window,
+      AppStrings s, ThemeData theme, ManuscriptTheme ms) {
     final elapsed =
         current == null ? Duration.zero : _now.difference(current.time);
-    final sinceAdhan =
-        current != null && elapsed < PrayerService.iqamaWindow;
+    final sinceAdhan = current != null && elapsed < window;
 
     final total = sinceAdhan
-        ? PrayerService.iqamaWindow
+        ? window
         : current == null
             ? Duration.zero
             : next.time.difference(current.time);

@@ -21,8 +21,8 @@ import java.util.Locale
 /**
  * The compact widget: the next prayer's name + time and a live countdown.
  *
- * For the first few minutes after an adhan (the app's iqama window) it turns
- * to the prayer just called and counts up from it instead, so the wait for the
+ * For the first few minutes after an adhan (that prayer's iqāmah delay, or
+ * twenty minutes) it turns to the prayer just called and counts up from it, so the wait for the
  * iqama can be judged from the home screen, as it can in the app's header.
  *
  * The count uses a [android.widget.Chronometer], which ticks on its own inside
@@ -78,7 +78,8 @@ class PrayerWidgetSmallProvider : AppWidgetProvider() {
     private fun scheduleTurn(context: Context, data: PrayerWidgetData) {
         val next = data.nextTime ?: return
         val now = System.currentTimeMillis()
-        val windowEnd = data.lastTime?.time?.plus(PrayerWidget.sinceWindowMillis(context))
+        val windowEnd = data.lastTime?.time
+            ?.plus(PrayerWidget.sinceWindowMillis(context, data.lastIndex))
         val at = if (windowEnd != null && windowEnd > now) windowEnd else next.time
         val am = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager ?: return
         val pi = turnIntent(context, PendingIntent.FLAG_UPDATE_CURRENT) ?: return
@@ -142,7 +143,7 @@ class PrayerWidgetSmallProvider : AppWidgetProvider() {
         // Just after an adhan, the prayer just called and the time since it;
         // otherwise the next prayer and the time until it.
         val now = System.currentTimeMillis()
-        val window = PrayerWidget.sinceWindowMillis(context)
+        val window = PrayerWidget.sinceWindowMillis(context, data.lastIndex)
         val since = data.lastTime?.takeIf { now - it.time in 0 until window }
         val shownIndex = if (since != null) data.lastIndex else data.nextIndex
         val shownTime = since ?: next

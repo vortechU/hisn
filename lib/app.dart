@@ -197,7 +197,8 @@ class _DuaAppState extends State<DuaApp> {
                   widget) =>
               (widget ?? PrayerWidgetService(repository))
                 ..bind(prayer, locale, calendar, theme, display, progress,
-                    context.read<TasbihController>()),
+                    context.read<TasbihController>(),
+                    context.read<NotificationService>()),
         ),
       ],
       // DisplaySettings joins the theme because the Latin faces carry no
