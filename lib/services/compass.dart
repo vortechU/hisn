@@ -142,10 +142,11 @@ class CompassTrust {
 /// known to be bad — can be tested without a device or a sensor.
 @immutable
 class QiblaFix {
-  const QiblaFix({
+  const QiblaFix._({
     required this.heading,
     required this.offset,
     required this.corrected,
+    required this.aligned,
     this.fault,
   });
 
@@ -167,31 +168,56 @@ class QiblaFix {
   /// narrow enough that a row of people using it still comes out straight.
   static const double alignedWithin = 5;
 
+  /// How far someone already facing the Qibla may drift before being told
+  /// they have left it. A little wider than [alignedWithin], so a hand resting
+  /// right on the edge holds one answer instead of flickering between two.
+  static const double staysAlignedWithin = 6.5;
+
   /// Whether the user is facing the Qibla. Never true on a faulty reading:
   /// that is a claim about the world, not about the arithmetic.
-  bool get aligned => fault == null && offset.abs() < alignedWithin;
+  final bool aligned;
+
+  /// The turn as it is spoken: whole degrees, positive to the right.
+  int get turn => offset.round();
 
   /// Combine a [reading] with the [qibla] bearing and the local [field].
   ///
   /// [magneticHeading] is the *smoothed* heading rather than [reading]'s own,
   /// so the wobble is already out before any of this is decided.
+  ///
+  /// [wasAligned] is whether the fix before this one was [aligned]; it decides
+  /// which of the two thresholds applies.
   factory QiblaFix.of({
     required double magneticHeading,
     required double qibla,
     required CompassReading reading,
     GeomagneticField? field,
+    bool wasAligned = false,
   }) {
     final heading =
         normalizeDegrees(magneticHeading + (field?.declination ?? 0));
-    return QiblaFix(
+    final offset = signedDelta(heading, qibla);
+    final fault = CompassTrust.primary(
+      CompassTrust.faults(reading, expectedField: field?.strength),
+    );
+    final within = wasAligned ? staysAlignedWithin : alignedWithin;
+    return QiblaFix._(
       heading: heading,
-      offset: signedDelta(heading, qibla),
+      offset: offset,
       corrected: field != null,
-      fault: CompassTrust.primary(
-        CompassTrust.faults(reading, expectedField: field?.strength),
-      ),
+      aligned: fault == null && offset.abs() < within,
+      fault: fault,
     );
   }
+
+  /// Whether this fix would put the same words and colours on screen as
+  /// [other]. The needle moves every frame; what is said about it changes a
+  /// few times a second at most, and only then is it worth rebuilding.
+  bool readsAs(QiblaFix other) =>
+      fault == other.fault &&
+      aligned == other.aligned &&
+      corrected == other.corrected &&
+      turn == other.turn;
 }
 
 /// The device compass, as a stream of readings.

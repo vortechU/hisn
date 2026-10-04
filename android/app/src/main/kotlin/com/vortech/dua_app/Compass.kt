@@ -85,8 +85,14 @@ class Compass(private val activity: Activity) : EventChannel.StreamHandler, Sens
         }
         // The magnetometer is registered even when the fused rotation vector is
         // driving the heading: it is the only honest source of both the field
-        // strength and the calibration state.
-        sensors.registerListener(this, magnetometer, RATE_MICROS)
+        // strength and the calibration state. Neither of those needs the
+        // heading's rate, so while the rotation vector steers, the magnetometer
+        // is asked for a few readings a second rather than fifty.
+        sensors.registerListener(
+            this,
+            magnetometer,
+            if (rotationSensor != null) FIELD_RATE_MICROS else RATE_MICROS,
+        )
         if (rotationSensor != null) {
             sensors.registerListener(this, rotationSensor, RATE_MICROS)
         } else if (accelerometer != null) {
@@ -118,6 +124,10 @@ class Compass(private val activity: Activity) : EventChannel.StreamHandler, Sens
             Sensor.TYPE_MAGNETIC_FIELD -> {
                 System.arraycopy(event.values, 0, magnetic, 0, 3)
                 hasMagnetic = true
+                // With the rotation vector steering, a magnetometer event
+                // brings no new heading — only the last one again, sent in the
+                // slot the next real one would have had.
+                if (rotationSensor != null) return
             }
             Sensor.TYPE_ACCELEROMETER -> {
                 System.arraycopy(event.values, 0, gravity, 0, 3)
@@ -224,8 +234,18 @@ class Compass(private val activity: Activity) : EventChannel.StreamHandler, Sens
     companion object {
         const val CHANNEL = "hisn/compass"
 
-        /** Delivery hint to the sensor, and the ceiling we forward at. */
+        /** Delivery hint to the sensors that steer the heading: fifty a second. */
         private const val RATE_MICROS = 20 * 1000
-        private const val RATE_MS = 50L
+
+        /**
+         * The shortest gap between readings sent on. Flutter moves the needle
+         * at the screen's own rate between readings, so these need only come
+         * often enough to keep it from lagging — every one the sensor gives at
+         * the rate above, and no more if it gives far more, as some do.
+         */
+        private const val RATE_MS = 16L
+
+        /** The magnetometer's rate when it reports only field strength. */
+        private const val FIELD_RATE_MICROS = 200 * 1000
     }
 }

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:adhan/adhan.dart';
 import 'package:dua_app/l10n/locale_controller.dart';
 import 'package:dua_app/screens/qibla_screen.dart';
@@ -65,21 +67,133 @@ void main() {
       }
     });
 
-    test('smoothing crosses the seam without going the long way', () {
-      // 355° heading toward 5°: the needle must pass through 0, not sweep back
-      // through 180.
-      final next = smoothAngle(355, 5, 0.5);
-      expect(next, closeTo(0, 1e-9));
+  });
+
+  group('the needle', () {
+    /// Run [needle] for [seconds] at [fps], as the screen would.
+    void run(NeedleSpring needle, double seconds, {double fps = 60}) {
+      final frames = (seconds * fps).round();
+      for (var i = 0; i < frames; i++) {
+        needle.advance(1 / fps);
+      }
+    }
+
+    test('starts where the first reading says, not from north', () {
+      final needle = NeedleSpring()..aim(-120);
+      expect(needle.angle, closeTo(240, 1e-9));
+      expect(needle.atRest, isTrue);
     });
 
-    test('smoothing converges on the target and stays in range', () {
-      var heading = 350.0;
-      for (var i = 0; i < 200; i++) {
-        heading = smoothAngle(heading, 40, 0.18);
-        expect(heading, greaterThanOrEqualTo(0));
-        expect(heading, lessThan(360));
+    test('travels to a new heading over time, rather than jumping', () {
+      final needle = NeedleSpring()
+        ..aim(10)
+        ..aim(100);
+      expect(needle.angle, 10, reason: 'aiming alone moves nothing');
+      needle.advance(1 / 60);
+      expect(needle.angle, greaterThan(10));
+      expect(needle.angle, lessThan(20), reason: 'one frame is not the trip');
+      run(needle, 1);
+      expect(needle.angle, 100);
+      expect(needle.atRest, isTrue);
+    });
+
+    test('settles without swinging past and back', () {
+      final needle = NeedleSpring()
+        ..aim(0)
+        ..aim(90);
+      var previous = 0.0;
+      for (var i = 0; i < 120; i++) {
+        needle.advance(1 / 60);
+        expect(needle.angle, greaterThanOrEqualTo(previous));
+        expect(needle.angle, lessThanOrEqualTo(90));
+        previous = needle.angle!;
       }
-      expect(heading, closeTo(40, 0.01));
+    });
+
+    test('does not overshoot when a steady turn stops', () {
+      // The phone turning at 90°/s for a second, then held still. The needle
+      // is carrying speed when the turn ends; it must not carry it past.
+      final needle = NeedleSpring()..aim(0);
+      for (var i = 1; i <= 60; i++) {
+        needle
+          ..aim(i * 1.5)
+          ..advance(1 / 60);
+      }
+      for (var i = 0; i < 120; i++) {
+        needle.advance(1 / 60);
+        expect(needle.angle, lessThanOrEqualTo(90 + 1e-9));
+      }
+      expect(needle.angle, 90);
+    });
+
+    test('lands in the same place whatever the frame rate', () {
+      // A 120 Hz screen, a 60 Hz one, and one that stalled for the whole
+      // quarter second: the needle should be in the same place on all three.
+      double after(double fps) {
+        final needle = NeedleSpring()
+          ..aim(0)
+          ..aim(80);
+        run(needle, 0.25, fps: fps);
+        return needle.angle!;
+      }
+
+      final stalled = NeedleSpring()
+        ..aim(0)
+        ..aim(80)
+        ..advance(0.25);
+      expect(after(120), closeTo(after(60), 1e-9));
+      expect(stalled.angle, closeTo(after(60), 1e-9));
+      // And it is still on its way, not there already.
+      expect(after(60), inExclusiveRange(10, 80));
+    });
+
+    test('crosses the seam the short way', () {
+      // 355° toward 5°: through north, never back round through 180.
+      final needle = NeedleSpring()
+        ..aim(355)
+        ..aim(5);
+      for (var i = 0; i < 60; i++) {
+        needle.advance(1 / 60);
+        expect(signedDelta(355, normalizeDegrees(needle.angle!)).abs(),
+            lessThanOrEqualTo(10 + 1e-9));
+      }
+      expect(normalizeDegrees(needle.angle!), closeTo(5, 1e-9));
+    });
+
+    test('follows the way the phone turned, readings at a time', () {
+      // A full clockwise turn, reported a reading at a time. The target winds
+      // on past 360 instead of snapping back, so the needle turns with it.
+      final needle = NeedleSpring()..aim(0);
+      for (var bearing = 10; bearing <= 370; bearing += 10) {
+        needle.aim(normalizeDegrees(bearing.toDouble()));
+      }
+      expect(needle.target, closeTo(370, 1e-9));
+    });
+
+    test('holds steady through jitter', () {
+      // A phone lying still, with the reading flickering ±2° about 100° at the
+      // sensor's 50 Hz. The old per-reading smoothing let a tenth of that
+      // through; the needle should show next to none of it.
+      final needle = NeedleSpring()..aim(100);
+      var widest = 0.0;
+      for (var reading = 0; reading < 150; reading++) {
+        needle.aim(reading.isEven ? 102 : 98);
+        // Each reading's 20 ms in frames of a 60 Hz screen, near enough.
+        for (var f = 0; f < (reading % 3 == 2 ? 2 : 1); f++) {
+          needle.advance(1 / 60);
+        }
+        if (reading > 50) {
+          widest = math.max(widest, (needle.angle! - 100).abs());
+        }
+      }
+      expect(widest, lessThan(0.05));
+    });
+
+    test('does not move for a change too small to see', () {
+      final needle = NeedleSpring()
+        ..aim(42)
+        ..aim(42.01);
+      expect(needle.atRest, isTrue);
     });
   });
 
@@ -273,6 +387,56 @@ void main() {
       expect(fix.aligned, isTrue);
     });
 
+    test('once facing it, a little drift does not call it off', () {
+      // 6° off: not close enough to arrive at, but close enough to stay at.
+      QiblaFix at(double offset, {required bool wasAligned}) => QiblaFix.of(
+            magneticHeading: 100 - offset,
+            qibla: 100,
+            reading: good(),
+            wasAligned: wasAligned,
+          );
+
+      expect(at(6, wasAligned: false).aligned, isFalse);
+      expect(at(6, wasAligned: true).aligned, isTrue);
+      expect(at(-6, wasAligned: true).aligned, isTrue);
+      expect(at(QiblaFix.staysAlignedWithin + 0.5, wasAligned: true).aligned,
+          isFalse);
+    });
+
+    test('a fault still overrides having been aligned', () {
+      final fix = QiblaFix.of(
+        magneticHeading: 100,
+        qibla: 100,
+        reading: good(accuracy: null),
+        wasAligned: true,
+      );
+      expect(fix.aligned, isFalse);
+    });
+
+    test('says the turn in whole degrees, signed', () {
+      QiblaFix facing(double heading) => QiblaFix.of(
+            magneticHeading: heading,
+            qibla: 160.7,
+            reading: good(),
+          );
+      expect(facing(4.9).turn, 156);
+      expect(facing(316.5).turn, -156);
+    });
+
+    test('reads the same only if it would say the same', () {
+      QiblaFix facing(double heading, {double? accuracy = 15}) => QiblaFix.of(
+            magneticHeading: heading,
+            qibla: 160.7,
+            reading: good(accuracy: accuracy),
+          );
+      // A tenth of a degree is the same words on screen.
+      expect(facing(10).readsAs(facing(10.1)), isTrue);
+      // A whole one is not.
+      expect(facing(10).readsAs(facing(11)), isFalse);
+      // Nor is the same heading with a fault.
+      expect(facing(10).readsAs(facing(10, accuracy: null)), isFalse);
+    });
+
     test('turns the shorter way across the seam', () {
       // Pointing at 350° true with the Qibla at 10°: a 20° turn right, not a
       // 340° turn left.
@@ -317,22 +481,8 @@ void main() {
     });
 
     /// Push one reading down the event channel, as the platform would.
-    Future<void> send(WidgetTester tester, CompassReading reading) async {
-      await messenger.handlePlatformMessage(
-        compassChannel,
-        const StandardMethodCodec().encodeSuccessEnvelope({
-          'heading': reading.heading,
-          'pitch': reading.pitch,
-          'roll': reading.roll,
-          'accuracy': reading.accuracy ?? -1.0,
-          'field': reading.fieldStrength ?? -1.0,
-        }),
-        (_) {},
-      );
-      // The smoothing closes only part of the gap per reading, so a heading has
-      // to be held for a moment before the needle has actually arrived.
-      for (var i = 0; i < 80; i++) {
-        await messenger.handlePlatformMessage(
+    Future<void> push(CompassReading reading) =>
+        messenger.handlePlatformMessage(
           compassChannel,
           const StandardMethodCodec().encodeSuccessEnvelope({
             'heading': reading.heading,
@@ -343,11 +493,20 @@ void main() {
           }),
           (_) {},
         );
-      }
-      await tester.pump();
+
+    /// Push a reading and let the needle come to rest on it. Settling also
+    /// proves the needle *does* come to rest — that a still phone stops
+    /// asking for frames.
+    Future<void> send(WidgetTester tester, CompassReading reading) async {
+      await push(reading);
+      await tester.pumpAndSettle();
     }
 
-    Future<void> pumpCompass(WidgetTester tester) async {
+    /// [around] puts the compass somewhere it might be hidden.
+    Future<void> pumpCompass(
+      WidgetTester tester, {
+      Widget Function(Widget compass)? around,
+    }) async {
       SharedPreferences.setMockInitialValues({
         // A fixed manual location, so nothing reaches for GPS mid-test.
         'prayer_location_mode': LocationMode.manual.name,
@@ -365,11 +524,102 @@ void main() {
         ],
         child: MaterialApp(
           theme: AppTheme.light(AppPalettes.emerald, arabicUi: false),
-          home: const Scaffold(body: SingleChildScrollView(child: QiblaCompass())),
+          home: Scaffold(
+            body: (around ?? (compass) => compass)(
+              const SingleChildScrollView(child: QiblaCompass()),
+            ),
+          ),
         ),
       ));
       await tester.pump();
     }
+
+    testWidgets('glides to a new heading instead of jumping to it',
+        (tester) async {
+      await pumpCompass(tester);
+      await send(tester, good(heading: 0));
+      expect(find.text('Turn right 156°'), findsOneWidget);
+
+      // A quarter turn to the right. One frame on, the needle is under way but
+      // nowhere near there; given time, it arrives.
+      await push(good(heading: 90));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 16));
+      expect(find.text('Turn right 156°'), findsNothing);
+      expect(find.text('Turn right 66°'), findsNothing);
+
+      await tester.pumpAndSettle();
+      expect(find.text('Turn right 66°'), findsOneWidget);
+    });
+
+    testWidgets('lets go of the sensors while its tab is out of sight',
+        (tester) async {
+      final calls = <String>[];
+      messenger.setMockMethodCallHandler(
+        const MethodChannel(compassChannel),
+        (call) async {
+          calls.add(call.method);
+          return null;
+        },
+      );
+      // The compass lives in an IndexedStack, built at launch behind whichever
+      // tab is open.
+      final tab = ValueNotifier<int>(1);
+      addTearDown(tab.dispose);
+      await pumpCompass(
+        tester,
+        around: (compass) => ValueListenableBuilder<int>(
+          valueListenable: tab,
+          builder: (context, index, _) => IndexedStack(
+            index: index,
+            children: [compass, const SizedBox()],
+          ),
+        ),
+      );
+
+      expect(calls, isEmpty, reason: 'built, but nobody can see it');
+      // Nor is anything behind the other tab keeping the app drawing.
+      expect(tester.binding.hasScheduledFrame, isFalse);
+
+      tab.value = 0;
+      await tester.pump();
+      expect(calls, ['listen']);
+
+      tab.value = 1;
+      await tester.pump();
+      expect(calls, ['listen', 'cancel']);
+    });
+
+    testWidgets('and while another page covers it', (tester) async {
+      final calls = <String>[];
+      messenger.setMockMethodCallHandler(
+        const MethodChannel(compassChannel),
+        (call) async {
+          calls.add(call.method);
+          return null;
+        },
+      );
+      final covered = ValueNotifier<bool>(false);
+      addTearDown(covered.dispose);
+      // What the navigator does to a route under an opaque one.
+      await pumpCompass(
+        tester,
+        around: (compass) => ValueListenableBuilder<bool>(
+          valueListenable: covered,
+          builder: (context, hidden, _) =>
+              TickerMode(enabled: !hidden, child: compass),
+        ),
+      );
+      expect(calls, ['listen']);
+
+      covered.value = true;
+      await tester.pump();
+      expect(calls, ['listen', 'cancel']);
+
+      covered.value = false;
+      await tester.pump();
+      expect(calls, ['listen', 'cancel', 'listen']);
+    });
 
     testWidgets('turns the declination into what it tells you to do',
         (tester) async {
