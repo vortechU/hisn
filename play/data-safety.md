@@ -2,6 +2,11 @@
 
 **Play Console → Policy → App content → Data safety.**
 
+[`data-safety.csv`](data-safety.csv) holds these answers in Play's own export
+format: on the Data safety page choose **Import from CSV** and pick it, rather
+than clicking through the form. If Play has changed the form since, export a
+fresh CSV from the console and carry the answers below across to it.
+
 The answers below are what the code actually does, checked against the app's
 dependencies and its merged Android manifest. They must stay consistent with
 <https://vortechu.github.io/hisn/privacy.html> — Play compares the two, and a
