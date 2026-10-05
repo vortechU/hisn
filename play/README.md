@@ -70,13 +70,10 @@ paid. See `TERMS.md` §6.
 
 ### 4. Exact-alarm permissions
 
-The app declares both `SCHEDULE_EXACT_ALARM` and `USE_EXACT_ALARM`. The second
-is a *restricted* permission Play limits to apps whose core purpose is alarms,
-timers, or calendar/reminder scheduling, and it needs a declaration. Prayer
-reminders are a defensible use — they are user-set, time-critical reminders and
-the app schedules nothing else — but this is the likeliest place for a
-reviewer to push back. [app-content.md](app-content.md) has the wording to
-submit and the fallback if it is refused.
+The app declares `SCHEDULE_EXACT_ALARM` only, which needs no declaration.
+`USE_EXACT_ALARM` was dropped: Play limits it to apps whose core function is an
+alarm clock or calendar, and Hisn is neither. See
+[app-content.md](app-content.md).
 
 ### 5. Foreground service type declaration
 

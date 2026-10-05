@@ -178,8 +178,8 @@ Practicalities:
 4. Watch **Quality → Android vitals** for a couple of days, then go to 100%.
 
 Review for a first release commonly takes several days, occasionally longer for
-an app that declares a restricted permission — which this one does
-(`USE_EXACT_ALARM`, see [app-content.md](app-content.md)).
+an app that declares a sensitive permission such as a foreground service (see
+[app-content.md](app-content.md)).
 
 ---
 

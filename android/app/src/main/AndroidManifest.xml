@@ -6,8 +6,11 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- Prayer-time reminders (scheduled local notifications). -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- Not USE_EXACT_ALARM: Play restricts it to apps whose core function is
+         an alarm clock or calendar. Users grant this one in system settings
+         (NotificationService asks), and without it alarms fall back to
+         inexact. -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
-    <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
     <!-- Play the full adhan reliably at prayer time via a foreground service. -->

@@ -103,45 +103,21 @@ tracking, and the app records nothing about the user's body.
 # Sensitive permission declarations
 
 These appear either on the App content page or as a blocking form when you
-upload a bundle that declares them. All four apply to Hisn.
+upload a bundle that declares them.
 
-## 1. Exact alarms — `USE_EXACT_ALARM` + `SCHEDULE_EXACT_ALARM`
+## 1. Exact alarms — `SCHEDULE_EXACT_ALARM` only
 
-**The riskiest declaration in this submission.** `USE_EXACT_ALARM` is a
-restricted permission: Play grants it to apps whose *core* function is alarms,
-timers, or calendar/reminder scheduling. A reviewer who reads "prayer times
-app" and stops there may refuse it.
+The app does **not** declare `USE_EXACT_ALARM`. Play's form for it asks one
+question — is the app's core functionality *Alarm clock* or *Calendar*? — and
+Hisn is neither; claiming one to keep the permission risks rejection or
+suspension. It was removed in 1.15.1+27.
 
-Declaration text to paste:
-
-```
-Hisn's core function is notifying the user at the five daily Islamic prayer
-times, which are astronomical events computed for the user's location and
-change every day. A reminder that arrives late is worthless: the user is being
-told that a time-bounded religious obligation has begun, and a few minutes'
-drift means they miss it or perform it out of its window.
-
-The app uses exact alarms only to (a) post the user's opt-in prayer reminder
-at the calculated time, optionally offset by a user-configured iqamah delay,
-and (b) start playback of the adhan at the calculated time. It schedules
-nothing else. Reminders are off by default and are enabled by the user per
-prayer. Inexact alarms and WorkManager were evaluated and are unsuitable: both
-are batched by the system and routinely fire many minutes late, which for this
-use case is the same as not firing.
-```
-
-**Verify before you rely on it:** open Play Console's *Policy → App content*
-page and check whether an "Alarms & reminders" or "Exact alarm permission"
-declaration is listed for your app. If none appears, the declaration is made
-at upload time against the bundle — the wording above serves either way.
-
-**If it is refused:** drop `USE_EXACT_ALARM` from
-`android/app/src/main/AndroidManifest.xml` and keep `SCHEDULE_EXACT_ALARM`
-alone. The app already handles this path — `NotificationService` calls
-`canScheduleExactNotifications()` and falls back, and
-`requestExactAlarmsPermission()` sends the user to the system setting. The cost
-is one extra tap during onboarding for users on Android 13+, not a broken
-feature.
+`SCHEDULE_EXACT_ALARM` needs no declaration. On Android 14+ it is off by
+default for new installs, so the user grants it under *Alarms & reminders*:
+`NotificationService` calls `requestExactAlarmsPermission()` when reminders are
+turned on, checks `canScheduleExactNotifications()` before scheduling, and
+falls back to inexact alarms if it is refused (the adhan may then be a few
+minutes late in Doze).
 
 ## 2. Foreground service — `FOREGROUND_SERVICE_MEDIA_PLAYBACK`
 
@@ -211,8 +187,7 @@ grep -o 'android:name="android.permission.[A-Z_]*"' build/app/intermediates/merg
 | `INTERNET` | Platform geocoding of coordinates → place name | Data safety |
 | `ACCESS_NETWORK_STATE` | Pulled in by a dependency; no direct use | None |
 | `POST_NOTIFICATIONS` | Prayer reminders (opt-in) | None |
-| `SCHEDULE_EXACT_ALARM` | Firing a reminder at the calculated time | §1 |
-| `USE_EXACT_ALARM` | Same, without a per-user grant | §1 — **restricted** |
+| `SCHEDULE_EXACT_ALARM` | Firing a reminder at the calculated time | None (§1) |
 | `RECEIVE_BOOT_COMPLETED` | Re-arming alarms after a reboot (AlarmManager drops them) | None |
 | `FOREGROUND_SERVICE` | The adhan player | §2 |
 | `FOREGROUND_SERVICE_MEDIA_PLAYBACK` | Same | §2 |
