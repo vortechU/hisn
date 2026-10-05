@@ -450,6 +450,10 @@ class AppStrings {
   // ---- clock & date ----
   String ampm(int hour24) => _t.ampm[hour24 >= 12 ? 1 : 0];
 
+  /// The short weekday name alone ("Mon", "الإثنين"), without the
+  /// punctuation [dateLabel] joins it to the date with.
+  String weekdayShort(DateTime t) => _t.weekdaysShort[t.weekday - 1];
+
   String dateLabel(DateTime t) => _t.dateFormat(
         weekday: _t.weekdaysShort[t.weekday - 1],
         day: t.day,

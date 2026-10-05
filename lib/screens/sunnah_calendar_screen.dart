@@ -198,7 +198,7 @@ class _DayRow extends StatelessWidget {
               children: [
                 Numeral('${day.date.day}', size: 20, serif: false),
                 Text(
-                  s.dateLabel(day.date).split(' ').first,
+                  s.weekdayShort(day.date),
                   style: theme.textTheme.labelSmall,
                 ),
               ],
