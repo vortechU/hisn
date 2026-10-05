@@ -35,7 +35,10 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.vortech.dua_app"
+        // The Play identity, fixed for the life of the listing. Deliberately
+        // not the namespace: that is only the Kotlin/R package, and renaming
+        // it would move every source file for no user-visible change.
+        applicationId = "com.vortech.hisn"
         // flutter_local_notifications + desugaring requires minSdk 21+.
         minSdk = maxOf(flutter.minSdkVersion, 21)
         targetSdk = flutter.targetSdkVersion
