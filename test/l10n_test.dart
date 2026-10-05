@@ -2,6 +2,7 @@ import 'package:adhan/adhan.dart';
 import 'package:dua_app/l10n/app_strings.dart';
 import 'package:dua_app/models/sunnah_day.dart';
 import 'package:dua_app/services/backup_service.dart';
+import 'package:dua_app/services/prayer_settings.dart';
 import 'package:dua_app/services/share_io.dart';
 import 'package:dua_app/l10n/locale_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -202,6 +203,18 @@ void main() {
       });
     });
   }
+
+  test('every built-in city and region has an Arabic name', () {
+    // A city added to presetCities without one would sit in Latin letters
+    // inside the Arabic interface: the picker, the prayer header, the widget.
+    final ar = AppStrings(AppLang.ar);
+    final latin = RegExp('[A-Za-z]');
+    for (final city in presetCities) {
+      expect(ar.place(city.name), isNot(matches(latin)), reason: city.name);
+      expect(ar.region(city.region), isNot(matches(latin)),
+          reason: city.region);
+    }
+  });
 
   test('languages differ where expected', () {
     expect(AppStrings(AppLang.en).navQibla, 'Qibla');

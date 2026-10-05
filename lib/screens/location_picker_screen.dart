@@ -41,8 +41,8 @@ class LocationPickerScreen extends StatelessWidget {
             final selected = !usingGps && service.locationLabel == city.name;
             return _Choice(
               icon: Icons.location_city_outlined,
-              title: city.name,
-              subtitle: city.region,
+              title: s.place(city.name),
+              subtitle: s.region(city.region),
               selected: selected,
               onTap: () async {
                 await context.read<PrayerService>().useManualCity(city);

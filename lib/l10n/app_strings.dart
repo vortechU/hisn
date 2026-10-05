@@ -387,8 +387,61 @@ class AppStrings {
       case 'Makkah':
         return _t.placeMakkah;
     }
+    // The built-in cities are stored by their English name; in Arabic each
+    // has its own. A GPS label is already in the device's language.
+    if (ar) return _arabicPlaces[label] ?? label;
     return label;
   }
+
+  /// [PresetCity.region] in the interface language.
+  String region(String region) =>
+      ar ? (_arabicPlaces[region] ?? region) : region;
+
+  // Keyed by the English names in `presetCities` (prayer_settings.dart).
+  static const _arabicPlaces = <String, String>{
+    'Madinah': 'المدينة المنورة',
+    'Riyadh': 'الرياض',
+    'Doha': 'الدوحة',
+    'Dubai': 'دبي',
+    'Kuwait City': 'مدينة الكويت',
+    'Cairo': 'القاهرة',
+    'Istanbul': 'إسطنبول',
+    'Casablanca': 'الدار البيضاء',
+    'Lagos': 'لاغوس',
+    'Karachi': 'كراتشي',
+    'Lahore': 'لاهور',
+    'Delhi': 'دلهي',
+    'Dhaka': 'دكا',
+    'Jakarta': 'جاكرتا',
+    'Kuala Lumpur': 'كوالالمبور',
+    'Singapore': 'سنغافورة',
+    'London': 'لندن',
+    'Paris': 'باريس',
+    'New York': 'نيويورك',
+    'Chicago': 'شيكاغو',
+    'Los Angeles': 'لوس أنجلوس',
+    'Toronto': 'تورنتو',
+    'Sydney': 'سيدني',
+    // Regions.
+    'Saudi Arabia': 'السعودية',
+    'Qatar': 'قطر',
+    'UAE': 'الإمارات',
+    'Kuwait': 'الكويت',
+    'Egypt': 'مصر',
+    'Türkiye': 'تركيا',
+    'Morocco': 'المغرب',
+    'Nigeria': 'نيجيريا',
+    'Pakistan': 'باكستان',
+    'India': 'الهند',
+    'Bangladesh': 'بنغلاديش',
+    'Indonesia': 'إندونيسيا',
+    'Malaysia': 'ماليزيا',
+    'United Kingdom': 'المملكة المتحدة',
+    'France': 'فرنسا',
+    'USA': 'الولايات المتحدة',
+    'Canada': 'كندا',
+    'Australia': 'أستراليا',
+  };
 
   // ---- onboarding (first-run tour) ----
   String get onboardSkip => _t.onboardSkip;
