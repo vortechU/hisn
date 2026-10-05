@@ -229,7 +229,8 @@ class _QiblaCompassState extends State<QiblaCompass>
     if (!prayer.hasKnownLocation) {
       return _NeedsLocation(
         locating: prayer.isLocating,
-        onRetry: () => context.read<PrayerService>().refreshLocation(),
+        onRetry: () =>
+            context.read<PrayerService>().refreshLocation(prompt: true),
       );
     }
 

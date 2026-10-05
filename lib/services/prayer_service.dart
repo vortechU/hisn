@@ -26,7 +26,10 @@ class PrayerService extends ChangeNotifier {
     _load();
     if (_locationMode == LocationMode.gps) {
       _compute();
-      _tryDeviceLocation();
+      // Never prompts: launch is not a moment the user chose, and Play wants
+      // the in-app explanation (the onboarding permissions page) to come
+      // before the system dialog. A grant already given is used silently.
+      _tryDeviceLocation(prompt: false);
     } else {
       _compute();
     }
@@ -131,9 +134,13 @@ class PrayerService extends ChangeNotifier {
   /// Re-attempt a device fix. The startup attempt runs only once, so screens
   /// that depend on real coordinates (the Qibla compass) call this when they
   /// open. No-op in manual mode or while a lookup is already in flight.
-  Future<void> refreshLocation() async {
+  ///
+  /// [prompt] raises the system permission dialog if it has not been
+  /// granted; pass it only from a control the user tapped for this purpose,
+  /// never from a screen merely coming into view.
+  Future<void> refreshLocation({bool prompt = false}) async {
     if (_locationMode != LocationMode.gps || _locating) return;
-    await _tryDeviceLocation();
+    await _tryDeviceLocation(prompt: prompt);
   }
 
   // ---- settings mutations ----
@@ -258,7 +265,7 @@ class PrayerService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _tryDeviceLocation() async {
+  Future<void> _tryDeviceLocation({bool prompt = true}) async {
     if (_locationMode != LocationMode.gps) return;
     _locating = true;
     notifyListeners();
@@ -266,7 +273,7 @@ class PrayerService extends ChangeNotifier {
       if (!await Geolocator.isLocationServiceEnabled()) return;
 
       var permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
+      if (prompt && permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
       }
       if (permission == LocationPermission.denied ||
