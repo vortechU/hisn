@@ -148,6 +148,7 @@ class NotificationsSettingsScreen extends StatelessWidget {
                 context.read<AdhanAudioService>().setEnabled(value),
           ),
           if (adhan.enabled) ...[
+            const _ExactAlarmsWarning(),
             if (!notifications.masterEnabled)
               Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(72, 0, 16, 8),
@@ -220,6 +221,70 @@ class NotificationsSettingsScreen extends StatelessWidget {
               ),
             ),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Warns, under the adhan switch, when the OS won't let the app set exact
+/// alarms — without them the adhan can't start at prayer time — and links to
+/// the system setting. Checks again whenever the user comes back to the app,
+/// since that setting lives outside it.
+class _ExactAlarmsWarning extends StatefulWidget {
+  const _ExactAlarmsWarning();
+
+  @override
+  State<_ExactAlarmsWarning> createState() => _ExactAlarmsWarningState();
+}
+
+class _ExactAlarmsWarningState extends State<_ExactAlarmsWarning>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    context.read<NotificationService>().checkExactAlarms();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && mounted) {
+      context.read<NotificationService>().checkExactAlarms();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final allowed = context
+        .select<NotificationService, bool>((n) => n.exactAlarmsAllowed);
+    if (allowed) return const SizedBox.shrink();
+    final s = AppStrings.of(context);
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(72, 0, 16, 8),
+      child: Row(
+        children: [
+          Icon(Icons.warning_amber_rounded,
+              size: 18, color: theme.colorScheme.error),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(s.adhanExactAlarmsOff,
+                style: theme.textTheme.bodySmall
+                    ?.copyWith(color: theme.colorScheme.error)),
+          ),
+          TextButton(
+            onPressed: () =>
+                context.read<NotificationService>().requestExactAlarms(),
+            child: Text(s.allowAlarms),
+          ),
         ],
       ),
     );

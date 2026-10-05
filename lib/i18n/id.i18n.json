@@ -162,6 +162,8 @@
   "adhanSound": "Suara azan",
   "adhanSoundSub": "Putar azan di tiap waktu salat",
   "adhanNeedsReminders": "Aktifkan Pengingat salat di atas agar azan berbunyi saat waktu salat.",
+  "adhanExactAlarmsOff": "Aktifkan \"Alarm & pengingat\" untuk Hisn agar azan dapat berbunyi saat waktu salat.",
+  "allowAlarms": "Izinkan",
   "adhanVolume": "Volume azan",
   "streamLabels": [
     "Media",

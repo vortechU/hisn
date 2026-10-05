@@ -502,6 +502,12 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// en: 'Turn on Prayer reminders above for the adhan to play at prayer time.'
 	String get adhanNeedsReminders => 'Turn on Prayer reminders above for the adhan to play at prayer time.';
 
+	/// en: 'Turn on "Alarms & reminders" for Hisn so the adhan can play at prayer time.'
+	String get adhanExactAlarmsOff => 'Turn on "Alarms & reminders" for Hisn so the adhan can play at prayer time.';
+
+	/// en: 'Allow'
+	String get allowAlarms => 'Allow';
+
 	/// en: 'Adhan volume'
 	String get adhanVolume => 'Adhan volume';
 
@@ -1339,6 +1345,8 @@ extension on Translations {
 			'adhanSound' => 'Adhan sound',
 			'adhanSoundSub' => 'Play the call to prayer at each time',
 			'adhanNeedsReminders' => 'Turn on Prayer reminders above for the adhan to play at prayer time.',
+			'adhanExactAlarmsOff' => 'Turn on "Alarms & reminders" for Hisn so the adhan can play at prayer time.',
+			'allowAlarms' => 'Allow',
 			'adhanVolume' => 'Adhan volume',
 			'streamLabels.0' => 'Media',
 			'streamLabels.1' => 'Ringer',

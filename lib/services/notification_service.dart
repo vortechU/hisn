@@ -134,6 +134,7 @@ class NotificationService extends ChangeNotifier {
   bool _dailyRemembrance = false;
   bool _initialized = false;
   bool _permissionDenied = false;
+  bool _exactAlarmsAllowed = true;
 
   PrayerService? _prayer;
   AdhanAudioService? _adhan;
@@ -143,6 +144,12 @@ class NotificationService extends ChangeNotifier {
 
   bool get masterEnabled => _masterEnabled;
   bool get permissionDenied => _permissionDenied;
+
+  /// Whether the OS lets the app set exact alarms, as of the last
+  /// [checkExactAlarms]. The adhan depends on it, not just its timing: since
+  /// Android 12 a foreground service may only be started from the background
+  /// by an exact alarm, so without one the adhan does not play at all.
+  bool get exactAlarmsAllowed => _exactAlarmsAllowed;
   bool isPrayerEnabled(Prayer prayer) => _enabled[prayer] ?? true;
   int iqamahOffset(Prayer prayer) => _iqamahOffset[prayer] ?? 0;
 
@@ -215,6 +222,31 @@ class NotificationService extends ChangeNotifier {
         AndroidFlutterLocalNotificationsPlugin>();
     if (android == null) return true;
     return (await android.canScheduleExactNotifications()) ?? false;
+  }
+
+  /// Re-reads [exactAlarmsAllowed] — the user can change it in system
+  /// settings at any time — and, if it changed, reschedules so the alarms
+  /// already set become exact (or fall back) to match.
+  Future<void> checkExactAlarms() async {
+    if (kIsWeb) return;
+    await _ensureInitialized();
+    final allowed = await _canScheduleExact();
+    if (allowed == _exactAlarmsAllowed) return;
+    _exactAlarmsAllowed = allowed;
+    notifyListeners();
+    await reschedule();
+  }
+
+  /// Opens the system "Alarms & reminders" page for the app.
+  Future<void> requestExactAlarms() async {
+    if (kIsWeb) return;
+    try {
+      await _plugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()
+          ?.requestExactAlarmsPermission();
+    } catch (_) {}
+    await checkExactAlarms();
   }
 
   @override

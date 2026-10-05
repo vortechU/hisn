@@ -202,6 +202,8 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get adhanSound => 'Suara azan';
 	@override String get adhanSoundSub => 'Putar azan di tiap waktu salat';
 	@override String get adhanNeedsReminders => 'Aktifkan Pengingat salat di atas agar azan berbunyi saat waktu salat.';
+	@override String get adhanExactAlarmsOff => 'Aktifkan "Alarm & pengingat" untuk Hisn agar azan dapat berbunyi saat waktu salat.';
+	@override String get allowAlarms => 'Izinkan';
 	@override String get adhanVolume => 'Volume azan';
 	@override List<String> get streamLabels => [
 		'Media',
@@ -635,6 +637,8 @@ extension on TranslationsId {
 			'adhanSound' => 'Suara azan',
 			'adhanSoundSub' => 'Putar azan di tiap waktu salat',
 			'adhanNeedsReminders' => 'Aktifkan Pengingat salat di atas agar azan berbunyi saat waktu salat.',
+			'adhanExactAlarmsOff' => 'Aktifkan "Alarm & pengingat" untuk Hisn agar azan dapat berbunyi saat waktu salat.',
+			'allowAlarms' => 'Izinkan',
 			'adhanVolume' => 'Volume azan',
 			'streamLabels.0' => 'Media',
 			'streamLabels.1' => 'Dering',

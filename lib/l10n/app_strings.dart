@@ -255,6 +255,8 @@ class AppStrings {
   String get adhanSound => _t.adhanSound;
   String get adhanSoundSub => _t.adhanSoundSub;
   String get adhanNeedsReminders => _t.adhanNeedsReminders;
+  String get adhanExactAlarmsOff => _t.adhanExactAlarmsOff;
+  String get allowAlarms => _t.allowAlarms;
   String get adhanVolume => _t.adhanVolume;
   String streamLabel(int index) => _t.streamLabels[index];
   String streamHint(int index) => _t.streamHints[index];

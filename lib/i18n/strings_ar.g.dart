@@ -202,6 +202,8 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get adhanSound => 'صوت الأذان';
 	@override String get adhanSoundSub => 'تشغيل الأذان عند كل وقت صلاة';
 	@override String get adhanNeedsReminders => 'فعّل تذكيرات الصلاة بالأعلى ليُشغَّل الأذان عند وقت الصلاة.';
+	@override String get adhanExactAlarmsOff => 'فعّل «المنبّهات والتذكيرات» لتطبيق حصن ليُشغَّل الأذان عند وقت الصلاة.';
+	@override String get allowAlarms => 'السماح';
 	@override String get adhanVolume => 'مستوى صوت الأذان';
 	@override List<String> get streamLabels => [
 		'الوسائط',
@@ -635,6 +637,8 @@ extension on TranslationsAr {
 			'adhanSound' => 'صوت الأذان',
 			'adhanSoundSub' => 'تشغيل الأذان عند كل وقت صلاة',
 			'adhanNeedsReminders' => 'فعّل تذكيرات الصلاة بالأعلى ليُشغَّل الأذان عند وقت الصلاة.',
+			'adhanExactAlarmsOff' => 'فعّل «المنبّهات والتذكيرات» لتطبيق حصن ليُشغَّل الأذان عند وقت الصلاة.',
+			'allowAlarms' => 'السماح',
 			'adhanVolume' => 'مستوى صوت الأذان',
 			'streamLabels.0' => 'الوسائط',
 			'streamLabels.1' => 'الرنين',
