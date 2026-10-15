@@ -1,0 +1,23 @@
+diff --git a/lib/theme/app_theme.dart b/lib/theme/app_theme.dart
+--- a/lib/theme/app_theme.dart
++++ b/lib/theme/app_theme.dart
+@@ -84,7 +84,10 @@ class Ms {
+   Ms._();
+ 
+-  /// Badges, chips, inputs, counters.
++  /// Badges, chips, counters.
+   static const double rSmall = 2;
+ 
++  /// Editable fields have a softer outline while ruled panels stay crisp.
++  static const double rInput = 12;
++
+   /// Buttons have a softer silhouette than manuscript frames and badges.
+   static const double rButton = 16;
+@@ -454,6 +457,6 @@ class AppTheme {
+ 
+   static OutlineInputBorder _inputBorder(Color color, {double width = 1}) =>
+       OutlineInputBorder(
+-        borderRadius: BorderRadius.circular(Ms.rSmall),
++        borderRadius: BorderRadius.circular(Ms.rInput),
+         borderSide: BorderSide(color: color, width: width),
+       );

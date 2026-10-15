@@ -1,0 +1,62 @@
+{
+  "en": {
+    "guideTitle": "Quick guide",
+    "guideWelcomeTitle": "Find your way around Hisn",
+    "guideWelcomeBody": "See where to find Tasbih, Quran search, prayer tools, appearance and reminder controls. You can replay this guide in Settings.",
+    "viewGuide": "View guide",
+    "replayGuide": "View the app guide",
+    "replayGuideSub": "A guided look at the main features",
+    "guideDone": "Done",
+    "guideProgress": "$current of $total",
+    "guideTasbihBody": "Open Tasbih to choose a phrase, add your own, and count your repetitions.",
+    "guideQuranBody": "Search for a surah or type Arabic words to find verses in the Quran.",
+    "guidePrayerBody": "Find prayer times and the Qibla here. You can choose location access in prayer settings.",
+    "guideAppearanceBody": "Choose Light, Dark or System here. Open Appearance in this menu to pick your colors.",
+    "guideNotificationsBody": "Choose reminders and adhan, set quiet periods, or pause all reminders in Notifications. Enable permissions only when you want to."
+  },
+  "ar": {
+    "guideTitle": "دليل سريع",
+    "guideWelcomeTitle": "تعرّف على تطبيق حصن",
+    "guideWelcomeBody": "تعرّف على مكان المسبحة والبحث في القرآن وأدوات الصلاة والمظهر والتنبيهات. يمكنك عرض هذا الدليل مجددًا من الإعدادات.",
+    "viewGuide": "عرض الدليل",
+    "replayGuide": "عرض دليل التطبيق",
+    "replayGuideSub": "جولة إرشادية للميزات الرئيسية",
+    "guideDone": "تم",
+    "guideProgress": "$current من $total",
+    "guideTasbihBody": "افتح المسبحة لاختيار ذكر، أو إضافة ذكر خاص بك، وعدّ التكرار.",
+    "guideQuranBody": "ابحث عن سورة أو اكتب كلمات عربية للعثور على آيات القرآن.",
+    "guidePrayerBody": "تجد هنا مواقيت الصلاة والقبلة. يمكنك اختيار السماح بالموقع من إعدادات الصلاة.",
+    "guideAppearanceBody": "اختر المظهر الفاتح أو الداكن أو مظهر النظام من هنا. افتح المظهر في هذه القائمة لاختيار الألوان.",
+    "guideNotificationsBody": "اختر التنبيهات والأذان، وحدد أوقات الهدوء أو أوقف جميع التنبيهات مؤقتًا من إعدادات التنبيهات. فعّل الأذونات عندما ترغب بذلك فقط."
+  },
+  "id": {
+    "guideTitle": "Panduan singkat",
+    "guideWelcomeTitle": "Kenali aplikasi Hisn",
+    "guideWelcomeBody": "Lihat tempat menemukan tasbih, pencarian Al-Qur'an, alat salat, tampilan, dan pengaturan pengingat. Panduan ini dapat dibuka kembali di Pengaturan.",
+    "viewGuide": "Lihat panduan",
+    "replayGuide": "Lihat panduan aplikasi",
+    "replayGuideSub": "Panduan untuk fitur utama",
+    "guideDone": "Selesai",
+    "guideProgress": "$current dari $total",
+    "guideTasbihBody": "Buka Tasbih untuk memilih zikir, menambahkan zikir sendiri, dan menghitung pengulangan.",
+    "guideQuranBody": "Cari surah atau ketik kata Arab untuk menemukan ayat Al-Qur'an.",
+    "guidePrayerBody": "Temukan waktu salat dan kiblat di sini. Anda dapat memilih izin lokasi di pengaturan salat.",
+    "guideAppearanceBody": "Pilih mode Terang, Gelap, atau Sistem di sini. Buka Tampilan pada menu ini untuk memilih warna.",
+    "guideNotificationsBody": "Pilih pengingat dan azan, atur waktu hening, atau jeda semua pengingat di Notifikasi. Aktifkan izin hanya saat Anda menginginkannya."
+  },
+  "ur": {
+    "guideTitle": "مختصر رہنما",
+    "guideWelcomeTitle": "حصن ایپ سے واقف ہوں",
+    "guideWelcomeBody": "تسبیح، قرآن کی تلاش، نماز کے اوزار، ظاہری شکل اور یاد دہانیوں کی ترتیبات کی جگہ جانیں۔ یہ رہنما ترتیبات میں دوبارہ کھولا جا سکتا ہے۔",
+    "viewGuide": "رہنما دیکھیں",
+    "replayGuide": "ایپ کا رہنما دیکھیں",
+    "replayGuideSub": "اہم خصوصیات کی رہنمائی",
+    "guideDone": "مکمل",
+    "guideProgress": "$total میں سے $current",
+    "guideTasbihBody": "ذکر منتخب کرنے، اپنا ذکر شامل کرنے اور تکرار گننے کے لیے تسبیح کھولیں۔",
+    "guideQuranBody": "سورت تلاش کریں یا قرآن کی آیات ڈھونڈنے کے لیے عربی الفاظ لکھیں۔",
+    "guidePrayerBody": "نماز کے اوقات اور قبلہ یہاں ملیں گے۔ مقام تک رسائی کی اجازت نماز کی ترتیبات میں منتخب کی جا سکتی ہے۔",
+    "guideAppearanceBody": "یہاں روشن، تاریک یا نظام کا انداز منتخب کریں۔ رنگ منتخب کرنے کے لیے اسی مینو میں ظاہری شکل کھولیں۔",
+    "guideNotificationsBody": "اطلاعات میں یاد دہانیاں اور اذان منتخب کریں، خاموش اوقات مقرر کریں یا تمام یاد دہانیاں عارضی طور پر روکیں۔ اجازتیں صرف اپنی مرضی سے فعال کریں۔"
+  }
+}

@@ -4,14 +4,18 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../l10n/app_strings.dart';
 import '../services/compass.dart';
 import '../services/geomag.dart';
 import '../services/prayer_service.dart';
+import '../services/qibla_preferences.dart';
 import '../theme/app_theme.dart';
 import '../util/angles.dart';
+import '../widgets/qibla_controls.dart';
 
 /// A live compass pointing toward the Qibla (the Ka'bah in Makkah), from the
 /// device magnetometer and the Qibla bearing for the current location.
@@ -81,12 +85,82 @@ class _QiblaCompassState extends State<QiblaCompass>
   /// Whether the app itself is in the foreground.
   bool _foreground = true;
 
+  QiblaPreferences? _preferences;
+  final _feedback = QiblaAlignmentFeedback();
+  final _elapsed = Stopwatch()..start();
+  bool _freshReading = false;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _ticker = createTicker(_onTick);
     _unavailable = DeviceCompass.readings == null;
+    _foreground =
+        WidgetsBinding.instance.lifecycleState == null ||
+        WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed;
+    _loadPreferences();
+  }
+
+  Future<void> _loadPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() => _preferences = QiblaPreferences(prefs));
+    _checkAlignmentFeedback();
+  }
+
+  Future<void> _setStyle(QiblaDialStyle style) async {
+    await _preferences?.setStyle(style);
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _setTone(QiblaDialTone tone) async {
+    await _preferences?.setTone(tone);
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _setVibration(bool enabled) async {
+    await _preferences?.setVibration(enabled);
+    if (mounted) setState(() {});
+  }
+
+  void _checkAlignmentFeedback() {
+    if (!mounted) return;
+    final reading = _reading;
+    final angle = _needle.angle;
+    if (reading == null || angle == null) return;
+    final prayer = context.read<PrayerService>();
+    final fix = QiblaFix.of(
+      magneticHeading: angle,
+      qibla: prayer.qiblaDirection,
+      reading: reading,
+      field: _field,
+      wasAligned: _shown?.aligned ?? false,
+    );
+    // Also require the fresh physical reading to face the Qibla: the spring
+    // can pass through alignment on the way to a different target heading.
+    final actual = QiblaFix.of(
+      magneticHeading: reading.heading,
+      qibla: prayer.qiblaDirection,
+      reading: reading,
+      field: _field,
+      wasAligned: fix.aligned,
+    );
+    final pulse = _feedback.update(
+      fix: fix,
+      active:
+          _onScreen &&
+          _foreground &&
+          !_unavailable &&
+          _freshReading &&
+          prayer.hasKnownLocation &&
+          _fieldLat == prayer.latitude &&
+          _fieldLng == prayer.longitude &&
+          actual.aligned,
+      enabled: _preferences?.vibration ?? false,
+      elapsed: _elapsed.elapsed,
+    );
+    if (pulse) HapticFeedback.mediumImpact();
   }
 
   @override
@@ -119,14 +193,7 @@ class _QiblaCompassState extends State<QiblaCompass>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    switch (state) {
-      case AppLifecycleState.resumed:
-        _foreground = true;
-      case AppLifecycleState.paused:
-        _foreground = false;
-      default:
-        return;
-    }
+    _foreground = state == AppLifecycleState.resumed;
     _syncSensors();
   }
 
@@ -138,6 +205,10 @@ class _QiblaCompassState extends State<QiblaCompass>
   /// whole time the app is open, on whichever tab.
   void _syncSensors() {
     final wanted = _onScreen && _foreground && !_unavailable;
+    if (!wanted) {
+      _freshReading = false;
+      _feedback.suspend();
+    }
     if (wanted && _sub == null) {
       _sub = DeviceCompass.readings!.listen(
         _onReading,
@@ -155,10 +226,12 @@ class _QiblaCompassState extends State<QiblaCompass>
   }
 
   void _onReading(CompassReading reading) {
-    if (!mounted) return;
+    if (!mounted || !_onScreen || !_foreground) return;
     final first = _reading == null;
     _reading = reading;
+    _freshReading = true;
     _needle.aim(reading.heading);
+    _checkAlignmentFeedback();
 
     if (first) {
       // The spinner gives way to the dial, with the needle already in place.
@@ -175,11 +248,12 @@ class _QiblaCompassState extends State<QiblaCompass>
   }
 
   void _onTick(Duration elapsed) {
-    final seconds = (elapsed - _lastTick).inMicroseconds /
-        Duration.microsecondsPerSecond;
+    final seconds =
+        (elapsed - _lastTick).inMicroseconds / Duration.microsecondsPerSecond;
     _lastTick = elapsed;
     _needle.advance(seconds);
     _needleAngle.value = _needle.angle!;
+    _checkAlignmentFeedback();
     // A phone lying still costs no frames.
     if (_needle.atRest) _ticker.stop();
     _rebuildIfChanged();
@@ -206,8 +280,11 @@ class _QiblaCompassState extends State<QiblaCompass>
     if (_fieldLat == lat && _fieldLng == lng) return;
     _fieldLat = lat;
     _fieldLng = lng;
+    _field = null;
     Geomag.at(lat, lng).then((value) {
-      if (mounted) setState(() => _field = value);
+      if (!mounted || _fieldLat != lat || _fieldLng != lng) return;
+      setState(() => _field = value);
+      _checkAlignmentFeedback();
     });
   }
 
@@ -256,6 +333,18 @@ class _QiblaCompassState extends State<QiblaCompass>
       declination: _field?.declination ?? 0,
       needle: _needleAngle,
       location: s.place(prayer.locationLabel),
+      style: _preferences?.style ?? QiblaDialStyle.classic,
+      tone: _preferences?.tone ?? QiblaDialTone.accent,
+      controls: _preferences == null
+          ? null
+          : QiblaControls(
+              style: _preferences!.style,
+              tone: _preferences!.tone,
+              vibration: _preferences!.vibration,
+              onStyle: _setStyle,
+              onTone: _setTone,
+              onVibration: _setVibration,
+            ),
     );
   }
 }
@@ -267,6 +356,9 @@ class _Compass extends StatelessWidget {
     required this.declination,
     required this.needle,
     required this.location,
+    required this.style,
+    required this.tone,
+    this.controls,
   });
 
   /// What is said about the needle: rebuilt only when that changes.
@@ -278,6 +370,9 @@ class _Compass extends StatelessWidget {
   /// Qibla index follow it without this widget being rebuilt.
   final ValueListenable<double> needle;
   final String location;
+  final QiblaDialStyle style;
+  final QiblaDialTone tone;
+  final Widget? controls;
 
   static const _fade = Duration(milliseconds: 220);
 
@@ -293,11 +388,16 @@ class _Compass extends StatelessWidget {
     final turn = fix.turn;
     // A muted needle for a reading that can't be trusted: the dial stays put so
     // nothing jumps, but it stops looking like an answer.
+    final selectedColor = switch (tone) {
+      QiblaDialTone.accent => ms.rubric,
+      QiblaDialTone.gold => ms.gilt,
+      QiblaDialTone.ink => scheme.onSurface,
+    };
     final accent = fault != null
         ? scheme.onSurfaceVariant
         : aligned
-            ? ms.rubric
-            : ms.gilt;
+        ? selectedColor
+        : selectedColor.withValues(alpha: 0.8);
 
     // Painted once and kept as a layer: each frame only turns it.
     final dial = RepaintBoundary(
@@ -308,6 +408,8 @@ class _Compass extends StatelessWidget {
           ink: scheme.onSurfaceVariant,
           north: ms.rubric,
           face: scheme.onSurface,
+          style: style,
+          accent: selectedColor,
         ),
       ),
     );
@@ -318,8 +420,10 @@ class _Compass extends StatelessWidget {
         const SizedBox(height: 6),
         Text(location, style: theme.textTheme.bodySmall),
         const SizedBox(height: 2),
-        Text(s.qiblaFromNorth(qibla.toStringAsFixed(0)),
-            style: theme.textTheme.titleMedium),
+        Text(
+          s.qiblaFromNorth(qibla.toStringAsFixed(0)),
+          style: theme.textTheme.titleMedium,
+        ),
         const SizedBox(height: 2),
         // Which north the needle is actually on. Small, but it is the whole
         // difference between a Qibla and a bearing that is merely nearby.
@@ -388,12 +492,14 @@ class _Compass extends StatelessWidget {
                   aligned
                       ? s.facingQibla
                       : turn > 0
-                          ? s.turnRight('$turn')
-                          : s.turnLeft('${-turn}'),
+                      ? s.turnRight('$turn')
+                      : s.turnLeft('${-turn}'),
                   key: ValueKey(aligned),
                   textAlign: TextAlign.center,
                   style: theme.textTheme.titleMedium?.copyWith(
-                    color: accent,
+                    color: fault != null
+                        ? scheme.onSurfaceVariant
+                        : scheme.onSurface,
                     // Every digit the same width, so the line doesn't shuffle
                     // sideways as the number counts down.
                     fontFeatures: const [FontFeature.tabularFigures()],
@@ -401,6 +507,7 @@ class _Compass extends StatelessWidget {
                 ),
         ),
         const SizedBox(height: 6),
+        ?controls,
       ],
     );
   }
@@ -425,9 +532,9 @@ class _FaultNote extends StatelessWidget {
 
     final (IconData icon, String message) = switch (fault) {
       CompassFault.interference => (
-          Icons.warning_amber_rounded,
-          s.qiblaInterference,
-        ),
+        Icons.warning_amber_rounded,
+        s.qiblaInterference,
+      ),
       CompassFault.uncalibrated => (Icons.gesture, s.calibrateHint),
       CompassFault.tilted => (Icons.phone_android, s.qiblaHoldFlat),
     };
@@ -473,10 +580,8 @@ class _Turning extends StatelessWidget {
     return ValueListenableBuilder<double>(
       valueListenable: needle,
       child: child,
-      builder: (context, angle, child) => Transform.rotate(
-        angle: degrees(angle) * math.pi / 180,
-        child: child,
-      ),
+      builder: (context, angle, child) =>
+          Transform.rotate(angle: degrees(angle) * math.pi / 180, child: child),
     );
   }
 }
@@ -489,12 +594,16 @@ class _DialPainter extends CustomPainter {
     required this.ink,
     required this.north,
     required this.face,
+    required this.style,
+    required this.accent,
   });
 
   final Color rule;
   final Color ink;
   final Color north;
   final Color face;
+  final QiblaDialStyle style;
+  final Color accent;
 
   static const _points = ['N', 'E', 'S', 'W'];
 
@@ -513,14 +622,44 @@ class _DialPainter extends CustomPainter {
       ..strokeWidth = 1.6
       ..isAntiAlias = true;
 
-    canvas.drawCircle(c, r - 1, hair);
-    canvas.drawCircle(c, r - 26, hair);
+    if (style != QiblaDialStyle.minimal) {
+      canvas.drawCircle(c, r - 1, hair);
+      canvas.drawCircle(c, r - 26, hair);
+    }
+    if (style == QiblaDialStyle.rose) {
+      final rose = Path();
+      for (var i = 0; i < 16; i++) {
+        final a = (i * 22.5 - 90) * math.pi / 180;
+        final length = i.isOdd
+            ? 22.0
+            : i % 4 == 0
+            ? 76.0
+            : 53.0;
+        final at = c + Offset(math.cos(a) * length, math.sin(a) * length);
+        if (i == 0) {
+          rose.moveTo(at.dx, at.dy);
+        } else {
+          rose.lineTo(at.dx, at.dy);
+        }
+      }
+      rose.close();
+      canvas.drawPath(rose, Paint()..color = accent.withValues(alpha: 0.08));
+      canvas.drawPath(rose, hair..color = accent.withValues(alpha: 0.4));
+      hair.color = rule;
+    }
 
     for (var deg = 0; deg < 360; deg += 5) {
+      if (style == QiblaDialStyle.minimal && deg % 30 != 0) continue;
       final major = deg % 45 == 0;
       final a = (deg - 90) * math.pi / 180;
       final outer = r - 2;
-      final inner = outer - (major ? 15 : deg % 15 == 0 ? 9 : 5);
+      final inner =
+          outer -
+          (major
+              ? 15
+              : deg % 15 == 0
+              ? 9
+              : 5);
       canvas.drawLine(
         c + Offset(math.cos(a) * inner, math.sin(a) * inner),
         c + Offset(math.cos(a) * outer, math.sin(a) * outer),
@@ -554,7 +693,9 @@ class _DialPainter extends CustomPainter {
       old.rule != rule ||
       old.ink != ink ||
       old.north != north ||
-      old.face != face;
+      old.face != face ||
+      old.style != style ||
+      old.accent != accent;
 }
 
 /// The Qibla index: a ruled line from the pivot out to a rosette that carries
@@ -613,7 +754,12 @@ class _IndexMark extends CustomPainter {
       ..lineTo(0, 0)
       ..lineTo(size.width, 0)
       ..close();
-    canvas.drawPath(path, Paint()..color = color..isAntiAlias = true);
+    canvas.drawPath(
+      path,
+      Paint()
+        ..color = color
+        ..isAntiAlias = true,
+    );
   }
 
   @override
@@ -637,8 +783,11 @@ class _NeedsLocation extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(Icons.location_off_outlined,
-              size: 56, color: theme.colorScheme.onSurfaceVariant),
+          Icon(
+            Icons.location_off_outlined,
+            size: 56,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
           const SizedBox(height: 14),
           Text(s.qiblaNoLocation, style: theme.textTheme.titleMedium),
           const SizedBox(height: 6),
@@ -682,8 +831,11 @@ class _Unavailable extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(Icons.explore_off_outlined,
-              size: 56, color: theme.colorScheme.onSurfaceVariant),
+          Icon(
+            Icons.explore_off_outlined,
+            size: 56,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
           const SizedBox(height: 14),
           Text(s.compassUnavailable, style: theme.textTheme.titleMedium),
           const SizedBox(height: 6),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/quran_repository.dart';
 import '../../l10n/app_strings.dart';
@@ -20,6 +22,21 @@ import 'settings_common.dart';
 class AboutSettingsScreen extends StatelessWidget {
   const AboutSettingsScreen({super.key});
 
+  static Future<void> _openSources(BuildContext context) async {
+    final uri = Uri.parse('https://tanzil.net/trans/');
+    try {
+      if (await launchUrl(uri, mode: LaunchMode.externalApplication)) return;
+    } catch (_) {
+      // A device without a browser can still copy the required attribution link.
+    }
+    await Clipboard.setData(ClipboardData(text: uri.toString()));
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppStrings.read(context).aboutLinkCopied)),
+      );
+    }
+  }
+
   // Family, role, licence. Proper nouns and licence identifiers only, so this
   // list needs no translation.
   static const _typefaces = <(String, String, String)>[
@@ -32,7 +49,7 @@ class AboutSettingsScreen extends StatelessWidget {
     (
       'KFGQPC Hafs (QCF v4)',
       'Mushaf pages · King Fahd Glorious Quran Printing Complex',
-      'KFGQPC'
+      'KFGQPC',
     ),
     ('Crimson Pro', 'Latin text', 'SIL OFL 1.1'),
     ('Karla', 'Latin apparatus', 'SIL OFL 1.1'),
@@ -67,8 +84,20 @@ class AboutSettingsScreen extends StatelessWidget {
               ],
             ),
           ),
-          const SettingsSectionHeader('Set in'),
-          const _CreditPanel(_typefaces),
+          SettingsSectionHeader(s.aboutTypefaces),
+          _CreditPanel([
+            for (final font in _typefaces)
+              (
+                font.$1,
+                switch (font.$2) {
+                  'Arabic text' => s.aboutArabicText,
+                  'Latin text' => s.aboutLatinText,
+                  'Latin apparatus' => s.aboutLatinApparatus,
+                  _ => s.aboutMushafPages,
+                },
+                font.$3,
+              ),
+          ]),
 
           // The verse meanings — the translations, and the Arabic tafsir.
           // Loaded from the manifest the meaning files are generated with, so
@@ -83,14 +112,28 @@ class AboutSettingsScreen extends StatelessWidget {
               }
               return Column(
                 children: [
-                  const SettingsSectionHeader('Verse meanings'),
+                  SettingsSectionHeader(s.aboutVerseMeanings),
                   _CreditPanel([
-                    for (final e in editions)
-                      (e.name, e.translator, e.source),
+                    for (final e in editions) (e.name, e.translator, e.source),
                   ]),
                 ],
               );
             },
+          ),
+          Padding(
+            padding: const EdgeInsets.all(Ms.margin),
+            child: Text(s.aboutUrduDuaCredit, style: theme.textTheme.bodySmall),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: Ms.margin),
+            child: Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: TextButton.icon(
+                onPressed: () => _openSources(context),
+                icon: const Icon(Icons.open_in_new, size: 18),
+                label: Text(s.aboutTranslationSource),
+              ),
+            ),
           ),
         ],
       ),
@@ -120,11 +163,9 @@ class _CreditPanel extends StatelessWidget {
         children: [
           for (var i = 0; i < rows.length; i++)
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
               decoration: BoxDecoration(
-                border:
-                    i == 0 ? null : Border(top: BorderSide(color: ms.rule)),
+                border: i == 0 ? null : Border(top: BorderSide(color: ms.rule)),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -133,10 +174,11 @@ class _CreditPanel extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _Credited(rows[i].$1,
-                            style: theme.textTheme.titleSmall),
-                        _Credited(rows[i].$2,
-                            style: theme.textTheme.bodySmall),
+                        _Credited(
+                          rows[i].$1,
+                          style: theme.textTheme.titleSmall,
+                        ),
+                        _Credited(rows[i].$2, style: theme.textTheme.bodySmall),
                       ],
                     ),
                   ),

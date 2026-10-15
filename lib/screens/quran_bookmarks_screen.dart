@@ -136,7 +136,7 @@ class _SavedPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('${s.surahWord} ${surah.nameFor(s.ar)}',
+                        Text('${s.surahWord} ${surah.nameFor(s.rtl)}',
                             style: theme.textTheme.titleSmall),
                         Text(s.juzLabel(surah.juz),
                             style: theme.textTheme.bodySmall),

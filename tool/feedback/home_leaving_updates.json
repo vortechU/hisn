@@ -1,0 +1,35 @@
+{
+  "sources": [
+    {
+      "url": "https://sunnah.com/abudawud:5094",
+      "reference": "Sunan Abi Dawud 5094",
+      "note": "Umm Salamah reports the Prophet's supplication when leaving her home. The Arabic has four active/passive pairs: going astray / being led astray; slipping / being made to slip; wronging / being wronged; behaving ignorantly / being treated ignorantly. Keep separate from the existing Bismillah, tawakkaltu card (Abi Dawud 5095)."
+    }
+  ],
+  "insertAfter": {
+    "daily_leaving_home_protection": "daily_leaving_home"
+  },
+  "additions": [
+    {
+      "id": "daily_leaving_home_protection",
+      "categoryId": "daily",
+      "title": "Leaving the home: seeking protection",
+      "titleArabic": "دُعَاءُ الْخُرُوجِ مِنَ الْمَنْزِلِ: الِاسْتِعَاذَةُ",
+      "arabic": "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ أَنْ أَضِلَّ أَوْ أُضَلَّ، أَوْ أَزِلَّ أَوْ أُزَلَّ، أَوْ أَظْلِمَ أَوْ أُظْلَمَ، أَوْ أَجْهَلَ أَوْ يُجْهَلَ عَلَيَّ",
+      "transliteration": "Allahumma inni a'udhu bika an adilla aw udalla, aw azilla aw uzalla, aw azlima aw uzlama, aw ajhala aw yujhala 'alayya",
+      "translation": "O Allah, I seek refuge in You from going astray or being led astray, from slipping or being made to slip, from wronging others or being wronged, and from behaving ignorantly or being treated with ignorance.",
+      "reference": "Sunan Abi Dawud 5094",
+      "repeat": 1
+    }
+  ],
+  "ar": {
+    "daily_leaving_home_protection": {
+      "reference": "سنن أبي داود ٥٠٩٤"
+    }
+  },
+  "id": {
+    "daily_leaving_home_protection": {
+      "translation": "Ya Allah, aku berlindung kepada-Mu agar tidak tersesat atau disesatkan, tergelincir atau dibuat tergelincir, menzalimi atau dizalimi, dan bertindak bodoh atau diperlakukan dengan kebodohan."
+    }
+  }
+}

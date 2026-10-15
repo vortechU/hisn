@@ -56,24 +56,24 @@ class TasbihWidgetProvider : AppWidgetProvider() {
 
     /**
      * One repetition, applied exactly as `TasbihController.increment` applies
-     * it: a tap that reaches the target closes the set, banks a lap and starts
-     * the next from zero.
+     * it: a tap that reaches the target banks a lap and keeps the target visible.
+     * The next recitation starts the following set at one.
      */
     private fun count(context: Context) {
         val p = PrayerWidget.prefs(context)
         val id = p.getString("tasbih_id", null) ?: return
         val target = p.getString("tasbih_target", "33")?.toIntOrNull() ?: 33
 
-        val next = FlutterPrefs.getInt(context, "$COUNT_KEY$id") + 1
-        if (target > 0 && next >= target) {
-            FlutterPrefs.putInt(context, "$COUNT_KEY$id", 0)
+        if (target < 1) return
+        val current = FlutterPrefs.getInt(context, "$COUNT_KEY$id")
+        val next = if (current >= target) 1 else current + 1
+        FlutterPrefs.putInt(context, "$COUNT_KEY$id", next)
+        if (next == target) {
             FlutterPrefs.putInt(
                 context,
                 "$LAPS_KEY$id",
                 FlutterPrefs.getInt(context, "$LAPS_KEY$id") + 1,
             )
-        } else {
-            FlutterPrefs.putInt(context, "$COUNT_KEY$id", next)
         }
     }
 
@@ -87,6 +87,7 @@ class TasbihWidgetProvider : AppWidgetProvider() {
         val views = RemoteViews(context.packageName, R.layout.tasbih_widget)
 
         WidgetChrome.applySheet(views, ms)
+        WidgetChrome.applyDirection(context, views, R.id.tasbih_root)
 
         val id = p.getString("tasbih_id", null)
         val arabic = p.getString("tasbih_arabic", "") ?: ""

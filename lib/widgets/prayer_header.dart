@@ -73,7 +73,8 @@ class _PrayerHeaderState extends State<PrayerHeader> {
               ),
               const RuleDivider(indent: Ms.margin),
               ...service.todaysPrayers.map((timing) {
-                final isNext = next != null &&
+                final isNext =
+                    next != null &&
                     next.prayer == timing.prayer &&
                     next.time == timing.time;
                 return _ScheduleRow(
@@ -112,8 +113,10 @@ class _PrayerHeaderState extends State<PrayerHeader> {
             // The date band — today's page, headed the way a chapter is.
             UnwanBand(
               child: Text(
-                s.hijriDate(_now,
-                    offset: context.watch<SunnahCalendarService>().offset),
+                s.hijriDate(
+                  _now,
+                  offset: context.watch<SunnahCalendarService>().offset,
+                ),
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -151,7 +154,11 @@ class _PrayerHeaderState extends State<PrayerHeader> {
   }
 
   Widget _clockBlock(
-      PrayerService service, AppStrings s, ThemeData theme, ManuscriptTheme ms) {
+    PrayerService service,
+    AppStrings s,
+    ThemeData theme,
+    ManuscriptTheme ms,
+  ) {
     final hour12 = _hour12(_now.hour);
     final minute = _now.minute.toString().padLeft(2, '0');
 
@@ -179,8 +186,11 @@ class _PrayerHeaderState extends State<PrayerHeader> {
         const SizedBox(height: 7),
         Row(
           children: [
-            Icon(Icons.place_outlined,
-                size: 13, color: theme.colorScheme.onSurfaceVariant),
+            Icon(
+              Icons.place_outlined,
+              size: 13,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
             const SizedBox(width: 5),
             Flexible(
               child: Text(
@@ -197,7 +207,11 @@ class _PrayerHeaderState extends State<PrayerHeader> {
   }
 
   Widget _currentPrayerBlock(
-      PrayerTiming current, AppStrings s, ThemeData theme, ManuscriptTheme ms) {
+    PrayerTiming current,
+    AppStrings s,
+    ThemeData theme,
+    ManuscriptTheme ms,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
@@ -207,13 +221,17 @@ class _PrayerHeaderState extends State<PrayerHeader> {
         FittedBox(
           fit: BoxFit.scaleDown,
           alignment: AlignmentDirectional.centerEnd,
-          child: ArabicText(current.prayer.arabicName,
-              fontSize: 25, color: ms.rubric, height: 1.5),
+          child: ArabicText(
+            current.prayer.arabicName,
+            fontSize: 25,
+            color: ms.rubric,
+            height: 1.5,
+          ),
         ),
         Text(
-          s.ar
+          s.rtl
               ? _clock(current.time, s)
-              : '${current.prayer.englishName} · ${_clock(current.time, s)}',
+              : '${s.prayerName(current.prayer)} · ${_clock(current.time, s)}',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: theme.textTheme.bodySmall,
@@ -229,17 +247,24 @@ class _PrayerHeaderState extends State<PrayerHeader> {
   /// [NotificationService.iqamahWindow]) — the entry turns to the prayer just
   /// called instead, counting the minutes since it so the iqama can be judged,
   /// and the rule fills across that window.
-  Widget _nextBlock(PrayerTiming? current, PrayerTiming next, Duration window,
-      AppStrings s, ThemeData theme, ManuscriptTheme ms) {
-    final elapsed =
-        current == null ? Duration.zero : _now.difference(current.time);
+  Widget _nextBlock(
+    PrayerTiming? current,
+    PrayerTiming next,
+    Duration window,
+    AppStrings s,
+    ThemeData theme,
+    ManuscriptTheme ms,
+  ) {
+    final elapsed = current == null
+        ? Duration.zero
+        : _now.difference(current.time);
     final sinceAdhan = current != null && elapsed < window;
 
     final total = sinceAdhan
         ? window
         : current == null
-            ? Duration.zero
-            : next.time.difference(current.time);
+        ? Duration.zero
+        : next.time.difference(current.time);
     final progress = total.inSeconds <= 0
         ? 0.0
         : (elapsed.inSeconds / total.inSeconds).clamp(0.0, 1.0);
@@ -274,7 +299,9 @@ class _PrayerHeaderState extends State<PrayerHeader> {
                 alignment: AlignmentDirectional.centerEnd,
                 child: Numeral(
                   _countdown(
-                      sinceAdhan ? elapsed : next.time.difference(_now), s),
+                    sinceAdhan ? elapsed : next.time.difference(_now),
+                    s,
+                  ),
                   size: 16,
                   weight: FontWeight.w700,
                   serif: false,
@@ -309,6 +336,9 @@ class _PrayerHeaderState extends State<PrayerHeader> {
     final m = d.inMinutes % 60;
     if (s.ar) {
       return h > 0 ? '$h س $m د' : '$m د';
+    }
+    if (s.lang.name == 'ur') {
+      return h > 0 ? '$h گھنٹے $m منٹ' : '$m منٹ';
     }
     return h > 0 ? '${h}h ${m}m' : '${m}m';
   }
@@ -354,8 +384,12 @@ class _ScheduleRow extends StatelessWidget {
                   : theme.textTheme.titleSmall,
             ),
           ),
-          ArabicText(timing.prayer.arabicName,
-              fontSize: 19, color: colour, height: 1.6),
+          ArabicText(
+            timing.prayer.arabicName,
+            fontSize: 19,
+            color: colour,
+            height: 1.6,
+          ),
           const SizedBox(width: 14),
           Numeral(
             _PrayerHeaderState._clock(timing.time, s),

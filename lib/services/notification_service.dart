@@ -195,6 +195,8 @@ class NotificationService extends ChangeNotifier {
         return AppLang.ar;
       case 'id':
         return AppLang.id;
+      case 'ur':
+        return AppLang.ur;
       default:
         return AppLang.en;
     }
@@ -801,7 +803,16 @@ class NotificationService extends ChangeNotifier {
     }
   }
 
-  Future<bool> _requestPermissions() async {
+  /// Request posting access for a user-enabled ongoing display. This does not
+  /// ask for exact alarms or enable any prayer reminders.
+  Future<bool> requestDisplayPermission() async {
+    final granted = await _requestPermissions(requestExact: false);
+    _permissionDenied = !granted;
+    notifyListeners();
+    return granted;
+  }
+
+  Future<bool> _requestPermissions({bool requestExact = true}) async {
     if (kIsWeb) return false;
     await _ensureInitialized();
     var granted = true;
@@ -815,9 +826,11 @@ class NotificationService extends ChangeNotifier {
       try {
         await android.requestNotificationsPermission();
       } catch (_) {}
-      try {
-        await android.requestExactAlarmsPermission();
-      } catch (_) {}
+      if (requestExact) {
+        try {
+          await android.requestExactAlarmsPermission();
+        } catch (_) {}
+      }
       // Authoritative source of truth: the actual enabled state.
       granted = await android.areNotificationsEnabled() ?? true;
     }

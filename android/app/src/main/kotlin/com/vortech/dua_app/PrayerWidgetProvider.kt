@@ -38,6 +38,7 @@ class PrayerWidgetProvider : AppWidgetProvider() {
         val views = RemoteViews(context.packageName, R.layout.prayer_widget)
 
         WidgetChrome.applySheet(views, ms)
+        WidgetChrome.applyDirection(context, views, R.id.widget_root)
         WidgetChrome.open(context, WidgetChrome.ROUTE_PRAYER)?.let {
             views.setOnClickPendingIntent(R.id.widget_root, it)
         }

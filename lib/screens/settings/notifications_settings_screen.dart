@@ -5,7 +5,10 @@ import 'package:provider/provider.dart';
 import '../../l10n/app_strings.dart';
 import '../../services/adhan_audio.dart';
 import '../../services/notification_service.dart';
+import '../../services/prayer_countdown_settings.dart';
+import '../../services/prayer_silence_settings.dart';
 import '../../services/sunnah_calendar_service.dart';
+import 'prayer_silence_settings_screen.dart';
 import 'settings_common.dart';
 
 /// All notification settings: prayer-time reminders, the daily-remembrance
@@ -25,6 +28,7 @@ class NotificationsSettingsScreen extends StatelessWidget {
       appBar: AppBar(title: Text(s.notifications)),
       body: ListView(
         children: [
+          const _PrayerFeatures(),
           SettingsSectionHeader(s.prayerReminders),
           SwitchListTile(
             secondary: const Icon(Icons.notifications_active_outlined),
@@ -41,14 +45,18 @@ class NotificationsSettingsScreen extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
               child: Row(
                 children: [
-                  Icon(Icons.warning_amber_rounded,
-                      size: 18, color: theme.colorScheme.error),
+                  Icon(
+                    Icons.warning_amber_rounded,
+                    size: 18,
+                    color: theme.colorScheme.error,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       s.notifBlocked,
-                      style: theme.textTheme.bodySmall
-                          ?.copyWith(color: theme.colorScheme.error),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.error,
+                      ),
                     ),
                   ),
                 ],
@@ -57,8 +65,10 @@ class NotificationsSettingsScreen extends StatelessWidget {
           if (notifications.masterEnabled)
             for (final prayer in NotificationService.notifiablePrayers)
               SwitchListTile(
-                contentPadding:
-                    const EdgeInsetsDirectional.only(start: 32, end: 12),
+                contentPadding: const EdgeInsetsDirectional.only(
+                  start: 32,
+                  end: 12,
+                ),
                 dense: true,
                 title: Text(s.prayerName(prayer)),
                 subtitle: notifications.isPrayerEnabled(prayer)
@@ -82,10 +92,14 @@ class NotificationsSettingsScreen extends StatelessWidget {
                     if (!context.mounted) return;
                     ScaffoldMessenger.of(context)
                       ..hideCurrentSnackBar()
-                      ..showSnackBar(SnackBar(
+                      ..showSnackBar(
+                        SnackBar(
                           duration: const Duration(seconds: 6),
                           content: Text(
-                              enabled == false ? s.testBlocked : s.testSent)));
+                            enabled == false ? s.testBlocked : s.testSent,
+                          ),
+                        ),
+                      );
                   },
                   icon: const Icon(Icons.notifications_active_outlined),
                   label: Text(s.sendTestNotif),
@@ -97,13 +111,19 @@ class NotificationsSettingsScreen extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.battery_alert_outlined,
-                      size: 18, color: theme.colorScheme.onSurfaceVariant),
+                  Icon(
+                    Icons.battery_alert_outlined,
+                    size: 18,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text(s.batteryHint,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant)),
+                    child: Text(
+                      s.batteryHint,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -114,7 +134,7 @@ class NotificationsSettingsScreen extends StatelessWidget {
           // One switch for the whole remembrance bundle (morning/evening adhkar
           // repeating until done, Friday Al-Kahf + salawat, nightly Al-Mulk).
           SwitchListTile(
-            secondary: const Icon(Icons.auto_awesome_outlined),
+            secondary: const Icon(Icons.menu_book_outlined),
             title: Text(s.dailyRemembrance),
             subtitle: Text(s.dailyRemembranceSub),
             isThreeLine: true,
@@ -128,9 +148,9 @@ class NotificationsSettingsScreen extends StatelessWidget {
             subtitle: Text(s.fastingRemindersSub),
             value: calendar.remindersEnabled,
             onChanged: (value) async {
-              await context
-                  .read<SunnahCalendarService>()
-                  .setRemindersEnabled(value);
+              await context.read<SunnahCalendarService>().setRemindersEnabled(
+                value,
+              );
               if (!context.mounted) return;
               // The calendar service doesn't own the scheduler, so ask for the
               // window to be rebuilt now rather than at the next launch.
@@ -154,13 +174,19 @@ class NotificationsSettingsScreen extends StatelessWidget {
                 padding: const EdgeInsetsDirectional.fromSTEB(72, 0, 16, 8),
                 child: Row(
                   children: [
-                    Icon(Icons.info_outline,
-                        size: 18, color: theme.colorScheme.tertiary),
+                    Icon(
+                      Icons.info_outline,
+                      size: 18,
+                      color: theme.colorScheme.tertiary,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: Text(s.adhanNeedsReminders,
-                          style: theme.textTheme.bodySmall
-                              ?.copyWith(color: theme.colorScheme.tertiary)),
+                      child: Text(
+                        s.adhanNeedsReminders,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.tertiary,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -169,9 +195,12 @@ class NotificationsSettingsScreen extends StatelessWidget {
               padding: const EdgeInsetsDirectional.fromSTEB(72, 0, 16, 4),
               child: Align(
                 alignment: AlignmentDirectional.centerStart,
-                child: Text(s.adhanVolume,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant)),
+                child: Text(
+                  s.adhanVolume,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
               ),
             ),
             Padding(
@@ -197,9 +226,12 @@ class NotificationsSettingsScreen extends StatelessWidget {
               padding: const EdgeInsetsDirectional.fromSTEB(72, 6, 16, 0),
               child: Align(
                 alignment: AlignmentDirectional.centerStart,
-                child: Text(s.streamHint(adhan.stream.index),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant)),
+                child: Text(
+                  s.streamHint(adhan.stream.index),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
               ),
             ),
             Padding(
@@ -223,6 +255,62 @@ class NotificationsSettingsScreen extends StatelessWidget {
           ],
         ],
       ),
+    );
+  }
+}
+
+class _PrayerFeatures extends StatelessWidget {
+  const _PrayerFeatures();
+
+  @override
+  Widget build(BuildContext context) {
+    final countdown = context.watch<PrayerCountdownSettings>();
+    final silence = context.watch<PrayerSilenceSettings>();
+    final s = AppStrings.of(context);
+    return Column(
+      children: [
+        SettingsSectionHeader(s.prayerCountdownTitle),
+        SwitchListTile(
+          secondary: const Icon(Icons.timer_outlined),
+          title: Text(s.prayerCountdownTitle),
+          subtitle: Text(
+            countdown.supported
+                ? countdown.enabled && countdown.notificationsAllowed == false
+                      ? s.notifBlocked
+                      : s.prayerCountdownSubtitle
+                : s.prayerCountdownUnavailable,
+          ),
+          value: countdown.enabled,
+          onChanged: countdown.supported
+              ? (value) async {
+                  final notifications = context.read<NotificationService>();
+                  if (value &&
+                      !await notifications.requestDisplayPermission()) {
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(s.notifBlocked)));
+                    return;
+                  }
+                  await countdown.setEnabled(value);
+                }
+              : null,
+        ),
+        ListTile(
+          leading: const Icon(Icons.do_not_disturb_on_outlined),
+          title: Text(s.prayerSilenceTitle),
+          subtitle: Text(
+            silence.supported ? s.prayerSilenceSub : s.prayerSilenceUnavailable,
+          ),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => const PrayerSilenceSettingsScreen(),
+            ),
+          ),
+        ),
+        const Divider(height: 24),
+      ],
     );
   }
 }
@@ -262,8 +350,9 @@ class _ExactAlarmsWarningState extends State<_ExactAlarmsWarning>
 
   @override
   Widget build(BuildContext context) {
-    final allowed = context
-        .select<NotificationService, bool>((n) => n.exactAlarmsAllowed);
+    final allowed = context.select<NotificationService, bool>(
+      (n) => n.exactAlarmsAllowed,
+    );
     if (allowed) return const SizedBox.shrink();
     final s = AppStrings.of(context);
     final theme = Theme.of(context);
@@ -272,13 +361,19 @@ class _ExactAlarmsWarningState extends State<_ExactAlarmsWarning>
       padding: const EdgeInsetsDirectional.fromSTEB(72, 0, 16, 8),
       child: Row(
         children: [
-          Icon(Icons.warning_amber_rounded,
-              size: 18, color: theme.colorScheme.error),
+          Icon(
+            Icons.warning_amber_rounded,
+            size: 18,
+            color: theme.colorScheme.error,
+          ),
           const SizedBox(width: 8),
           Expanded(
-            child: Text(s.adhanExactAlarmsOff,
-                style: theme.textTheme.bodySmall
-                    ?.copyWith(color: theme.colorScheme.error)),
+            child: Text(
+              s.adhanExactAlarmsOff,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.error,
+              ),
+            ),
           ),
           TextButton(
             onPressed: () =>
@@ -315,12 +410,18 @@ class _IqamahOffsetPicker extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.timer_outlined,
-                size: 14, color: theme.colorScheme.onSurfaceVariant),
+            Icon(
+              Icons.timer_outlined,
+              size: 14,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
             const SizedBox(width: 4),
-            Text(s.iqamahOffsetValue(offset),
-                style: theme.textTheme.bodySmall
-                    ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            Text(
+              s.iqamahOffsetValue(offset),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
           ],
         ),
       ),
@@ -341,8 +442,10 @@ class _IqamahOffsetPicker extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
               child: Align(
                 alignment: AlignmentDirectional.centerStart,
-                child: Text('${s.prayerName(prayer)} · ${s.iqamahOffset}',
-                    style: Theme.of(sheetContext).textTheme.titleSmall),
+                child: Text(
+                  '${s.prayerName(prayer)} · ${s.iqamahOffset}',
+                  style: Theme.of(sheetContext).textTheme.titleSmall,
+                ),
               ),
             ),
             for (final minutes in NotificationService.iqamahOffsetChoices)

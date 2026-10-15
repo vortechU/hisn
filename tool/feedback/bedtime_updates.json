@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "description": "Merge each field map into the entry with this id in the indicated file; base duas.json is a list, overlays are maps. Preserve all other fields and ordering.",
+  "sourceUrls": [
+    "https://sunnah.com/bukhari:5017"
+  ],
+  "files": {
+    "assets/data/duas.json": {
+      "sleep_ikhlas": {
+        "instruction": "At bedtime, cup your hands together, blow lightly into your palms and recite Surahs al-Ikhlas, al-Falaq and an-Nas. Wipe as much of your body as you can, starting with your head, face and the front of your body. Repeat the complete sequence of blowing, reciting and wiping three times.",
+        "translation": "Surah Al-Ikhlas (Qur'an 112), recited three times."
+      },
+      "sleep_falaq": {
+        "instruction": "At bedtime, cup your hands together, blow lightly into your palms and recite Surahs al-Ikhlas, al-Falaq and an-Nas. Wipe as much of your body as you can, starting with your head, face and the front of your body. Repeat the complete sequence of blowing, reciting and wiping three times.",
+        "translation": "Surah Al-Falaq (Qur'an 113), recited three times."
+      },
+      "sleep_nas": {
+        "instruction": "At bedtime, cup your hands together, blow lightly into your palms and recite Surahs al-Ikhlas, al-Falaq and an-Nas. Wipe as much of your body as you can, starting with your head, face and the front of your body. Repeat the complete sequence of blowing, reciting and wiping three times.",
+        "translation": "Surah An-Nas (Qur'an 114), recited three times."
+      }
+    },
+    "assets/data/duas.ar.json": {
+      "sleep_ikhlas": {
+        "instruction": "عند النوم، اجمع كفيك وانفث فيهما نفثًا خفيفًا واقرأ سور الإخلاص والفلق والناس، ثم امسح بهما ما استطعت من جسدك، بدءًا برأسك ووجهك ومقدمة جسدك. كرر النفث والقراءة والمسح ثلاث مرات."
+      },
+      "sleep_falaq": {
+        "instruction": "عند النوم، اجمع كفيك وانفث فيهما نفثًا خفيفًا واقرأ سور الإخلاص والفلق والناس، ثم امسح بهما ما استطعت من جسدك، بدءًا برأسك ووجهك ومقدمة جسدك. كرر النفث والقراءة والمسح ثلاث مرات."
+      },
+      "sleep_nas": {
+        "instruction": "عند النوم، اجمع كفيك وانفث فيهما نفثًا خفيفًا واقرأ سور الإخلاص والفلق والناس، ثم امسح بهما ما استطعت من جسدك، بدءًا برأسك ووجهك ومقدمة جسدك. كرر النفث والقراءة والمسح ثلاث مرات."
+      }
+    },
+    "assets/data/duas.id.json": {
+      "sleep_ikhlas": {
+        "instruction": "Sebelum tidur, satukan kedua telapak tangan, tiupkan dengan lembut ke kedua telapak tangan dan baca Surah al-Ikhlas, al-Falaq, dan an-Nas. Usapkan ke seluruh bagian tubuh yang dapat dijangkau, dimulai dari kepala, wajah, dan bagian depan tubuh. Ulangi seluruh rangkaian meniup, membaca, dan mengusap sebanyak tiga kali.",
+        "translation": "Surah Al-Ikhlas (Al-Qur'an 112), dibaca tiga kali."
+      },
+      "sleep_falaq": {
+        "instruction": "Sebelum tidur, satukan kedua telapak tangan, tiupkan dengan lembut ke kedua telapak tangan dan baca Surah al-Ikhlas, al-Falaq, dan an-Nas. Usapkan ke seluruh bagian tubuh yang dapat dijangkau, dimulai dari kepala, wajah, dan bagian depan tubuh. Ulangi seluruh rangkaian meniup, membaca, dan mengusap sebanyak tiga kali.",
+        "translation": "Surah Al-Falaq (Al-Qur'an 113), dibaca tiga kali."
+      },
+      "sleep_nas": {
+        "instruction": "Sebelum tidur, satukan kedua telapak tangan, tiupkan dengan lembut ke kedua telapak tangan dan baca Surah al-Ikhlas, al-Falaq, dan an-Nas. Usapkan ke seluruh bagian tubuh yang dapat dijangkau, dimulai dari kepala, wajah, dan bagian depan tubuh. Ulangi seluruh rangkaian meniup, membaca, dan mengusap sebanyak tiga kali.",
+        "translation": "Surah An-Nas (Al-Qur'an 114), dibaca tiga kali."
+      }
+    }
+  },
+  "generator": {
+    "path": "tool/gen_ar_overlay.py",
+    "instructions": {
+      "sleep_ikhlas": "عند النوم، اجمع كفيك وانفث فيهما نفثًا خفيفًا واقرأ سور الإخلاص والفلق والناس، ثم امسح بهما ما استطعت من جسدك، بدءًا برأسك ووجهك ومقدمة جسدك. كرر النفث والقراءة والمسح ثلاث مرات.",
+      "sleep_falaq": "عند النوم، اجمع كفيك وانفث فيهما نفثًا خفيفًا واقرأ سور الإخلاص والفلق والناس، ثم امسح بهما ما استطعت من جسدك، بدءًا برأسك ووجهك ومقدمة جسدك. كرر النفث والقراءة والمسح ثلاث مرات.",
+      "sleep_nas": "عند النوم، اجمع كفيك وانفث فيهما نفثًا خفيفًا واقرأ سور الإخلاص والفلق والناس، ثم امسح بهما ما استطعت من جسدك، بدءًا برأسك ووجهك ومقدمة جسدك. كرر النفث والقراءة والمسح ثلاث مرات."
+    },
+    "operations": [
+      "Add an INSTRUCTIONS dictionary using the instructions map in this proposal.",
+      "For each source entry with a nonempty instruction, emit entry[\"instruction\"] = INSTRUCTIONS[d[\"id\"]].",
+      "Validate that source ids with instruction exactly match INSTRUCTIONS keys, as the script already does for VIRTUES.",
+      "Update _meta.scope to mention instruction as well as source and virtue; keep Arabic translation omitted."
+    ]
+  }
+}

@@ -26,10 +26,48 @@ import '../widgets/ornament.dart';
 class TasbihScreen extends StatelessWidget {
   const TasbihScreen({super.key});
 
+  Future<void> _editCustom(BuildContext context, {Dhikr? existing}) async {
+    final dhikr = await showDialog<Dhikr>(
+      context: context,
+      builder: (_) => _CustomDhikrDialog(existing: existing),
+    );
+    if (dhikr != null && context.mounted) {
+      await context.read<TasbihController>().select(dhikr);
+    }
+  }
+
+  Future<void> _deleteCustom(BuildContext context, Dhikr dhikr) async {
+    final s = AppStrings.read(context);
+    final remove = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(s.deleteDhikr),
+        content: Text(s.deleteDhikrConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(s.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(s.delete),
+          ),
+        ],
+      ),
+    );
+    if (remove == true && context.mounted) {
+      final controller = context.read<TasbihController>();
+      final fallback = context.read<DuaRepository>().dhikr.first;
+      await controller.removeCustom(dhikr.id);
+      await controller.select(fallback);
+    }
+  }
+
   Future<void> _count(BuildContext context, Dhikr dhikr) async {
-    final completed = await context
-        .read<TasbihController>()
-        .increment(dhikr.id, dhikr.target);
+    final completed = await context.read<TasbihController>().increment(
+      dhikr.id,
+      dhikr.target,
+    );
     if (completed) {
       HapticFeedback.heavyImpact();
     } else {
@@ -41,8 +79,11 @@ class TasbihScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final ms = ManuscriptTheme.of(context);
-    final dhikrList = context.read<DuaRepository>().dhikr;
     final controller = context.watch<TasbihController>();
+    final dhikrList = [
+      ...context.read<DuaRepository>().dhikr,
+      ...controller.customDhikr,
+    ];
     final s = AppStrings.of(context);
     // Falls back to the first preset when nothing has been chosen yet, or when
     // a stored choice no longer matches anything in the collection.
@@ -56,6 +97,27 @@ class TasbihScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(s.navTasbih),
         actions: [
+          IconButton(
+            key: const ValueKey('add_custom_dhikr'),
+            icon: const Icon(Icons.add),
+            tooltip: s.addDhikr,
+            onPressed: () => _editCustom(context),
+          ),
+          if (controller.isCustom(dhikr.id))
+            PopupMenuButton<String>(
+              key: const ValueKey('custom_dhikr_actions'),
+              onSelected: (action) {
+                if (action == 'edit') {
+                  _editCustom(context, existing: dhikr);
+                } else {
+                  _deleteCustom(context, dhikr);
+                }
+              },
+              itemBuilder: (_) => [
+                PopupMenuItem(value: 'edit', child: Text(s.editDhikr)),
+                PopupMenuItem(value: 'delete', child: Text(s.deleteDhikr)),
+              ],
+            ),
           IconButton(
             icon: const Icon(Icons.restart_alt),
             tooltip: s.resetCount,
@@ -77,7 +139,12 @@ class TasbihScreen extends StatelessWidget {
               behavior: HitTestBehavior.opaque,
               onTap: () => _count(context, dhikr),
               child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(Ms.margin, 20, Ms.margin, 28),
+                padding: const EdgeInsets.fromLTRB(
+                  Ms.margin,
+                  20,
+                  Ms.margin,
+                  28,
+                ),
                 child: Column(
                   children: [
                     ArabicText(
@@ -98,12 +165,14 @@ class TasbihScreen extends StatelessWidget {
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
-                      const SizedBox(height: 3),
-                      Text(
-                        dhikr.translation,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.bodyMedium,
-                      ),
+                      if (dhikr.translation.isNotEmpty) ...[
+                        const SizedBox(height: 3),
+                        Text(
+                          dhikr.translationFor(s.lang.name),
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                      ],
                     ],
                     const SizedBox(height: 26),
                     _Beat(
@@ -111,7 +180,9 @@ class TasbihScreen extends StatelessWidget {
                       count: count,
                       laps: laps,
                       child: ProgressRosette(
-                        fraction: dhikr.target == 0 ? 0 : count / dhikr.target,
+                        fraction: dhikr.target == 0
+                            ? 0
+                            : (count / dhikr.target).clamp(0, 1),
                         size: 244,
                         lobes: 11,
                         color: ms.gilt,
@@ -136,7 +207,11 @@ class TasbihScreen extends StatelessWidget {
                       const SizedBox(height: 10),
                     ],
                     Text(
-                      laps == 0 ? s.tapToCount : s.setsCompleted(laps),
+                      count >= dhikr.target
+                          ? s.nextSetOnTap
+                          : laps == 0
+                          ? s.tapToCount
+                          : s.setsCompleted(laps),
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodySmall,
                     ),
@@ -147,6 +222,151 @@ class TasbihScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// A user's name and phrase, with a target chosen for their own session.
+class _CustomDhikrDialog extends StatefulWidget {
+  const _CustomDhikrDialog({this.existing});
+  final Dhikr? existing;
+
+  @override
+  State<_CustomDhikrDialog> createState() => _CustomDhikrDialogState();
+}
+
+class _CustomDhikrDialogState extends State<_CustomDhikrDialog> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _name;
+  late final TextEditingController _arabic;
+  late final TextEditingController _target;
+  bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _name = TextEditingController(text: widget.existing?.transliteration ?? '');
+    _arabic = TextEditingController(text: widget.existing?.arabic ?? '');
+    _target = TextEditingController(text: '${widget.existing?.target ?? 100}');
+  }
+
+  @override
+  void dispose() {
+    _name.dispose();
+    _arabic.dispose();
+    _target.dispose();
+    super.dispose();
+  }
+
+  int? _targetValue(String text) {
+    if (!RegExp(r'^[0-9٠-٩۰-۹]+$').hasMatch(text)) return null;
+    final normalized = String.fromCharCodes(
+      text.runes.map((code) {
+        if (code >= 0x0660 && code <= 0x0669) return code - 0x0660 + 0x30;
+        if (code >= 0x06f0 && code <= 0x06f9) return code - 0x06f0 + 0x30;
+        return code;
+      }),
+    );
+    final value = int.tryParse(normalized);
+    return value != null &&
+            value >= 1 &&
+            value <= TasbihController.maxCustomTarget
+        ? value
+        : null;
+  }
+
+  Future<void> _save() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() => _saving = true);
+    final controller = context.read<TasbihController>();
+    final Dhikr saved;
+    if (widget.existing == null) {
+      saved = await controller.addCustom(
+        name: _name.text,
+        arabic: _arabic.text,
+        target: _targetValue(_target.text)!,
+      );
+    } else {
+      saved = await controller.updateCustom(
+        id: widget.existing!.id,
+        name: _name.text,
+        arabic: _arabic.text,
+        target: _targetValue(_target.text)!,
+      );
+    }
+    if (mounted) Navigator.pop(context, saved);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final s = AppStrings.of(context);
+    return AlertDialog(
+      title: Text(widget.existing == null ? s.addDhikr : s.editDhikr),
+      scrollable: true,
+      content: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextFormField(
+              key: const ValueKey('custom_dhikr_name'),
+              controller: _name,
+              autofocus: true,
+              decoration: InputDecoration(labelText: s.fieldDhikrName),
+              validator: (text) => text == null || text.trim().isEmpty
+                  ? s.fieldDhikrNameRequired
+                  : null,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              key: const ValueKey('custom_dhikr_arabic'),
+              controller: _arabic,
+              textDirection: TextDirection.rtl,
+              minLines: 2,
+              maxLines: 4,
+              decoration: InputDecoration(labelText: s.fieldArabic),
+              validator: (text) => text == null || text.trim().isEmpty
+                  ? s.fieldArabicRequired
+                  : null,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              key: const ValueKey('custom_dhikr_target'),
+              controller: _target,
+              keyboardType: TextInputType.number,
+              textDirection: TextDirection.ltr,
+              decoration: InputDecoration(
+                labelText: s.fieldRepeat,
+                errorMaxLines: 3,
+              ),
+              inputFormatters: [
+                TextInputFormatter.withFunction(
+                  (oldValue, newValue) =>
+                      RegExp(r'^[0-9٠-٩۰-۹]*$').hasMatch(newValue.text)
+                      ? newValue
+                      : oldValue,
+                ),
+              ],
+              validator: (text) => _targetValue(text ?? '') == null
+                  ? s.fieldDhikrTargetRequired
+                  : null,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              s.customDhikrTargetNote,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: _saving ? null : () => Navigator.pop(context),
+          child: Text(s.cancel),
+        ),
+        FilledButton(onPressed: _saving ? null : _save, child: Text(s.save)),
+      ],
     );
   }
 }
@@ -164,22 +384,28 @@ class _RollingNumeral extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => AnimatedSwitcher(
-        duration: Motion.of(context, Motion.quick),
-        switchInCurve: Curves.easeOut,
-        switchOutCurve: Curves.easeIn,
-        transitionBuilder: (child, animation) => FadeTransition(
-          opacity: animation,
-          child: SlideTransition(
-            position: Tween(begin: const Offset(0, 0.34), end: Offset.zero)
-                .animate(animation),
-            child: child,
-          ),
-        ),
-        // Keyed on the figure itself: that is what makes a new number a new
-        // child, and so what the switch is triggered by.
-        child: Numeral(text, key: ValueKey(text), size: 62,
-            weight: FontWeight.w600),
-      );
+    duration: Motion.of(context, Motion.quick),
+    switchInCurve: Curves.easeOut,
+    switchOutCurve: Curves.easeIn,
+    transitionBuilder: (child, animation) => FadeTransition(
+      opacity: animation,
+      child: SlideTransition(
+        position: Tween(
+          begin: const Offset(0, 0.34),
+          end: Offset.zero,
+        ).animate(animation),
+        child: child,
+      ),
+    ),
+    // Keyed on the figure itself: that is what makes a new number a new
+    // child, and so what the switch is triggered by.
+    child: Numeral(
+      text,
+      key: ValueKey(text),
+      size: 62,
+      weight: FontWeight.w600,
+    ),
+  );
 }
 
 /// A short swell through whatever it wraps, each time the count moves.
@@ -216,20 +442,25 @@ class _BeatState extends State<_Beat> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _controller =
-        AnimationController(vsync: this, duration: Motion.quick * 2);
+    _controller = AnimationController(vsync: this, duration: Motion.quick * 2);
   }
 
   /// Out and back: the swell is over before the next bead, even at speed.
   static final _swell = TweenSequence<double>([
     TweenSequenceItem(
-        tween: Tween(begin: 0.0, end: 1.0)
-            .chain(CurveTween(curve: Curves.easeOut)),
-        weight: 40),
+      tween: Tween(
+        begin: 0.0,
+        end: 1.0,
+      ).chain(CurveTween(curve: Curves.easeOut)),
+      weight: 40,
+    ),
     TweenSequenceItem(
-        tween: Tween(begin: 1.0, end: 0.0)
-            .chain(CurveTween(curve: Curves.easeIn)),
-        weight: 60),
+      tween: Tween(
+        begin: 1.0,
+        end: 0.0,
+      ).chain(CurveTween(curve: Curves.easeIn)),
+      weight: 60,
+    ),
   ]);
 
   /// How far the swell reaches. A set completing earns nearly three times the
@@ -294,9 +525,13 @@ class _LapTally extends StatelessWidget {
           ),
         if (laps > shown) ...[
           const SizedBox(width: 5),
-          Numeral('+${laps - shown}',
-              size: 12, serif: false, weight: FontWeight.w700,
-              color: ms.gilt),
+          Numeral(
+            '+${laps - shown}',
+            size: 12,
+            serif: false,
+            weight: FontWeight.w700,
+            color: ms.gilt,
+          ),
         ],
       ],
     );
@@ -350,10 +585,12 @@ class _PhraseSelector extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    // In Arabic the tab is the phrase itself (bare, so the
-                    // harakat don't crowd a 48px strip) rather than a Latin
-                    // spelling of it.
-                    s.ar
+                    // Built-ins show their Arabic phrase in RTL; custom phrases
+                    // retain the user's name so identical texts stay distinct.
+                    s.rtl &&
+                            !context.read<TasbihController>().isCustom(
+                              phrases[index].id,
+                            )
                         ? stripHarakat(phrases[index].arabic)
                         : phrases[index].transliteration,
                     style: theme.textTheme.titleSmall?.copyWith(

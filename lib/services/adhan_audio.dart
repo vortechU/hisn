@@ -4,6 +4,8 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'adhan_scheduler.dart';
+
 /// Which device volume controls the adhan. Mirrors both the in-app player
 /// (via the audio session usage) and the notification channel (via its
 /// audio-attributes usage), so the physical volume rocker for that stream
@@ -91,6 +93,7 @@ class AdhanAudioService extends ChangeNotifier {
 
   Future<void> stop() async {
     await _player?.stop();
+    await AdhanScheduler.stop();
     if (_isPlaying) {
       _isPlaying = false;
       notifyListeners();
@@ -100,17 +103,17 @@ class AdhanAudioService extends ChangeNotifier {
   AudioContext _contextFor(AdhanVolumeStream s) {
     final (usage, content) = switch (s) {
       AdhanVolumeStream.media => (
-          AndroidUsageType.media,
-          AndroidContentType.music
-        ),
+        AndroidUsageType.media,
+        AndroidContentType.music,
+      ),
       AdhanVolumeStream.ring => (
-          AndroidUsageType.notification,
-          AndroidContentType.sonification
-        ),
+        AndroidUsageType.notification,
+        AndroidContentType.sonification,
+      ),
       AdhanVolumeStream.alarm => (
-          AndroidUsageType.alarm,
-          AndroidContentType.sonification
-        ),
+        AndroidUsageType.alarm,
+        AndroidContentType.sonification,
+      ),
     };
     return AudioContext(
       android: AudioContextAndroid(

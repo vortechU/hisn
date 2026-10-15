@@ -316,4 +316,78 @@ class QuranRepository {
           normalizeArabic(s.name).contains(qn);
     }).toList(growable: false);
   }
+
+  Future<_VerseSearchIndex>? _verseSearchIndex;
+
+  /// Searches bundled Arabic verse text, ignoring diacritics and letter
+  /// variants. The word index is built only on the first Arabic word search,
+  /// shared by concurrent searches, and reused for the rest of this session.
+  /// Surah-name and short/numeric searches do not load the verse corpus.
+  Future<List<PageVerse>> searchVerses(String query, {int limit = 50}) async {
+    final normalized = _normalizeVerseSearch(query);
+    if (limit <= 0 || normalized.length < 2 || !isArabicScript(normalized)) {
+      return const [];
+    }
+    await loadIndex();
+    final index = await (_verseSearchIndex ??= _buildVerseSearchIndex());
+    Set<int>? candidates;
+    for (final part in normalized.split(' ')) {
+      final matching = <int>{};
+      for (final entry in index.words.entries) {
+        if (entry.key.contains(part)) matching.addAll(entry.value);
+      }
+      candidates = candidates == null
+          ? matching
+          : candidates.intersection(matching);
+      if (candidates.isEmpty) return const [];
+    }
+    final ordered = candidates!.toList()..sort();
+    final results = <PageVerse>[];
+    for (final position in ordered) {
+      if (!index.texts[position].contains(normalized)) continue;
+      results.add(index.verses[position]);
+      if (results.length == limit) break;
+    }
+    return results;
+  }
+
+  Future<_VerseSearchIndex> _buildVerseSearchIndex() async {
+    final verses = <PageVerse>[];
+    final texts = <String>[];
+    final words = <String, List<int>>{};
+    try {
+      // Keep asset reads bounded instead of opening 114 files at once.
+      for (var start = 0; start < _surahs.length; start += 8) {
+        final group = _surahs.skip(start).take(8).toList();
+        final details = await Future.wait(
+          group.map((surah) => loadSurah(surah.number)),
+        );
+        for (var i = 0; i < group.length; i++) {
+          for (final ayah in details[i].ayahs) {
+            final position = verses.length;
+            final text = _normalizeVerseSearch(ayah.text);
+            verses.add(PageVerse(surah: group[i], ayah: ayah));
+            texts.add(text);
+            for (final word in text.split(' ').toSet()) {
+              (words[word] ??= []).add(position);
+            }
+          }
+        }
+      }
+      return _VerseSearchIndex(verses, texts, words);
+    } catch (_) {
+      _verseSearchIndex = null; // A later retry can recover an asset-read error.
+      rethrow;
+    }
+  }
+}
+
+String _normalizeVerseSearch(String text) =>
+    normalizeArabic(text).replaceAll(RegExp(r'\s+'), ' ').trim();
+
+class _VerseSearchIndex {
+  const _VerseSearchIndex(this.verses, this.texts, this.words);
+  final List<PageVerse> verses;
+  final List<String> texts;
+  final Map<String, List<int>> words;
 }

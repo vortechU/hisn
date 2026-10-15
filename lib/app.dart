@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'data/dua_repository.dart';
 import 'data/quran_repository.dart';
 import 'l10n/locale_controller.dart';
+import 'l10n/app_strings.dart';
 import 'screens/home_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'services/adhan_audio.dart';
@@ -15,10 +16,13 @@ import 'services/custom_dua_service.dart';
 import 'services/display_settings.dart';
 import 'services/dua_progress_service.dart';
 import 'services/favorites_service.dart';
+import 'services/feature_tour_controller.dart';
 import 'services/listen_settings.dart';
 import 'services/muhassan_service.dart';
 import 'services/notification_service.dart';
 import 'services/prayer_service.dart';
+import 'services/prayer_countdown_settings.dart';
+import 'services/prayer_silence_settings.dart';
 import 'services/prayer_widget_service.dart';
 import 'services/quran_service.dart';
 import 'services/sunnah_calendar_service.dart';
@@ -27,6 +31,8 @@ import 'services/theme_controller.dart';
 import 'theme/app_theme.dart';
 import 'util/app_navigator.dart';
 import 'widgets/home_widget_link.dart';
+import 'widgets/adhan_playback_banner.dart';
+import 'widgets/prayer_features_lifecycle.dart';
 
 /// The dua ids in [categoryId] that count toward the daily streak — everything
 /// except the long 100× dhikr (see [MuhassanService.highRepeatThreshold]), so a
@@ -145,6 +151,7 @@ class _DuaAppState extends State<DuaApp> {
         ChangeNotifierProvider(create: (_) => FavoritesService(prefs)),
         ChangeNotifierProvider(create: (_) => DisplaySettings(prefs)),
         ChangeNotifierProvider(create: (_) => ThemeController(prefs)),
+        ChangeNotifierProvider(create: (_) => FeatureTourController(prefs)),
         ChangeNotifierProvider(create: (_) => DuaProgressService(prefs)),
         ChangeNotifierProvider(create: (_) => TasbihController(prefs)),
         ChangeNotifierProvider(create: (_) => ListenSettings(prefs)),
@@ -152,10 +159,12 @@ class _DuaAppState extends State<DuaApp> {
         // they outlive this tree (the handler is a process-wide singleton) and
         // must not be disposed when a restore discards the providers.
         Provider<AdhkarAudioLibrary>.value(
-            value: widget.audioLibrary ?? AdhkarAudioLibrary.empty()),
+          value: widget.audioLibrary ?? AdhkarAudioLibrary.empty(),
+        ),
         if (widget.audio != null)
           ChangeNotifierProvider<AdhkarAudioHandler>.value(
-              value: widget.audio!),
+            value: widget.audio!,
+          ),
         ChangeNotifierProvider(
           create: (_) => MuhassanService(prefs)
             ..setEssential(
@@ -166,8 +175,27 @@ class _DuaAppState extends State<DuaApp> {
         ChangeNotifierProvider(create: (_) => PrayerService(prefs)),
         ChangeNotifierProvider(create: (_) => AdhanAudioService(prefs)),
         ChangeNotifierProvider(create: (_) => SunnahCalendarService(prefs)),
-        ChangeNotifierProxyProvider4<PrayerService, AdhanAudioService,
-            DuaProgressService, SunnahCalendarService, NotificationService>(
+        ChangeNotifierProxyProvider<LocaleController, PrayerCountdownSettings>(
+          lazy: false,
+          create: (_) => PrayerCountdownSettings(prefs),
+          update: (_, locale, service) =>
+              (service ?? PrayerCountdownSettings(prefs))
+                ..sync(AppStrings(locale.lang)),
+        ),
+        ChangeNotifierProxyProvider<LocaleController, PrayerSilenceSettings>(
+          lazy: false,
+          create: (_) => PrayerSilenceSettings(prefs),
+          update: (_, locale, service) =>
+              (service ?? PrayerSilenceSettings(prefs))
+                ..sync(AppStrings(locale.lang)),
+        ),
+        ChangeNotifierProxyProvider4<
+          PrayerService,
+          AdhanAudioService,
+          DuaProgressService,
+          SunnahCalendarService,
+          NotificationService
+        >(
           // Eager so reminders are (re)scheduled at launch, not only when the
           // Settings tab is first opened.
           lazy: false,
@@ -183,22 +211,38 @@ class _DuaAppState extends State<DuaApp> {
         // count changes on every tap, which would otherwise re-push the whole
         // payload each time a bead was told.
         ChangeNotifierProxyProvider6<
-            PrayerService,
-            LocaleController,
-            SunnahCalendarService,
-            ThemeController,
-            DisplaySettings,
-            DuaProgressService,
-            PrayerWidgetService>(
+          PrayerService,
+          LocaleController,
+          SunnahCalendarService,
+          ThemeController,
+          DisplaySettings,
+          DuaProgressService,
+          PrayerWidgetService
+        >(
           // Eager so the home-screen widgets are refreshed at launch.
           lazy: false,
           create: (_) => PrayerWidgetService(repository),
-          update: (context, prayer, locale, calendar, theme, display, progress,
-                  widget) =>
-              (widget ?? PrayerWidgetService(repository))
-                ..bind(prayer, locale, calendar, theme, display, progress,
-                    context.read<TasbihController>(),
-                    context.read<NotificationService>()),
+          update:
+              (
+                context,
+                prayer,
+                locale,
+                calendar,
+                theme,
+                display,
+                progress,
+                widget,
+              ) => (widget ?? PrayerWidgetService(repository))
+                ..bind(
+                  prayer,
+                  locale,
+                  calendar,
+                  theme,
+                  display,
+                  progress,
+                  context.read<TasbihController>(),
+                  context.read<NotificationService>(),
+                ),
         ),
       ],
       // DisplaySettings joins the theme because the Latin faces carry no
@@ -208,7 +252,7 @@ class _DuaAppState extends State<DuaApp> {
       child: Consumer3<LocaleController, ThemeController, DisplaySettings>(
         builder: (context, localeController, themeController, display, _) {
           final arabicFamily = display.arabicFontFamily;
-          final arabicUi = localeController.lang == AppLang.ar;
+          final arabicUi = localeController.rtl;
           return MaterialApp(
             title: 'Hisn',
             navigatorKey: appNavigatorKey,
@@ -231,6 +275,14 @@ class _DuaAppState extends State<DuaApp> {
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
+            builder: (context, child) => PrayerFeaturesLifecycle(
+              child: Column(
+                children: [
+                  Expanded(child: child ?? const SizedBox.shrink()),
+                  const AdhanPlaybackBanner(),
+                ],
+              ),
+            ),
             home: HomeWidgetLink(
               child: (prefs.getBool(OnboardingScreen.seenKey) ?? false)
                   ? const HomeScreen()

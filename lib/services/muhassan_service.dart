@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../data/dua_id_migrations.dart';
+
 /// Tracks the daily "muhassan" (مُحَصَّن — *fortified*) habit: completing the
 /// morning and evening adhkar each day, and the resulting streak.
 ///
@@ -133,6 +135,12 @@ class MuhassanService extends ChangeNotifier {
     _fortifiedDays = _decode(_prefs.getString(_kHistory));
     _total = _prefs.getInt(_kTotal) ?? 0;
     _rolloverIfNeeded();
+    if (_morningDone.any(splitDuaIds.containsKey) ||
+        _eveningDone.any(splitDuaIds.containsKey)) {
+      _morningDone = expandLegacyDuaIds(_morningDone);
+      _eveningDone = expandLegacyDuaIds(_eveningDone);
+      _persistProgress();
+    }
   }
 
   Set<String> _decode(String? raw) {

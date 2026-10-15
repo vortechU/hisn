@@ -105,7 +105,10 @@ class _RecommendedAdhkarState extends State<RecommendedAdhkar> {
               // Ruled top and bottom only — the band runs to the page margins
               // instead of sitting in a box of its own.
               border: Border(
-                top: BorderSide(color: ms.gilt.withValues(alpha: 0.7), width: Ms.stroke),
+                top: BorderSide(
+                  color: ms.gilt.withValues(alpha: 0.7),
+                  width: Ms.stroke,
+                ),
                 bottom: BorderSide(color: ms.rule),
               ),
             ),
@@ -115,9 +118,12 @@ class _RecommendedAdhkarState extends State<RecommendedAdhkar> {
               children: [
                 Row(
                   children: [
-                    Text(s.recommendedNow.toUpperCase(),
-                        style: theme.textTheme.labelSmall
-                            ?.copyWith(color: ms.gilt)),
+                    Text(
+                      s.recommendedNow.toUpperCase(),
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: ms.gilt,
+                      ),
+                    ),
                     const SizedBox(width: 8),
                     Rosette(size: 12, color: ms.gilt, lobes: visuals.lobes),
                     const Spacer(),
@@ -134,9 +140,9 @@ class _RecommendedAdhkarState extends State<RecommendedAdhkar> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Expanded(
-                      child: s.ar
+                      child: s.rtl
                           ? ArabicText(
-                              category.titleArabic,
+                              category.titleForLang(s.lang.name),
                               fontSize: 27,
                               fontWeight: FontWeight.w600,
                               textAlign: TextAlign.start,
@@ -146,15 +152,19 @@ class _RecommendedAdhkarState extends State<RecommendedAdhkar> {
                           : Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                ArabicText(category.titleArabic,
-                                    fontSize: 24,
-                                    textAlign: TextAlign.start,
-                                    height: 1.5,
-                                    maxLines: 1),
-                                Text(category.title,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: theme.textTheme.titleMedium),
+                                ArabicText(
+                                  category.titleArabic,
+                                  fontSize: 24,
+                                  textAlign: TextAlign.start,
+                                  height: 1.5,
+                                  maxLines: 1,
+                                ),
+                                Text(
+                                  category.titleForLang(s.lang.name),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.titleMedium,
+                                ),
                               ],
                             ),
                     ),
@@ -165,12 +175,13 @@ class _RecommendedAdhkarState extends State<RecommendedAdhkar> {
                         children: [
                           Text(
                             s.readNow(count),
-                            style: theme.textTheme.labelMedium
-                                ?.copyWith(color: ms.rubric),
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              color: ms.rubric,
+                            ),
                           ),
                           const SizedBox(width: 5),
                           Icon(
-                            s.ar
+                            s.rtl
                                 ? Icons.arrow_back_rounded
                                 : Icons.arrow_forward_rounded,
                             size: 15,
@@ -183,7 +194,7 @@ class _RecommendedAdhkarState extends State<RecommendedAdhkar> {
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  category.subtitleFor(s.ar),
+                  category.subtitleForLang(s.lang.name),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodySmall,

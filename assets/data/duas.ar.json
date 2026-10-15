@@ -1,20 +1,36 @@
 {
   "_meta": {
     "status": "DRAFT — requires review by a qualified person before release",
-    "scope": "Arabic rendering of the SOURCE and the VIRTUE only. No translation field: the dua text is already Arabic, so the card drops the meaning line entirely in an Arabic interface.",
+    "scope": "Arabic rendering of the SOURCE, VIRTUE and practical INSTRUCTION. No translation field: the dua text is already Arabic, so the card drops the meaning line entirely in an Arabic interface.",
     "source": "Collection names and hadith numbering as they appear in the Arabic editions; virtues follow the wording of Hisn al-Muslim (Sa'id al-Qahtani)."
   },
   "morning_ayat_kursi": {
     "reference": "القرآن الكريم، البقرة: ٢٥٥",
     "virtue": "من قرأها حين يُصبح أُجير من الجن حتى يُمسي."
   },
-  "morning_muawwidhat": {
+  "morning_ikhlas": {
     "reference": "سنن أبي داود ٥٠٨٢، الترمذي ٣٥٧٥",
     "virtue": "من قرأهنّ ثلاث مرات حين يُصبح وحين يُمسي كفَتْه من كل شيء."
   },
-  "morning_sayyidul_istighfar": {
-    "reference": "صحيح البخاري ٦٣٠٦",
-    "virtue": "من قالها من النهار موقنًا بها فمات من يومه قبل أن يُمسي فهو من أهل الجنة."
+  "morning_falaq": {
+    "reference": "سنن أبي داود ٥٠٨٢، الترمذي ٣٥٧٥",
+    "virtue": "من قرأهنّ ثلاث مرات حين يُصبح وحين يُمسي كفَتْه من كل شيء."
+  },
+  "morning_nas": {
+    "reference": "سنن أبي داود ٥٠٨٢، الترمذي ٣٥٧٥",
+    "virtue": "من قرأهنّ ثلاث مرات حين يُصبح وحين يُمسي كفَتْه من كل شيء."
+  },
+  "morning_radeetu": {
+    "reference": "سنن أبي داود ٥٠٧٢، الترمذي ٣٣٨٩",
+    "virtue": "من قالها ثلاث مرات حين يُصبح وحين يُمسي كان حقًّا على الله أن يُرضيه يوم القيامة."
+  },
+  "morning_bismillah_la_yadurr": {
+    "reference": "سنن أبي داود ٥٠٨٨، الترمذي ٣٣٨٨",
+    "virtue": "من قالها ثلاث مرات لم تُصبه فجأةُ بلاء."
+  },
+  "morning_subhanallah_adada": {
+    "reference": "صحيح مسلم ٢٧٢٦",
+    "virtue": "كلمات لو وُزنت بكل ما قيل من الذكر منذ الصباح لرجحتهنّ."
   },
   "morning_ushhiduka": {
     "reference": "سنن أبي داود ٥٠٦٩",
@@ -29,29 +45,12 @@
   "morning_fitrah": {
     "reference": "مسند أحمد ١٥٣٦٧"
   },
-  "morning_afiyah": {
-    "reference": "سنن أبي داود ٥٠٩٠"
-  },
-  "morning_afwa_afiyah": {
-    "reference": "سنن أبي داود ٥٠٧٤، ابن ماجه ٣٨٧١"
-  },
   "morning_ya_hayyu": {
     "reference": "النسائي، عمل اليوم والليلة ٥٧٥ (حسن)"
-  },
-  "morning_alimal_ghayb": {
-    "reference": "سنن أبي داود ٥٠٦٧، الترمذي ٣٣٩٢"
   },
   "morning_hasbiyallah": {
     "reference": "سنن أبي داود ٥٠٨١",
     "virtue": "من قالها سبع مرات حين يُصبح وحين يُمسي كفاه الله ما أهمّه."
-  },
-  "morning_bismillah_la_yadurr": {
-    "reference": "سنن أبي داود ٥٠٨٨، الترمذي ٣٣٨٨",
-    "virtue": "من قالها ثلاث مرات لم تُصبه فجأةُ بلاء."
-  },
-  "morning_radeetu": {
-    "reference": "سنن أبي داود ٥٠٧٢، الترمذي ٣٣٨٩",
-    "virtue": "من قالها ثلاث مرات حين يُصبح وحين يُمسي كان حقًّا على الله أن يُرضيه يوم القيامة."
   },
   "morning_ma_asbaha_nimah": {
     "reference": "سنن أبي داود ٥٠٧٣",
@@ -61,28 +60,57 @@
     "reference": "الطبراني، المعجم الأوسط (حسن)",
     "virtue": "من صلّى على النبي ﷺ عشرًا حين يُصبح وعشرًا حين يُمسي أدركته شفاعته يوم القيامة."
   },
+  "morning_sayyidul_istighfar": {
+    "reference": "صحيح البخاري ٦٣٠٦",
+    "virtue": "من قالها من النهار موقنًا بها فمات من يومه قبل أن يُمسي فهو من أهل الجنة."
+  },
+  "morning_afiyah": {
+    "reference": "سنن أبي داود ٥٠٩٠"
+  },
+  "morning_afwa_afiyah": {
+    "reference": "سنن أبي داود ٥٠٧٤، ابن ماجه ٣٨٧١"
+  },
+  "morning_alimal_ghayb": {
+    "reference": "سنن أبي داود ٥٠٦٧، الترمذي ٣٣٩٢"
+  },
   "morning_tahlil_100": {
     "reference": "صحيح البخاري ٣٢٩٣، مسلم ٢٦٩١",
     "virtue": "من قالها مائة مرة في يوم كانت له عدل عشر رقاب، وكُتبت له مائة حسنة، ومُحيت عنه مائة سيئة، وكانت له حِرزًا من الشيطان يومه ذلك."
-  },
-  "morning_subhanallah_adada": {
-    "reference": "صحيح مسلم ٢٧٢٦",
-    "virtue": "كلمات لو وُزنت بكل ما قيل من الذكر منذ الصباح لرجحتهنّ."
   },
   "morning_subhanallah_bihamdihi": {
     "reference": "صحيح مسلم ٢٦٩٢",
     "virtue": "من قالها مائة مرة في اليوم حُطّت خطاياه وإن كانت مثل زبد البحر."
   },
-  "evening_amsayna": {
-    "reference": "صحيح مسلم ٢٧٢٣"
+  "evening_ayat_kursi": {
+    "reference": "القرآن الكريم، البقرة: ٢٥٥",
+    "virtue": "من قرأها حين يُمسي أُجير من الجن حتى يُصبح."
   },
-  "evening_muawwidhat": {
+  "evening_ikhlas": {
     "reference": "سنن أبي داود ٥٠٨٢، الترمذي ٣٥٧٥",
     "virtue": "من قرأهنّ ثلاث مرات حين يُصبح وحين يُمسي كفَتْه من كل شيء."
   },
-  "evening_sayyidul_istighfar": {
-    "reference": "صحيح البخاري ٦٣٠٦",
-    "virtue": "من قالها من الليل موقنًا بها فمات من ليلته قبل أن يُصبح فهو من أهل الجنة."
+  "evening_falaq": {
+    "reference": "سنن أبي داود ٥٠٨٢، الترمذي ٣٥٧٥",
+    "virtue": "من قرأهنّ ثلاث مرات حين يُصبح وحين يُمسي كفَتْه من كل شيء."
+  },
+  "evening_nas": {
+    "reference": "سنن أبي داود ٥٠٨٢، الترمذي ٣٥٧٥",
+    "virtue": "من قرأهنّ ثلاث مرات حين يُصبح وحين يُمسي كفَتْه من كل شيء."
+  },
+  "evening_audhu_kalimat": {
+    "reference": "صحيح مسلم ٢٧٠٩",
+    "virtue": "من قالها ثلاث مرات حين يُمسي لم يضرّه شيء تلك الليلة."
+  },
+  "evening_radeetu": {
+    "reference": "سنن أبي داود ٥٠٧٢، الترمذي ٣٣٨٩",
+    "virtue": "من قالها ثلاث مرات حين يُصبح وحين يُمسي كان حقًّا على الله أن يُرضيه يوم القيامة."
+  },
+  "evening_bismillah_la_yadurr": {
+    "reference": "سنن أبي داود ٥٠٨٨، الترمذي ٣٣٨٨",
+    "virtue": "من قالها ثلاث مرات لم تُصبه فجأةُ بلاء."
+  },
+  "evening_amsayna": {
+    "reference": "صحيح مسلم ٢٧٢٣"
   },
   "evening_ushhiduka": {
     "reference": "سنن أبي داود ٥٠٦٩",
@@ -94,33 +122,12 @@
   "evening_fitrah": {
     "reference": "مسند أحمد ١٥٣٦٧"
   },
-  "evening_afiyah": {
-    "reference": "سنن أبي داود ٥٠٩٠"
-  },
-  "evening_afwa_afiyah": {
-    "reference": "سنن أبي داود ٥٠٧٤، ابن ماجه ٣٨٧١"
-  },
   "evening_ya_hayyu": {
     "reference": "النسائي، عمل اليوم والليلة ٥٧٥ (حسن)"
-  },
-  "evening_alimal_ghayb": {
-    "reference": "سنن أبي داود ٥٠٦٧، الترمذي ٣٣٩٢"
-  },
-  "evening_audhu_kalimat": {
-    "reference": "صحيح مسلم ٢٧٠٩",
-    "virtue": "من قالها ثلاث مرات حين يُمسي لم يضرّه شيء تلك الليلة."
   },
   "evening_hasbiyallah": {
     "reference": "سنن أبي داود ٥٠٨١",
     "virtue": "من قالها سبع مرات حين يُصبح وحين يُمسي كفاه الله ما أهمّه."
-  },
-  "evening_bismillah_la_yadurr": {
-    "reference": "سنن أبي داود ٥٠٨٨، الترمذي ٣٣٨٨",
-    "virtue": "من قالها ثلاث مرات لم تُصبه فجأةُ بلاء."
-  },
-  "evening_radeetu": {
-    "reference": "سنن أبي داود ٥٠٧٢، الترمذي ٣٣٨٩",
-    "virtue": "من قالها ثلاث مرات حين يُصبح وحين يُمسي كان حقًّا على الله أن يُرضيه يوم القيامة."
   },
   "evening_ma_amsa_nimah": {
     "reference": "سنن أبي داود ٥٠٧٣"
@@ -128,6 +135,19 @@
   "evening_salah_nabi": {
     "reference": "الطبراني، المعجم الأوسط (حسن)",
     "virtue": "من صلّى على النبي ﷺ عشرًا حين يُصبح وعشرًا حين يُمسي أدركته شفاعته يوم القيامة."
+  },
+  "evening_sayyidul_istighfar": {
+    "reference": "صحيح البخاري ٦٣٠٦",
+    "virtue": "من قالها من الليل موقنًا بها فمات من ليلته قبل أن يُصبح فهو من أهل الجنة."
+  },
+  "evening_afiyah": {
+    "reference": "سنن أبي داود ٥٠٩٠"
+  },
+  "evening_afwa_afiyah": {
+    "reference": "سنن أبي داود ٥٠٧٤، ابن ماجه ٣٨٧١"
+  },
+  "evening_alimal_ghayb": {
+    "reference": "سنن أبي داود ٥٠٦٧، الترمذي ٣٣٩٢"
   },
   "evening_subhanallah_bihamdihi": {
     "reference": "صحيح مسلم ٢٦٩٢",
@@ -139,6 +159,9 @@
   "salah_tahlil": {
     "reference": "صحيح البخاري ٨٤٤، مسلم ٥٩٣"
   },
+  "salah_la_ilaha_wahdahu": {
+    "reference": "صحيح مسلم ٥٩٤"
+  },
   "salah_subhanallah": {
     "reference": "صحيح مسلم ٥٩٧"
   },
@@ -149,9 +172,26 @@
     "reference": "صحيح مسلم ٥٩٧",
     "virtue": "من تمّم المائة بالتهليل غُفرت خطاياه وإن كانت مثل زبد البحر."
   },
+  "salah_tasbih_tahlil_final": {
+    "reference": "صحيح مسلم ٥٩٧أ",
+    "instruction": "بعد قول سبحان الله ٣٣ مرة، والحمد لله ٣٣ مرة، والله أكبر ٣٣ مرة، يُقال هذا الذكر مرة واحدة لإتمام المائة."
+  },
   "salah_ayat_kursi": {
     "reference": "القرآن الكريم، البقرة: ٢٥٥؛ النسائي (تُقرأ دبر كل صلاة)",
     "virtue": "من قرأها دبر كل صلاة مكتوبة لم يمنعه من دخول الجنة إلا أن يموت."
+  },
+  "salah_ilman_nafian": {
+    "reference": "سنن ابن ماجه ٩٢٥",
+    "virtue": "كان النبي صلى الله عليه وسلم يقولها إذا سلّم من صلاة الفجر."
+  },
+  "salah_ikhlas": {
+    "reference": "سنن أبي داود ١٥٢٣، النسائي (حسن)"
+  },
+  "salah_falaq": {
+    "reference": "سنن أبي داود ١٥٢٣، النسائي (حسن)"
+  },
+  "salah_nas": {
+    "reference": "سنن أبي داود ١٥٢٣، النسائي (حسن)"
   },
   "sleep_ayat_kursi": {
     "reference": "صحيح البخاري ٢٣١١",
@@ -160,18 +200,46 @@
   "sleep_bismika": {
     "reference": "صحيح البخاري ٦٣٢٤"
   },
+  "sleep_qini": {
+    "reference": "سنن أبي داود ٥٠٤٥"
+  },
+  "sleep_tasbih_fatima": {
+    "reference": "صحيح البخاري ٣٧٠٥، مسلم ٢٧٢٧",
+    "virtue": "علّمه النبي صلى الله عليه وسلم فاطمة رضي الله عنها بدلًا من خادم؛ وهو خير لها من خادم."
+  },
+  "sleep_ikhlas": {
+    "reference": "صحيح البخاري ٥٠١٧",
+    "virtue": "كان النبي صلى الله عليه وسلم يفعل ذلك كل ليلة قبل أن ينام.",
+    "instruction": "عند النوم، اجمع كفيك وانفث فيهما نفثًا خفيفًا واقرأ سور الإخلاص والفلق والناس، ثم امسح بهما ما استطعت من جسدك، بدءًا برأسك ووجهك ومقدمة جسدك. كرر النفث والقراءة والمسح ثلاث مرات."
+  },
+  "sleep_falaq": {
+    "reference": "صحيح البخاري ٥٠١٧",
+    "virtue": "كان النبي صلى الله عليه وسلم يفعل ذلك كل ليلة قبل أن ينام.",
+    "instruction": "عند النوم، اجمع كفيك وانفث فيهما نفثًا خفيفًا واقرأ سور الإخلاص والفلق والناس، ثم امسح بهما ما استطعت من جسدك، بدءًا برأسك ووجهك ومقدمة جسدك. كرر النفث والقراءة والمسح ثلاث مرات."
+  },
+  "sleep_nas": {
+    "reference": "صحيح البخاري ٥٠١٧",
+    "virtue": "كان النبي صلى الله عليه وسلم يفعل ذلك كل ليلة قبل أن ينام.",
+    "instruction": "عند النوم، اجمع كفيك وانفث فيهما نفثًا خفيفًا واقرأ سور الإخلاص والفلق والناس، ثم امسح بهما ما استطعت من جسدك، بدءًا برأسك ووجهك ومقدمة جسدك. كرر النفث والقراءة والمسح ثلاث مرات."
+  },
+  "sleep_night_fear": {
+    "reference": "سنن أبي داود ٣٨٩٣، الترمذي ٣٥٢٨ (حسن)",
+    "virtue": "تُقال للصبي أو لمن فزع من النوم."
+  },
   "sleep_aslamtu": {
     "reference": "صحيح البخاري ٢٤٧",
     "virtue": "من قالها فمات من ليلته مات على الفطرة."
   },
-  "sleep_qini": {
-    "reference": "سنن أبي داود ٥٠٤٥"
-  },
   "waking_alhamdulillah_ahyana": {
-    "reference": "صحيح البخاري ٦٣١٢"
+    "reference": "صحيح البخاري ٦٣١٢؛ صحيح البخاري ١٨٣",
+    "instruction": "عند الاستيقاظ، امسح أثر النوم عن وجهك بيدك، كما فعل النبي صلى الله عليه وسلم (صحيح البخاري ١٨٣). هذا عمل وليس دعاءً يُتلى."
   },
   "waking_afani": {
     "reference": "سنن الترمذي ٣٤٠١"
+  },
+  "waking_imran_190_200": {
+    "reference": "القرآن الكريم، آل عمران: ١٩٠–٢٠٠؛ صحيح البخاري ١٨٣، ٤٥٦٩؛ صحيح مسلم ٧٦٣ب",
+    "instruction": "عند الاستيقاظ من النوم ليلًا، تُقرأ هذه الآيات من خواتيم سورة آل عمران (١٩٠–٢٠٠)."
   },
   "daily_before_eating": {
     "reference": "سنن أبي داود ٣٧٦٧"
@@ -184,72 +252,27 @@
     "reference": "سنن أبي داود ٥٠٩٥، الترمذي ٣٤٢٦",
     "virtue": "يُقال له: هُديتَ وكُفيتَ ووُقيتَ، وتنحّى عنه الشيطان."
   },
+  "daily_leaving_home_protection": {
+    "reference": "سنن أبي داود ٥٠٩٤"
+  },
   "daily_entering_bathroom": {
     "reference": "صحيح البخاري ١٤٢، مسلم ٣٧٥"
   },
   "daily_leaving_bathroom": {
     "reference": "سنن أبي داود ٣٠، الترمذي ٧"
   },
-  "forgiveness_astaghfirullah_azim": {
-    "reference": "سنن أبي داود ١٥١٧، الترمذي ٣٥٧٧",
-    "virtue": "من قالها غُفر له وإن كان فرّ من الزحف."
-  },
-  "forgiveness_rabbi_ghfirli": {
-    "reference": "سنن أبي داود ١٥١٦، الترمذي ٣٤٣٤"
-  },
-  "forgiveness_yunus": {
-    "reference": "القرآن الكريم، الأنبياء: ٨٧؛ الترمذي ٣٥٠٥",
-    "virtue": "ما دعا بها مسلم في شيء قط إلا استجاب الله له."
-  },
-  "distress_hamm_hazan": {
-    "reference": "صحيح البخاري ٦٣٦٩"
-  },
-  "distress_karb": {
-    "reference": "صحيح البخاري ٦٣٤٦، مسلم ٢٧٣٠"
-  },
-  "distress_rahmataka_arju": {
-    "reference": "سنن أبي داود ٥٠٩٠"
-  },
-  "distress_hasbunallah": {
-    "reference": "القرآن الكريم، آل عمران: ١٧٣؛ صحيح البخاري ٤٥٦٣",
-    "virtue": "قالها إبراهيم عليه السلام حين أُلقي في النار، وقالها النبي ﷺ والمؤمنون."
-  },
-  "travel_setting_off": {
-    "reference": "صحيح مسلم ١٣٤٢"
-  },
-  "travel_stopping": {
-    "reference": "صحيح مسلم ٢٧٠٨",
-    "virtue": "من نزل منزلًا فقالها لم يضرّه شيء حتى يرتحل."
-  },
-  "travel_returning": {
-    "reference": "صحيح البخاري ١٧٩٧، مسلم ١٣٤٤"
-  },
-  "mosque_after_adhan": {
-    "reference": "صحيح البخاري ٦١٤",
-    "virtue": "من قالها بعد الأذان حلّت له الشفاعة يوم القيامة."
-  },
-  "mosque_entering": {
-    "reference": "صحيح مسلم ٧١٣"
-  },
-  "mosque_leaving": {
-    "reference": "صحيح مسلم ٧١٣"
-  },
-  "salah_la_ilaha_wahdahu": {
-    "reference": "صحيح مسلم ٥٩٤"
-  },
-  "salah_ilman_nafian": {
-    "reference": "سنن ابن ماجه ٩٢٥",
-    "virtue": "كان النبي صلى الله عليه وسلم يقولها إذا سلّم من صلاة الفجر."
-  },
-  "salah_muawwidhat": {
-    "reference": "سنن أبي داود ١٥٢٣، النسائي (حسن)"
-  },
   "daily_entering_home": {
-    "reference": "سنن أبي داود ٥٠٩٦",
-    "virtue": "ثم يُسلّم على أهله."
+    "reference": "سنن أبي داود ٥٠٩٦؛ صحيح مسلم ٢٠١٨؛ القرآن الكريم، النور: ٦١",
+    "instruction": "اذكر الله عند الدخول وسلّم على أهل بيتك. وقد ثبت هذان الأمران مستقلّين في صحيح مسلم ٢٠١٨ والقرآن الكريم، النور: ٦١. واختلف العلماء في درجة هذا الدعاء المروي؛ حسّنه ابن باز وضعّفه الألباني."
+  },
+  "daily_wearing_clothes": {
+    "reference": "سنن أبي داود ٤٠٢٣ (حسن)؛ صحيح مسلم ٢٠٩٧",
+    "virtue": "من قالها عند لبس الثوب غُفر له ما تقدّم من ذنبه.",
+    "instruction": "هذا الدعاء عند لبس الثوب، سواء أكان جديدًا أم سبق لبسه. وعند لبس النعل ابدأ بالقدم اليمنى، وعند خلعه ابدأ باليسرى. وهذه إرشادات للعمل وليست ذكرًا يُتلى."
   },
   "daily_wearing_new_clothes": {
-    "reference": "سنن أبي داود ٤٠٢٠، الترمذي ١٧٦٧ (حسن)"
+    "reference": "سنن أبي داود ٤٠٢٠، الترمذي ١٧٦٧ (حسن)",
+    "instruction": "عند لبس النعل ابدأ بالقدم اليمنى، وعند خلعه ابدأ باليسرى (صحيح مسلم ٢٠٩٧)."
   },
   "daily_marketplace": {
     "reference": "سنن الترمذي ٣٤٢٨ (حسن)",
@@ -267,16 +290,16 @@
     "reference": "سنن الترمذي ٣٤٣١ (حسن)",
     "virtue": "تُقال سرًّا ولا يسمعها المبتلى؛ من قالها لم يصبه ذلك البلاء."
   },
-  "distress_musibah": {
-    "reference": "صحيح مسلم ٩١٨",
-    "virtue": "من قالها عند المصيبة أجره الله فيها وأخلف له خيرًا منها."
+  "forgiveness_astaghfirullah_azim": {
+    "reference": "سنن أبي داود ١٥١٧، الترمذي ٣٥٧٧",
+    "virtue": "من قالها غُفر له وإن كان فرّ من الزحف."
   },
-  "distress_debt": {
-    "reference": "سنن الترمذي ٣٥٦٣ (حسن)"
+  "forgiveness_rabbi_ghfirli": {
+    "reference": "سنن أبي داود ١٥١٦، الترمذي ٣٤٣٤"
   },
-  "distress_against_oppressor": {
-    "reference": "سنن أبي داود ١٥٣٧",
-    "virtue": "كان النبي صلى الله عليه وسلم يقولها إذا خاف قومًا."
+  "forgiveness_yunus": {
+    "reference": "القرآن الكريم، الأنبياء: ٨٧؛ الترمذي ٣٥٠٥",
+    "virtue": "ما دعا بها مسلم في شيء قط إلا استجاب الله له."
   },
   "forgiveness_rabbana_zalamna": {
     "reference": "القرآن الكريم، الأعراف: ٢٣",
@@ -288,25 +311,39 @@
   "forgiveness_rabbanaghfirlana": {
     "reference": "القرآن الكريم، آل عمران: ١٦"
   },
-  "mosque_going": {
-    "reference": "صحيح البخاري ٦٣١٦، مسلم ٧٦٣",
-    "virtue": "من دعاء النبي صلى الله عليه وسلم إذا خرج إلى المسجد ليلًا."
+  "distress_hamm_hazan": {
+    "reference": "صحيح البخاري ٦٣٦٩"
   },
-  "mosque_adhan_response_hayya": {
-    "reference": "صحيح مسلم ٣٨٥",
-    "virtue": "تُقال بدلًا من ترديد قول المؤذن عند حي على الصلاة وحي على الفلاح، وما عداهما يُردَّد كما يقوله المؤذن."
+  "distress_karb": {
+    "reference": "صحيح البخاري ٦٣٤٦، مسلم ٢٧٣٠"
   },
-  "sleep_tasbih_fatima": {
-    "reference": "صحيح البخاري ٣٧٠٥، مسلم ٢٧٢٧",
-    "virtue": "علّمه النبي صلى الله عليه وسلم فاطمة رضي الله عنها بدلًا من خادم؛ وهو خير لها من خادم."
+  "distress_rahmataka_arju": {
+    "reference": "سنن أبي داود ٥٠٩٠"
   },
-  "sleep_three_quls": {
-    "reference": "صحيح البخاري ٥٠١٧",
-    "virtue": "كان النبي صلى الله عليه وسلم يفعل ذلك كل ليلة قبل أن ينام."
+  "distress_hasbunallah": {
+    "reference": "القرآن الكريم، آل عمران: ١٧٣؛ صحيح البخاري ٤٥٦٣",
+    "virtue": "قالها إبراهيم عليه السلام حين أُلقي في النار، وقالها النبي ﷺ والمؤمنون."
   },
-  "sleep_night_fear": {
-    "reference": "سنن أبي داود ٣٨٩٣، الترمذي ٣٥٢٨ (حسن)",
-    "virtue": "تُقال للصبي أو لمن فزع من النوم."
+  "distress_musibah": {
+    "reference": "صحيح مسلم ٩١٨",
+    "virtue": "من قالها عند المصيبة أجره الله فيها وأخلف له خيرًا منها."
+  },
+  "distress_debt": {
+    "reference": "سنن الترمذي ٣٥٦٣ (حسن)"
+  },
+  "distress_against_oppressor": {
+    "reference": "سنن أبي داود ١٥٣٧",
+    "virtue": "كان النبي صلى الله عليه وسلم يقولها إذا خاف قومًا."
+  },
+  "travel_setting_off": {
+    "reference": "صحيح مسلم ١٣٤٢"
+  },
+  "travel_stopping": {
+    "reference": "صحيح مسلم ٢٧٠٨",
+    "virtue": "من نزل منزلًا فقالها لم يضرّه شيء حتى يرتحل."
+  },
+  "travel_returning": {
+    "reference": "صحيح البخاري ١٧٩٧، مسلم ١٣٤٤"
   },
   "travel_entering_town": {
     "reference": "ابن حبان (صححه الألباني)"
@@ -315,7 +352,37 @@
     "reference": "صحيح البخاري ٢٩٩٣"
   },
   "travel_astawdiuka": {
-    "reference": "سنن الترمذي ٣٤٤٣ (حسن)",
+    "reference": "سنن أبي داود ٢٦٠٠؛ جامع الترمذي ٣٤٤٣",
     "virtue": "كان النبي صلى الله عليه وسلم يقولها لمن أراد سفرًا."
+  },
+  "mosque_adhan_response_hayya": {
+    "reference": "صحيح مسلم ٣٨٥",
+    "virtue": "تُقال بدلًا من ترديد قول المؤذن عند حي على الصلاة وحي على الفلاح، وما عداهما يُردَّد كما يقوله المؤذن."
+  },
+  "mosque_adhan_testimony": {
+    "reference": "صحيح مسلم ٣٨٦",
+    "virtue": "تُقال عند سماع المؤذن؛ وقد وعد النبي صلى الله عليه وسلم من قالها بمغفرة ذنبه."
+  },
+  "mosque_after_adhan_salawat": {
+    "reference": "صحيح مسلم ٣٨٤، ٤٠٦",
+    "virtue": "بعد الفراغ من إجابة المؤذن يُصلَّى على النبي صلى الله عليه وسلم، ثم تُسأل له الوسيلة. ومن صلّى عليه صلاةً صلّى الله عليه بها عشرًا. وهذه إحدى الصيغ الثابتة، وحديث الأذان لا يخصّها دون غيرها."
+  },
+  "mosque_after_adhan": {
+    "reference": "صحيح البخاري ٦١٤",
+    "virtue": "من قالها بعد الأذان حلّت له الشفاعة يوم القيامة."
+  },
+  "mosque_entering": {
+    "reference": "صحيح مسلم ٧١٣"
+  },
+  "mosque_leaving": {
+    "reference": "صحيح مسلم ٧١٣"
+  },
+  "mosque_after_wudu": {
+    "reference": "صحيح مسلم ٢٣٤أ، ٢٣٤ب",
+    "virtue": "من أسبغ الوضوء ثم قالها فُتحت له أبواب الجنة الثمانية، يدخل من أيها شاء."
+  },
+  "mosque_going": {
+    "reference": "صحيح البخاري ٦٣١٦، مسلم ٧٦٣",
+    "virtue": "من دعاء النبي صلى الله عليه وسلم إذا خرج إلى المسجد ليلًا."
   }
 }

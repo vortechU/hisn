@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// The languages the UI is translated into.
-enum AppLang { en, ar, id }
+enum AppLang { en, ar, id, ur }
 
 /// Holds the app's chosen UI language and persists it. On first launch it
 /// follows the phone's language when that's one we translate into, so the app
@@ -32,6 +32,7 @@ class LocaleController extends ChangeNotifier {
 
   Locale get locale => _locale;
   bool get isArabic => _locale.languageCode == 'ar';
+  bool get rtl => const {'ar', 'ur'}.contains(_locale.languageCode);
 
   /// The current language as an [AppLang] (what [AppStrings] switches on).
   AppLang get lang {
@@ -40,6 +41,8 @@ class LocaleController extends ChangeNotifier {
         return AppLang.ar;
       case 'id':
         return AppLang.id;
+      case 'ur':
+        return AppLang.ur;
       default:
         return AppLang.en;
     }
@@ -50,6 +53,7 @@ class LocaleController extends ChangeNotifier {
     Locale('en'),
     Locale('ar'),
     Locale('id'),
+    Locale('ur'),
   ];
 
   static Locale _localeForCode(String? code) {
@@ -58,6 +62,8 @@ class LocaleController extends ChangeNotifier {
         return const Locale('ar');
       case 'id':
         return const Locale('id');
+      case 'ur':
+        return const Locale('ur');
       default:
         return const Locale('en');
     }
@@ -67,7 +73,7 @@ class LocaleController extends ChangeNotifier {
   /// or English if none match. Mirrors how the platform resolves resources:
   /// the user's ordered locale list is honoured, most-preferred first.
   static Locale _deviceDefaultLocale() {
-    const supportedCodes = {'en', 'ar', 'id'};
+    const supportedCodes = {'en', 'ar', 'id', 'ur'};
     for (final locale in WidgetsBinding.instance.platformDispatcher.locales) {
       if (supportedCodes.contains(locale.languageCode)) {
         return Locale(locale.languageCode);

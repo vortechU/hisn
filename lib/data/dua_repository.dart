@@ -47,8 +47,10 @@ class DuaRepository {
 
     final overlays = await _loadTranslationOverlays();
     _duas = (jsonDecode(results[1]) as List)
-        .map((e) => _applyOverlays(
-            Dua.fromJson(e as Map<String, dynamic>), overlays))
+        .map(
+          (e) =>
+              _applyOverlays(Dua.fromJson(e as Map<String, dynamic>), overlays),
+        )
         .toList(growable: false);
 
     _dhikr = (jsonDecode(results[2]) as List)
@@ -75,28 +77,34 @@ class DuaRepository {
   /// Languages that ship an overlay file (`assets/data/duas.<lang>.json`).
   ///
   /// The Arabic dua text is never translated — only the `translation`
-  /// (meaning), `virtue` and `reference` fields are overlaid, and a file may
+  /// (meaning), `virtue`, `instruction` and `reference` fields are overlaid, and a file may
   /// carry any subset of them. The Arabic overlay deliberately omits
   /// `translation`: the dua is already in Arabic, so the card drops that line
   /// rather than rendering the Arabic back into Arabic.
-  static const _overlayLangs = ['id', 'ar'];
+  static const _overlayLangs = ['id', 'ar', 'ur'];
 
   /// The overlaid fields, in the order they are read out of each entry.
-  static const _overlayFields = ['translation', 'virtue', 'reference'];
+  static const _overlayFields = [
+    'title',
+    'translation',
+    'virtue',
+    'instruction',
+    'reference',
+  ];
 
   /// Loads each available overlay into `{ langCode: { duaId: {field: text} } }`.
   /// A missing or empty overlay file is skipped silently, so shipping before the
   /// content is filled in is safe (duas just keep their English meaning).
   Future<Map<String, Map<String, Map<String, dynamic>>>>
-      _loadTranslationOverlays() async {
+  _loadTranslationOverlays() async {
     final result = <String, Map<String, Map<String, dynamic>>>{};
     for (final lang in _overlayLangs) {
       try {
-        final raw =
-            await rootBundle.loadString('assets/data/duas.$lang.json');
+        final raw = await rootBundle.loadString('assets/data/duas.$lang.json');
         final decoded = jsonDecode(raw) as Map<String, dynamic>;
         result[lang] = decoded.map(
-            (id, value) => MapEntry(id, (value as Map).cast<String, dynamic>()));
+          (id, value) => MapEntry(id, (value as Map).cast<String, dynamic>()),
+        );
       } catch (_) {
         // No overlay (or malformed) — fall back to the base English meaning.
       }
@@ -109,7 +117,9 @@ class DuaRepository {
   /// A field missing from an entry leaves that language falling back to the
   /// English original, so an overlay can be filled in a field at a time.
   Dua _applyOverlays(
-      Dua dua, Map<String, Map<String, Map<String, dynamic>>> overlays) {
+    Dua dua,
+    Map<String, Map<String, Map<String, dynamic>>> overlays,
+  ) {
     final byField = {for (final f in _overlayFields) f: <String, String>{}};
     overlays.forEach((lang, byId) {
       final entry = byId[dua.id];
@@ -124,7 +134,9 @@ class DuaRepository {
     if (byField.values.every((m) => m.isEmpty)) return dua;
     return dua.withLocalized(
       translations: byField['translation'],
+      titles: byField['title'],
       virtues: byField['virtue'],
+      instructions: byField['instruction'],
       references: byField['reference'],
     );
   }
@@ -149,28 +161,36 @@ class DuaRepository {
       searchIn(_duas, query, langCode: langCode);
 
   /// Same matching logic, runnable over any dua list (e.g. custom duas).
-  static List<Dua> searchIn(List<Dua> duas, String query,
-      {String langCode = 'en'}) {
+  static List<Dua> searchIn(
+    List<Dua> duas,
+    String query, {
+    String langCode = 'en',
+  }) {
     final raw = query.trim();
     final q = raw.toLowerCase();
     if (q.isEmpty) return const [];
     final qn = normalizeArabic(raw);
     final arabicQuery = qn.isNotEmpty;
-    return duas.where((dua) {
-      return dua.title.toLowerCase().contains(q) ||
-          dua.transliteration.toLowerCase().contains(q) ||
-          dua.translation.toLowerCase().contains(q) ||
-          dua.translationFor(langCode).toLowerCase().contains(q) ||
-          dua.reference.toLowerCase().contains(q) ||
-          dua.referenceFor(langCode).toLowerCase().contains(q) ||
-          (arabicQuery && normalizeArabic(dua.arabic).contains(qn)) ||
-          // An Arabic source typed loosely — "ابي داود" for "أبي داود".
-          (arabicQuery &&
-              normalizeArabic(dua.referenceFor(langCode)).contains(qn)) ||
-          (arabicQuery &&
-              dua.titleArabic != null &&
-              normalizeArabic(dua.titleArabic!).contains(qn));
-    }).toList(growable: false);
+    return duas
+        .where((dua) {
+          return dua.title.toLowerCase().contains(q) ||
+              dua.titleForLang(langCode).toLowerCase().contains(q) ||
+              dua.transliteration.toLowerCase().contains(q) ||
+              dua.translation.toLowerCase().contains(q) ||
+              dua.translationFor(langCode).toLowerCase().contains(q) ||
+              dua.reference.toLowerCase().contains(q) ||
+              dua.referenceFor(langCode).toLowerCase().contains(q) ||
+              (arabicQuery && normalizeArabic(dua.arabic).contains(qn)) ||
+              (arabicQuery &&
+                  normalizeArabic(dua.titleForLang(langCode)).contains(qn)) ||
+              // An Arabic source typed loosely — "ابي داود" for "أبي داود".
+              (arabicQuery &&
+                  normalizeArabic(dua.referenceFor(langCode)).contains(qn)) ||
+              (arabicQuery &&
+                  dua.titleArabic != null &&
+                  normalizeArabic(dua.titleArabic!).contains(qn));
+        })
+        .toList(growable: false);
   }
 
   Dua? duaById(String id) => _duaById[id];

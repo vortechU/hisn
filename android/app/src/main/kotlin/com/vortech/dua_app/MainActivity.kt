@@ -1,7 +1,11 @@
 package com.vortech.dua_app
 
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.provider.Settings
 import android.hardware.GeomagneticField
+import android.view.KeyEvent
 import com.ryanheise.audioservice.AudioServiceActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
@@ -16,6 +20,28 @@ import java.util.concurrent.RejectedExecutionException
  * mid-set. Nothing else about this activity changes.
  */
 class MainActivity : AudioServiceActivity() {
+    private var adhanVolumeKey: Int? = null
+
+    /** Activity-only handling: physical volume buttons silence a playing adhan
+     * while Hisn is visible. No receiver or global key interception is used. */
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        val volume = keyCode == KeyEvent.KEYCODE_VOLUME_UP ||
+            keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_MUTE
+        if (volume && (AdhanPlayerService.isPlaying || adhanVolumeKey == keyCode)) {
+            adhanVolumeKey = keyCode
+            AdhanPlayerService.stop(this)
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+        if (adhanVolumeKey == keyCode) {
+            adhanVolumeKey = null
+            return true
+        }
+        return super.onKeyUp(keyCode, event)
+    }
     private val channelName = "hisn/adhan"
     private val geomagChannelName = "hisn/geomag"
     private val widgetChannelName = "hisn/widget"
@@ -72,6 +98,17 @@ class MainActivity : AudioServiceActivity() {
         EventChannel(flutterEngine.dartExecutor.binaryMessenger, Compass.CHANNEL)
             .setStreamHandler(Compass(this))
 
+        EventChannel(flutterEngine.dartExecutor.binaryMessenger, AdhanPlayerService.PLAYBACK_CHANNEL)
+            .setStreamHandler(object : EventChannel.StreamHandler {
+                override fun onListen(arguments: Any?, events: EventChannel.EventSink) {
+                    AdhanPlayerService.playbackListener = { events.success(it) }
+                    events.success(AdhanPlayerService.isPlaying)
+                }
+                override fun onCancel(arguments: Any?) {
+                    AdhanPlayerService.playbackListener = null
+                }
+            })
+
         // The Earth's field where the user is standing, from Android's built-in
         // World Magnetic Model. Two numbers come out of it: the declination
         // that turns a magnetic heading into a true one, and the field strength
@@ -125,16 +162,47 @@ class MainActivity : AudioServiceActivity() {
                         result.success(null)
                     }
                     "stop" -> {
-                        try {
-                            startService(
-                                Intent(this, AdhanPlayerService::class.java)
-                                    .apply { action = AdhanPlayerService.ACTION_STOP }
-                            )
-                        } catch (_: Exception) {
-                        }
+                        AdhanPlayerService.stop(applicationContext)
                         result.success(null)
                     }
+                    "isPlaying" -> result.success(AdhanPlayerService.isPlaying)
                     else -> result.notImplemented()
+                }
+            }
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "hisn/prayer_countdown")
+            .setMethodCallHandler { call, result ->
+                if (call.method == "update") {
+                    result.success(PrayerCountdown.update(applicationContext, call.arguments as? Map<*, *>))
+                } else result.notImplemented()
+            }
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "hisn/prayer_silence")
+            .setMethodCallHandler { call, result ->
+                if (Build.VERSION.SDK_INT < 24) {
+                    result.success(mapOf("supported" to false, "reason" to "unsupported"))
+                } else try {
+                    when (call.method) {
+                        "update" -> result.success(PrayerSilencer.update(applicationContext, call.arguments as? Map<*, *>))
+                        "status" -> {
+                            PrayerSilencer.refresh(applicationContext)
+                            result.success(PrayerSilencer.status(applicationContext))
+                        }
+                        "skipCurrent" -> result.success(PrayerSilencer.skipCurrent(applicationContext))
+                        "openPolicySettings" -> {
+                            // Only an explicit settings-screen button reaches this branch.
+                            startActivity(Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS))
+                            result.success(PrayerSilencer.status(applicationContext))
+                        }
+                        "openExactAlarmSettings" -> {
+                            if (Build.VERSION.SDK_INT >= 31) startActivity(Intent(
+                                Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:$packageName")))
+                            result.success(PrayerSilencer.status(applicationContext))
+                        }
+                        else -> result.notImplemented()
+                    }
+                } catch (error: Exception) {
+                    result.error("prayer_silence", "Prayer silence could not be updated", null)
                 }
             }
 

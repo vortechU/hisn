@@ -32,6 +32,7 @@ class AppStrings {
 
   /// Whether the app is currently in Arabic (drives RTL + Arabic-title display).
   bool get ar => lang == AppLang.ar;
+  bool get rtl => lang == AppLang.ar || lang == AppLang.ur;
 
   /// Whether the app is currently in Indonesian.
   bool get id => lang == AppLang.id;
@@ -56,6 +57,8 @@ class AppStrings {
         return AppLocale.id;
       case AppLang.en:
         return AppLocale.en;
+      case AppLang.ur:
+        return AppLocale.ur;
     }
   }
 
@@ -95,8 +98,7 @@ class AppStrings {
   String get statCurrent => _t.statCurrent;
   String get statBest => _t.statBest;
   String get statTotal => _t.statTotal;
-  String daysValue(int n) =>
-      n == 1 ? _t.daysValueOne : _t.daysValueOther(n: n);
+  String daysValue(int n) => n == 1 ? _t.daysValueOne : _t.daysValueOther(n: n);
   String get streakOnFire => _t.streakOnFire;
   String get streakTodayPending => _t.streakTodayPending;
   String get streakBroken => _t.streakBroken;
@@ -110,6 +112,16 @@ class AppStrings {
   // ---- quran ----
   String get quranTitle => _t.quranTitle;
   String get searchSurah => _t.searchSurah;
+  String get searchQuran => _t.searchQuran;
+  String get quranSearchSurahs => _t.quranSearchSurahs;
+  String get quranSearchVerses => _t.quranSearchVerses;
+  String get quranSearchFailed => _t.quranSearchFailed;
+  String get quranSearchLimit => _t.quranSearchLimit;
+  String get retrySearch => _t.retrySearch;
+  String get afterPrayerTasbih => _t.afterPrayerTasbih;
+  String get startAfterPrayerTasbih => _t.startAfterPrayerTasbih;
+  String get currentPhrase => _t.currentPhrase;
+  String get afterPrayerComplete => _t.afterPrayerComplete;
   String get continueReading => _t.continueReading;
   String get surahWord => _t.surahWord;
   String revelationLabel(String revelation) =>
@@ -145,6 +157,17 @@ class AppStrings {
   String get fieldTranslation => _t.fieldTranslation;
   String get fieldReference => _t.fieldReference;
   String get fieldRepeat => _t.fieldRepeat;
+  String get fieldRepeatPositiveRequired => _t.fieldRepeatPositiveRequired;
+  String get addDhikr => _t.addDhikr;
+  String get editDhikr => _t.editDhikr;
+  String get deleteDhikr => _t.deleteDhikr;
+  String get deleteDhikrConfirm => _t.deleteDhikrConfirm;
+  String get fieldDhikrName => _t.fieldDhikrName;
+  String get fieldDhikrNameRequired => _t.fieldDhikrNameRequired;
+  String get fieldDhikrTargetRequired => _t.fieldDhikrTargetRequired;
+  String get nextSetOnTap => _t.nextSetOnTap;
+  String get nextPhraseOnTap => _t.nextPhraseOnTap;
+  String get customDhikrTargetNote => _t.customDhikrTargetNote;
   String get save => _t.save;
   String get cancel => _t.cancel;
   String get delete => _t.delete;
@@ -168,8 +191,7 @@ class AppStrings {
   String get remaining => _t.remaining;
   String get countdownNow => _t.countdownNow;
   String get sinceAdhan => _t.sinceAdhan;
-  String todaysPrayers(String location) =>
-      _t.todaysPrayers(location: location);
+  String todaysPrayers(String location) => _t.todaysPrayers(location: location);
 
   // ---- search ----
   String get searchHint => _t.searchHint;
@@ -273,10 +295,20 @@ class AppStrings {
   String get showTranslationSub => _t.showTranslationSub;
 
   String get aboutBody => _t.aboutBody;
+  String get aboutTypefaces => _t.aboutTypefaces;
+  String get aboutVerseMeanings => _t.aboutVerseMeanings;
+  String get aboutUrduDuaCredit => _t.aboutUrduDuaCredit;
+  String get aboutTranslationSource => _t.aboutTranslationSource;
+  String get aboutLinkCopied => _t.aboutLinkCopied;
+  String get aboutArabicText => _t.aboutArabicText;
+  String get aboutLatinText => _t.aboutLatinText;
+  String get aboutLatinApparatus => _t.aboutLatinApparatus;
+  String get aboutMushafPages => _t.aboutMushafPages;
 
   String get languageEnglish => 'English';
   String get languageArabic => 'العربية';
   String get languageIndonesian => 'Bahasa Indonesia';
+  String get languageUrdu => 'اردو';
   String get currentLanguage {
     switch (lang) {
       case AppLang.ar:
@@ -285,6 +317,8 @@ class AppStrings {
         return languageIndonesian;
       case AppLang.en:
         return languageEnglish;
+      case AppLang.ur:
+        return languageUrdu;
     }
   }
 
@@ -327,8 +361,7 @@ class AppStrings {
   }
 
   // ---- notifications ----
-  String notifTitle(Prayer prayer) =>
-      _t.notifTitle(name: prayerName(prayer));
+  String notifTitle(Prayer prayer) => _t.notifTitle(name: prayerName(prayer));
   String notifBody(Prayer prayer, String place) =>
       _t.notifBody(name: prayerName(prayer), place: place);
   String notifIqamahBody(Prayer prayer, String place) =>
@@ -363,8 +396,7 @@ class AppStrings {
 
   // ---- qibla ----
   String get qiblaTitle => navQibla;
-  String qiblaFromNorth(String degrees) =>
-      _t.qiblaFromNorth(degrees: degrees);
+  String qiblaFromNorth(String degrees) => _t.qiblaFromNorth(degrees: degrees);
   String get facingQibla => _t.facingQibla;
   String turnRight(String degrees) => _t.turnRight(degrees: degrees);
   String turnLeft(String degrees) => _t.turnLeft(degrees: degrees);
@@ -510,10 +542,10 @@ class AppStrings {
   String weekdayShort(DateTime t) => _t.weekdaysShort[t.weekday - 1];
 
   String dateLabel(DateTime t) => _t.dateFormat(
-        weekday: _t.weekdaysShort[t.weekday - 1],
-        day: t.day,
-        month: _t.monthsShort[t.month - 1],
-      );
+    weekday: _t.weekdaysShort[t.weekday - 1],
+    day: t.day,
+    month: _t.monthsShort[t.month - 1],
+  );
 
   // ---- hijri (Islamic) date ----
 
@@ -538,19 +570,19 @@ class AppStrings {
   /// The Hijri date of an already-resolved [day], formatted without redoing
   /// the conversion.
   String hijriDateOf(SunnahDay day) => _t.hijriDateFormat(
-        day: day.hijriDay,
-        month: _t.hijriMonths[(day.hijriMonth - 1).clamp(0, 11)],
-        year: day.hijriYear,
-      );
+    day: day.hijriDay,
+    month: _t.hijriMonths[(day.hijriMonth - 1).clamp(0, 11)],
+    year: day.hijriYear,
+  );
 
   // ---- sharing ----
   String get share => _t.share;
   String get shareAsImage => _t.shareAsImage;
   String get shareAsText => _t.shareAsText;
   String shareImageFailed(ShareCaptureError error) => switch (error) {
-        ShareCaptureError.notReady => _t.shareImageFailedNotReady,
-        ShareCaptureError.unsupported => _t.shareImageFailedUnsupported,
-      };
+    ShareCaptureError.notReady => _t.shareImageFailedNotReady,
+    ShareCaptureError.unsupported => _t.shareImageFailedUnsupported,
+  };
 
   // ---- Islamic calendar: sunnah fasts & occasions ----
   String get secCalendar => _t.secCalendar;
@@ -663,9 +695,11 @@ class AppStrings {
   String get hijriAdjustHint => _t.hijriAdjustHint;
 
   /// The label for a Hijri offset, e.g. -1 → "−1 day".
-  String hijriOffsetLabel(int offset) => _t.hijriOffsetLabels[
-      (offset - SunnahCalendarRules.minOffset)
-          .clamp(0, _t.hijriOffsetLabels.length - 1)];
+  String hijriOffsetLabel(int offset) =>
+      _t.hijriOffsetLabels[(offset - SunnahCalendarRules.minOffset).clamp(
+        0,
+        _t.hijriOffsetLabels.length - 1,
+      )];
 
   String get fastingReminders => _t.fastingReminders;
   String get fastingRemindersSub => _t.fastingRemindersSub;
@@ -717,9 +751,50 @@ class AppStrings {
 
   /// The message for a backup file that can't be used.
   String restoreError(BackupError error) => switch (error) {
-        BackupError.malformed => _t.restoreErrMalformed,
-        BackupError.notABackup => _t.restoreErrNotABackup,
-        BackupError.tooNew => _t.restoreErrTooNew,
-        BackupError.empty => _t.restoreErrEmpty,
-      };
+    BackupError.malformed => _t.restoreErrMalformed,
+    BackupError.notABackup => _t.restoreErrNotABackup,
+    BackupError.tooNew => _t.restoreErrTooNew,
+    BackupError.empty => _t.restoreErrEmpty,
+  };
+
+  String get prayerCountdownChannelDescription => _t.prayerCountdownChannelDescription;
+  String get prayerCountdownSubtitle => _t.prayerCountdownSubtitle;
+  String get prayerCountdownTitle => _t.prayerCountdownTitle;
+  String get prayerCountdownUnavailable => _t.prayerCountdownUnavailable;
+
+  String get guideAppearanceBody => _t.guideAppearanceBody;
+  String get guideDone => _t.guideDone;
+  String get guideNotificationsBody => _t.guideNotificationsBody;
+  String get guidePrayerBody => _t.guidePrayerBody;
+  String guideProgress(int current, int total) => _t.guideProgress(current: current, total: total);
+  String get guideQuranBody => _t.guideQuranBody;
+  String get guideTasbihBody => _t.guideTasbihBody;
+  String get guideTitle => _t.guideTitle;
+  String get guideWelcomeBody => _t.guideWelcomeBody;
+  String get guideWelcomeTitle => _t.guideWelcomeTitle;
+  String prayerSilenceActiveUntil(String time) => _t.prayerSilenceActiveUntil(time: time);
+  String get prayerSilenceBody => _t.prayerSilenceBody;
+  String get prayerSilenceDisabled => _t.prayerSilenceDisabled;
+  String get prayerSilenceEnable => _t.prayerSilenceEnable;
+  String get prayerSilenceEnd => _t.prayerSilenceEnd;
+  String get prayerSilenceError => _t.prayerSilenceError;
+  String get prayerSilenceExact => _t.prayerSilenceExact;
+  String get prayerSilenceExactButton => _t.prayerSilenceExactButton;
+  String get prayerSilenceExpiryNote => _t.prayerSilenceExpiryNote;
+  String get prayerSilenceLocation => _t.prayerSilenceLocation;
+  String prayerSilenceMinutes(int minutes) => _t.prayerSilenceMinutes(minutes: minutes);
+  String get prayerSilencePermission => _t.prayerSilencePermission;
+  String get prayerSilencePolicyButton => _t.prayerSilencePolicyButton;
+  String get prayerSilenceReady => _t.prayerSilenceReady;
+  String get prayerSilenceRuleDisabled => _t.prayerSilenceRuleDisabled;
+  String get prayerSilenceStart => _t.prayerSilenceStart;
+  String get prayerSilenceStopNow => _t.prayerSilenceStopNow;
+  String get prayerSilenceSub => _t.prayerSilenceSub;
+  String get prayerSilenceTimingHint => _t.prayerSilenceTimingHint;
+  String get prayerSilenceTitle => _t.prayerSilenceTitle;
+  String get prayerSilenceUnavailable => _t.prayerSilenceUnavailable;
+  String get prayerSilenceWaiting => _t.prayerSilenceWaiting;
+  String get replayGuide => _t.replayGuide;
+  String get replayGuideSub => _t.replayGuideSub;
+  String get viewGuide => _t.viewGuide;
 }

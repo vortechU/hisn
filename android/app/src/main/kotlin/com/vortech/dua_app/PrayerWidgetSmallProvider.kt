@@ -117,6 +117,7 @@ class PrayerWidgetSmallProvider : AppWidgetProvider() {
         val views = RemoteViews(context.packageName, R.layout.prayer_widget_small)
 
         WidgetChrome.applySheet(views, ms)
+        WidgetChrome.applyDirection(context, views, R.id.widget_root_small)
         WidgetChrome.open(context, WidgetChrome.ROUTE_PRAYER)?.let {
             views.setOnClickPendingIntent(R.id.widget_root_small, it)
         }
@@ -174,7 +175,7 @@ class PrayerWidgetSmallProvider : AppWidgetProvider() {
         } else {
             views.setViewVisibility(R.id.small_countdown, View.GONE)
             views.setViewVisibility(R.id.small_countdown_static, View.VISIBLE)
-            views.setTextViewText(R.id.small_countdown_static, relative(span))
+            views.setTextViewText(R.id.small_countdown_static, relative(context, span))
         }
         return views
     }
@@ -194,7 +195,7 @@ class PrayerWidgetSmallProvider : AppWidgetProvider() {
         ms: WidgetPalette,
         name: String,
     ) {
-        val drawn = if (WidgetChrome.isArabicUi(context)) {
+        val drawn = if (WidgetChrome.isRtlUi(context)) {
             val width = WidgetChrome.widthPx(context, manager, widgetId, FALLBACK_WIDTH_DP) -
                 WidgetChrome.dp(context, 28f)
             WidgetArabic.render(
@@ -223,10 +224,13 @@ class PrayerWidgetSmallProvider : AppWidgetProvider() {
         }
     }
 
-    private fun relative(millis: Long): String {
+    private fun relative(context: Context, millis: Long): String {
         val mins = (millis / 60000).coerceAtLeast(0)
         val h = mins / 60
         val m = mins % 60
+        if (PrayerWidget.prefs(context).getString("lang", "en") == "ur") {
+            return if (h > 0) "$h گھنٹے $m منٹ" else "$m منٹ"
+        }
         return if (h > 0) "${h}h ${m}m" else "${m}m"
     }
 

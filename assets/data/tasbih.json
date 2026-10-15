@@ -42,6 +42,13 @@
     "target": 100
   },
   {
+    "id": "hawqala",
+    "arabic": "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ",
+    "transliteration": "La hawla wa la quwwata illa billah",
+    "translation": "There is no might nor power except with Allah",
+    "target": 100
+  },
+  {
     "id": "salawat",
     "arabic": "اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ",
     "transliteration": "Allahumma salli 'ala Muhammad",

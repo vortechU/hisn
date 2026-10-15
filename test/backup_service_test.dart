@@ -16,6 +16,8 @@ const _sample = <String, Object>{
   'favorite_dua_ids': <String>['morning_ayat_kursi', 'evening_quls'],
   'tasbih_count_subhanallah': 33,
   'tasbih_laps_subhanallah': 4,
+  'tasbih_custom_phrases':
+      '[{"id":"custom_test","arabic":"الله","target":100}]',
   'quran_bookmark_pages': <String>['2', '604'],
   'quran_bookmark_ayahs': <String>['2:255', '18:10'],
   'quran_last_page': 255,
@@ -26,7 +28,15 @@ const _sample = <String, Object>{
   'notif_master_enabled': true,
   'display_font_scale': 1.0,
   'theme_patterns': false,
+  'qibla_dial_style': 'rose',
+  'qibla_dial_tone': 'gold',
+  'qibla_alignment_vibration': false,
   'onboarding_seen_v1': true,
+  'feature_guide_seen_v1': true,
+  'notif_prayer_countdown_enabled': true,
+  'prayer_silence_enabled': true,
+  'prayer_silence_fajr_start': 5,
+  'prayer_silence_fajr_end': 50,
 };
 
 Future<SharedPreferences> _prefsWith(Map<String, Object> values) async {
@@ -35,8 +45,8 @@ Future<SharedPreferences> _prefsWith(Map<String, Object> values) async {
 }
 
 Map<String, Object> _valuesOf(SharedPreferences prefs) => {
-      for (final k in prefs.getKeys()) k: prefs.get(k)!,
-    };
+  for (final k in prefs.getKeys()) k: prefs.get(k)!,
+};
 
 /// A [BackupService] whose storage gives out on one key.
 ///
@@ -88,6 +98,11 @@ void main() {
       const progress = BackupScope.progressOnly;
       expect(BackupService.inScope('muhassan_streak', progress), isTrue);
       expect(BackupService.inScope('custom_duas', progress), isTrue);
+      expect(BackupService.inScope('tasbih_custom_phrases', progress), isTrue);
+      expect(
+        BackupService.inScope('qibla_alignment_vibration', progress),
+        isFalse,
+      );
       expect(BackupService.inScope('tasbih_count_x', progress), isTrue);
       // Covered by the `quran_` prefix rather than by name, so a Quran key
       // added later is backed up without anyone remembering to list it.
@@ -96,6 +111,14 @@ void main() {
       expect(BackupService.inScope('prayer_lat', progress), isFalse);
       expect(BackupService.inScope('app_language', progress), isFalse);
       expect(BackupService.inScope('notif_master_enabled', progress), isFalse);
+      for (final key in const [
+        'feature_guide_seen_v1',
+        'notif_prayer_countdown_enabled',
+        'prayer_silence_enabled',
+        'prayer_silence_fajr_start',
+      ]) {
+        expect(BackupService.inScope(key, progress), isFalse);
+      }
     });
   });
 
@@ -205,8 +228,11 @@ void main() {
         'prayer_lat': 51.5072, // this phone is in London now
         'app_language': 'en',
       });
-      final written =
-          await service.restore(target, backup!, scope: BackupScope.progressOnly);
+      final written = await service.restore(
+        target,
+        backup!,
+        scope: BackupScope.progressOnly,
+      );
 
       expect(written, 1);
       expect(target.getInt('muhassan_streak'), 5);
@@ -237,36 +263,39 @@ void main() {
     // Carries a key the previous state does not hold ('quran_last_page'), so a
     // test can fail on it without also tripping the rollback.
     Future<Backup> incoming() => backupOf(const {
-          'muhassan_streak': 1,
-          'muhassan_best': 1,
-          'favorite_dua_ids': <String>['z'],
-          'quran_last_page': 5,
-          'app_language': 'ar',
-        });
-
-    test('a failed write leaves the previous state exactly as it was',
-        () async {
-      final backup = await incoming();
-      final prefs = await _prefsWith(before);
-
-      await expectLater(
-        const _FailingBackupService('quran_last_page').restore(prefs, backup),
-        throwsA(isA<StateError>()),
-      );
-
-      expect(_valuesOf(prefs), before);
-      // Cleared once the rollback succeeded, so the next launch has nothing
-      // left to do.
-      expect(prefs.getString('backup_restore_journal'), isNull);
+      'muhassan_streak': 1,
+      'muhassan_best': 1,
+      'favorite_dua_ids': <String>['z'],
+      'quran_last_page': 5,
+      'app_language': 'ar',
     });
+
+    test(
+      'a failed write leaves the previous state exactly as it was',
+      () async {
+        final backup = await incoming();
+        final prefs = await _prefsWith(before);
+
+        await expectLater(
+          const _FailingBackupService('quran_last_page').restore(prefs, backup),
+          throwsA(isA<StateError>()),
+        );
+
+        expect(_valuesOf(prefs), before);
+        // Cleared once the rollback succeeded, so the next launch has nothing
+        // left to do.
+        expect(prefs.getString('backup_restore_journal'), isNull);
+      },
+    );
 
     test('rolls back only the scope it touched', () async {
       final backup = await incoming();
       final prefs = await _prefsWith(before);
 
       await expectLater(
-        const _FailingBackupService('quran_last_page')
-            .restore(prefs, backup, scope: BackupScope.progressOnly),
+        const _FailingBackupService(
+          'quran_last_page',
+        ).restore(prefs, backup, scope: BackupScope.progressOnly),
         throwsA(isA<StateError>()),
       );
 
@@ -316,17 +345,19 @@ void main() {
       expect(prefs.getInt('muhassan_streak'), 1);
     });
 
-    test('an unreadable journal is dropped rather than retried forever',
-        () async {
-      final prefs = await _prefsWith({
-        ...before,
-        'backup_restore_journal': 'not json',
-      });
+    test(
+      'an unreadable journal is dropped rather than retried forever',
+      () async {
+        final prefs = await _prefsWith({
+          ...before,
+          'backup_restore_journal': 'not json',
+        });
 
-      expect(await service.recoverInterruptedRestore(prefs), isFalse);
-      expect(prefs.getString('backup_restore_journal'), isNull);
-      expect(_valuesOf(prefs), before);
-    });
+        expect(await service.recoverInterruptedRestore(prefs), isFalse);
+        expect(prefs.getString('backup_restore_journal'), isNull);
+        expect(_valuesOf(prefs), before);
+      },
+    );
 
     test('the journal key never leaks into a backup file', () async {
       expect(BackupService.isBackedUp('backup_restore_journal'), isFalse);
@@ -337,8 +368,10 @@ void main() {
       });
       final doc = service.build(prefs, appVersion: '1.9.0');
 
-      expect((doc['data'] as Map).containsKey('backup_restore_journal'),
-          isFalse);
+      expect(
+        (doc['data'] as Map).containsKey('backup_restore_journal'),
+        isFalse,
+      );
     });
   });
 
@@ -366,22 +399,30 @@ void main() {
 
     test('a backup from a newer app', () async {
       expect(
-        await errorFor(jsonEncode({
-          'app': 'hisn-backup',
-          'format': BackupService.formatVersion + 1,
-          'data': {'muhassan_streak': {'type': 'int', 'value': 1}},
-        })),
+        await errorFor(
+          jsonEncode({
+            'app': 'hisn-backup',
+            'format': BackupService.formatVersion + 1,
+            'data': {
+              'muhassan_streak': {'type': 'int', 'value': 1},
+            },
+          }),
+        ),
         BackupError.tooNew,
       );
     });
 
     test('a backup with nothing restorable in it', () async {
       expect(
-        await errorFor(jsonEncode({
-          'app': 'hisn-backup',
-          'format': 1,
-          'data': {'not_our_key': {'type': 'int', 'value': 1}},
-        })),
+        await errorFor(
+          jsonEncode({
+            'app': 'hisn-backup',
+            'format': 1,
+            'data': {
+              'not_our_key': {'type': 'int', 'value': 1},
+            },
+          }),
+        ),
         BackupError.empty,
       );
     });
@@ -389,30 +430,37 @@ void main() {
 
   group('tolerates imperfect files', () {
     test('drops entries it cannot decode, keeps the rest', () async {
-      final (backup, error) = service.parse(jsonEncode({
-        'app': 'hisn-backup',
-        'format': 1,
-        'data': {
-          'muhassan_streak': {'type': 'int', 'value': 7},
-          'muhassan_best': {'type': 'int', 'value': 'not a number'},
-          'favorite_dua_ids': {'type': 'stringList', 'value': [1, 2]},
-          'app_language': {'type': 'mystery', 'value': 'ar'},
-          'quran_last_page': 'no type tag at all',
-        },
-      }));
+      final (backup, error) = service.parse(
+        jsonEncode({
+          'app': 'hisn-backup',
+          'format': 1,
+          'data': {
+            'muhassan_streak': {'type': 'int', 'value': 7},
+            'muhassan_best': {'type': 'int', 'value': 'not a number'},
+            'favorite_dua_ids': {
+              'type': 'stringList',
+              'value': [1, 2],
+            },
+            'app_language': {'type': 'mystery', 'value': 'ar'},
+            'quran_last_page': 'no type tag at all',
+          },
+        }),
+      );
 
       expect(error, isNull);
       expect(backup!.values, {'muhassan_streak': 7});
     });
 
     test('accepts a whole double written by hand as an int', () async {
-      final (backup, _) = service.parse(jsonEncode({
-        'app': 'hisn-backup',
-        'format': 1,
-        'data': {
-          'display_font_scale': {'type': 'double', 'value': 1},
-        },
-      }));
+      final (backup, _) = service.parse(
+        jsonEncode({
+          'app': 'hisn-backup',
+          'format': 1,
+          'data': {
+            'display_font_scale': {'type': 'double', 'value': 1},
+          },
+        }),
+      );
 
       expect(backup!.values['display_font_scale'], isA<double>());
       expect(backup.values['display_font_scale'], 1.0);
@@ -424,7 +472,7 @@ void main() {
       final (backup, _) = service.parse(raw);
 
       expect(backup!.countIn(BackupScope.everything), _sample.length);
-      expect(backup.countIn(BackupScope.progressOnly), 11);
+      expect(backup.countIn(BackupScope.progressOnly), 12);
     });
   });
 }

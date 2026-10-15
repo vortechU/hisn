@@ -86,6 +86,16 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	];
 	@override String get quranTitle => 'القرآن الكريم';
 	@override String get searchSurah => 'ابحث في السور…';
+	@override String get searchQuran => 'ابحث عن سورة أو كلمات في القرآن';
+	@override String get quranSearchSurahs => 'السور';
+	@override String get quranSearchVerses => 'الآيات';
+	@override String get quranSearchFailed => 'تعذر البحث في الآيات. حاول مرة أخرى.';
+	@override String get quranSearchLimit => 'عرض أول ٥٠ نتيجة من الآيات';
+	@override String get retrySearch => 'أعد البحث';
+	@override String get afterPrayerTasbih => 'التسبيح بعد الصلاة';
+	@override String get startAfterPrayerTasbih => 'عدّ أذكار ما بعد الصلاة';
+	@override String get currentPhrase => 'الذكر الحالي';
+	@override String get afterPrayerComplete => 'اكتملت أذكار ما بعد الصلاة.';
 	@override String get continueReading => 'متابعة القراءة';
 	@override String get surahWord => 'سورة';
 	@override String get revelationMeccan => 'مكية';
@@ -113,6 +123,16 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get fieldTranslation => 'الترجمة / المعنى (اختياري)';
 	@override String get fieldReference => 'المصدر (اختياري)';
 	@override String get fieldRepeat => 'عدد التكرار';
+	@override String get fieldRepeatPositiveRequired => 'أدخل عددًا صحيحًا لا يقل عن ١.';
+	@override String get addDhikr => 'إضافة ذكر';
+	@override String get editDhikr => 'تعديل الذكر';
+	@override String get deleteDhikr => 'حذف الذكر';
+	@override String get deleteDhikrConfirm => 'حذف هذا الذكر وعدّاده المحفوظ؟';
+	@override String get fieldDhikrName => 'الاسم';
+	@override String get fieldDhikrNameRequired => 'أدخل اسمًا لهذا الذكر.';
+	@override String get fieldDhikrTargetRequired => 'أدخل عددًا صحيحًا من ١ إلى ١٬٠٠٠٬٠٠٠.';
+	@override String get nextSetOnTap => 'اكتملت الجولة. اضغط لبدء الجولة التالية.';
+	@override String get customDhikrTargetNote => 'اختر عدد التكرار لجلستك الخاصة.';
 	@override String get save => 'حفظ';
 	@override String get cancel => 'إلغاء';
 	@override String get delete => 'حذف';
@@ -207,16 +227,16 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get adhanVolume => 'مستوى صوت الأذان';
 	@override List<String> get streamLabels => [
 		'الوسائط',
-		'الرنين',
+		'الرنين / الإشعارات',
 		'المنبّه',
 	];
 	@override List<String> get streamHints => [
-		'يتحكّم به مستوى صوت الوسائط',
-		'يتحكّم به مستوى صوت الرنين',
-		'يتحكّم به مستوى صوت المنبّه',
+		'الوسائط: يستخدم مستوى صوت الموسيقى والفيديو في هاتفك. كتم الرنين لا يكتمه بالضرورة؛ راجع صوت الوسائط وإعدادات عدم الإزعاج أيضًا.',
+		'الرنين: يستخدم مستوى صوت الرنين أو الإشعارات في هاتفك. قد يكتم الوضع الصامت أو الاهتزاز وعدم الإزعاج صوت الأذان.',
+		'المنبّه: يستخدم مستوى صوت المنبّه في هاتفك. كتم الرنين لا يكتم المنبّهات عادةً؛ راجع السماح بالمنبّهات في إعدادات عدم الإزعاج.',
 	];
 	@override String get previewAdhan => 'تجربة الأذان';
-	@override String get stopAdhan => 'إيقاف';
+	@override String get stopAdhan => 'إيقاف الأذان';
 	@override String get adhanPlaying => 'جارٍ تشغيل الأذان…';
 	@override String get notifBlocked => 'الإشعارات محظورة. فعّلها لتطبيق Hisn من إعدادات جهازك.';
 	@override String get textSize => 'حجم الخط';
@@ -468,6 +488,55 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get shareAsText => 'مشاركة كنص';
 	@override String get shareImageFailedNotReady => 'لم تكن البطاقة جاهزة — تتم مشاركة النص بدلاً من ذلك.';
 	@override String get shareImageFailedUnsupported => 'تعذّر إنشاء صورة على هذا الجهاز — تتم مشاركة النص بدلاً من ذلك.';
+	@override String get nextPhraseOnTap => 'اكتمل الذكر. اضغط لعدّ الذكر التالي.';
+	@override String get aboutTypefaces => 'الخطوط';
+	@override String get aboutVerseMeanings => 'معاني الآيات';
+	@override String get aboutUrduDuaCredit => 'معاني الأدعية بالأردية: مسودة مشروع حصن؛ في انتظار مراجعة مختصّ.';
+	@override String get aboutTranslationSource => 'مصادر الترجمات · تنزيل';
+	@override String get aboutLinkCopied => 'نُسخ رابط المصدر. افتحه في متصفحك.';
+	@override String get aboutArabicText => 'النص العربي';
+	@override String get aboutLatinText => 'النص اللاتيني';
+	@override String get aboutLatinApparatus => 'نص الواجهة اللاتيني';
+	@override String get aboutMushafPages => 'صفحات المصحف · مجمع الملك فهد لطباعة المصحف الشريف';
+	@override String get prayerCountdownTitle => 'العد التنازلي للصلاة القادمة';
+	@override String get prayerCountdownSubtitle => 'اعرض عدًا تنازليًا صامتًا في إشعارات أندرويد.';
+	@override String get prayerCountdownUnavailable => 'متاح على أندرويد. يتحكم النظام في طريقة عرض العد التنازلي.';
+	@override String get prayerCountdownChannelDescription => 'عد تنازلي صامت للصلاة القادمة';
+	@override String get guideTitle => 'دليل سريع';
+	@override String get guideWelcomeTitle => 'تعرّف على تطبيق حصن';
+	@override String get guideWelcomeBody => 'تعرّف على مكان المسبحة والبحث في القرآن وأدوات الصلاة والمظهر والتنبيهات. يمكنك عرض هذا الدليل مجددًا من الإعدادات.';
+	@override String get viewGuide => 'عرض الدليل';
+	@override String get replayGuide => 'عرض دليل التطبيق';
+	@override String get replayGuideSub => 'جولة إرشادية للميزات الرئيسية';
+	@override String get guideDone => 'تم';
+	@override String guideProgress({required Object current, required Object total}) => '${current} من ${total}';
+	@override String get guideTasbihBody => 'افتح المسبحة لاختيار ذكر، أو إضافة ذكر خاص بك، وعدّ التكرار.';
+	@override String get guideQuranBody => 'ابحث عن سورة أو اكتب كلمات عربية للعثور على آيات القرآن.';
+	@override String get guidePrayerBody => 'تجد هنا مواقيت الصلاة والقبلة. يمكنك اختيار السماح بالموقع من إعدادات الصلاة.';
+	@override String get guideAppearanceBody => 'اختر المظهر الفاتح أو الداكن أو مظهر النظام من هنا. افتح المظهر في هذه القائمة لاختيار الألوان.';
+	@override String get guideNotificationsBody => 'اختر التنبيهات والأذان، وحدد أوقات الهدوء أو أوقف جميع التنبيهات مؤقتًا من إعدادات التنبيهات. فعّل الأذونات عندما ترغب بذلك فقط.';
+	@override String get prayerSilenceTitle => 'الصامت وقت الصلاة';
+	@override String get prayerSilenceSub => 'فترة هدوء تلقائية بعد الأذان';
+	@override String get prayerSilenceEnable => 'تفعيل الصامت وقت الصلاة';
+	@override String get prayerSilenceBody => 'كتم المكالمات والإشعارات خلال فترة تختارها بعد كل أذان، مع السماح بالمنبّهات. قد تطبّق أوضاع عدم الإزعاج الأخرى إعدادات أكثر تقييدًا.';
+	@override String get prayerSilenceTimingHint => 'البداية والنهاية بالدقائق بعد الأذان. إذا كان حصن لا يزال يشغّل الأذان، ينتظر الصامت انتهاءه، مع بقاء وقت النهاية كما هو.';
+	@override String get prayerSilenceStart => 'البداية بعد الأذان';
+	@override String get prayerSilenceEnd => 'النهاية بعد الأذان';
+	@override String prayerSilenceMinutes({required Object minutes}) => '${minutes} دقيقة';
+	@override String get prayerSilencePolicyButton => 'السماح بالوصول إلى عدم الإزعاج';
+	@override String get prayerSilenceExactButton => 'السماح بالتوقيت الدقيق';
+	@override String get prayerSilenceDisabled => 'الصامت وقت الصلاة متوقف';
+	@override String get prayerSilencePermission => 'اسمح بالوصول إلى عدم الإزعاج لاستخدام الصامت وقت الصلاة.';
+	@override String get prayerSilenceExact => 'متوقف مؤقتًا: يلزم السماح بالمنبّهات الدقيقة لضبط وقت البداية والنهاية.';
+	@override String get prayerSilenceLocation => 'اختر مدينتك أو اسمح بالموقع لحساب فترات الصلاة.';
+	@override String get prayerSilenceReady => 'جاهز لفترة الصلاة القادمة';
+	@override String prayerSilenceActiveUntil({required Object time}) => 'الصامت وقت الصلاة مفعّل حتى ${time}';
+	@override String get prayerSilenceWaiting => 'في انتظار انتهاء الأذان';
+	@override String get prayerSilenceRuleDisabled => 'وضع الصلاة الخاص بحصن معطّل في إعدادات أندرويد.';
+	@override String get prayerSilenceUnavailable => 'الصامت وقت الصلاة متاح على أندرويد فقط.';
+	@override String get prayerSilenceError => 'تعذّر جدولة الصامت وقت الصلاة. راجع الأذونات وأعد المحاولة.';
+	@override String get prayerSilenceStopNow => 'إنهاء فترة الصامت الحالية';
+	@override String get prayerSilenceExpiryNote => 'ينتهي وضع حصن وحده تلقائيًا؛ ولا يتغير وضع عدم الإزعاج الذي ضبطته بنفسك. قد يؤخر أندرويد التحقق الاحتياطي من النهاية عند سحب إذن المنبّهات الدقيقة أو تقييد التطبيق.';
 }
 
 /// The flat map containing all translations for locale <ar>.
@@ -523,6 +592,16 @@ extension on TranslationsAr {
 			'weekdayLetters.6' => 'ح',
 			'quranTitle' => 'القرآن الكريم',
 			'searchSurah' => 'ابحث في السور…',
+			'searchQuran' => 'ابحث عن سورة أو كلمات في القرآن',
+			'quranSearchSurahs' => 'السور',
+			'quranSearchVerses' => 'الآيات',
+			'quranSearchFailed' => 'تعذر البحث في الآيات. حاول مرة أخرى.',
+			'quranSearchLimit' => 'عرض أول ٥٠ نتيجة من الآيات',
+			'retrySearch' => 'أعد البحث',
+			'afterPrayerTasbih' => 'التسبيح بعد الصلاة',
+			'startAfterPrayerTasbih' => 'عدّ أذكار ما بعد الصلاة',
+			'currentPhrase' => 'الذكر الحالي',
+			'afterPrayerComplete' => 'اكتملت أذكار ما بعد الصلاة.',
 			'continueReading' => 'متابعة القراءة',
 			'surahWord' => 'سورة',
 			'revelationMeccan' => 'مكية',
@@ -550,6 +629,16 @@ extension on TranslationsAr {
 			'fieldTranslation' => 'الترجمة / المعنى (اختياري)',
 			'fieldReference' => 'المصدر (اختياري)',
 			'fieldRepeat' => 'عدد التكرار',
+			'fieldRepeatPositiveRequired' => 'أدخل عددًا صحيحًا لا يقل عن ١.',
+			'addDhikr' => 'إضافة ذكر',
+			'editDhikr' => 'تعديل الذكر',
+			'deleteDhikr' => 'حذف الذكر',
+			'deleteDhikrConfirm' => 'حذف هذا الذكر وعدّاده المحفوظ؟',
+			'fieldDhikrName' => 'الاسم',
+			'fieldDhikrNameRequired' => 'أدخل اسمًا لهذا الذكر.',
+			'fieldDhikrTargetRequired' => 'أدخل عددًا صحيحًا من ١ إلى ١٬٠٠٠٬٠٠٠.',
+			'nextSetOnTap' => 'اكتملت الجولة. اضغط لبدء الجولة التالية.',
+			'customDhikrTargetNote' => 'اختر عدد التكرار لجلستك الخاصة.',
 			'save' => 'حفظ',
 			'cancel' => 'إلغاء',
 			'delete' => 'حذف',
@@ -641,13 +730,13 @@ extension on TranslationsAr {
 			'allowAlarms' => 'السماح',
 			'adhanVolume' => 'مستوى صوت الأذان',
 			'streamLabels.0' => 'الوسائط',
-			'streamLabels.1' => 'الرنين',
+			'streamLabels.1' => 'الرنين / الإشعارات',
 			'streamLabels.2' => 'المنبّه',
-			'streamHints.0' => 'يتحكّم به مستوى صوت الوسائط',
-			'streamHints.1' => 'يتحكّم به مستوى صوت الرنين',
-			'streamHints.2' => 'يتحكّم به مستوى صوت المنبّه',
+			'streamHints.0' => 'الوسائط: يستخدم مستوى صوت الموسيقى والفيديو في هاتفك. كتم الرنين لا يكتمه بالضرورة؛ راجع صوت الوسائط وإعدادات عدم الإزعاج أيضًا.',
+			'streamHints.1' => 'الرنين: يستخدم مستوى صوت الرنين أو الإشعارات في هاتفك. قد يكتم الوضع الصامت أو الاهتزاز وعدم الإزعاج صوت الأذان.',
+			'streamHints.2' => 'المنبّه: يستخدم مستوى صوت المنبّه في هاتفك. كتم الرنين لا يكتم المنبّهات عادةً؛ راجع السماح بالمنبّهات في إعدادات عدم الإزعاج.',
 			'previewAdhan' => 'تجربة الأذان',
-			'stopAdhan' => 'إيقاف',
+			'stopAdhan' => 'إيقاف الأذان',
 			'adhanPlaying' => 'جارٍ تشغيل الأذان…',
 			'notifBlocked' => 'الإشعارات محظورة. فعّلها لتطبيق Hisn من إعدادات جهازك.',
 			'textSize' => 'حجم الخط',
@@ -887,6 +976,55 @@ extension on TranslationsAr {
 			'shareAsText' => 'مشاركة كنص',
 			'shareImageFailedNotReady' => 'لم تكن البطاقة جاهزة — تتم مشاركة النص بدلاً من ذلك.',
 			'shareImageFailedUnsupported' => 'تعذّر إنشاء صورة على هذا الجهاز — تتم مشاركة النص بدلاً من ذلك.',
+			'nextPhraseOnTap' => 'اكتمل الذكر. اضغط لعدّ الذكر التالي.',
+			'aboutTypefaces' => 'الخطوط',
+			'aboutVerseMeanings' => 'معاني الآيات',
+			'aboutUrduDuaCredit' => 'معاني الأدعية بالأردية: مسودة مشروع حصن؛ في انتظار مراجعة مختصّ.',
+			'aboutTranslationSource' => 'مصادر الترجمات · تنزيل',
+			'aboutLinkCopied' => 'نُسخ رابط المصدر. افتحه في متصفحك.',
+			'aboutArabicText' => 'النص العربي',
+			'aboutLatinText' => 'النص اللاتيني',
+			'aboutLatinApparatus' => 'نص الواجهة اللاتيني',
+			'aboutMushafPages' => 'صفحات المصحف · مجمع الملك فهد لطباعة المصحف الشريف',
+			'prayerCountdownTitle' => 'العد التنازلي للصلاة القادمة',
+			'prayerCountdownSubtitle' => 'اعرض عدًا تنازليًا صامتًا في إشعارات أندرويد.',
+			'prayerCountdownUnavailable' => 'متاح على أندرويد. يتحكم النظام في طريقة عرض العد التنازلي.',
+			'prayerCountdownChannelDescription' => 'عد تنازلي صامت للصلاة القادمة',
+			'guideTitle' => 'دليل سريع',
+			'guideWelcomeTitle' => 'تعرّف على تطبيق حصن',
+			'guideWelcomeBody' => 'تعرّف على مكان المسبحة والبحث في القرآن وأدوات الصلاة والمظهر والتنبيهات. يمكنك عرض هذا الدليل مجددًا من الإعدادات.',
+			'viewGuide' => 'عرض الدليل',
+			'replayGuide' => 'عرض دليل التطبيق',
+			'replayGuideSub' => 'جولة إرشادية للميزات الرئيسية',
+			'guideDone' => 'تم',
+			'guideProgress' => ({required Object current, required Object total}) => '${current} من ${total}',
+			'guideTasbihBody' => 'افتح المسبحة لاختيار ذكر، أو إضافة ذكر خاص بك، وعدّ التكرار.',
+			'guideQuranBody' => 'ابحث عن سورة أو اكتب كلمات عربية للعثور على آيات القرآن.',
+			'guidePrayerBody' => 'تجد هنا مواقيت الصلاة والقبلة. يمكنك اختيار السماح بالموقع من إعدادات الصلاة.',
+			'guideAppearanceBody' => 'اختر المظهر الفاتح أو الداكن أو مظهر النظام من هنا. افتح المظهر في هذه القائمة لاختيار الألوان.',
+			'guideNotificationsBody' => 'اختر التنبيهات والأذان، وحدد أوقات الهدوء أو أوقف جميع التنبيهات مؤقتًا من إعدادات التنبيهات. فعّل الأذونات عندما ترغب بذلك فقط.',
+			'prayerSilenceTitle' => 'الصامت وقت الصلاة',
+			'prayerSilenceSub' => 'فترة هدوء تلقائية بعد الأذان',
+			'prayerSilenceEnable' => 'تفعيل الصامت وقت الصلاة',
+			'prayerSilenceBody' => 'كتم المكالمات والإشعارات خلال فترة تختارها بعد كل أذان، مع السماح بالمنبّهات. قد تطبّق أوضاع عدم الإزعاج الأخرى إعدادات أكثر تقييدًا.',
+			'prayerSilenceTimingHint' => 'البداية والنهاية بالدقائق بعد الأذان. إذا كان حصن لا يزال يشغّل الأذان، ينتظر الصامت انتهاءه، مع بقاء وقت النهاية كما هو.',
+			'prayerSilenceStart' => 'البداية بعد الأذان',
+			'prayerSilenceEnd' => 'النهاية بعد الأذان',
+			'prayerSilenceMinutes' => ({required Object minutes}) => '${minutes} دقيقة',
+			'prayerSilencePolicyButton' => 'السماح بالوصول إلى عدم الإزعاج',
+			'prayerSilenceExactButton' => 'السماح بالتوقيت الدقيق',
+			'prayerSilenceDisabled' => 'الصامت وقت الصلاة متوقف',
+			'prayerSilencePermission' => 'اسمح بالوصول إلى عدم الإزعاج لاستخدام الصامت وقت الصلاة.',
+			'prayerSilenceExact' => 'متوقف مؤقتًا: يلزم السماح بالمنبّهات الدقيقة لضبط وقت البداية والنهاية.',
+			'prayerSilenceLocation' => 'اختر مدينتك أو اسمح بالموقع لحساب فترات الصلاة.',
+			'prayerSilenceReady' => 'جاهز لفترة الصلاة القادمة',
+			'prayerSilenceActiveUntil' => ({required Object time}) => 'الصامت وقت الصلاة مفعّل حتى ${time}',
+			'prayerSilenceWaiting' => 'في انتظار انتهاء الأذان',
+			'prayerSilenceRuleDisabled' => 'وضع الصلاة الخاص بحصن معطّل في إعدادات أندرويد.',
+			'prayerSilenceUnavailable' => 'الصامت وقت الصلاة متاح على أندرويد فقط.',
+			'prayerSilenceError' => 'تعذّر جدولة الصامت وقت الصلاة. راجع الأذونات وأعد المحاولة.',
+			'prayerSilenceStopNow' => 'إنهاء فترة الصامت الحالية',
+			'prayerSilenceExpiryNote' => 'ينتهي وضع حصن وحده تلقائيًا؛ ولا يتغير وضع عدم الإزعاج الذي ضبطته بنفسك. قد يؤخر أندرويد التحقق الاحتياطي من النهاية عند سحب إذن المنبّهات الدقيقة أو تقييد التطبيق.',
 			_ => null,
 		};
 	}

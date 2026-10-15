@@ -116,7 +116,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 onPageChanged: (i) => setState(() => _page = i),
                 children: [
                   _TipPage(
-                    icon: Icons.auto_awesome,
+                    icon: Icons.mosque_outlined,
                     title: s.onboardWelcomeTitle,
                     body: s.onboardWelcomeBody,
                     hero: true,
@@ -392,9 +392,8 @@ class _PermissionTile extends StatelessWidget {
   }
 }
 
-/// Page position, marked as a row of rules — the current page's rule struck
-/// long and in the rubric, the rest short. Reads as a quire signature rather
-/// than as a carousel's dots.
+/// Rounded page dots with an elongated active mark, ordered with the tour's
+/// reading direction so the first page starts on the right in Arabic.
 class _Dots extends StatelessWidget {
   const _Dots({required this.count, required this.active});
 
@@ -411,10 +410,13 @@ class _Dots extends StatelessWidget {
         return AnimatedContainer(
           duration: Motion.of(context, Motion.quick),
           curve: Curves.easeOut,
-          margin: const EdgeInsetsDirectional.only(end: 5),
-          width: selected ? 20 : 9,
-          height: 2,
-          color: selected ? ms.rubric : ms.rule,
+          margin: const EdgeInsetsDirectional.only(end: 6),
+          width: selected ? 24 : 8,
+          height: 8,
+          decoration: BoxDecoration(
+            color: selected ? ms.rubric : ms.ruleStrong,
+            borderRadius: BorderRadius.circular(4),
+          ),
         );
       }),
     );

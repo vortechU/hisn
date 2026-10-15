@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../l10n/app_strings.dart';
@@ -6,7 +7,6 @@ import '../models/dua.dart';
 import '../services/custom_dua_service.dart';
 import '../services/display_settings.dart';
 import '../theme/app_theme.dart';
-import '../widgets/ornament.dart';
 
 /// A form for adding — or, when [existing] is provided, editing — a custom dua.
 /// Only the Arabic text is required.
@@ -27,7 +27,7 @@ class _AddDuaScreenState extends State<AddDuaScreen> {
   final _transliteration = TextEditingController();
   final _translation = TextEditingController();
   final _reference = TextEditingController();
-  int _repeat = 1;
+  final _repeatInput = TextEditingController(text: '1');
   bool _saving = false;
 
   bool get _isEditing => widget.existing != null;
@@ -45,9 +45,10 @@ class _AddDuaScreenState extends State<AddDuaScreen> {
       _title.text = dua.title == _defaultPlaceholder ? '' : dua.title;
       _transliteration.text = dua.transliteration;
       _translation.text = dua.translation;
-      _reference.text =
-          dua.reference == _defaultPlaceholder ? '' : dua.reference;
-      _repeat = dua.repeat;
+      _reference.text = dua.reference == _defaultPlaceholder
+          ? ''
+          : dua.reference;
+      _repeatInput.text = dua.repeat.toString();
     }
   }
 
@@ -58,11 +59,13 @@ class _AddDuaScreenState extends State<AddDuaScreen> {
     _transliteration.dispose();
     _translation.dispose();
     _reference.dispose();
+    _repeatInput.dispose();
     super.dispose();
   }
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
+    final repeat = _parseRepeat(_repeatInput.text)!;
     setState(() => _saving = true);
     final service = context.read<CustomDuaService>();
     if (_isEditing) {
@@ -73,7 +76,7 @@ class _AddDuaScreenState extends State<AddDuaScreen> {
         transliteration: _transliteration.text,
         translation: _translation.text,
         reference: _reference.text,
-        repeat: _repeat,
+        repeat: repeat,
       );
     } else {
       await service.add(
@@ -82,7 +85,7 @@ class _AddDuaScreenState extends State<AddDuaScreen> {
         transliteration: _transliteration.text,
         translation: _translation.text,
         reference: _reference.text,
-        repeat: _repeat,
+        repeat: repeat,
       );
     }
     if (mounted) Navigator.of(context).pop(true);
@@ -92,17 +95,15 @@ class _AddDuaScreenState extends State<AddDuaScreen> {
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
     final theme = Theme.of(context);
-    final arabicFamily =
-        context.select<DisplaySettings, String>((d) => d.arabicFontFamily);
+    final arabicFamily = context.select<DisplaySettings, String>(
+      (d) => d.arabicFontFamily,
+    );
 
     return Scaffold(
       appBar: AppBar(
         title: Text(_isEditing ? s.editDua : s.newDua),
         actions: [
-          TextButton(
-            onPressed: _saving ? null : _save,
-            child: Text(s.save),
-          ),
+          TextButton(onPressed: _saving ? null : _save, child: Text(s.save)),
         ],
       ),
       body: Form(
@@ -127,8 +128,9 @@ class _AddDuaScreenState extends State<AddDuaScreen> {
                 height: 1.85,
                 color: theme.colorScheme.onSurface,
               ),
-              validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? s.fieldArabicRequired : null,
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? s.fieldArabicRequired
+                  : null,
             ),
             const SizedBox(height: 18),
             _Label(s.fieldTitle),
@@ -139,8 +141,9 @@ class _AddDuaScreenState extends State<AddDuaScreen> {
             const SizedBox(height: 6),
             TextFormField(
               controller: _transliteration,
-              style: theme.textTheme.bodyLarge
-                  ?.copyWith(fontStyle: FontStyle.italic),
+              style: theme.textTheme.bodyLarge?.copyWith(
+                fontStyle: FontStyle.italic,
+              ),
             ),
             const SizedBox(height: 18),
             _Label(s.fieldTranslation),
@@ -152,9 +155,9 @@ class _AddDuaScreenState extends State<AddDuaScreen> {
             TextFormField(controller: _reference),
             const SizedBox(height: 22),
             _RepeatStepper(
-              value: _repeat,
+              controller: _repeatInput,
               label: s.fieldRepeat,
-              onChanged: (v) => setState(() => _repeat = v),
+              onChanged: () => setState(() {}),
             ),
             const SizedBox(height: 24),
             FilledButton.icon(
@@ -183,84 +186,113 @@ class _Label extends StatelessWidget {
     final ms = ManuscriptTheme.of(context);
     return Row(
       children: [
-        Text(text.toUpperCase(), style: theme.textTheme.labelSmall),
+        Flexible(
+          child: Text(text.toUpperCase(), style: theme.textTheme.labelSmall),
+        ),
         if (required) ...[
           const SizedBox(width: 4),
-          Text('*',
-              style: theme.textTheme.labelSmall?.copyWith(color: ms.rubric)),
+          Text(
+            '*',
+            style: theme.textTheme.labelSmall?.copyWith(color: ms.rubric),
+          ),
         ],
       ],
     );
   }
 }
 
-/// The repetition count, as a numeral between two ruled steppers.
+/// Parse Western, Arabic-Indic and Persian digits without changing the input.
+int? _parseRepeat(String text) {
+  if (!RegExp(r'^[0-9٠-٩۰-۹]+$').hasMatch(text)) return null;
+  final normalized = String.fromCharCodes(
+    text.runes.map((code) {
+      if (code >= 0x0660 && code <= 0x0669) return code - 0x0660 + 0x30;
+      if (code >= 0x06f0 && code <= 0x06f9) return code - 0x06f0 + 0x30;
+      return code;
+    }),
+  );
+  final value = int.tryParse(normalized);
+  return value != null && value >= 1 ? value : null;
+}
+
+/// Direct numeric entry for large targets, with steppers for small adjustments.
 class _RepeatStepper extends StatelessWidget {
   const _RepeatStepper({
-    required this.value,
+    required this.controller,
     required this.label,
     required this.onChanged,
   });
 
-  final int value;
+  final TextEditingController controller;
   final String label;
-  final ValueChanged<int> onChanged;
+  final VoidCallback onChanged;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final ms = ManuscriptTheme.of(context);
+    final s = AppStrings.of(context);
+    final value = _parseRepeat(controller.text);
 
-    Widget step(IconData icon, String tooltip, VoidCallback? onTap) => Material(
-          type: MaterialType.transparency,
-          child: InkWell(
-            onTap: onTap,
-            child: Tooltip(
-              message: tooltip,
-              child: SizedBox(
-                width: 44,
-                height: 44,
-                child: Icon(
-                  icon,
-                  size: 19,
-                  color: onTap == null
-                      ? theme.colorScheme.onSurfaceVariant
-                          .withValues(alpha: 0.4)
-                      : ms.rubric,
-                ),
+    void step(int next) {
+      controller.value = TextEditingValue(
+        text: '$next',
+        selection: TextSelection.collapsed(offset: '$next'.length),
+      );
+      onChanged();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _Label(label),
+        const SizedBox(height: 6),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            IconButton(
+              key: const ValueKey('custom_repeat_decrement'),
+              tooltip: '$label: −1',
+              color: ms.rubric,
+              constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+              onPressed: value != null && value > 1
+                  ? () => step(value - 1)
+                  : null,
+              icon: const Icon(Icons.remove),
+            ),
+            Expanded(
+              child: TextFormField(
+                key: const ValueKey('custom_repeat_count'),
+                controller: controller,
+                keyboardType: TextInputType.number,
+                textDirection: TextDirection.ltr,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleMedium,
+                decoration: InputDecoration(hintText: '1', errorMaxLines: 2),
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                inputFormatters: [
+                  TextInputFormatter.withFunction(
+                    (oldValue, newValue) =>
+                        RegExp(r'^[0-9٠-٩۰-۹]*$').hasMatch(newValue.text)
+                        ? newValue
+                        : oldValue,
+                  ),
+                ],
+                validator: (text) => _parseRepeat(text ?? '') == null
+                    ? s.fieldRepeatPositiveRequired
+                    : null,
+                onChanged: (_) => onChanged(),
               ),
             ),
-          ),
-        );
-
-    return Row(
-      children: [
-        Expanded(
-          child: Text(label.toUpperCase(), style: theme.textTheme.labelSmall),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: ms.rule),
-            borderRadius: BorderRadius.circular(Ms.rSmall),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                step(Icons.remove, '−',
-                    value > 1 ? () => onChanged(value - 1) : null),
-                VerticalDivider(width: 1, color: ms.rule),
-                SizedBox(
-                  width: 56,
-                  child: Center(child: Numeral('$value', size: 19)),
-                ),
-                VerticalDivider(width: 1, color: ms.rule),
-                step(Icons.add, '+',
-                    value < 1000 ? () => onChanged(value + 1) : null),
-              ],
+            IconButton(
+              key: const ValueKey('custom_repeat_increment'),
+              tooltip: '$label: +1',
+              color: ms.rubric,
+              constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+              onPressed: () => step((value ?? 0) + 1),
+              icon: const Icon(Icons.add),
             ),
-          ),
+          ],
         ),
       ],
     );

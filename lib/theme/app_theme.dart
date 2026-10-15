@@ -81,8 +81,14 @@ class ManuscriptTheme extends ThemeExtension<ManuscriptTheme> {
 class Ms {
   Ms._();
 
-  /// Badges, chips, inputs, counters.
+  /// Badges, chips, counters.
   static const double rSmall = 2;
+
+  /// Editable fields have a softer outline while ruled panels stay crisp.
+  static const double rInput = 12;
+
+  /// Buttons have a softer silhouette than manuscript frames and badges.
+  static const double rButton = 16;
 
   /// Ruled panels and cards.
   static const double rPanel = 3;
@@ -297,7 +303,7 @@ class AppTheme {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13),
           textStyle: text.labelLarge,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(Ms.rSmall),
+            borderRadius: BorderRadius.circular(Ms.rButton),
           ),
         ),
       ),
@@ -308,7 +314,7 @@ class AppTheme {
           textStyle: text.labelLarge,
           side: BorderSide(color: rubric.withValues(alpha: 0.5)),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(Ms.rSmall),
+            borderRadius: BorderRadius.circular(Ms.rButton),
           ),
         ),
       ),
@@ -318,7 +324,7 @@ class AppTheme {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           textStyle: text.labelLarge,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(Ms.rSmall),
+            borderRadius: BorderRadius.circular(Ms.rButton),
           ),
         ),
       ),
@@ -327,7 +333,7 @@ class AppTheme {
           foregroundColor: inkMuted,
           highlightColor: rubric.withValues(alpha: 0.10),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(Ms.rSmall),
+            borderRadius: BorderRadius.circular(Ms.rButton),
           ),
         ),
       ),
@@ -451,7 +457,7 @@ class AppTheme {
 
   static OutlineInputBorder _inputBorder(Color color, {double width = 1}) =>
       OutlineInputBorder(
-        borderRadius: BorderRadius.circular(Ms.rSmall),
+        borderRadius: BorderRadius.circular(Ms.rInput),
         borderSide: BorderSide(color: color, width: width),
       );
 

@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "baseEntries": [
+    {
+      "id": "daily_wearing_clothes",
+      "categoryId": "daily",
+      "title": "Wearing a garment",
+      "titleArabic": "دُعَاءُ لُبْسِ الثَّوْبِ",
+      "arabic": "الْحَمْدُ لِلَّهِ الَّذِي كَسَانِي هَذَا الثَّوْبَ وَرَزَقَنِيهِ مِنْ غَيْرِ حَوْلٍ مِنِّي وَلَا قُوَّةٍ",
+      "transliteration": "Alhamdu lillahil-ladhi kasani hadhath-thawba wa razaqanihi min ghayri hawlin minni wa la quwwah",
+      "translation": "Praise belongs to Allah, who clothed me with this garment and provided it for me without any might or power of my own.",
+      "reference": "Sunan Abi Dawud 4023 (graded hasan); Sahih Muslim 2097",
+      "repeat": 1,
+      "virtue": "Whoever says this on putting on a garment is forgiven their past sins.",
+      "instruction": "This supplication is for putting on a garment, whether new or previously worn. When putting on shoes, begin with the right foot; when taking them off, begin with the left. The shoe guidance is an action, not words to recite."
+    }
+  ],
+  "insertBefore": {
+    "daily_wearing_clothes": "daily_wearing_new_clothes"
+  },
+  "baseUpdates": {
+    "daily_wearing_new_clothes": {
+      "instruction": "When putting on shoes, begin with the right foot; when taking them off, begin with the left (Sahih Muslim 2097)."
+    }
+  },
+  "arabicOverlay": {
+    "daily_wearing_clothes": {
+      "reference": "سنن أبي داود ٤٠٢٣ (حسن)؛ صحيح مسلم ٢٠٩٧",
+      "virtue": "من قالها عند لبس الثوب غُفر له ما تقدّم من ذنبه.",
+      "instruction": "هذا الدعاء عند لبس الثوب، سواء أكان جديدًا أم سبق لبسه. وعند لبس النعل ابدأ بالقدم اليمنى، وعند خلعه ابدأ باليسرى. وهذه إرشادات للعمل وليست ذكرًا يُتلى."
+    },
+    "daily_wearing_new_clothes": {
+      "instruction": "عند لبس النعل ابدأ بالقدم اليمنى، وعند خلعه ابدأ باليسرى (صحيح مسلم ٢٠٩٧)."
+    }
+  },
+  "indonesianOverlay": {
+    "daily_wearing_clothes": {
+      "translation": "Segala puji bagi Allah yang telah memberiku pakaian ini dan menganugerahkannya kepadaku tanpa daya dan kekuatan dariku.",
+      "virtue": "Siapa yang mengucapkannya ketika mengenakan pakaian, diampuni dosa-dosanya yang telah lalu.",
+      "instruction": "Doa ini dibaca ketika mengenakan pakaian, baik baru maupun yang pernah dipakai. Ketika memakai alas kaki, dahulukan kaki kanan; ketika melepasnya, dahulukan kaki kiri. Petunjuk tentang alas kaki merupakan tindakan, bukan bacaan doa."
+    },
+    "daily_wearing_new_clothes": {
+      "instruction": "Ketika memakai alas kaki, dahulukan kaki kanan; ketika melepasnya, dahulukan kaki kiri (Sahih Muslim 2097)."
+    }
+  },
+  "generatorVirtues": {
+    "daily_wearing_clothes": "من قالها عند لبس الثوب غُفر له ما تقدّم من ذنبه."
+  },
+  "generatorInstructions": {
+    "daily_wearing_clothes": "هذا الدعاء عند لبس الثوب، سواء أكان جديدًا أم سبق لبسه. وعند لبس النعل ابدأ بالقدم اليمنى، وعند خلعه ابدأ باليسرى. وهذه إرشادات للعمل وليست ذكرًا يُتلى.",
+    "daily_wearing_new_clothes": "عند لبس النعل ابدأ بالقدم اليمنى، وعند خلعه ابدأ باليسرى (صحيح مسلم ٢٠٩٧)."
+  },
+  "sources": [
+    {
+      "url": "https://sunnah.com/abudawud:4023",
+      "supports": "Garment supplication. Displayed grading: hasan without the addition 'and later sins'. Virtue deliberately promises forgiveness of past sins only."
+    },
+    {
+      "url": "https://sunnah.com/muslim:2097a",
+      "supports": "Right foot first when putting on shoes; left foot first when taking shoes off."
+    },
+    {
+      "url": "https://sunnah.com/hisn:5",
+      "supports": "Hisn al-Muslim's separate general garment-wearing section, distinct from new clothes."
+    }
+  ],
+  "integrationNotes": [
+    "Preserve existing daily_wearing_new_clothes recitation, source and repeat count. Add the general garment supplication directly before it.",
+    "Put shoe etiquette in instruction fields, keeping it outside recitable Arabic and repeat counts.",
+    "No new reference-generator phrase required; '(graded hasan)' is already supported. Add generatorVirtues and generatorInstructions to their respective Arabic generator tables.",
+    "No audio entry proposed; no verified recording exists for the new garment card."
+  ]
+}

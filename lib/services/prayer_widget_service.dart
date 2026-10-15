@@ -216,8 +216,8 @@ class PrayerWidgetService extends ChangeNotifier {
       final done = progress == null
           ? 0
           : duas.where((d) => progress.countOf(d.id) >= d.repeat).length;
-      data['adhkar_${id}_title'] = category?.titleFor(s.ar) ?? '';
-      data['adhkar_${id}_sub'] = category?.subtitleFor(s.ar) ?? '';
+      data['adhkar_${id}_title'] = category?.titleForLang(s.lang.name) ?? '';
+      data['adhkar_${id}_sub'] = category?.subtitleForLang(s.lang.name) ?? '';
       data['adhkar_${id}_done'] = done.toString();
       data['adhkar_${id}_total'] = duas.length.toString();
     }

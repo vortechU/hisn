@@ -67,11 +67,15 @@ class AdhanPlayerService : Service() {
 
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("الأذان · Adhan")
-            .setContentText("Playing the call to prayer")
+            .setContentText(playbackLabel())
             .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
-            .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Stop", stopPi)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setDeleteIntent(stopPi)
+            .setStyle(androidx.media.app.NotificationCompat.MediaStyle()
+                .setShowActionsInCompactView(0))
+            .addAction(android.R.drawable.ic_menu_close_clear_cancel, stopLabel(), stopPi)
         if (openPi != null) builder.setContentIntent(openPi)
 
         val notif = builder.build()
@@ -84,8 +88,26 @@ class AdhanPlayerService : Service() {
         }
     }
 
+    private fun language(): String = FlutterPrefs.getString(this, "app_language", "en") ?: "en"
+
+    private fun stopLabel(): String = when (language()) {
+        "ar" -> "إيقاف الأذان"
+        "id" -> "Hentikan azan"
+        "ur" -> "اذان بند کریں"
+        else -> "Stop adhan"
+    }
+
+    private fun playbackLabel(): String = when (language()) {
+        "ar" -> "الأذان قيد التشغيل"
+        "id" -> "Azan sedang diputar"
+        "ur" -> "اذان چل رہی ہے"
+        else -> "Adhan is playing"
+    }
+
     private fun play(fajr: Boolean, usage: String) {
         try {
+            publishPlayback(true)
+            if (Build.VERSION.SDK_INT >= 24) PrayerSilencer.refresh(this)
             player?.release()
             // Static R.raw reference (not getIdentifier-by-name): gives the exact
             // resource id and, critically, forces the release optimizer to KEEP
@@ -115,6 +137,7 @@ class AdhanPlayerService : Service() {
                 }
                 prepare()
                 start()
+                publishPlayback(true)
             }
         } catch (e: Exception) {
             Log.e(TAG, "play() threw", e)
@@ -135,6 +158,8 @@ class AdhanPlayerService : Service() {
         }
         player?.release()
         player = null
+        publishPlayback(false)
+        if (Build.VERSION.SDK_INT >= 24) PrayerSilencer.refresh(this)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             stopForeground(STOP_FOREGROUND_REMOVE)
         } else {
@@ -147,6 +172,8 @@ class AdhanPlayerService : Service() {
     override fun onDestroy() {
         player?.release()
         player = null
+        publishPlayback(false)
+        if (Build.VERSION.SDK_INT >= 24) PrayerSilencer.refresh(this)
         super.onDestroy()
     }
 
@@ -157,8 +184,27 @@ class AdhanPlayerService : Service() {
         const val EXTRA_USAGE = "usage"
         const val CHANNEL_ID = "adhan_playback"
         const val NOTIF_ID = 73101
+        const val PLAYBACK_CHANNEL = "hisn/adhan_playback"
+
+        @Volatile var isPlaying: Boolean = false
+            private set
+        var playbackListener: ((Boolean) -> Unit)? = null
+
+        private fun publishPlayback(playing: Boolean) {
+            isPlaying = playing
+            playbackListener?.invoke(playing)
+        }
+
+        /** Stop an existing service without creating an idle service to stop. */
+        fun stop(context: android.content.Context) {
+            context.stopService(Intent(context, AdhanPlayerService::class.java))
+        }
 
         fun start(context: android.content.Context, fajr: Boolean, usage: String) {
+            // Reserve playback before the service is dispatched. A coincident
+            // silence alarm must not mute the app's own call to prayer.
+            publishPlayback(true)
+            if (Build.VERSION.SDK_INT >= 24) PrayerSilencer.refresh(context)
             val i = Intent(context, AdhanPlayerService::class.java).apply {
                 putExtra(EXTRA_FAJR, fajr)
                 putExtra(EXTRA_USAGE, usage)
@@ -166,6 +212,8 @@ class AdhanPlayerService : Service() {
             try {
                 ContextCompat.startForegroundService(context, i)
             } catch (e: Exception) {
+                publishPlayback(false)
+                if (Build.VERSION.SDK_INT >= 24) PrayerSilencer.refresh(context)
                 Log.e(TAG, "startForegroundService threw", e)
             }
         }

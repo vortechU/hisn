@@ -45,7 +45,7 @@ class CategoryVisuals {
     'sleep': CategoryVisuals(Icons.bedtime_outlined, CategoryTone.rubric, 6),
     'waking': CategoryVisuals(Icons.alarm_outlined, CategoryTone.rubric, 8),
     'daily':
-        CategoryVisuals(Icons.auto_awesome_outlined, CategoryTone.rubric, 10),
+        CategoryVisuals(Icons.menu_book_outlined, CategoryTone.rubric, 10),
     'forgiveness': CategoryVisuals(Icons.spa_outlined, CategoryTone.gilt, 8),
     'distress':
         CategoryVisuals(Icons.self_improvement_outlined, CategoryTone.gilt, 12),

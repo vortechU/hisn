@@ -112,6 +112,7 @@ class BackupService {
   static const _progressKeys = <String>{
     'favorite_dua_ids',
     'custom_duas',
+    'tasbih_custom_phrases',
   };
   static const _progressPrefixes = <String>[
     'muhassan_', // streak, best, history, per-day completion
@@ -125,6 +126,7 @@ class BackupService {
   static const _settingsKeys = <String>{
     'app_language',
     'onboarding_seen_v1',
+    'feature_guide_seen_v1',
     // Nudges the calculated Hijri date onto the local sighting. A device
     // setting, not progress: restoring "progress only" onto a phone in another
     // country must leave that phone's own alignment alone.
@@ -136,6 +138,7 @@ class BackupService {
     'display_', // font scale, transliteration/translation, Arabic face
     'theme_', // palette, mode, patterns
     'adhan_sound_', // enabled, volume stream
+    'qibla_', // dial appearance and alignment vibration
   ];
 
   /// Whether [key] belongs to the user's data at all.

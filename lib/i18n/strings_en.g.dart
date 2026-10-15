@@ -165,6 +165,36 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// en: 'Search surahs…'
 	String get searchSurah => 'Search surahs…';
 
+	/// en: 'Search surahs or Arabic words'
+	String get searchQuran => 'Search surahs or Arabic words';
+
+	/// en: 'Surahs'
+	String get quranSearchSurahs => 'Surahs';
+
+	/// en: 'Verses'
+	String get quranSearchVerses => 'Verses';
+
+	/// en: 'Could not search verses. Try again.'
+	String get quranSearchFailed => 'Could not search verses. Try again.';
+
+	/// en: 'Showing the first 50 verse results'
+	String get quranSearchLimit => 'Showing the first 50 verse results';
+
+	/// en: 'Retry search'
+	String get retrySearch => 'Retry search';
+
+	/// en: 'Tasbih after prayer'
+	String get afterPrayerTasbih => 'Tasbih after prayer';
+
+	/// en: 'Count the dhikr after prayer'
+	String get startAfterPrayerTasbih => 'Count the dhikr after prayer';
+
+	/// en: 'Current phrase'
+	String get currentPhrase => 'Current phrase';
+
+	/// en: 'The dhikr after prayer is complete.'
+	String get afterPrayerComplete => 'The dhikr after prayer is complete.';
+
 	/// en: 'Continue reading'
 	String get continueReading => 'Continue reading';
 
@@ -245,6 +275,36 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
 	/// en: 'Repetitions'
 	String get fieldRepeat => 'Repetitions';
+
+	/// en: 'Enter a whole number of 1 or more.'
+	String get fieldRepeatPositiveRequired => 'Enter a whole number of 1 or more.';
+
+	/// en: 'Add dhikr'
+	String get addDhikr => 'Add dhikr';
+
+	/// en: 'Edit dhikr'
+	String get editDhikr => 'Edit dhikr';
+
+	/// en: 'Delete dhikr'
+	String get deleteDhikr => 'Delete dhikr';
+
+	/// en: 'Remove this dhikr and its saved count?'
+	String get deleteDhikrConfirm => 'Remove this dhikr and its saved count?';
+
+	/// en: 'Name'
+	String get fieldDhikrName => 'Name';
+
+	/// en: 'Enter a name for this dhikr.'
+	String get fieldDhikrNameRequired => 'Enter a name for this dhikr.';
+
+	/// en: 'Enter a whole number from 1 to 1,000,000.'
+	String get fieldDhikrTargetRequired => 'Enter a whole number from 1 to 1,000,000.';
+
+	/// en: 'Set complete. Tap to begin the next set.'
+	String get nextSetOnTap => 'Set complete. Tap to begin the next set.';
+
+	/// en: 'Choose a repetition target for your own session.'
+	String get customDhikrTargetNote => 'Choose a repetition target for your own session.';
 
 	/// en: 'Save'
 	String get save => 'Save';
@@ -513,20 +573,20 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
 	List<String> get streamLabels => [
 		'Media',
-		'Ringer',
+		'Ringer / notifications',
 		'Alarm',
 	];
 	List<String> get streamHints => [
-		'Controlled by your media volume',
-		'Controlled by your ringer volume',
-		'Controlled by your alarm volume',
+		'Media: uses your phone\'s music and video volume slider. A silent ringer does not necessarily mute it; check media volume and Do Not Disturb settings too.',
+		'Ringer: uses your phone\'s ringtone or notification volume slider. Silent or vibrate mode and Do Not Disturb can silence the adhan.',
+		'Alarm: uses your phone\'s alarm volume slider. A silent ringer usually does not mute alarms; check whether Do Not Disturb allows alarms.',
 	];
 
 	/// en: 'Preview adhan'
 	String get previewAdhan => 'Preview adhan';
 
-	/// en: 'Stop'
-	String get stopAdhan => 'Stop';
+	/// en: 'Stop adhan'
+	String get stopAdhan => 'Stop adhan';
 
 	/// en: 'Playing adhan…'
 	String get adhanPlaying => 'Playing adhan…';
@@ -1176,6 +1236,153 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
 	/// en: 'This device couldn't make an image — sharing the text instead.'
 	String get shareImageFailedUnsupported => 'This device couldn\'t make an image — sharing the text instead.';
+
+	/// en: 'Phrase complete. Tap to count the next phrase.'
+	String get nextPhraseOnTap => 'Phrase complete. Tap to count the next phrase.';
+
+	/// en: 'Typefaces'
+	String get aboutTypefaces => 'Typefaces';
+
+	/// en: 'Verse meanings'
+	String get aboutVerseMeanings => 'Verse meanings';
+
+	/// en: 'Urdu dua meanings: Hisn project draft; qualified review pending.'
+	String get aboutUrduDuaCredit => 'Urdu dua meanings: Hisn project draft; qualified review pending.';
+
+	/// en: 'Translation sources · Tanzil'
+	String get aboutTranslationSource => 'Translation sources · Tanzil';
+
+	/// en: 'Source link copied. Open it in your browser.'
+	String get aboutLinkCopied => 'Source link copied. Open it in your browser.';
+
+	/// en: 'Arabic text'
+	String get aboutArabicText => 'Arabic text';
+
+	/// en: 'Latin text'
+	String get aboutLatinText => 'Latin text';
+
+	/// en: 'Latin interface text'
+	String get aboutLatinApparatus => 'Latin interface text';
+
+	/// en: 'Mushaf pages · King Fahd Glorious Quran Printing Complex'
+	String get aboutMushafPages => 'Mushaf pages · King Fahd Glorious Quran Printing Complex';
+
+	/// en: 'Next prayer countdown'
+	String get prayerCountdownTitle => 'Next prayer countdown';
+
+	/// en: 'Keep a silent countdown in your Android notifications.'
+	String get prayerCountdownSubtitle => 'Keep a silent countdown in your Android notifications.';
+
+	/// en: 'Available on Android. The system controls how the countdown appears.'
+	String get prayerCountdownUnavailable => 'Available on Android. The system controls how the countdown appears.';
+
+	/// en: 'Silent countdown to the next prayer'
+	String get prayerCountdownChannelDescription => 'Silent countdown to the next prayer';
+
+	/// en: 'Quick guide'
+	String get guideTitle => 'Quick guide';
+
+	/// en: 'Find your way around Hisn'
+	String get guideWelcomeTitle => 'Find your way around Hisn';
+
+	/// en: 'See where to find Tasbih, Quran search, prayer tools, appearance and reminder controls. You can replay this guide in Settings.'
+	String get guideWelcomeBody => 'See where to find Tasbih, Quran search, prayer tools, appearance and reminder controls. You can replay this guide in Settings.';
+
+	/// en: 'View guide'
+	String get viewGuide => 'View guide';
+
+	/// en: 'View the app guide'
+	String get replayGuide => 'View the app guide';
+
+	/// en: 'A guided look at the main features'
+	String get replayGuideSub => 'A guided look at the main features';
+
+	/// en: 'Done'
+	String get guideDone => 'Done';
+
+	/// en: '$current of $total'
+	String guideProgress({required Object current, required Object total}) => '${current} of ${total}';
+
+	/// en: 'Open Tasbih to choose a phrase, add your own, and count your repetitions.'
+	String get guideTasbihBody => 'Open Tasbih to choose a phrase, add your own, and count your repetitions.';
+
+	/// en: 'Search for a surah or type Arabic words to find verses in the Quran.'
+	String get guideQuranBody => 'Search for a surah or type Arabic words to find verses in the Quran.';
+
+	/// en: 'Find prayer times and the Qibla here. You can choose location access in prayer settings.'
+	String get guidePrayerBody => 'Find prayer times and the Qibla here. You can choose location access in prayer settings.';
+
+	/// en: 'Choose Light, Dark or System here. Open Appearance in this menu to pick your colors.'
+	String get guideAppearanceBody => 'Choose Light, Dark or System here. Open Appearance in this menu to pick your colors.';
+
+	/// en: 'Choose reminders and adhan, set quiet periods, or pause all reminders in Notifications. Enable permissions only when you want to.'
+	String get guideNotificationsBody => 'Choose reminders and adhan, set quiet periods, or pause all reminders in Notifications. Enable permissions only when you want to.';
+
+	/// en: 'Silence during prayer'
+	String get prayerSilenceTitle => 'Silence during prayer';
+
+	/// en: 'Automatic quiet time after the adhan'
+	String get prayerSilenceSub => 'Automatic quiet time after the adhan';
+
+	/// en: 'Enable prayer silence'
+	String get prayerSilenceEnable => 'Enable prayer silence';
+
+	/// en: 'Silence calls and notifications for a window you choose after each adhan. Alarms remain allowed. Other Do Not Disturb modes may apply stricter settings.'
+	String get prayerSilenceBody => 'Silence calls and notifications for a window you choose after each adhan. Alarms remain allowed. Other Do Not Disturb modes may apply stricter settings.';
+
+	/// en: 'Start and end are minutes after the adhan. If Hisn is still playing the adhan, silence waits for it to finish; the end time stays the same.'
+	String get prayerSilenceTimingHint => 'Start and end are minutes after the adhan. If Hisn is still playing the adhan, silence waits for it to finish; the end time stays the same.';
+
+	/// en: 'Start after adhan'
+	String get prayerSilenceStart => 'Start after adhan';
+
+	/// en: 'End after adhan'
+	String get prayerSilenceEnd => 'End after adhan';
+
+	/// en: '$minutes min'
+	String prayerSilenceMinutes({required Object minutes}) => '${minutes} min';
+
+	/// en: 'Allow Do Not Disturb access'
+	String get prayerSilencePolicyButton => 'Allow Do Not Disturb access';
+
+	/// en: 'Allow precise timing'
+	String get prayerSilenceExactButton => 'Allow precise timing';
+
+	/// en: 'Prayer silence is off'
+	String get prayerSilenceDisabled => 'Prayer silence is off';
+
+	/// en: 'Allow Do Not Disturb access to use prayer silence.'
+	String get prayerSilencePermission => 'Allow Do Not Disturb access to use prayer silence.';
+
+	/// en: 'Paused: precise-alarm access is needed to start and end on time.'
+	String get prayerSilenceExact => 'Paused: precise-alarm access is needed to start and end on time.';
+
+	/// en: 'Choose your city or allow location to calculate prayer windows.'
+	String get prayerSilenceLocation => 'Choose your city or allow location to calculate prayer windows.';
+
+	/// en: 'Ready for the next prayer window'
+	String get prayerSilenceReady => 'Ready for the next prayer window';
+
+	/// en: 'Prayer silence is active until $time'
+	String prayerSilenceActiveUntil({required Object time}) => 'Prayer silence is active until ${time}';
+
+	/// en: 'Waiting for the adhan to finish'
+	String get prayerSilenceWaiting => 'Waiting for the adhan to finish';
+
+	/// en: 'Hisn's prayer mode is disabled in Android settings.'
+	String get prayerSilenceRuleDisabled => 'Hisn\'s prayer mode is disabled in Android settings.';
+
+	/// en: 'Prayer silence is available on Android only.'
+	String get prayerSilenceUnavailable => 'Prayer silence is available on Android only.';
+
+	/// en: 'Prayer silence could not be scheduled. Check access and try again.'
+	String get prayerSilenceError => 'Prayer silence could not be scheduled. Check access and try again.';
+
+	/// en: 'End this quiet period'
+	String get prayerSilenceStopNow => 'End this quiet period';
+
+	/// en: 'Only Hisn's mode ends automatically; your own Do Not Disturb stays unchanged. Android may delay the backup end check if precise-alarm access is revoked or the phone restricts the app.'
+	String get prayerSilenceExpiryNote => 'Only Hisn\'s mode ends automatically; your own Do Not Disturb stays unchanged. Android may delay the backup end check if precise-alarm access is revoked or the phone restricts the app.';
 }
 
 /// The flat map containing all translations for locale <en>.
@@ -1231,6 +1438,16 @@ extension on Translations {
 			'weekdayLetters.6' => 'S',
 			'quranTitle' => 'Quran',
 			'searchSurah' => 'Search surahs…',
+			'searchQuran' => 'Search surahs or Arabic words',
+			'quranSearchSurahs' => 'Surahs',
+			'quranSearchVerses' => 'Verses',
+			'quranSearchFailed' => 'Could not search verses. Try again.',
+			'quranSearchLimit' => 'Showing the first 50 verse results',
+			'retrySearch' => 'Retry search',
+			'afterPrayerTasbih' => 'Tasbih after prayer',
+			'startAfterPrayerTasbih' => 'Count the dhikr after prayer',
+			'currentPhrase' => 'Current phrase',
+			'afterPrayerComplete' => 'The dhikr after prayer is complete.',
 			'continueReading' => 'Continue reading',
 			'surahWord' => 'Surah',
 			'revelationMeccan' => 'Meccan',
@@ -1258,6 +1475,16 @@ extension on Translations {
 			'fieldTranslation' => 'Translation / meaning (optional)',
 			'fieldReference' => 'Source (optional)',
 			'fieldRepeat' => 'Repetitions',
+			'fieldRepeatPositiveRequired' => 'Enter a whole number of 1 or more.',
+			'addDhikr' => 'Add dhikr',
+			'editDhikr' => 'Edit dhikr',
+			'deleteDhikr' => 'Delete dhikr',
+			'deleteDhikrConfirm' => 'Remove this dhikr and its saved count?',
+			'fieldDhikrName' => 'Name',
+			'fieldDhikrNameRequired' => 'Enter a name for this dhikr.',
+			'fieldDhikrTargetRequired' => 'Enter a whole number from 1 to 1,000,000.',
+			'nextSetOnTap' => 'Set complete. Tap to begin the next set.',
+			'customDhikrTargetNote' => 'Choose a repetition target for your own session.',
 			'save' => 'Save',
 			'cancel' => 'Cancel',
 			'delete' => 'Delete',
@@ -1349,13 +1576,13 @@ extension on Translations {
 			'allowAlarms' => 'Allow',
 			'adhanVolume' => 'Adhan volume',
 			'streamLabels.0' => 'Media',
-			'streamLabels.1' => 'Ringer',
+			'streamLabels.1' => 'Ringer / notifications',
 			'streamLabels.2' => 'Alarm',
-			'streamHints.0' => 'Controlled by your media volume',
-			'streamHints.1' => 'Controlled by your ringer volume',
-			'streamHints.2' => 'Controlled by your alarm volume',
+			'streamHints.0' => 'Media: uses your phone\'s music and video volume slider. A silent ringer does not necessarily mute it; check media volume and Do Not Disturb settings too.',
+			'streamHints.1' => 'Ringer: uses your phone\'s ringtone or notification volume slider. Silent or vibrate mode and Do Not Disturb can silence the adhan.',
+			'streamHints.2' => 'Alarm: uses your phone\'s alarm volume slider. A silent ringer usually does not mute alarms; check whether Do Not Disturb allows alarms.',
 			'previewAdhan' => 'Preview adhan',
-			'stopAdhan' => 'Stop',
+			'stopAdhan' => 'Stop adhan',
 			'adhanPlaying' => 'Playing adhan…',
 			'notifBlocked' => 'Notifications are blocked. Enable them for Hisn in your device settings.',
 			'textSize' => 'Text size',
@@ -1595,6 +1822,55 @@ extension on Translations {
 			'shareAsText' => 'Share text',
 			'shareImageFailedNotReady' => 'The card wasn\'t ready to capture — sharing the text instead.',
 			'shareImageFailedUnsupported' => 'This device couldn\'t make an image — sharing the text instead.',
+			'nextPhraseOnTap' => 'Phrase complete. Tap to count the next phrase.',
+			'aboutTypefaces' => 'Typefaces',
+			'aboutVerseMeanings' => 'Verse meanings',
+			'aboutUrduDuaCredit' => 'Urdu dua meanings: Hisn project draft; qualified review pending.',
+			'aboutTranslationSource' => 'Translation sources · Tanzil',
+			'aboutLinkCopied' => 'Source link copied. Open it in your browser.',
+			'aboutArabicText' => 'Arabic text',
+			'aboutLatinText' => 'Latin text',
+			'aboutLatinApparatus' => 'Latin interface text',
+			'aboutMushafPages' => 'Mushaf pages · King Fahd Glorious Quran Printing Complex',
+			'prayerCountdownTitle' => 'Next prayer countdown',
+			'prayerCountdownSubtitle' => 'Keep a silent countdown in your Android notifications.',
+			'prayerCountdownUnavailable' => 'Available on Android. The system controls how the countdown appears.',
+			'prayerCountdownChannelDescription' => 'Silent countdown to the next prayer',
+			'guideTitle' => 'Quick guide',
+			'guideWelcomeTitle' => 'Find your way around Hisn',
+			'guideWelcomeBody' => 'See where to find Tasbih, Quran search, prayer tools, appearance and reminder controls. You can replay this guide in Settings.',
+			'viewGuide' => 'View guide',
+			'replayGuide' => 'View the app guide',
+			'replayGuideSub' => 'A guided look at the main features',
+			'guideDone' => 'Done',
+			'guideProgress' => ({required Object current, required Object total}) => '${current} of ${total}',
+			'guideTasbihBody' => 'Open Tasbih to choose a phrase, add your own, and count your repetitions.',
+			'guideQuranBody' => 'Search for a surah or type Arabic words to find verses in the Quran.',
+			'guidePrayerBody' => 'Find prayer times and the Qibla here. You can choose location access in prayer settings.',
+			'guideAppearanceBody' => 'Choose Light, Dark or System here. Open Appearance in this menu to pick your colors.',
+			'guideNotificationsBody' => 'Choose reminders and adhan, set quiet periods, or pause all reminders in Notifications. Enable permissions only when you want to.',
+			'prayerSilenceTitle' => 'Silence during prayer',
+			'prayerSilenceSub' => 'Automatic quiet time after the adhan',
+			'prayerSilenceEnable' => 'Enable prayer silence',
+			'prayerSilenceBody' => 'Silence calls and notifications for a window you choose after each adhan. Alarms remain allowed. Other Do Not Disturb modes may apply stricter settings.',
+			'prayerSilenceTimingHint' => 'Start and end are minutes after the adhan. If Hisn is still playing the adhan, silence waits for it to finish; the end time stays the same.',
+			'prayerSilenceStart' => 'Start after adhan',
+			'prayerSilenceEnd' => 'End after adhan',
+			'prayerSilenceMinutes' => ({required Object minutes}) => '${minutes} min',
+			'prayerSilencePolicyButton' => 'Allow Do Not Disturb access',
+			'prayerSilenceExactButton' => 'Allow precise timing',
+			'prayerSilenceDisabled' => 'Prayer silence is off',
+			'prayerSilencePermission' => 'Allow Do Not Disturb access to use prayer silence.',
+			'prayerSilenceExact' => 'Paused: precise-alarm access is needed to start and end on time.',
+			'prayerSilenceLocation' => 'Choose your city or allow location to calculate prayer windows.',
+			'prayerSilenceReady' => 'Ready for the next prayer window',
+			'prayerSilenceActiveUntil' => ({required Object time}) => 'Prayer silence is active until ${time}',
+			'prayerSilenceWaiting' => 'Waiting for the adhan to finish',
+			'prayerSilenceRuleDisabled' => 'Hisn\'s prayer mode is disabled in Android settings.',
+			'prayerSilenceUnavailable' => 'Prayer silence is available on Android only.',
+			'prayerSilenceError' => 'Prayer silence could not be scheduled. Check access and try again.',
+			'prayerSilenceStopNow' => 'End this quiet period',
+			'prayerSilenceExpiryNote' => 'Only Hisn\'s mode ends automatically; your own Do Not Disturb stays unchanged. Android may delay the backup end check if precise-alarm access is revoked or the phone restricts the app.',
 			_ => null,
 		};
 	}

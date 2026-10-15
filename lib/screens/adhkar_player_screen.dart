@@ -15,6 +15,7 @@ import '../services/muhassan_service.dart';
 import '../theme/app_theme.dart';
 import '../theme/category_visuals.dart';
 import '../widgets/arabic_text.dart';
+import '../widgets/dua_instruction.dart';
 import '../widgets/ornament.dart';
 
 /// The set being recited aloud.
@@ -76,18 +77,17 @@ class _AdhkarPlayerScreenState extends State<AdhkarPlayerScreen> {
     final s = AppStrings.read(context);
     final settings = context.read<ListenSettings>();
     await context.read<AdhkarAudioHandler>().start(
-          categoryId: widget.category.id,
-          duas: widget.duas,
-          library: context.read<AdhkarAudioLibrary>(),
-          progress: context.read<DuaProgressService>(),
-          muhassan: context.read<MuhassanService>(),
-          setTitle: widget.category.titleFor(s.ar),
-          titleOf: (dua) =>
-              s.ar ? (dua.titleArabic ?? dua.title) : dua.title,
-          gapSteps: settings.gapSteps,
-          includeAppendix: settings.includeAppendix,
-          resume: resume,
-        );
+      categoryId: widget.category.id,
+      duas: widget.duas,
+      library: context.read<AdhkarAudioLibrary>(),
+      progress: context.read<DuaProgressService>(),
+      muhassan: context.read<MuhassanService>(),
+      setTitle: widget.category.titleForLang(s.lang.name),
+      titleOf: (dua) => dua.titleForLang(s.lang.name),
+      gapSteps: settings.gapSteps,
+      includeAppendix: settings.includeAppendix,
+      resume: resume,
+    );
   }
 
   @override
@@ -96,15 +96,14 @@ class _AdhkarPlayerScreenState extends State<AdhkarPlayerScreen> {
     final s = AppStrings.of(context);
     final tint = CategoryVisuals.of(widget.category.id).color(context);
 
-    _syncWakelock(
-        context.select<ListenSettings, bool>((l) => l.keepScreenOn));
+    _syncWakelock(context.select<ListenSettings, bool>((l) => l.keepScreenOn));
 
     final session = audio.session;
     final dua = audio.currentDua;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.category.titleFor(s.ar)),
+        title: Text(widget.category.titleForLang(s.lang.name)),
         actions: [
           IconButton(
             icon: const Icon(Icons.replay),
@@ -155,10 +154,11 @@ class _Head extends StatelessWidget {
     final s = AppStrings.of(context);
 
     final duas = session?.duas.length ?? 0;
-    final done = context.select<DuaProgressService, int>((p) =>
-        session == null
-            ? 0
-            : session!.duas.where((d) => p.countOf(d.id) >= d.repeat).length);
+    final done = context.select<DuaProgressService, int>(
+      (p) => session == null
+          ? 0
+          : session!.duas.where((d) => p.countOf(d.id) >= d.repeat).length,
+    );
     final allDone = duas > 0 && done == duas;
     final missing = session?.missing.length ?? 0;
 
@@ -173,8 +173,11 @@ class _Head extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(allDone ? Icons.check : Icons.graphic_eq,
-                  size: 22, color: allDone ? ms.gilt : tint),
+              Icon(
+                allDone ? Icons.check : Icons.graphic_eq,
+                size: 22,
+                color: allDone ? ms.gilt : tint,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
@@ -208,7 +211,11 @@ class _Head extends StatelessWidget {
 /// The dhikr being said: its Arabic, set large, with the meaning under it and
 /// the repetition told in beads.
 class _Recitation extends StatelessWidget {
-  const _Recitation({required this.dua, required this.step, required this.tint});
+  const _Recitation({
+    required this.dua,
+    required this.step,
+    required this.tint,
+  });
 
   final Dua dua;
   final AdhkarStep? step;
@@ -220,8 +227,10 @@ class _Recitation extends StatelessWidget {
     final ms = ManuscriptTheme.of(context);
     final s = AppStrings.of(context);
     final display = context.watch<DisplaySettings>();
+    final instruction = dua.instructionFor(s.lang.name);
     final count = context.select<DuaProgressService, int>(
-        (p) => p.countOf(dua.id));
+      (p) => p.countOf(dua.id),
+    );
 
     final page = ListView(
       padding: const EdgeInsets.fromLTRB(Ms.margin, 20, Ms.margin, 24),
@@ -230,7 +239,7 @@ class _Recitation extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                s.ar ? (dua.titleArabic ?? dua.title) : dua.title,
+                dua.titleForLang(s.lang.name),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.titleMedium?.copyWith(color: ms.rubric),
@@ -243,6 +252,10 @@ class _Recitation extends StatelessWidget {
           ],
         ),
         const RuleDivider(),
+        if (instruction != null && instruction.trim().isNotEmpty) ...[
+          DuaInstruction(text: instruction, arabic: s.rtl),
+          const SizedBox(height: 16),
+        ],
         // Set larger than a dua card's: this is the only text on the page, and
         // it is being read across a room or over a shoulder as often as held.
         ArabicText(dua.arabic, block: true, fontSize: 30),
@@ -254,10 +267,7 @@ class _Recitation extends StatelessWidget {
           ),
         ],
         const SizedBox(height: 16),
-        Text(
-          dua.referenceFor(s.lang.name),
-          style: theme.textTheme.labelSmall,
-        ),
+        Text(dua.referenceFor(s.lang.name), style: theme.textTheme.labelSmall),
       ],
     );
 
@@ -265,8 +275,9 @@ class _Recitation extends StatelessWidget {
     // scaler over the subtree rather than multiplied into each font size, so
     // the Arabic and the meaning grow together.
     return MediaQuery(
-      data: MediaQuery.of(context)
-          .copyWith(textScaler: TextScaler.linear(display.fontScale)),
+      data: MediaQuery.of(
+        context,
+      ).copyWith(textScaler: TextScaler.linear(display.fontScale)),
       child: page,
     );
   }
@@ -298,9 +309,7 @@ class _Beads extends StatelessWidget {
             child: Rosette(
               size: 13,
               lobes: 6,
-              color: i < count
-                  ? tint
-                  : ManuscriptTheme.of(context).rule,
+              color: i < count ? tint : ManuscriptTheme.of(context).rule,
               filled: i < count,
             ),
           ),
@@ -342,13 +351,12 @@ class _Transport extends StatelessWidget {
             icon: Icon(playing ? Icons.pause : Icons.play_arrow),
             iconSize: 34,
             tooltip: playing ? s.listenPause : s.listenResume,
-            onPressed:
-                live ? (playing ? audio.pause : audio.play) : null,
+            onPressed: live ? (playing ? audio.pause : audio.play) : null,
             style: IconButton.styleFrom(
               backgroundColor: tint,
               padding: const EdgeInsets.all(14),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(Ms.rPanel),
+                borderRadius: BorderRadius.circular(Ms.rButton),
               ),
             ),
           ),

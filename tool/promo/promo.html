@@ -1,0 +1,284 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Hisn promo</title>
+<style>
+@font-face{font-family:Crimson;src:url(a/CrimsonPro-Bold.ttf);font-weight:700}
+@font-face{font-family:Crimson;src:url(a/CrimsonPro-Italic.ttf);font-style:italic;font-weight:400}
+@font-face{font-family:Karla;src:url(a/Karla-Regular.ttf);font-weight:400}
+@font-face{font-family:Karla;src:url(a/Karla-Medium.ttf);font-weight:500}
+@font-face{font-family:Karla;src:url(a/Karla-Bold.ttf);font-weight:700}
+@font-face{font-family:Amiri;src:url(a/Amiri-Regular.ttf)}
+:root{--ground:#072c3e;--gilt:#cda84e;--cream:#f7f2e6;--muted:#a7bbc4;--paper:#ede5d3}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;background:var(--ground);overflow:hidden}
+#stage{position:absolute;inset:0;width:1080px;height:1920px;overflow:hidden;
+  background:radial-gradient(ellipse 900px 1200px at 50% 42%,#0d3f55 0%,#093547 45%,#072c3e 100%)}
+.abs{position:absolute}
+#pattern{inset:-200px;opacity:.07}
+#motes{left:0;top:0}
+#frame{inset:30px;border:2px solid rgba(205,168,78,.55);pointer-events:none}
+#frame:before{content:"";position:absolute;inset:-9px;border:1px solid rgba(205,168,78,.18)}
+.scene{position:absolute;inset:0;opacity:0}
+.center{left:0;right:0;text-align:center}
+.eyebrow{font:700 27px Karla;letter-spacing:.32em;color:var(--gilt);text-transform:uppercase}
+.headline{font:700 86px/1.02 Crimson;color:var(--cream);letter-spacing:-.005em}
+.sub{font:400 35px/1.35 Karla;color:var(--muted)}
+.w{display:inline-block;white-space:pre}
+.phone{position:absolute;left:170px;top:560px;width:740px;height:1284px;border-radius:84px;
+  background:#0b0f10;padding:20px;box-shadow:0 60px 120px rgba(0,0,0,.55),0 0 0 2px rgba(205,168,78,.35),inset 0 0 0 3px #222a2c}
+.screen{position:relative;width:700px;height:1244px;border-radius:66px;overflow:hidden;background:#eee}
+.screen .inner{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:0 0}
+.screen img{position:absolute;left:0;top:0;width:1080px;height:1920px}
+.callout{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:visible}
+.rule{height:2px;background:linear-gradient(90deg,transparent,var(--gilt),transparent)}
+.ar{font-family:Amiri;direction:rtl}
+.pill{display:inline-block;border:2px solid var(--gilt);border-radius:999px;padding:22px 46px;font:500 34px Karla;color:var(--cream);letter-spacing:.04em}
+</style></head>
+<body>
+<div id="stage">
+  <svg id="pattern" class="abs" width="1480" height="2320">
+    <defs><pattern id="star" width="120" height="120" patternUnits="userSpaceOnUse">
+      <g fill="none" stroke="#cda84e" stroke-width="1.6" transform="translate(60 60)">
+        <rect x="-30" y="-30" width="60" height="60"/><rect x="-30" y="-30" width="60" height="60" transform="rotate(45)"/>
+        <circle r="12"/><path d="M-60 0H-42M42 0H60M0 -60V-42M0 42V60"/>
+      </g></pattern></defs>
+    <rect width="100%" height="100%" fill="url(#star)"/>
+  </svg>
+  <canvas id="motes" class="abs" width="1080" height="1920"></canvas>
+
+  <!-- INTRO -->
+  <div class="scene" id="intro">
+    <svg class="abs" id="introRing" width="1080" height="1920" style="left:0;top:0"></svg>
+    <img id="introIcon" class="abs" src="a/icon_t.png" style="left:340px;top:560px;width:400px;height:400px">
+    <div class="abs center" id="introTitle" style="top:1130px;font:700 190px Crimson;color:var(--cream);letter-spacing:.06em"></div>
+    <div class="abs rule" id="introRule" style="top:1365px;left:240px;width:600px"></div>
+    <div class="abs center" id="introTag" style="top:1410px;font:italic 400 56px Crimson;color:var(--gilt)">A fortress for your day</div>
+  </div>
+
+  <!-- VERSE -->
+  <div class="scene" id="verse">
+    <div class="abs center eyebrow" id="verseEye" style="top:640px">Remembrance</div>
+    <div class="abs center ar" id="verseAr" style="top:730px;font-size:104px;line-height:1.7;color:var(--cream);padding:0 80px"></div>
+    <div class="abs rule" id="verseRule" style="top:1105px;left:290px;width:500px"></div>
+    <div class="abs center" id="verseEn" style="top:1150px;font:italic 400 54px/1.3 Crimson;color:var(--cream);padding:0 120px"></div>
+    <div class="abs center" id="verseRef" style="top:1330px;font:500 28px Karla;letter-spacing:.2em;color:var(--gilt)">AR-RAʿD · 13:28</div>
+  </div>
+
+  <div id="features"></div>
+
+  <!-- LANGUAGES -->
+  <div class="scene" id="langs">
+    <div class="abs center eyebrow" id="langEye" style="top:190px">Three languages, in full</div>
+    <div class="abs center headline" id="langHead" style="top:250px">Speaks your language</div>
+    <div class="abs center" id="langList" style="top:380px;font:500 40px Karla;color:var(--muted)">
+      <span class="ar" style="font-family:Amiri;font-size:50px;color:var(--cream)">العربية</span>
+      <span style="color:var(--gilt)"> · </span>English<span style="color:var(--gilt)"> · </span>Bahasa Indonesia</div>
+  </div>
+
+  <!-- VALUES -->
+  <div class="scene" id="values">
+    <div class="abs center eyebrow" style="top:560px" id="valEye">Made with care</div>
+    <div class="abs center headline v" style="top:650px;font-size:130px">Offline.</div>
+    <div class="abs center headline v" style="top:810px;font-size:130px">No ads.</div>
+    <div class="abs center headline v" style="top:970px;font-size:130px">No accounts.</div>
+    <div class="abs rule" id="valRule" style="top:1180px;left:290px;width:500px"></div>
+    <div class="abs center v2" style="top:1220px;font:italic 400 64px Crimson;color:var(--gilt)">Just you and your remembrance.</div>
+  </div>
+
+  <!-- OUTRO -->
+  <div class="scene" id="outro">
+    <svg class="abs" id="outroRing" width="1080" height="1920" style="left:0;top:0"></svg>
+    <img id="outroIcon" class="abs" src="a/icon_t.png" style="left:390px;top:470px;width:300px;height:300px">
+    <div class="abs center" id="outroTitle" style="top:900px;font:700 170px Crimson;color:var(--cream);letter-spacing:.06em">HISN</div>
+    <div class="abs rule" id="outroRule" style="top:1110px;left:240px;width:600px"></div>
+    <div class="abs center" id="outroSub" style="top:1145px;font:500 44px Karla;color:var(--gilt)">Adhkar · Qur'an · Prayer times</div>
+    <div class="abs center" id="outroCta" style="top:1300px"><span class="pill">Coming soon to Google Play</span></div>
+  </div>
+
+  <div id="frame" class="abs"></div>
+</div>
+
+<script>
+// ---------- helpers ----------
+const $=id=>document.getElementById(id);
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const seg=(t,a,b)=>clamp((t-a)/(b-a));
+const lerp=(a,b,p)=>a+(b-a)*p;
+const eOut=p=>1-Math.pow(1-p,3);
+const eInOut=p=>p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;
+const eBack=p=>{const c=1.4;return 1+(c+1)*Math.pow(p-1,3)+c*Math.pow(p-1,2)};
+const SC=700/1080;
+function words(el,text){el.innerHTML=text.split('|').map(line=>line.split(/(\s+)/).map(w=>/^\s+$/.test(w)?w:`<span class="w">${w}</span>`).join('')).join('<br>');return [...el.querySelectorAll('.w')]}
+function revealWords(ws,t,start,step,dur=.55){ws.forEach((w,i)=>{const p=eOut(seg(t,start+i*step,start+i*step+dur));
+  w.style.opacity=p;w.style.transform=`translateY(${(1-p)*34}px)`;w.style.filter=`blur(${(1-p)*8}px)`})}
+function show(el,o){el.style.opacity=o;el.style.visibility=o>0.001?'visible':'hidden'}
+
+// rosette (the app's own ornament: a ring of small circles on a circle)
+function rosette(svg,cx,cy,r,n,dotR){
+  const C=2*Math.PI*r;
+  let h=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#cda84e" stroke-width="3" stroke-dasharray="${C}" class="ring"/>`;
+  h+=`<circle cx="${cx}" cy="${cy}" r="${r+26}" fill="none" stroke="#cda84e" stroke-opacity=".3" stroke-width="1.5" stroke-dasharray="${2*Math.PI*(r+26)}" class="ring2"/>`;
+  for(let i=0;i<n;i++){const a=2*Math.PI*i/n-Math.PI/2;
+    h+=`<circle cx="${cx+r*Math.cos(a)}" cy="${cy+r*Math.sin(a)}" r="${dotR}" fill="#cda84e" class="dot" style="transform-box:fill-box;transform-origin:center"/>`}
+  svg.innerHTML=h;return {C,C2:2*Math.PI*(r+26),ring:svg.querySelector('.ring'),ring2:svg.querySelector('.ring2'),dots:[...svg.querySelectorAll('.dot')]}
+}
+function drawRosette(R,p,dotStart,dotStep,t){
+  R.ring.setAttribute('stroke-dashoffset',R.C*(1-eInOut(p)));
+  R.ring2.setAttribute('stroke-dashoffset',-R.C2*(1-eInOut(p)));
+  R.dots.forEach((d,i)=>{const q=seg(t,dotStart+i*dotStep,dotStart+i*dotStep+.35);d.style.transform=`scale(${eBack(q)})`;d.style.opacity=q>0?1:0});
+}
+
+// ---------- scene table ----------
+const FEATS=[
+ {eye:'Prayer times',head:'Every prayer,|to the minute',sub:'Live countdown and an adhan that plays on time.',img:['01-home'],
+  call:{type:'rect',x:46,y:86,w:988,h:566,r:20},dur:3.6},
+ {eye:'Adhkar',head:'Count each dua,|tap by tap',sub:'Morning, evening, after prayer and before sleep.',img:['02-dua-counting'],
+  pan:{from:0,to:-120},dur:3.6},
+ {eye:'The Qur\'an',head:'The whole Mushaf,|page by page',sub:'With the meaning beneath every verse.',img:['03-mushaf','04-verses'],dur:4.6},
+ {eye:'Qibla',head:'Face the Qibla|with confidence',sub:'Corrected to true north — and honest when it can\'t be sure.',img:['05-qibla'],
+  call:{type:'circle',cx:540,cy:828,r:410},dur:3.6},
+ {eye:'Tasbih',head:'A tasbih that|never leaves you',sub:'Tap anywhere to count.',img:['06-tasbih'],tasbih:true,dur:3.6},
+ {eye:'Sunnah fasts',head:'Never miss|a Sunnah fast',sub:'Mondays, Thursdays, the white days, Arafah and more.',img:['07-calendar'],
+  call:{type:'rect',x:44,y:348,w:992,h:476,r:14},dur:3.6},
+ {eye:'Day & night',head:'Gentle on the eyes|after Isha',sub:'A quiet dark theme for night-time reading.',img:['01-home','08-home-dark'],wipe:true,dur:3.8},
+];
+const T={intro:[0,5],verse:[5,9.6]};
+let cur=9.6;FEATS.forEach(f=>{f.t0=cur;cur+=f.dur;f.t1=cur});
+T.langs=[cur,cur+4.6];cur+=4.6;T.values=[cur,cur+4.4];cur+=4.4;T.outro=[cur,cur+5.6];cur+=5.6;
+window.DURATION=cur;
+
+// build feature scenes
+const fwrap=$('features');
+FEATS.forEach((f,k)=>{
+  const s=document.createElement('div');s.className='scene';s.innerHTML=`
+   <div class="abs center eyebrow" style="top:150px">${f.eye}</div>
+   <div class="abs center headline hd" style="top:205px;padding:0 70px"></div>
+   <div class="abs center sub sb" style="top:420px;padding:0 110px"></div>
+   <div class="phone"><div class="screen"><div class="inner">
+     ${f.img.map((m,i)=>`<img src="a/${m}.png" class="im${i}">`).join('')}
+     ${f.tasbih?`<svg class="callout" viewBox="0 0 1080 1920"><ellipse cx="538" cy="1080" rx="108" ry="70" fill="rgb(237,229,211)"/>
+        <text class="tnum" x="538" y="1132" text-anchor="middle" font-family="Crimson" font-weight="700" font-size="148" fill="#211d17">21</text></svg>`:''}
+     <svg class="callout co" viewBox="0 0 1080 1920"></svg>
+   </div></div></div>`;
+  fwrap.appendChild(s);f.el=s;
+  f.hw=words(s.querySelector('.hd'),f.head);f.sw=words(s.querySelector('.sb'),f.sub);
+  f.phone=s.querySelector('.phone');f.inner=s.querySelector('.inner');f.imgs=[...s.querySelectorAll('.inner img')];
+  f.co=s.querySelector('.co');
+  if(f.call&&!f.call.none){const c=f.call;let shape,len;
+    if(c.type==='rect'){shape=`<rect x="${c.x}" y="${c.y}" width="${c.w}" height="${c.h}" rx="${c.r}"`;len=2*(c.w+c.h)}
+    else {shape=`<circle cx="${c.cx}" cy="${c.cy}" r="${c.r}"`;len=2*Math.PI*c.r}
+    f.co.innerHTML=`<defs><mask id="m${k}"><rect width="1080" height="1920" fill="white"/>${shape} fill="black"/></mask></defs>
+      <rect width="1080" height="1920" fill="#06222f" mask="url(#m${k})" class="dim"/>
+      ${shape} fill="none" stroke="#cda84e" stroke-width="9" stroke-dasharray="${len}" class="line" style="filter:drop-shadow(0 0 14px rgba(205,168,78,.8))"/>`;
+    f.len=len;
+  }
+  if(f.tasbih){f.tnum=s.querySelector('.tnum');}
+});
+
+const introR=rosette($('introRing'),540,760,290,16,9);
+const outroR=rosette($('outroRing'),540,620,215,12,8);
+const introLetters=('HISN').split('').map(c=>{const sp=document.createElement('span');sp.className='w';sp.textContent=c;$('introTitle').appendChild(sp);return sp});
+const verseArW=words($('verseAr'),'أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ');
+const verseEnW=words($('verseEn'),'“Verily, in the remembrance of Allah do hearts find rest.”');
+
+// language phones
+const LP=[{img:'ar-01',x:-290,rot:-11,z:1},{img:'ar-02',x:290,rot:11,z:1},{img:'01-home',x:0,rot:0,z:2}];
+LP.forEach(p=>{const d=document.createElement('div');d.className='phone';d.style.zIndex=p.z;
+  d.innerHTML=`<div class="screen"><div class="inner" style="transform:scale(${SC})"><img src="a/${p.img}.png"></div></div>`;$('langs').appendChild(d);p.el=d});
+
+// motes
+const MO=[];let sd=7;const rnd=()=>{sd=(sd*16807)%2147483647;return sd/2147483647};
+for(let i=0;i<46;i++)MO.push({x:rnd()*1080,y:rnd()*1920,r:1+rnd()*2.6,v:14+rnd()*30,ph:rnd()*6.28,sw:20+rnd()*40});
+const mctx=$('motes').getContext('2d');
+
+// ---------- render ----------
+window.renderAt=function(t){
+  // background life
+  $('pattern').style.transform=`translate(${-(t*6)%120}px,${-(t*10)%120}px)`;
+  mctx.clearRect(0,0,1080,1920);
+  MO.forEach(m=>{const y=((m.y-m.v*t)%1920+1920)%1920,x=m.x+Math.sin(t*.6+m.ph)*m.sw;
+    const a=.25+.35*(.5+.5*Math.sin(t*1.7+m.ph*3));
+    mctx.beginPath();mctx.fillStyle=`rgba(205,168,78,${a})`;mctx.arc(x,y,m.r,0,6.283);mctx.fill()});
+
+  // INTRO
+  {const [a,b]=T.intro,lt=t-a,o=t<b?1-seg(t,b-.5,b):0;show($('intro'),t>=a&&t<b?o:0);
+   if(t<b){drawRosette(introR,seg(lt,.1,1.5),.5,.06,lt);
+    const ip=eOut(seg(lt,.9,2));const ic=$('introIcon');ic.style.opacity=ip;ic.style.transform=`scale(${.82+.18*ip})`;ic.style.filter=`blur(${(1-ip)*14}px)`;
+    const lift=eInOut(seg(lt,2,2.8))*-60;$('introRing').style.transform=ic.style.transform+'';
+    $('introRing').style.transform=`translateY(${lift}px)`;ic.style.transform+=` translateY(${lift}px)`;
+    introLetters.forEach((l,i)=>{const p=eOut(seg(lt,2.2+i*.12,2.9+i*.12));l.style.opacity=p;l.style.transform=`translateY(${(1-p)*60}px)`;l.style.filter=`blur(${(1-p)*10}px)`});
+    $('introTitle').style.letterSpacing=lerp(.3,.06,eOut(seg(lt,2.2,3.4)))+'em';
+    $('introRule').style.transform=`scaleX(${eInOut(seg(lt,3,3.6))})`;
+    const tg=eOut(seg(lt,3.3,4));$('introTag').style.opacity=tg;$('introTag').style.transform=`translateY(${(1-tg)*20}px)`;
+    $('intro').style.transform=`scale(${1+seg(t,b-.5,b)*.06})`;}}
+
+  // VERSE
+  {const [a,b]=T.verse,lt=t-a,on=t>=a&&t<b;show($('verse'),on?Math.min(seg(lt,0,.4),1-seg(t,b-.5,b)):0);
+   if(on){$('verseEye').style.opacity=eOut(seg(lt,.1,.7));
+    revealWords(verseArW,lt,.3,.22,.7);
+    $('verseRule').style.transform=`scaleX(${eInOut(seg(lt,1.5,2.1))})`;
+    revealWords(verseEnW,lt,1.8,.08,.6);
+    $('verseRef').style.opacity=eOut(seg(lt,2.8,3.3));
+    $('verse').style.transform=`scale(${1+lt*.008})`;}}
+
+  // FEATURES
+  FEATS.forEach((f,k)=>{const on=t>=f.t0-.01&&t<f.t1;const lt=t-f.t0,D=f.dur;
+    const out=seg(t,f.t1-.45,f.t1);show(f.el,on?1-out:0);if(!on)return;
+    const side=k%2?1:-1;
+    const pe=eOut(seg(lt,0,.9)),pb=eBack(seg(lt,0,.9));
+    const drift=Math.sin(lt*.9)*1.2;
+    f.phone.style.transform=`perspective(2400px) translateY(${(1-pb)*420 - eInOut(out)*90}px) rotateY(${side*(1-pe)*18+side*drift}deg) rotateX(${(1-pe)*10}deg) scale(${.96+.04*pe})`;
+    f.phone.style.opacity=pe;
+    f.el.querySelector('.eyebrow').style.opacity=eOut(seg(lt,.15,.6));
+    f.el.querySelector('.eyebrow').style.letterSpacing=lerp(.5,.32,eOut(seg(lt,.15,.9)))+'em';
+    revealWords(f.hw,lt,.2,.07,.55);revealWords(f.sw,lt,.6,.035,.5);
+    // gentle ken burns inside the screen
+    // zoom about a focus point (screen px); the image always covers the screen
+    let z=1+.04*seg(lt,.4,D),fy=370;
+    if(f.pan){z=1+.14*eInOut(seg(lt,.9,D-.3));fy=lerp(250,1000,eInOut(seg(lt,.9,D-.3)));}
+    f.inner.style.transformOrigin='0 0';
+    f.inner.style.transform=`translate(${-350*(z-1)}px,${-fy*(z-1)}px) scale(${SC*z})`;
+    // two-image scenes
+    if(f.imgs.length>1){
+      if(f.wipe){const p=eInOut(seg(lt,1.4,2.4));f.imgs[1].style.clipPath=`polygon(0 0,${p*220}% 0,${p*220-120}% 100%,0 100%)`;}
+      else{const p=eInOut(seg(lt,2.0,2.7));f.imgs[1].style.opacity=p;f.imgs[1].style.transform=`translateY(${(1-p)*260}px)`;f.imgs[0].style.transform=`translateY(${-p*120}px)`;}
+    }
+    // callout
+    if(f.len){const dim=f.co.querySelector('.dim'),ln=f.co.querySelector('.line');
+      const p=eInOut(seg(lt,1.0,1.8));ln.setAttribute('stroke-dashoffset',f.len*(1-p));ln.style.opacity=p>0?1:0;
+      dim.style.opacity=.42*eOut(seg(lt,.9,1.5));}
+    if(f.tasbih){const n=Math.round(lerp(12,21,seg(lt,.9,2.6)));f.tnum.textContent=n;
+      const ph=(lt-.9)/(1.7/9);const kick=lt>.9&&lt<2.7?Math.max(0,1-(ph%1)*3):0;
+      f.tnum.style.transformOrigin='538px 1080px';f.tnum.style.transform=`scale(${1+.1*kick})`;}
+  });
+
+  // LANGUAGES
+  {const [a,b]=T.langs,lt=t-a,on=t>=a&&t<b;show($('langs'),on?1-seg(t,b-.45,b):0);
+   if(on){[$('langEye'),$('langHead'),$('langList')].forEach((e,i)=>{const p=eOut(seg(lt,.1+i*.2,.7+i*.2));e.style.opacity=p;e.style.transform=`translateY(${(1-p)*30}px)`});
+    LP.forEach((p,i)=>{const q=eBack(seg(lt,.2+(p.z==2?0:.35),1.2+(p.z==2?0:.35)));const qq=clamp(q);
+      const s=p.z==2?.84:.66;
+      p.el.style.opacity=clamp(seg(lt,.2+(p.z==2?0:.35),.7+(p.z==2?0:.35)));
+      p.el.style.transform=`translate(${p.x*q}px,${(1-q)*300 + (p.z==2?40:150)}px) rotate(${p.rot*q}deg) scale(${s})`;
+      p.el.style.transformOrigin='50% 50%';});}}
+
+  // VALUES
+  {const [a,b]=T.values,lt=t-a,on=t>=a&&t<b;show($('values'),on?Math.min(seg(lt,0,.3),1-seg(t,b-.45,b)):0);
+   if(on){$('valEye').style.opacity=eOut(seg(lt,0,.5));
+    [...document.querySelectorAll('#values .v')].forEach((e,i)=>{const p=eOut(seg(lt,.25+i*.45,.95+i*.45));e.style.opacity=p;e.style.transform=`translateX(${(1-p)*(i%2?80:-80)}px)`;e.style.filter=`blur(${(1-p)*10}px)`});
+    $('valRule').style.transform=`scaleX(${eInOut(seg(lt,1.8,2.4))})`;
+    const p=eOut(seg(lt,2.1,2.8));const v2=document.querySelector('#values .v2');v2.style.opacity=p;v2.style.transform=`translateY(${(1-p)*24}px)`;}}
+
+  // OUTRO
+  {const [a,b]=T.outro,lt=t-a,on=t>=a;show($('outro'),on?seg(lt,0,.4)*(1-seg(t,b-.6,b)):0);
+   if(on){drawRosette(outroR,seg(lt,.1,1.3),.4,.06,lt);
+    $('outroRing').style.transform=`rotate(${lt*4}deg)`;$('outroRing').style.transformOrigin='540px 620px';
+    const ip=eOut(seg(lt,.5,1.4));const ic=$('outroIcon');ic.style.opacity=ip;ic.style.transform=`scale(${.85+.15*ip})`;ic.style.filter=`blur(${(1-ip)*12}px)`;
+    const tp=eOut(seg(lt,1,1.7));$('outroTitle').style.opacity=tp;$('outroTitle').style.letterSpacing=lerp(.25,.06,tp)+'em';
+    $('outroRule').style.transform=`scaleX(${eInOut(seg(lt,1.4,2))})`;
+    const sp=eOut(seg(lt,1.7,2.3));$('outroSub').style.opacity=sp;$('outroSub').style.transform=`translateY(${(1-sp)*20}px)`;
+    const cp=eBack(seg(lt,2.2,2.9));$('outroCta').style.opacity=clamp(cp);$('outroCta').style.transform=`scale(${.85+.15*cp})`;}}
+};
+window.ready=document.fonts.ready.then(()=>Promise.all([...document.images].map(i=>i.decode().catch(()=>{}))));
+const q=new URLSearchParams(location.search);if(q.has('t')){window.ready.then(()=>renderAt(+q.get('t')))}
+else if(!q.has('render')){let st=performance.now();window.ready.then(()=>{const loop=()=>{renderAt(((performance.now()-st)/1000)%DURATION);requestAnimationFrame(loop)};loop()})}
+</script>
+</body></html>

@@ -37,7 +37,7 @@ void main() {
       final editions = await repo.loadEditions();
 
       expect(editions, isNotEmpty);
-      expect(editions.map((e) => e.lang).toSet(), {'en', 'id', 'ar'});
+      expect(editions.map((e) => e.lang).toSet(), {'en', 'id', 'ar', 'ur'});
       for (final e in editions) {
         expect(e.name, isNotEmpty, reason: e.lang);
         expect(e.translator, isNotEmpty, reason: e.lang);
@@ -59,7 +59,7 @@ void main() {
       expect(arabic.kind, QuranEditionKind.tafsir);
       expect(isArabicScript(arabic.credit), isTrue);
 
-      for (final lang in const ['en', 'id']) {
+      for (final lang in const ['en', 'id', 'ur']) {
         expect((await repo.editionFor(lang))!.kind,
             QuranEditionKind.translation, reason: lang);
       }
@@ -77,7 +77,7 @@ void main() {
       // The guard against a truncated or reordered regeneration. Checked for
       // all 114 surahs in every language, because a gap anywhere shifts every
       // verse after it.
-      for (final lang in const ['en', 'id', 'ar']) {
+      for (final lang in const ['en', 'id', 'ar', 'ur']) {
         for (final surah in repo.surahs) {
           final translation = await repo.loadTranslation(surah.number, lang);
           expect(translation, isNotNull,
@@ -94,7 +94,7 @@ void main() {
       // Control characters are how the upstream damage showed up; if a future
       // regeneration reintroduces any, it surfaces here rather than on screen.
       final control = RegExp(r'[\x00-\x08\x0b-\x1f\x7f-\x9f]');
-      for (final lang in const ['en', 'id', 'ar']) {
+      for (final lang in const ['en', 'id', 'ar', 'ur']) {
         for (final surah in repo.surahs) {
           final t = (await repo.loadTranslation(surah.number, lang))!;
           for (var i = 0; i < t.ayahs.length; i++) {

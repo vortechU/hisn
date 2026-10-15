@@ -86,6 +86,16 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	];
 	@override String get quranTitle => 'Al-Qur\'an';
 	@override String get searchSurah => 'Cari surah…';
+	@override String get searchQuran => 'Cari surah atau kata Arab';
+	@override String get quranSearchSurahs => 'Surah';
+	@override String get quranSearchVerses => 'Ayat';
+	@override String get quranSearchFailed => 'Tidak dapat mencari ayat. Coba lagi.';
+	@override String get quranSearchLimit => 'Menampilkan 50 hasil ayat pertama';
+	@override String get retrySearch => 'Ulangi pencarian';
+	@override String get afterPrayerTasbih => 'Tasbih setelah salat';
+	@override String get startAfterPrayerTasbih => 'Hitung zikir setelah salat';
+	@override String get currentPhrase => 'Zikir saat ini';
+	@override String get afterPrayerComplete => 'Zikir setelah salat telah selesai.';
 	@override String get continueReading => 'Lanjutkan membaca';
 	@override String get surahWord => 'Surah';
 	@override String get revelationMeccan => 'Makkiyah';
@@ -113,6 +123,16 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get fieldTranslation => 'Terjemahan / makna (opsional)';
 	@override String get fieldReference => 'Sumber (opsional)';
 	@override String get fieldRepeat => 'Pengulangan';
+	@override String get fieldRepeatPositiveRequired => 'Masukkan bilangan bulat minimal 1.';
+	@override String get addDhikr => 'Tambah zikir';
+	@override String get editDhikr => 'Edit zikir';
+	@override String get deleteDhikr => 'Hapus zikir';
+	@override String get deleteDhikrConfirm => 'Hapus zikir ini beserta hitungan yang tersimpan?';
+	@override String get fieldDhikrName => 'Nama';
+	@override String get fieldDhikrNameRequired => 'Masukkan nama untuk zikir ini.';
+	@override String get fieldDhikrTargetRequired => 'Masukkan bilangan bulat dari 1 hingga 1.000.000.';
+	@override String get nextSetOnTap => 'Putaran selesai. Ketuk untuk memulai putaran berikutnya.';
+	@override String get customDhikrTargetNote => 'Pilih jumlah pengulangan untuk sesi pribadi Anda.';
 	@override String get save => 'Simpan';
 	@override String get cancel => 'Batal';
 	@override String get delete => 'Hapus';
@@ -207,16 +227,16 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get adhanVolume => 'Volume azan';
 	@override List<String> get streamLabels => [
 		'Media',
-		'Dering',
+		'Dering / notifikasi',
 		'Alarm',
 	];
 	@override List<String> get streamHints => [
-		'Dikontrol oleh volume media Anda',
-		'Dikontrol oleh volume dering Anda',
-		'Dikontrol oleh volume alarm Anda',
+		'Media: memakai pengatur volume musik dan video ponsel. Mode dering senyap belum tentu membisukannya; periksa juga volume media dan pengaturan Jangan Ganggu.',
+		'Dering: memakai pengatur volume nada dering atau notifikasi ponsel. Mode senyap, getar, dan Jangan Ganggu dapat membisukan azan.',
+		'Alarm: memakai pengatur volume alarm ponsel. Mode dering senyap biasanya tidak membisukan alarm; periksa izin alarm dalam pengaturan Jangan Ganggu.',
 	];
 	@override String get previewAdhan => 'Pratinjau azan';
-	@override String get stopAdhan => 'Berhenti';
+	@override String get stopAdhan => 'Hentikan azan';
 	@override String get adhanPlaying => 'Memutar azan…';
 	@override String get notifBlocked => 'Notifikasi diblokir. Aktifkan untuk Hisn di pengaturan perangkat Anda.';
 	@override String get textSize => 'Ukuran teks';
@@ -468,6 +488,55 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get shareAsText => 'Bagikan teks';
 	@override String get shareImageFailedNotReady => 'Kartu belum siap diambil — teksnya dibagikan sebagai gantinya.';
 	@override String get shareImageFailedUnsupported => 'Perangkat ini tidak dapat membuat gambar — teksnya dibagikan sebagai gantinya.';
+	@override String get nextPhraseOnTap => 'Zikir selesai. Ketuk untuk menghitung zikir berikutnya.';
+	@override String get aboutTypefaces => 'Jenis huruf';
+	@override String get aboutVerseMeanings => 'Makna ayat';
+	@override String get aboutUrduDuaCredit => 'Makna doa Urdu: draf proyek Hisn; menunggu tinjauan ahli.';
+	@override String get aboutTranslationSource => 'Sumber terjemahan · Tanzil';
+	@override String get aboutLinkCopied => 'Tautan sumber disalin. Buka di peramban Anda.';
+	@override String get aboutArabicText => 'Teks Arab';
+	@override String get aboutLatinText => 'Teks Latin';
+	@override String get aboutLatinApparatus => 'Teks antarmuka Latin';
+	@override String get aboutMushafPages => 'Halaman mushaf · Kompleks Percetakan Al-Qur\'an Raja Fahd';
+	@override String get prayerCountdownTitle => 'Hitung mundur salat berikutnya';
+	@override String get prayerCountdownSubtitle => 'Tampilkan hitung mundur senyap di notifikasi Android.';
+	@override String get prayerCountdownUnavailable => 'Tersedia di Android. Sistem mengatur tampilan hitung mundur.';
+	@override String get prayerCountdownChannelDescription => 'Hitung mundur senyap menuju salat berikutnya';
+	@override String get guideTitle => 'Panduan singkat';
+	@override String get guideWelcomeTitle => 'Kenali aplikasi Hisn';
+	@override String get guideWelcomeBody => 'Lihat tempat menemukan tasbih, pencarian Al-Qur\'an, alat salat, tampilan, dan pengaturan pengingat. Panduan ini dapat dibuka kembali di Pengaturan.';
+	@override String get viewGuide => 'Lihat panduan';
+	@override String get replayGuide => 'Lihat panduan aplikasi';
+	@override String get replayGuideSub => 'Panduan untuk fitur utama';
+	@override String get guideDone => 'Selesai';
+	@override String guideProgress({required Object current, required Object total}) => '${current} dari ${total}';
+	@override String get guideTasbihBody => 'Buka Tasbih untuk memilih zikir, menambahkan zikir sendiri, dan menghitung pengulangan.';
+	@override String get guideQuranBody => 'Cari surah atau ketik kata Arab untuk menemukan ayat Al-Qur\'an.';
+	@override String get guidePrayerBody => 'Temukan waktu salat dan kiblat di sini. Anda dapat memilih izin lokasi di pengaturan salat.';
+	@override String get guideAppearanceBody => 'Pilih mode Terang, Gelap, atau Sistem di sini. Buka Tampilan pada menu ini untuk memilih warna.';
+	@override String get guideNotificationsBody => 'Pilih pengingat dan azan, atur waktu hening, atau jeda semua pengingat di Notifikasi. Aktifkan izin hanya saat Anda menginginkannya.';
+	@override String get prayerSilenceTitle => 'Senyap saat salat';
+	@override String get prayerSilenceSub => 'Waktu tenang otomatis setelah azan';
+	@override String get prayerSilenceEnable => 'Aktifkan senyap saat salat';
+	@override String get prayerSilenceBody => 'Senyapkan panggilan dan notifikasi selama waktu yang Anda pilih setelah setiap azan. Alarm tetap diizinkan. Mode Jangan Ganggu lainnya dapat menerapkan pengaturan yang lebih ketat.';
+	@override String get prayerSilenceTimingHint => 'Awal dan akhir dihitung dalam menit setelah azan. Jika Hisn masih memutar azan, mode senyap menunggu hingga selesai; waktu akhir tidak berubah.';
+	@override String get prayerSilenceStart => 'Mulai setelah azan';
+	@override String get prayerSilenceEnd => 'Berakhir setelah azan';
+	@override String prayerSilenceMinutes({required Object minutes}) => '${minutes} menit';
+	@override String get prayerSilencePolicyButton => 'Izinkan akses Jangan Ganggu';
+	@override String get prayerSilenceExactButton => 'Izinkan waktu yang tepat';
+	@override String get prayerSilenceDisabled => 'Senyap saat salat nonaktif';
+	@override String get prayerSilencePermission => 'Izinkan akses Jangan Ganggu untuk memakai senyap saat salat.';
+	@override String get prayerSilenceExact => 'Dijeda: akses alarm tepat diperlukan agar awal dan akhir sesuai waktu.';
+	@override String get prayerSilenceLocation => 'Pilih kota atau izinkan lokasi untuk menghitung waktu salat.';
+	@override String get prayerSilenceReady => 'Siap untuk waktu salat berikutnya';
+	@override String prayerSilenceActiveUntil({required Object time}) => 'Senyap saat salat aktif hingga ${time}';
+	@override String get prayerSilenceWaiting => 'Menunggu azan selesai';
+	@override String get prayerSilenceRuleDisabled => 'Mode salat Hisn dinonaktifkan dalam pengaturan Android.';
+	@override String get prayerSilenceUnavailable => 'Senyap saat salat hanya tersedia di Android.';
+	@override String get prayerSilenceError => 'Senyap saat salat tidak dapat dijadwalkan. Periksa akses dan coba lagi.';
+	@override String get prayerSilenceStopNow => 'Akhiri waktu senyap ini';
+	@override String get prayerSilenceExpiryNote => 'Hanya mode Hisn yang berakhir otomatis; mode Jangan Ganggu Anda tidak diubah. Android dapat menunda pemeriksaan akhir cadangan jika akses alarm tepat dicabut atau aplikasi dibatasi.';
 }
 
 /// The flat map containing all translations for locale <id>.
@@ -523,6 +592,16 @@ extension on TranslationsId {
 			'weekdayLetters.6' => 'M',
 			'quranTitle' => 'Al-Qur\'an',
 			'searchSurah' => 'Cari surah…',
+			'searchQuran' => 'Cari surah atau kata Arab',
+			'quranSearchSurahs' => 'Surah',
+			'quranSearchVerses' => 'Ayat',
+			'quranSearchFailed' => 'Tidak dapat mencari ayat. Coba lagi.',
+			'quranSearchLimit' => 'Menampilkan 50 hasil ayat pertama',
+			'retrySearch' => 'Ulangi pencarian',
+			'afterPrayerTasbih' => 'Tasbih setelah salat',
+			'startAfterPrayerTasbih' => 'Hitung zikir setelah salat',
+			'currentPhrase' => 'Zikir saat ini',
+			'afterPrayerComplete' => 'Zikir setelah salat telah selesai.',
 			'continueReading' => 'Lanjutkan membaca',
 			'surahWord' => 'Surah',
 			'revelationMeccan' => 'Makkiyah',
@@ -550,6 +629,16 @@ extension on TranslationsId {
 			'fieldTranslation' => 'Terjemahan / makna (opsional)',
 			'fieldReference' => 'Sumber (opsional)',
 			'fieldRepeat' => 'Pengulangan',
+			'fieldRepeatPositiveRequired' => 'Masukkan bilangan bulat minimal 1.',
+			'addDhikr' => 'Tambah zikir',
+			'editDhikr' => 'Edit zikir',
+			'deleteDhikr' => 'Hapus zikir',
+			'deleteDhikrConfirm' => 'Hapus zikir ini beserta hitungan yang tersimpan?',
+			'fieldDhikrName' => 'Nama',
+			'fieldDhikrNameRequired' => 'Masukkan nama untuk zikir ini.',
+			'fieldDhikrTargetRequired' => 'Masukkan bilangan bulat dari 1 hingga 1.000.000.',
+			'nextSetOnTap' => 'Putaran selesai. Ketuk untuk memulai putaran berikutnya.',
+			'customDhikrTargetNote' => 'Pilih jumlah pengulangan untuk sesi pribadi Anda.',
 			'save' => 'Simpan',
 			'cancel' => 'Batal',
 			'delete' => 'Hapus',
@@ -641,13 +730,13 @@ extension on TranslationsId {
 			'allowAlarms' => 'Izinkan',
 			'adhanVolume' => 'Volume azan',
 			'streamLabels.0' => 'Media',
-			'streamLabels.1' => 'Dering',
+			'streamLabels.1' => 'Dering / notifikasi',
 			'streamLabels.2' => 'Alarm',
-			'streamHints.0' => 'Dikontrol oleh volume media Anda',
-			'streamHints.1' => 'Dikontrol oleh volume dering Anda',
-			'streamHints.2' => 'Dikontrol oleh volume alarm Anda',
+			'streamHints.0' => 'Media: memakai pengatur volume musik dan video ponsel. Mode dering senyap belum tentu membisukannya; periksa juga volume media dan pengaturan Jangan Ganggu.',
+			'streamHints.1' => 'Dering: memakai pengatur volume nada dering atau notifikasi ponsel. Mode senyap, getar, dan Jangan Ganggu dapat membisukan azan.',
+			'streamHints.2' => 'Alarm: memakai pengatur volume alarm ponsel. Mode dering senyap biasanya tidak membisukan alarm; periksa izin alarm dalam pengaturan Jangan Ganggu.',
 			'previewAdhan' => 'Pratinjau azan',
-			'stopAdhan' => 'Berhenti',
+			'stopAdhan' => 'Hentikan azan',
 			'adhanPlaying' => 'Memutar azan…',
 			'notifBlocked' => 'Notifikasi diblokir. Aktifkan untuk Hisn di pengaturan perangkat Anda.',
 			'textSize' => 'Ukuran teks',
@@ -887,6 +976,55 @@ extension on TranslationsId {
 			'shareAsText' => 'Bagikan teks',
 			'shareImageFailedNotReady' => 'Kartu belum siap diambil — teksnya dibagikan sebagai gantinya.',
 			'shareImageFailedUnsupported' => 'Perangkat ini tidak dapat membuat gambar — teksnya dibagikan sebagai gantinya.',
+			'nextPhraseOnTap' => 'Zikir selesai. Ketuk untuk menghitung zikir berikutnya.',
+			'aboutTypefaces' => 'Jenis huruf',
+			'aboutVerseMeanings' => 'Makna ayat',
+			'aboutUrduDuaCredit' => 'Makna doa Urdu: draf proyek Hisn; menunggu tinjauan ahli.',
+			'aboutTranslationSource' => 'Sumber terjemahan · Tanzil',
+			'aboutLinkCopied' => 'Tautan sumber disalin. Buka di peramban Anda.',
+			'aboutArabicText' => 'Teks Arab',
+			'aboutLatinText' => 'Teks Latin',
+			'aboutLatinApparatus' => 'Teks antarmuka Latin',
+			'aboutMushafPages' => 'Halaman mushaf · Kompleks Percetakan Al-Qur\'an Raja Fahd',
+			'prayerCountdownTitle' => 'Hitung mundur salat berikutnya',
+			'prayerCountdownSubtitle' => 'Tampilkan hitung mundur senyap di notifikasi Android.',
+			'prayerCountdownUnavailable' => 'Tersedia di Android. Sistem mengatur tampilan hitung mundur.',
+			'prayerCountdownChannelDescription' => 'Hitung mundur senyap menuju salat berikutnya',
+			'guideTitle' => 'Panduan singkat',
+			'guideWelcomeTitle' => 'Kenali aplikasi Hisn',
+			'guideWelcomeBody' => 'Lihat tempat menemukan tasbih, pencarian Al-Qur\'an, alat salat, tampilan, dan pengaturan pengingat. Panduan ini dapat dibuka kembali di Pengaturan.',
+			'viewGuide' => 'Lihat panduan',
+			'replayGuide' => 'Lihat panduan aplikasi',
+			'replayGuideSub' => 'Panduan untuk fitur utama',
+			'guideDone' => 'Selesai',
+			'guideProgress' => ({required Object current, required Object total}) => '${current} dari ${total}',
+			'guideTasbihBody' => 'Buka Tasbih untuk memilih zikir, menambahkan zikir sendiri, dan menghitung pengulangan.',
+			'guideQuranBody' => 'Cari surah atau ketik kata Arab untuk menemukan ayat Al-Qur\'an.',
+			'guidePrayerBody' => 'Temukan waktu salat dan kiblat di sini. Anda dapat memilih izin lokasi di pengaturan salat.',
+			'guideAppearanceBody' => 'Pilih mode Terang, Gelap, atau Sistem di sini. Buka Tampilan pada menu ini untuk memilih warna.',
+			'guideNotificationsBody' => 'Pilih pengingat dan azan, atur waktu hening, atau jeda semua pengingat di Notifikasi. Aktifkan izin hanya saat Anda menginginkannya.',
+			'prayerSilenceTitle' => 'Senyap saat salat',
+			'prayerSilenceSub' => 'Waktu tenang otomatis setelah azan',
+			'prayerSilenceEnable' => 'Aktifkan senyap saat salat',
+			'prayerSilenceBody' => 'Senyapkan panggilan dan notifikasi selama waktu yang Anda pilih setelah setiap azan. Alarm tetap diizinkan. Mode Jangan Ganggu lainnya dapat menerapkan pengaturan yang lebih ketat.',
+			'prayerSilenceTimingHint' => 'Awal dan akhir dihitung dalam menit setelah azan. Jika Hisn masih memutar azan, mode senyap menunggu hingga selesai; waktu akhir tidak berubah.',
+			'prayerSilenceStart' => 'Mulai setelah azan',
+			'prayerSilenceEnd' => 'Berakhir setelah azan',
+			'prayerSilenceMinutes' => ({required Object minutes}) => '${minutes} menit',
+			'prayerSilencePolicyButton' => 'Izinkan akses Jangan Ganggu',
+			'prayerSilenceExactButton' => 'Izinkan waktu yang tepat',
+			'prayerSilenceDisabled' => 'Senyap saat salat nonaktif',
+			'prayerSilencePermission' => 'Izinkan akses Jangan Ganggu untuk memakai senyap saat salat.',
+			'prayerSilenceExact' => 'Dijeda: akses alarm tepat diperlukan agar awal dan akhir sesuai waktu.',
+			'prayerSilenceLocation' => 'Pilih kota atau izinkan lokasi untuk menghitung waktu salat.',
+			'prayerSilenceReady' => 'Siap untuk waktu salat berikutnya',
+			'prayerSilenceActiveUntil' => ({required Object time}) => 'Senyap saat salat aktif hingga ${time}',
+			'prayerSilenceWaiting' => 'Menunggu azan selesai',
+			'prayerSilenceRuleDisabled' => 'Mode salat Hisn dinonaktifkan dalam pengaturan Android.',
+			'prayerSilenceUnavailable' => 'Senyap saat salat hanya tersedia di Android.',
+			'prayerSilenceError' => 'Senyap saat salat tidak dapat dijadwalkan. Periksa akses dan coba lagi.',
+			'prayerSilenceStopNow' => 'Akhiri waktu senyap ini',
+			'prayerSilenceExpiryNote' => 'Hanya mode Hisn yang berakhir otomatis; mode Jangan Ganggu Anda tidak diubah. Android dapat menunda pemeriksaan akhir cadangan jika akses alarm tepat dicabut atau aplikasi dibatasi.',
 			_ => null,
 		};
 	}

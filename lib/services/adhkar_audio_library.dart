@@ -23,9 +23,9 @@ const bool kAdhkarAudioEnabled = false;
 /// apart, a second reciter is a data change — another entry in
 /// `assets/data/adhkar_audio.json` — rather than a second field on every dua.
 ///
-/// The mapping is many ids to one file. Eleven of the thirty-six morning and
-/// evening entries are the same Arabic word for word, so they share a
-/// recording; the near-misses that differ only by *aṣbaḥtu* / *amsaytu* do not.
+/// Matching morning and evening entries share a recording. Each of the three
+/// surahs has its own recording, including its basmalah; the near-misses that
+/// differ only by *aṣbaḥtu* / *amsaytu* do not share recordings.
 ///
 /// Coverage is checked against the real asset manifest at load, so an entry
 /// naming a file that was never added is dropped rather than left to fail

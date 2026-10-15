@@ -1,0 +1,27 @@
+{
+  "sources": [
+    {
+      "url": "https://sunnah.com/muslim:1342",
+      "reference": "Sahih Muslim 1342",
+      "note": "The Arabic report includes three omitted clauses after ومن العمل ما ترضى: easing the journey and its distance; Allah as companion and guardian; refuge from hardship, distressing sights and an unhappy return. The return-only addition remains in the existing separate returning card. English and Indonesian below are fresh renderings of the complete Arabic supplication."
+    }
+  ],
+  "base": {
+    "travel_setting_off": {
+      "arabic": "اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ، وَإِنَّا إِلَى رَبِّنَا لَمُنْقَلِبُونَ، اللَّهُمَّ إِنَّا نَسْأَلُكَ فِي سَفَرِنَا هَذَا الْبِرَّ وَالتَّقْوَى، وَمِنَ الْعَمَلِ مَا تَرْضَى، اللَّهُمَّ هَوِّنْ عَلَيْنَا سَفَرَنَا هَذَا وَاطْوِ عَنَّا بُعْدَهُ، اللَّهُمَّ أَنْتَ الصَّاحِبُ فِي السَّفَرِ وَالْخَلِيفَةُ فِي الْأَهْلِ، اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ وَعْثَاءِ السَّفَرِ، وَكَآبَةِ الْمَنْظَرِ، وَسُوءِ الْمُنْقَلَبِ فِي الْمَالِ وَالْأَهْلِ",
+      "transliteration": "Allahu Akbar (x3). Subhanal-ladhi sakhkhara lana hadha wa ma kunna lahu muqrinin, wa inna ila Rabbina lamunqalibun. Allahumma inna nas'aluka fi safarina hadhal-birra wat-taqwa, wa minal-'amali ma tarda. Allahumma hawwin 'alayna safarana hadha watwi 'anna bu'dah. Allahumma antas-sahibu fis-safari wal-khalifatu fil-ahl. Allahumma inni a'udhu bika min wa'tha'is-safar, wa ka'abatil-manzar, wa su'il-munqalabi fil-mali wal-ahl",
+      "translation": "Allah is the Greatest (three times). Glory be to Him who has made this transport available to us, for we could not have mastered it ourselves. We shall surely return to our Lord. O Allah, we ask You for righteousness and piety on this journey, and for deeds that please You. O Allah, ease this journey for us and shorten its distance for us. O Allah, You are our companion on the journey and the guardian of our family. O Allah, I seek refuge in You from the hardships of travel, distressing sights, and an unhappy return concerning our property and family.",
+      "reference": "Sahih Muslim 1342"
+    }
+  },
+  "ar": {
+    "travel_setting_off": {
+      "reference": "صحيح مسلم ١٣٤٢"
+    }
+  },
+  "id": {
+    "travel_setting_off": {
+      "translation": "Allah Mahabesar (tiga kali). Mahasuci Allah yang telah menundukkan kendaraan ini bagi kami, padahal kami sendiri tidak mampu menguasainya. Sesungguhnya kami pasti kembali kepada Tuhan kami. Ya Allah, kami memohon kepada-Mu dalam perjalanan ini kebajikan dan ketakwaan, serta amal yang Engkau ridai. Ya Allah, mudahkanlah perjalanan ini bagi kami dan dekatkanlah jaraknya bagi kami. Ya Allah, Engkaulah pendamping kami dalam perjalanan dan penjaga keluarga kami. Ya Allah, aku berlindung kepada-Mu dari kesulitan perjalanan, pemandangan yang menyedihkan, dan kepulangan yang membawa keburukan pada harta dan keluarga."
+    }
+  }
+}

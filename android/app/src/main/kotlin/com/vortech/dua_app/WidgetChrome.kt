@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.widget.RemoteViews
+import android.view.View
 
 /**
  * The chrome every Hisn widget shares: the ruled page it is drawn on, the
@@ -119,6 +120,14 @@ object WidgetChrome {
     /** Whether the interface language is Arabic. */
     fun isArabicUi(context: Context): Boolean =
         PrayerWidget.prefs(context).getString("lang", "en") == "ar"
+
+    fun isRtlUi(context: Context): Boolean =
+        PrayerWidget.prefs(context).getString("lang", "en") in setOf("ar", "ur")
+
+    fun applyDirection(context: Context, views: RemoteViews, root: Int) {
+        views.setInt(root, "setLayoutDirection",
+            if (isRtlUi(context)) View.LAYOUT_DIRECTION_RTL else View.LAYOUT_DIRECTION_LTR)
+    }
 
     /**
      * [value] in the digits the interface reads in — Arabic-Indic when the app

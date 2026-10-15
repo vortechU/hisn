@@ -57,6 +57,7 @@ class AdhkarWidgetProvider : AppWidgetProvider() {
         val views = RemoteViews(context.packageName, R.layout.adhkar_widget)
 
         WidgetChrome.applySheet(views, ms)
+        WidgetChrome.applyDirection(context, views, R.id.adhkar_root)
 
         val set = currentSet(context)
         // The category travels in the route, so opening the widget lands on the
@@ -112,7 +113,7 @@ class AdhkarWidgetProvider : AppWidgetProvider() {
         ms: WidgetPalette,
         title: String,
     ) {
-        val drawn = if (WidgetChrome.isArabicUi(context)) {
+        val drawn = if (WidgetChrome.isRtlUi(context)) {
             val width = WidgetChrome.widthPx(context, manager, widgetId, FALLBACK_WIDTH_DP) -
                 WidgetChrome.dp(context, 30f)
             WidgetArabic.render(

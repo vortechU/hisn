@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,13 +19,135 @@ import 'adhan_widget_bridge.dart';
 /// the app is suspended, and the in-memory copy here would otherwise still hold
 /// the count from before.
 class TasbihController extends ChangeNotifier {
-  TasbihController(this._prefs);
+  TasbihController(this._prefs) {
+    _loadCustomDhikr();
+  }
 
   static const _countPrefix = 'tasbih_count_';
   static const _lapPrefix = 'tasbih_laps_';
   static const _selectedKey = 'tasbih_selected';
+  static const _customKey = 'tasbih_custom_phrases';
+  static const maxCustomTarget = 1000000;
 
   final SharedPreferences _prefs;
+  List<Dhikr> _customDhikr = [];
+
+  List<Dhikr> get customDhikr => List.unmodifiable(_customDhikr);
+
+  bool isCustom(String id) => _customDhikr.any((d) => d.id == id);
+
+  void _loadCustomDhikr() {
+    final raw = _prefs.getString(_customKey);
+    if (raw == null) {
+      _customDhikr = [];
+      return;
+    }
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is! List) return;
+      final loaded = <Dhikr>[];
+      for (final item in decoded) {
+        try {
+          final dhikr = Dhikr.fromJson(Map<String, dynamic>.from(item as Map));
+          if (!dhikr.id.startsWith('custom_dhikr_') ||
+              dhikr.arabic.trim().isEmpty ||
+              dhikr.transliteration.trim().isEmpty ||
+              dhikr.target < 1 ||
+              dhikr.target > maxCustomTarget ||
+              loaded.any((d) => d.id == dhikr.id)) {
+            continue;
+          }
+          loaded.add(dhikr);
+        } catch (_) {
+          // A malformed entry must not hide the user's other saved phrases.
+        }
+      }
+      _customDhikr = loaded;
+    } catch (_) {
+      // Preserve the saved store if a restore has an unreadable value.
+    }
+  }
+
+  Future<void> _persistCustomDhikr() async {
+    await _prefs.setString(
+      _customKey,
+      jsonEncode(
+        _customDhikr
+            .map(
+              (d) => {
+                'id': d.id, 'arabic': d.arabic,
+                // A custom phrase's presentation label is the name supplied by its user.
+                'transliteration': d.transliteration,
+                'translation': d.translation,
+                'target': d.target,
+              },
+            )
+            .toList(),
+      ),
+    );
+  }
+
+  Dhikr _customPhrase(String id, String name, String arabic, int target) {
+    if (name.trim().isEmpty ||
+        arabic.trim().isEmpty ||
+        target < 1 ||
+        target > maxCustomTarget) {
+      throw ArgumentError(
+        'A dhikr needs a name, text and target from 1 to $maxCustomTarget.',
+      );
+    }
+    return Dhikr(
+      id: id,
+      arabic: arabic.trim(),
+      transliteration: name.trim(),
+      translation: '',
+      target: target,
+    );
+  }
+
+  Future<Dhikr> addCustom({
+    required String name,
+    required String arabic,
+    required int target,
+  }) async {
+    final dhikr = _customPhrase(
+      'custom_dhikr_${DateTime.now().microsecondsSinceEpoch}',
+      name,
+      arabic,
+      target,
+    );
+    _customDhikr = [..._customDhikr, dhikr];
+    await _persistCustomDhikr();
+    notifyListeners();
+    return dhikr;
+  }
+
+  Future<Dhikr> updateCustom({
+    required String id,
+    required String name,
+    required String arabic,
+    required int target,
+  }) async {
+    final index = _customDhikr.indexWhere((d) => d.id == id);
+    if (index < 0) throw ArgumentError.value(id, 'id', 'Unknown custom dhikr');
+    final dhikr = _customPhrase(id, name, arabic, target);
+    _customDhikr = [..._customDhikr]..[index] = dhikr;
+    await _persistCustomDhikr();
+    notifyListeners();
+    // Refresh the selected phrase's native display even when its id stays put.
+    if (selectedId == id) await AdhanWidgetBridge.update(widgetPayload(dhikr));
+    return dhikr;
+  }
+
+  Future<void> removeCustom(String id) async {
+    if (!isCustom(id)) return;
+    _customDhikr = _customDhikr.where((d) => d.id != id).toList();
+    await _persistCustomDhikr();
+    await _prefs.remove('$_countPrefix$id');
+    await _prefs.remove('$_lapPrefix$id');
+    if (selectedId == id) await _prefs.remove(_selectedKey);
+    notifyListeners();
+  }
 
   Timer? _widgetRefresh;
 
@@ -75,28 +198,33 @@ class TasbihController extends ChangeNotifier {
   /// shared store, because it changes on a tap while the app is closed and a
   /// pushed value would be a set behind.
   static Map<String, String> widgetPayload(Dhikr dhikr) => {
-        'tasbih_id': dhikr.id,
-        'tasbih_arabic': dhikr.arabic,
-        'tasbih_translit': dhikr.transliteration,
-        'tasbih_target': dhikr.target.toString(),
-      };
+    'tasbih_id': dhikr.id,
+    'tasbih_arabic': dhikr.arabic,
+    'tasbih_translit': dhikr.transliteration,
+    'tasbih_target': dhikr.target.toString(),
+  };
 
   /// Increments the count for [dhikrId]. Returns `true` when this tap completed
   /// a full set (so the UI can fire stronger haptics / feedback).
   Future<bool> increment(String dhikrId, int target) async {
-    final next = countFor(dhikrId) + 1;
-    final completedSet = next >= target;
+    if (target < 1) {
+      throw ArgumentError.value(target, 'target', 'Must be positive');
+    }
+    final current = countFor(dhikrId);
+    // Keep the completed target visible. The next intentional recitation starts
+    // the following set at one, so the user never spends a tap just resetting.
+    final next = current >= target ? 1 : current + 1;
+    final completedSet = next == target;
 
     // `shared_preferences` updates its in-memory copy synchronously and only
     // the disk write is asynchronous, so the new count is already readable
     // here. Telling the screen first, and settling the write after, takes a
     // platform round trip out from between the bead and the finger.
-    final writes = completedSet
-        ? [
-            _prefs.setInt('$_countPrefix$dhikrId', 0),
-            _prefs.setInt('$_lapPrefix$dhikrId', lapsFor(dhikrId) + 1),
-          ]
-        : [_prefs.setInt('$_countPrefix$dhikrId', next)];
+    final writes = [
+      _prefs.setInt('$_countPrefix$dhikrId', next),
+      if (completedSet)
+        _prefs.setInt('$_lapPrefix$dhikrId', lapsFor(dhikrId) + 1),
+    ];
 
     notifyListeners();
     // The widget draws from the same keys, so it is now showing a stale count.
@@ -119,6 +247,7 @@ class TasbihController extends ChangeNotifier {
   /// cached before the widget's taps, and would undo them.
   Future<void> reload() async {
     await _prefs.reload();
+    _loadCustomDhikr();
     notifyListeners();
   }
 }

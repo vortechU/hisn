@@ -85,6 +85,24 @@ android {
             )
         }
     }
+
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+        // Robolectric's documented access flags for Java 17+ test runners.
+        unitTests.all {
+            it.jvmArgs(
+                "--add-opens=java.base/java.lang=ALL-UNNAMED",
+                "--add-opens=java.base/java.util=ALL-UNNAMED",
+                "--add-opens=java.base/java.io=ALL-UNNAMED",
+                "--add-opens=java.base/java.net=ALL-UNNAMED",
+                "--add-opens=java.base/java.security=ALL-UNNAMED",
+                "--add-opens=java.base/java.text=ALL-UNNAMED",
+                "--add-opens=java.base/jdk.internal.access=ALL-UNNAMED",
+                "--add-opens=java.desktop/java.awt.font=ALL-UNNAMED",
+                "--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
+            )
+        }
+    }
 }
 
 kotlin {
@@ -97,9 +115,21 @@ flutter {
     source = "../.."
 }
 
+// AGP 9's host-test APK consumes the assets copied by Flutter. Declare that
+// edge explicitly, so native notification tests get the same assets as the app.
+tasks.configureEach {
+    Regex("^package(.+)UnitTestForUnitTest$").matchEntire(name)?.let { match ->
+        dependsOn("copyFlutterAssets${match.groupValues[1]}")
+    }
+}
+
 dependencies {
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.robolectric:robolectric:4.17")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
     // Same Adhan algorithm as the Dart `adhan` package, so the home-screen
     // widget can compute prayer times natively (no Flutter engine needed).
     implementation("com.batoulapps.adhan:adhan:1.2.1")
+    // Compact Stop action in the foreground adhan playback notification.
+    implementation("androidx.media:media:1.8.0")
 }

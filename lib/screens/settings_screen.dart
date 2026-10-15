@@ -3,11 +3,13 @@ import 'package:provider/provider.dart';
 
 import '../l10n/app_strings.dart';
 import '../services/adhkar_audio_library.dart';
+import '../services/feature_tour_controller.dart';
 import '../services/prayer_service.dart';
 import '../services/prayer_settings.dart';
 import '../services/theme_controller.dart';
 import '../theme/app_theme.dart';
 import '../widgets/ornament.dart';
+import '../widgets/feature_tour_anchor.dart';
 import 'settings/about_settings_screen.dart';
 import 'settings/appearance_settings_screen.dart';
 import 'settings/backup_settings_screen.dart';
@@ -39,27 +41,63 @@ class SettingsScreen extends StatelessWidget {
     final s = AppStrings.of(context);
 
     final entries = <_Entry>[
-      _Entry(Icons.schedule_outlined, s.secPrayerTimes,
-          _locationSubtitle(service, s), (_) => const PrayerTimesSettingsScreen()),
-      _Entry(Icons.notifications_none, s.notifications, s.prayerRemindersSub,
-          (_) => const NotificationsSettingsScreen()),
-      _Entry(Icons.calendar_month_outlined, s.secCalendar, s.calendarSub,
-          (_) => const SunnahCalendarScreen()),
-      _Entry(Icons.palette_outlined, s.secAppearance,
-          s.paletteName(theme.palette.id), (_) => const AppearanceSettingsScreen()),
-      _Entry(Icons.format_size, s.secDisplay, s.textSize,
-          (_) => const DisplaySettingsScreen()),
+      _Entry(
+        Icons.schedule_outlined,
+        s.secPrayerTimes,
+        _locationSubtitle(service, s),
+        (_) => const PrayerTimesSettingsScreen(),
+      ),
+      _Entry(
+        Icons.notifications_none,
+        s.notifications,
+        s.prayerRemindersSub,
+        (_) => const NotificationsSettingsScreen(),
+      ),
+      _Entry(
+        Icons.calendar_month_outlined,
+        s.secCalendar,
+        s.calendarSub,
+        (_) => const SunnahCalendarScreen(),
+      ),
+      _Entry(
+        Icons.palette_outlined,
+        s.secAppearance,
+        s.paletteName(theme.palette.id),
+        (_) => const AppearanceSettingsScreen(),
+      ),
+      _Entry(
+        Icons.format_size,
+        s.secDisplay,
+        s.textSize,
+        (_) => const DisplaySettingsScreen(),
+      ),
       // Only when something is recorded — otherwise this section would settle
       // the behaviour of a feature the build doesn't have.
       if (context.read<AdhkarAudioLibrary>().hasAnyAudio)
-        _Entry(Icons.headset_outlined, s.secListen, s.listenSub,
-            (_) => const ListenSettingsScreen()),
-      _Entry(Icons.translate_outlined, s.secLanguage, s.currentLanguage,
-          (_) => const LanguageSettingsScreen()),
-      _Entry(Icons.backup_outlined, s.secBackup, s.backupSub,
-          (_) => const BackupSettingsScreen()),
-      _Entry(Icons.info_outline, s.secAbout, 'v$kAppVersion',
-          (_) => const AboutSettingsScreen()),
+        _Entry(
+          Icons.headset_outlined,
+          s.secListen,
+          s.listenSub,
+          (_) => const ListenSettingsScreen(),
+        ),
+      _Entry(
+        Icons.translate_outlined,
+        s.secLanguage,
+        s.currentLanguage,
+        (_) => const LanguageSettingsScreen(),
+      ),
+      _Entry(
+        Icons.backup_outlined,
+        s.secBackup,
+        s.backupSub,
+        (_) => const BackupSettingsScreen(),
+      ),
+      _Entry(
+        Icons.info_outline,
+        s.secAbout,
+        'v$kAppVersion',
+        (_) => const AboutSettingsScreen(),
+      ),
     ];
 
     return Scaffold(
@@ -77,7 +115,25 @@ class SettingsScreen extends StatelessWidget {
             child: Column(
               children: [
                 for (var i = 0; i < entries.length; i++)
-                  _SettingsRow(entry: entries[i], first: i == 0),
+                  if (i == 1)
+                    FeatureTourAnchor(
+                      target: FeatureTourTarget.notifications,
+                      child: _SettingsRow(entry: entries[i], first: false),
+                    )
+                  else
+                    _SettingsRow(entry: entries[i], first: i == 0),
+                if (context.read<FeatureTourController?>() != null)
+                  ListTile(
+                    key: const ValueKey('replay_feature_guide'),
+                    leading: Icon(
+                      Icons.help_outline,
+                      size: 20,
+                      color: ms.rubric,
+                    ),
+                    title: Text(s.replayGuide),
+                    subtitle: Text(s.replayGuideSub),
+                    onTap: context.read<FeatureTourController>().start,
+                  ),
               ],
             ),
           ),
@@ -118,13 +174,13 @@ class _SettingsRow extends StatelessWidget {
     return Material(
       type: MaterialType.transparency,
       child: InkWell(
-        onTap: () => Navigator.of(context)
-            .push(MaterialPageRoute(builder: entry.builder)),
+        onTap: () => Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: entry.builder)),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
           decoration: BoxDecoration(
-            border:
-                first ? null : Border(top: BorderSide(color: ms.rule)),
+            border: first ? null : Border(top: BorderSide(color: ms.rule)),
           ),
           child: Row(
             children: [

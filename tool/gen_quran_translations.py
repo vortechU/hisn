@@ -63,6 +63,14 @@ TOTAL_AYAHS = 6236
 # explaining it does.
 EDITIONS = [
     {
+        'lang': 'ur',
+        'id': 'ur.junagarhi',
+        'kind': 'translation',
+        'name': 'قرآن مجید کا اردو ترجمہ',
+        'translator': 'محمد جوناگڑھی',
+        'credit': 'محمد جوناگڑھی',
+    },
+    {
         'lang': 'en',
         'id': 'en.hilali',
         'kind': 'translation',

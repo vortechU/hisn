@@ -8,8 +8,16 @@
     "translation": "Allah, tidak ada tuhan yang berhak disembah selain Dia, Yang Maha Hidup lagi Maha Berdiri sendiri (mengurus makhluk-Nya). Dia tidak mengantuk dan tidak tidur. Milik-Nya apa yang ada di langit dan apa yang ada di bumi. Siapakah yang dapat memberi syafaat di sisi-Nya tanpa izin-Nya? Dia mengetahui apa yang di hadapan mereka dan apa yang di belakang mereka, dan mereka tidak mengetahui sesuatu pun dari ilmu-Nya kecuali apa yang Dia kehendaki. Kursi-Nya meliputi langit dan bumi, dan Dia tidak merasa berat memelihara keduanya. Dialah Yang Maha Tinggi lagi Maha Agung.",
     "virtue": "Siapa membacanya pada pagi hari, ia dilindungi dari (gangguan) jin hingga petang."
   },
-  "morning_muawwidhat": {
-    "translation": "Surah al-Ikhlas, al-Falaq, dan an-Nas (Al-Qur'an 112–114), dibaca tiga kali.",
+  "morning_ikhlas": {
+    "translation": "Surah Al-Ikhlas (Al-Qur'an 112), dibaca tiga kali.",
+    "virtue": "Siapa membacanya tiga kali pada pagi dan petang, niscaya itu mencukupinya dari segala sesuatu."
+  },
+  "morning_falaq": {
+    "translation": "Surah Al-Falaq (Al-Qur'an 113), dibaca tiga kali.",
+    "virtue": "Siapa membacanya tiga kali pada pagi dan petang, niscaya itu mencukupinya dari segala sesuatu."
+  },
+  "morning_nas": {
+    "translation": "Surah An-Nas (Al-Qur'an 114), dibaca tiga kali.",
     "virtue": "Siapa membacanya tiga kali pada pagi dan petang, niscaya itu mencukupinya dari segala sesuatu."
   },
   "morning_sayyidul_istighfar": {
@@ -62,8 +70,20 @@
   "evening_amsayna": {
     "translation": "Kami memasuki waktu petang dan kerajaan pada saat ini milik Allah. Segala puji bagi Allah. Tidak ada tuhan yang berhak disembah selain Allah semata, tiada sekutu bagi-Nya. Milik-Nya kerajaan dan bagi-Nya segala puji, dan Dia Mahakuasa atas segala sesuatu."
   },
-  "evening_muawwidhat": {
-    "translation": "Surah al-Ikhlas, al-Falaq, dan an-Nas (Al-Qur'an 112–114), dibaca tiga kali.",
+  "evening_ayat_kursi": {
+    "translation": "Allah, tidak ada tuhan yang berhak disembah selain Dia, Yang Maha Hidup lagi Maha Berdiri sendiri (mengurus makhluk-Nya). Dia tidak mengantuk dan tidak tidur. Milik-Nya apa yang ada di langit dan apa yang ada di bumi. Siapakah yang dapat memberi syafaat di sisi-Nya tanpa izin-Nya? Dia mengetahui apa yang di hadapan mereka dan apa yang di belakang mereka, dan mereka tidak mengetahui sesuatu pun dari ilmu-Nya kecuali apa yang Dia kehendaki. Kursi-Nya meliputi langit dan bumi, dan Dia tidak merasa berat memelihara keduanya. Dialah Yang Maha Tinggi lagi Maha Agung.",
+    "virtue": "Siapa membacanya pada petang hari, ia dilindungi dari (gangguan) jin hingga pagi."
+  },
+  "evening_ikhlas": {
+    "translation": "Surah Al-Ikhlas (Al-Qur'an 112), dibaca tiga kali.",
+    "virtue": "Siapa membacanya tiga kali pada pagi dan petang, niscaya itu mencukupinya dari segala sesuatu."
+  },
+  "evening_falaq": {
+    "translation": "Surah Al-Falaq (Al-Qur'an 113), dibaca tiga kali.",
+    "virtue": "Siapa membacanya tiga kali pada pagi dan petang, niscaya itu mencukupinya dari segala sesuatu."
+  },
+  "evening_nas": {
+    "translation": "Surah An-Nas (Al-Qur'an 114), dibaca tiga kali.",
     "virtue": "Siapa membacanya tiga kali pada pagi dan petang, niscaya itu mencukupinya dari segala sesuatu."
   },
   "evening_sayyidul_istighfar": {
@@ -140,7 +160,8 @@
     "translation": "Ya Allah, lindungilah aku dari azab-Mu pada hari Engkau membangkitkan hamba-hamba-Mu."
   },
   "waking_alhamdulillah_ahyana": {
-    "translation": "Segala puji bagi Allah yang menghidupkan kami setelah mematikan kami, dan kepada-Nya tempat kembali (kebangkitan)."
+    "translation": "Segala puji bagi Allah yang menghidupkan kami setelah mematikan kami, dan kepada-Nya tempat kembali (kebangkitan).",
+    "instruction": "Saat bangun, usap bekas kantuk dari wajah dengan tangan, sebagaimana dilakukan Nabi (Sahih al-Bukhari 183). Ini adalah tindakan, bukan bacaan doa."
   },
   "waking_afani": {
     "translation": "Segala puji bagi Allah yang telah menyehatkan tubuhku, mengembalikan ruhku kepadaku, dan mengizinkanku untuk mengingat-Nya."
@@ -187,7 +208,7 @@
     "virtue": "Inilah ucapan Ibrahim ketika dilemparkan ke dalam api, dan ucapan Nabi ﷺ beserta orang-orang beriman."
   },
   "travel_setting_off": {
-    "translation": "Allah Mahabesar (tiga kali). Mahasuci (Allah) yang telah menundukkan ini bagi kami, padahal kami sebelumnya tidak mampu menguasainya. Sesungguhnya kepada Tuhan kami, kami pasti kembali. Ya Allah, kami memohon kepada-Mu dalam perjalanan kami ini kebaikan dan ketakwaan, serta amal yang Engkau ridai."
+    "translation": "Allah Mahabesar (tiga kali). Mahasuci Allah yang telah menundukkan kendaraan ini bagi kami, padahal kami sendiri tidak mampu menguasainya. Sesungguhnya kami pasti kembali kepada Tuhan kami. Ya Allah, kami memohon kepada-Mu dalam perjalanan ini kebajikan dan ketakwaan, serta amal yang Engkau ridai. Ya Allah, mudahkanlah perjalanan ini bagi kami dan dekatkanlah jaraknya bagi kami. Ya Allah, Engkaulah pendamping kami dalam perjalanan dan penjaga keluarga kami. Ya Allah, aku berlindung kepada-Mu dari kesulitan perjalanan, pemandangan yang menyedihkan, dan kepulangan yang membawa keburukan pada harta dan keluarga."
   },
   "travel_stopping": {
     "translation": "Aku berlindung dengan kalimat-kalimat Allah yang sempurna dari keburukan apa yang Dia ciptakan.",
@@ -241,15 +262,22 @@
     "translation": "Ya Allah, aku memohon kepada-Mu ilmu yang bermanfaat, rezeki yang baik, dan amal yang diterima.",
     "virtue": "Diucapkan Nabi ﷺ setelah salam dari shalat Subuh."
   },
-  "salah_muawwidhat": {
-    "translation": "Surah al-Ikhlas, al-Falaq, dan an-Nas (Al-Qur'an 112–114), dibaca sekali setelah setiap shalat, dan tiga kali setelah Subuh dan Maghrib."
+  "salah_ikhlas": {
+    "translation": "Surah Al-Ikhlas (Al-Qur'an 112), dibaca sekali setelah setiap shalat, dan tiga kali setelah Subuh dan Maghrib."
+  },
+  "salah_falaq": {
+    "translation": "Surah Al-Falaq (Al-Qur'an 113), dibaca sekali setelah setiap shalat, dan tiga kali setelah Subuh dan Maghrib."
+  },
+  "salah_nas": {
+    "translation": "Surah An-Nas (Al-Qur'an 114), dibaca sekali setelah setiap shalat, dan tiga kali setelah Subuh dan Maghrib."
   },
   "daily_entering_home": {
-    "translation": "Dengan nama Allah kami masuk, dan dengan nama Allah kami keluar, dan kepada Allah Tuhan kami, kami bertawakal.",
-    "virtue": "Kemudian hendaklah ia mengucapkan salam kepada keluarganya."
+    "translation": "Ya Allah, aku memohon kepada-Mu kebaikan ketika masuk dan kebaikan ketika keluar. Dengan nama Allah kami masuk, dan dengan nama Allah kami keluar, serta kepada Allah, Tuhan kami, kami bertawakal.",
+    "instruction": "Ingatlah Allah ketika masuk dan ucapkan salam kepada keluarga di rumah. Kedua amalan ini memiliki dalil tersendiri dalam Muslim 2018 dan Al-Qur'an 24:61. Penilaian terhadap hadis doa ini diperselisihkan: Ibnu Baz menilainya hasan, sedangkan al-Albani menilainya lemah."
   },
   "daily_wearing_new_clothes": {
-    "translation": "Ya Allah, bagi-Mu segala puji. Engkau telah memberiku pakaian ini. Aku memohon kepada-Mu kebaikannya dan kebaikan untuk apa ia dibuat, dan aku berlindung kepada-Mu dari keburukannya dan keburukan untuk apa ia dibuat."
+    "translation": "Ya Allah, bagi-Mu segala puji. Engkau telah memberiku pakaian ini. Aku memohon kepada-Mu kebaikannya dan kebaikan untuk apa ia dibuat, dan aku berlindung kepada-Mu dari keburukannya dan keburukan untuk apa ia dibuat.",
+    "instruction": "Ketika memakai alas kaki, dahulukan kaki kanan; ketika melepasnya, dahulukan kaki kiri (Sahih Muslim 2097)."
   },
   "daily_marketplace": {
     "translation": "Tidak ada tuhan yang berhak disembah selain Allah semata, tiada sekutu bagi-Nya. Milik-Nya kerajaan dan bagi-Nya segala puji. Dia menghidupkan dan mematikan, dan Dia Maha Hidup, tidak mati. Di tangan-Nya segala kebaikan, dan Dia Mahakuasa atas segala sesuatu.",
@@ -300,9 +328,20 @@
     "translation": "Mahasuci Allah (33 kali), segala puji bagi Allah (33 kali), Allah Mahabesar (34 kali).",
     "virtue": "Diajarkan Nabi ﷺ kepada Fathimah radhiyallahu 'anha sebagai ganti seorang pembantu; dan itu lebih baik baginya daripada seorang pembantu."
   },
-  "sleep_three_quls": {
-    "translation": "Membaca Surah al-Ikhlas, al-Falaq, dan an-Nas, lalu meniup kedua telapak tangan setelah membacanya, kemudian mengusapkannya ke bagian tubuh yang terjangkau, dimulai dari kepala dan wajah, sebanyak tiga kali.",
-    "virtue": "Nabi ﷺ melakukan hal itu setiap malam sebelum tidur."
+  "sleep_ikhlas": {
+    "translation": "Surah Al-Ikhlas (Al-Qur'an 112), dibaca tiga kali.",
+    "virtue": "Nabi ﷺ melakukan hal itu setiap malam sebelum tidur.",
+    "instruction": "Sebelum tidur, satukan kedua telapak tangan, tiupkan dengan lembut ke kedua telapak tangan dan baca Surah al-Ikhlas, al-Falaq, dan an-Nas. Usapkan ke seluruh bagian tubuh yang dapat dijangkau, dimulai dari kepala, wajah, dan bagian depan tubuh. Ulangi seluruh rangkaian meniup, membaca, dan mengusap sebanyak tiga kali."
+  },
+  "sleep_falaq": {
+    "translation": "Surah Al-Falaq (Al-Qur'an 113), dibaca tiga kali.",
+    "virtue": "Nabi ﷺ melakukan hal itu setiap malam sebelum tidur.",
+    "instruction": "Sebelum tidur, satukan kedua telapak tangan, tiupkan dengan lembut ke kedua telapak tangan dan baca Surah al-Ikhlas, al-Falaq, dan an-Nas. Usapkan ke seluruh bagian tubuh yang dapat dijangkau, dimulai dari kepala, wajah, dan bagian depan tubuh. Ulangi seluruh rangkaian meniup, membaca, dan mengusap sebanyak tiga kali."
+  },
+  "sleep_nas": {
+    "translation": "Surah An-Nas (Al-Qur'an 114), dibaca tiga kali.",
+    "virtue": "Nabi ﷺ melakukan hal itu setiap malam sebelum tidur.",
+    "instruction": "Sebelum tidur, satukan kedua telapak tangan, tiupkan dengan lembut ke kedua telapak tangan dan baca Surah al-Ikhlas, al-Falaq, dan an-Nas. Usapkan ke seluruh bagian tubuh yang dapat dijangkau, dimulai dari kepala, wajah, dan bagian depan tubuh. Ulangi seluruh rangkaian meniup, membaca, dan mengusap sebanyak tiga kali."
   },
   "sleep_night_fear": {
     "translation": "Aku berlindung dengan kalimat-kalimat Allah yang sempurna dari kemurkaan-Nya dan siksa-Nya, dari keburukan hamba-hamba-Nya, dan dari bisikan-bisikan setan serta kehadiran mereka.",
@@ -315,7 +354,35 @@
     "translation": "Para sahabat mengucapkan takbir (Allahu Akbar) setiap kali melewati jalan yang menanjak, dan tasbih (Subhanallah) setiap kali melewati jalan yang menurun."
   },
   "travel_astawdiuka": {
-    "translation": "Aku titipkan kepada Allah agamamu, amanahmu, dan penutup amalmu.",
+    "translation": "Aku titipkan kepada Allah agamamu, amanahmu, dan amal-amal penutup hidupmu.",
     "virtue": "Diucapkan Nabi ﷺ kepada orang yang hendak bepergian."
+  },
+  "mosque_adhan_testimony": {
+    "translation": "Aku pun bersaksi bahwa tidak ada yang berhak disembah selain Allah semata, tidak ada sekutu bagi-Nya, dan bahwa Muhammad adalah hamba dan utusan-Nya. Aku rida kepada Allah sebagai Tuhanku, kepada Muhammad sebagai Rasul, dan kepada Islam sebagai agamaku.",
+    "virtue": "Dibaca ketika mendengar muazin; Nabi ﷺ menjanjikan ampunan dosa bagi orang yang mengucapkannya."
+  },
+  "mosque_after_adhan_salawat": {
+    "translation": "Ya Allah, limpahkanlah selawat kepada Muhammad dan keluarga Muhammad sebagaimana Engkau telah melimpahkan selawat kepada keluarga Ibrahim. Sesungguhnya Engkau Maha Terpuji lagi Mahamulia. Ya Allah, limpahkanlah keberkahan kepada Muhammad dan keluarga Muhammad sebagaimana Engkau telah melimpahkan keberkahan kepada keluarga Ibrahim. Sesungguhnya Engkau Maha Terpuji lagi Mahamulia.",
+    "virtue": "Setelah selesai menjawab azan, berselawatlah kepada Nabi ﷺ, lalu mohonkanlah wasilah untuk beliau kepada Allah. Allah membalas satu selawat dengan sepuluh selawat. Ini salah satu lafal yang sahih; hadis tentang azan tidak mewajibkan lafal khusus ini."
+  },
+  "daily_leaving_home_protection": {
+    "translation": "Ya Allah, aku berlindung kepada-Mu agar tidak tersesat atau disesatkan, tergelincir atau dibuat tergelincir, menzalimi atau dizalimi, dan bertindak bodoh atau diperlakukan dengan kebodohan."
+  },
+  "daily_wearing_clothes": {
+    "translation": "Segala puji bagi Allah yang telah memberiku pakaian ini dan menganugerahkannya kepadaku tanpa daya dan kekuatan dariku.",
+    "virtue": "Siapa yang mengucapkannya ketika mengenakan pakaian, diampuni dosa-dosanya yang telah lalu.",
+    "instruction": "Doa ini dibaca ketika mengenakan pakaian, baik baru maupun yang pernah dipakai. Ketika memakai alas kaki, dahulukan kaki kanan; ketika melepasnya, dahulukan kaki kiri. Petunjuk tentang alas kaki merupakan tindakan, bukan bacaan doa."
+  },
+  "waking_imran_190_200": {
+    "translation": "(190) Sesungguhnya dalam penciptaan langit dan bumi, dan silih bergantinya malam dan siang terdapat tanda-tanda bagi orang-orang yang berakal,\n\n(191) (yaitu) orang-orang yang mengingat Allah sambil berdiri atau duduk atau dalam keadan berbaring dan mereka memikirkan tentang penciptaan langit dan bumi (seraya berkata): \"Ya Tuhan kami, tiadalah Engkau menciptakan ini dengan sia-sia, Maha Suci Engkau, maka peliharalah kami dari siksa neraka.\n\n(192) Ya Tuhan kami, sesungguhnya barangsiapa yang Engkau masukkan ke dalam neraka, maka sungguh telah Engkau hinakan ia, dan tidak ada bagi orang-orang yang zalim seorang penolongpun.\n\n(193) Ya Tuhan kami, sesungguhnya kami mendengar (seruan) yang menyeru kepada iman, (yaitu): \"Berimanlah kamu kepada Tuhanmu\", maka kamipun beriman. Ya Tuhan kami, ampunilah bagi kami dosa-dosa kami dan hapuskanlah dari kami kesalahan-kesalahan kami, dan wafatkanlah kami beserta orang-orang yang banyak berbakti.\n\n(194) Ya Tuhan kami, berilah kami apa yang telah Engkau janjikan kepada kami dengan perantaraan rasul-rasul Engkau. Dan janganlah Engkau hinakan kami di hari kiamat. Sesungguhnya Engkau tidak menyalahi janji\".\n\n(195) Maka Tuhan mereka memperkenankan permohonannya (dengan berfirman): \"Sesungguhnya Aku tidak menyia-nyiakan amal orang-orang yang beramal di antara kamu, baik laki-laki atau perempuan, (karena) sebagian kamu adalah turunan dari sebagian yang lain. Maka orang-orang yang berhijrah, yang diusir dari kampung halamannya, yang disakiti pada jalan-Ku, yang berperang dan yang dibunuh, pastilah akan Ku-hapuskan kesalahan-kesalahan mereka dan pastilah Aku masukkan mereka ke dalam surga yang mengalir sungai-sungai di bawahnya, sebagai pahala di sisi Allah. Dan Allah pada sisi-Nya pahala yang baik\".\n\n(196) Janganlah sekali-kali kamu terperdaya oleh kebebasan orang-orang kafir bergerak di dalam negeri.\n\n(197) Itu hanyalah kesenangan sementara, kemudian tempat tinggal mereka ialah Jahannam; dan Jahannam itu adalah tempat yang seburuk-buruknya.\n\n(198) Akan tetapi orang-orang yang bertakwa kepada Tuhannya, bagi mereka surga yang mengalir sungai-sungai di dalamnya, sedang mereka kekal di dalamnya sebagai tempat tinggal (anugerah) dari sisi Allah. Dan apa yang di sisi Allah adalah lebih baik bagi orang-orang yang berbakti.\n\n(199) Dan sesungguhnya diantara ahli kitab ada orang yang beriman kepada Allah dan kepada apa yang diturunkan kepada kamu dan yang diturunkan kepada mereka sedang mereka berendah hati kepada Allah dan mereka tidak menukarkan ayat-ayat Allah dengan harga yang sedikit. Mereka memperoleh pahala di sisi Tuhannya. Sesungguhnya Allah amat cepat perhitungan-Nya.\n\n(200) Hai orang-orang yang beriman, bersabarlah kamu dan kuatkanlah kesabaranmu dan tetaplah bersiap siaga (di perbatasan negerimu) dan bertakwalah kepada Allah, supaya kamu beruntung.",
+    "instruction": "Saat terbangun pada malam hari, bacalah ayat-ayat penutup surah Ali Imran ini (3:190–200)."
+  },
+  "salah_tasbih_tahlil_final": {
+    "translation": "Tidak ada tuhan selain Allah semata, tanpa sekutu bagi-Nya. Milik-Nya segala kerajaan dan segala pujian, dan Dia Mahakuasa atas segala sesuatu.",
+    "instruction": "Setelah membaca SubhanAllah 33 kali, Alhamdulillah 33 kali, dan Allahu Akbar 33 kali, bacalah zikir ini sekali untuk melengkapi seratus."
+  },
+  "mosque_after_wudu": {
+    "translation": "Aku bersaksi bahwa tidak ada sesembahan yang berhak disembah selain Allah semata, tanpa sekutu bagi-Nya, dan aku bersaksi bahwa Muhammad adalah hamba dan utusan-Nya.",
+    "virtue": "Siapa yang menyempurnakan wudu lalu mengucapkan zikir ini, delapan pintu surga dibukakan baginya dan ia dapat masuk melalui pintu yang dikehendakinya."
   }
 }

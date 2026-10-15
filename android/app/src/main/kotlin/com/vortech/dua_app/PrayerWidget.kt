@@ -62,6 +62,8 @@ object PrayerWidget {
         val editor = prefs(context).edit()
         for ((key, value) in data) editor.putString(key, value)
         editor.apply()
+        PrayerCountdown.onPrayerConfigChanged(context)
+        if (Build.VERSION.SDK_INT >= 24) PrayerSilencer.onPrayerConfigChanged(context)
     }
 
     /** Redraw every instance of every Hisn widget. */
@@ -85,7 +87,21 @@ object PrayerWidget {
     }
 
     /** Read config + compute today's prayer times for rendering. */
-    fun compute(context: Context): PrayerWidgetData {
+    fun prayersOn(context: Context, date: Date): List<Pair<String, Long>> {
+        val p = prefs(context)
+        val lat = p.getString("lat", null)?.toDoubleOrNull() ?: return emptyList()
+        val lng = p.getString("lng", null)?.toDoubleOrNull() ?: return emptyList()
+        if (!lat.isFinite() || !lng.isFinite() || lat !in -90.0..90.0 || lng !in -180.0..180.0) return emptyList()
+        val params = paramsFor(p.getString("method", "umm_al_qura")).apply {
+            madhab = madhabFor(p.getString("madhab", "shafi"))
+        }
+        val pt = PrayerTimes(Coordinates(lat, lng), dateComponents(date), params)
+        return listOf("fajr" to prayerMillis(pt.fajr), "dhuhr" to prayerMillis(pt.dhuhr),
+            "asr" to prayerMillis(pt.asr), "maghrib" to prayerMillis(pt.maghrib),
+            "isha" to prayerMillis(pt.isha))
+    }
+
+    fun compute(context: Context, now: Date = Date()): PrayerWidgetData {
         val p = prefs(context)
         val label = p.getString("label", "Hisn") ?: "Hisn"
         val am = p.getString("am", "AM") ?: "AM"
@@ -101,7 +117,8 @@ object PrayerWidget {
 
         val lat = p.getString("lat", null)?.toDoubleOrNull()
         val lng = p.getString("lng", null)?.toDoubleOrNull()
-        if (lat == null || lng == null) {
+        if (lat == null || lng == null || !lat.isFinite() || !lng.isFinite() ||
+            lat !in -90.0..90.0 || lng !in -180.0..180.0) {
             return PrayerWidgetData(label, hijri, names, null, 0, null, 0, null, am, pm)
         }
 
@@ -109,16 +126,17 @@ object PrayerWidget {
         val params = paramsFor(p.getString("method", "umm_al_qura")).apply {
             madhab = madhabFor(p.getString("madhab", "shafi"))
         }
-        val now = Date()
         val today = dateComponents(now)
         val pt = PrayerTimes(coords, today, params)
         val times = listOf(pt.fajr, pt.dhuhr, pt.asr, pt.maghrib, pt.isha)
+            .map { Date(prayerMillis(it)) }
 
         var nextIndex = times.indexOfFirst { it.after(now) }
         val nextTime: Date
         if (nextIndex < 0) {
             // All of today's prayers have passed — next is tomorrow's Fajr.
-            nextTime = PrayerTimes(coords, dateComponents(shiftDays(now, 1)), params).fajr
+            nextTime = Date(prayerMillis(
+                PrayerTimes(coords, dateComponents(shiftDays(now, 1)), params).fajr))
             nextIndex = 0
         } else {
             nextTime = times[nextIndex]
@@ -128,7 +146,8 @@ object PrayerWidget {
         val lastTime: Date
         if (lastIndex < 0) {
             // Before today's Fajr — the last adhan was yesterday's Isha.
-            lastTime = PrayerTimes(coords, dateComponents(shiftDays(now, -1)), params).isha
+            lastTime = Date(prayerMillis(
+                PrayerTimes(coords, dateComponents(shiftDays(now, -1)), params).isha))
             lastIndex = times.lastIndex
         } else {
             lastTime = times[lastIndex]
@@ -155,6 +174,11 @@ object PrayerWidget {
             time = date
             add(Calendar.DAY_OF_MONTH, days)
         }.time
+
+    // Adhan 1.x leaves Calendar's current milliseconds in otherwise rounded
+    // prayer dates. Remove only that incidental fraction, retaining all seconds
+    // so recomputation cannot drift alarms or prayer-window identities.
+    private fun prayerMillis(date: Date): Long = date.time / 1_000L * 1_000L
 
     private fun dateComponents(date: Date): DateComponents {
         val c = Calendar.getInstance().apply { time = date }

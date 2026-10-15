@@ -3,10 +3,10 @@
 /// Source: lib/i18n
 /// To regenerate, run: `dart run slang`
 ///
-/// Locales: 3
-/// Strings: 1227 (409 per locale)
+/// Locales: 4
+/// Strings: 1912 (478 per locale)
 ///
-/// Built on 2026-10-05 at 20:48 UTC
+/// Built on 2026-10-15 at 01:15 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint, unused_import
@@ -20,6 +20,7 @@ export 'package:slang_flutter/slang_flutter.dart';
 
 import 'strings_ar.g.dart' as l_ar;
 import 'strings_id.g.dart' as l_id;
+import 'strings_ur.g.dart' as l_ur;
 part 'strings_en.g.dart';
 
 /// Supported locales.
@@ -31,7 +32,8 @@ part 'strings_en.g.dart';
 enum AppLocale with BaseAppLocale<AppLocale, Translations> {
 	en(languageCode: 'en'),
 	ar(languageCode: 'ar'),
-	id(languageCode: 'id');
+	id(languageCode: 'id'),
+	ur(languageCode: 'ur');
 
 	const AppLocale({
 		required this.languageCode,
@@ -77,6 +79,12 @@ enum AppLocale with BaseAppLocale<AppLocale, Translations> {
 				);
 			case AppLocale.id:
 				return l_id.TranslationsId(
+					overrides: overrides,
+					cardinalResolver: cardinalResolver,
+					ordinalResolver: ordinalResolver,
+				);
+			case AppLocale.ur:
+				return l_ur.TranslationsUr(
 					overrides: overrides,
 					cardinalResolver: cardinalResolver,
 					ordinalResolver: ordinalResolver,

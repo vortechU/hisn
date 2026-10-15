@@ -18,6 +18,7 @@ class Shareable {
     this.translation,
     this.translationCredit,
     this.translationIsArabic = false,
+    this.translationIsRtl = false,
     this.repeat = 1,
   });
 
@@ -46,6 +47,7 @@ class Shareable {
   /// carries — so the card sets it in Arabic type, right-to-left, instead of
   /// the Latin body face.
   final bool translationIsArabic;
+  final bool translationIsRtl;
 
   /// How many times the dua is repeated. 1 (the default) is not shown.
   final int repeat;
@@ -61,11 +63,13 @@ class Shareable {
     return Shareable(
       arabic: dua.arabic,
       reference: dua.referenceFor(langCode),
-      title: dua.title,
-      titleArabic: dua.titleArabic,
-      transliteration:
-          arabicUi ? null : _orNull(dua.transliteration),
+      title: dua.titleForLang(langCode),
+      titleArabic: langCode == 'ur'
+          ? dua.titleForLang(langCode)
+          : dua.titleArabic,
+      transliteration: arabicUi ? null : _orNull(dua.transliteration),
       translation: arabicUi ? null : _orNull(dua.translationFor(langCode)),
+      translationIsRtl: langCode == 'ur',
       repeat: dua.repeat,
     );
   }
@@ -80,7 +84,7 @@ class Shareable {
   /// a translation of Arabic into Arabic.
   factory Shareable.verse(PageVerse verse, String langCode) {
     final arabicUi = langCode == _arabicCode;
-    final name = verse.surah.nameFor(arabicUi);
+    final name = verse.surah.nameFor(arabicUi || langCode == 'ur');
     final translation = _orNull(verse.translation);
     return Shareable(
       arabic: verse.ayah.text,
@@ -88,9 +92,11 @@ class Shareable {
       title: name,
       titleArabic: verse.surah.name,
       translation: translation,
-      translationCredit:
-          translation == null ? null : _orNull(verse.translationCredit),
+      translationCredit: translation == null
+          ? null
+          : _orNull(verse.translationCredit),
       translationIsArabic: translation != null && verse.translationIsArabic,
+      translationIsRtl: translation != null && (arabicUi || langCode == 'ur'),
     );
   }
 

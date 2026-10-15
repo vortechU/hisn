@@ -11,6 +11,8 @@
          (NotificationService asks), and without it alarms fall back to
          inexact. -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <!-- Opt-in app-owned prayer DND rule. Access is opened only by its settings button. -->
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
     <!-- Play the full adhan reliably at prayer time via a foreground service. -->
@@ -70,6 +72,37 @@
         <receiver
             android:name=".AdhanAlarmReceiver"
             android:exported="false" />
+        <receiver android:name=".PrayerCountdownReceiver" android:exported="false">
+            <intent-filter>
+                <action android:name="com.vortech.dua_app.PRAYER_COUNTDOWN_BOUNDARY" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.LOCALE_CHANGED" />
+                <action android:name="android.intent.action.CONFIGURATION_CHANGED" />
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".PrayerSilenceReceiver" android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
+                <action android:name="android.app.action.NOTIFICATION_POLICY_ACCESS_GRANTED_CHANGED" />
+                <action android:name="android.app.action.AUTOMATIC_ZEN_RULE_STATUS_CHANGED" />
+            </intent-filter>
+        </receiver>
+        <service android:name=".PrayerSilenceConditionProvider"
+            android:label="Hisn · Prayer silence"
+            android:permission="android.permission.BIND_CONDITION_PROVIDER_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.notification.ConditionProviderService" />
+            </intent-filter>
+        </service>
         <!-- Re-arm the adhan alarms after a reboot or app update (AlarmManager
              drops them on reboot). -->
         <receiver

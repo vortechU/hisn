@@ -15,6 +15,7 @@ import '../widgets/arabic_text.dart';
 import '../widgets/dua_card.dart';
 import '../widgets/ornament.dart';
 import 'adhkar_player_screen.dart';
+import 'after_prayer_tasbih_screen.dart';
 
 /// Every dua in a category, read as a session: tap a block to advance through
 /// its repetitions, with the set's progress ruled across the head of the page.
@@ -74,7 +75,7 @@ class _CategoryDuasScreenState extends State<CategoryDuasScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.category.titleFor(s.ar)),
+        title: Text(widget.category.titleForLang(s.lang.name)),
         actions: [
           _ListenAction(category: widget.category, duas: _duas),
           _ResetAction(duas: _duas, onReset: _resetAll),
@@ -89,10 +90,28 @@ class _CategoryDuasScreenState extends State<CategoryDuasScreen> {
             icon: visuals.icon,
             tint: tint,
           ),
+          if (widget.category.id == 'after_salah')
+            Padding(
+              padding: const EdgeInsets.fromLTRB(Ms.margin, 12, Ms.margin, 0),
+              child: OutlinedButton.icon(
+                key: const ValueKey('start_after_prayer_tasbih'),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const AfterPrayerTasbihScreen(),
+                  ),
+                ),
+                icon: const Icon(Icons.radio_button_checked),
+                label: Text(s.startAfterPrayerTasbih),
+              ),
+            ),
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.fromLTRB(
-                  Ms.margin, Ms.margin, Ms.margin, 34),
+                Ms.margin,
+                Ms.margin,
+                Ms.margin,
+                34,
+              ),
               itemCount: _duas.length,
               itemBuilder: (context, index) {
                 final dua = _duas[index];
@@ -113,7 +132,8 @@ class _CategoryDuasScreenState extends State<CategoryDuasScreen> {
 /// repetitions, say — rebuilds nothing here.
 int _completedCount(BuildContext context, List<Dua> duas) =>
     context.select<DuaProgressService, int>(
-        (p) => duas.where((d) => p.countOf(d.id) >= d.repeat).length);
+      (p) => duas.where((d) => p.countOf(d.id) >= d.repeat).length,
+    );
 
 /// The head of the session: the set's name in Arabic, its mark, and the tally
 /// of blocks finished — the page's one dominant element.
@@ -150,20 +170,25 @@ class _SessionHead extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(allDone ? Icons.check : icon,
-                  size: 24, color: allDone ? ms.gilt : tint),
+              Icon(
+                allDone ? Icons.check : icon,
+                size: 24,
+                color: allDone ? ms.gilt : tint,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (!s.ar)
-                      ArabicText(category.titleArabic,
-                          fontSize: 21,
-                          color: tint,
-                          textAlign: TextAlign.start,
-                          height: 1.5,
-                          maxLines: 1),
+                      ArabicText(
+                        category.titleArabic,
+                        fontSize: 21,
+                        color: tint,
+                        textAlign: TextAlign.start,
+                        height: 1.5,
+                        maxLines: 1,
+                      ),
                     Text(
                       allDone ? s.setComplete : s.tapEachDua,
                       maxLines: 1,
@@ -246,8 +271,9 @@ class _CountedDuaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final count =
-        context.select<DuaProgressService, int>((p) => p.countOf(dua.id));
+    final count = context.select<DuaProgressService, int>(
+      (p) => p.countOf(dua.id),
+    );
     return DuaCard(dua: dua, count: count, onCount: onCount);
   }
 }

@@ -1,0 +1,32 @@
+{
+  "sources": [
+    {
+      "url": "https://sunnah.com/abudawud:2600",
+      "reference": "Sunan Abi Dawud 2600",
+      "note": "The reported farewell wording is وخواتيم عملك. This proposal adopts that wording without making any claim that other transmitted variants are invalid."
+    },
+    {
+      "url": "https://sunnah.com/tirmidhi:3443",
+      "reference": "Jami at-Tirmidhi 3443",
+      "note": "The app's existing cited report also has وخواتيم عملك, not آخر عملك."
+    }
+  ],
+  "base": {
+    "travel_astawdiuka": {
+      "arabic": "أَسْتَوْدِعُ اللَّهَ دِينَكَ وَأَمَانَتَكَ وَخَوَاتِيمَ عَمَلِكَ",
+      "transliteration": "Astawdi'ullaha dinaka wa amanataka wa khawatima 'amalik",
+      "translation": "I entrust to Allah your religion, your trust, and the final deeds of your life.",
+      "reference": "Sunan Abi Dawud 2600; Jami at-Tirmidhi 3443"
+    }
+  },
+  "ar": {
+    "travel_astawdiuka": {
+      "reference": "سنن أبي داود ٢٦٠٠؛ جامع الترمذي ٣٤٤٣"
+    }
+  },
+  "id": {
+    "travel_astawdiuka": {
+      "translation": "Aku titipkan kepada Allah agamamu, amanahmu, dan amal-amal penutup hidupmu."
+    }
+  }
+}

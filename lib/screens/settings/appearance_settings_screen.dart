@@ -71,7 +71,7 @@ class AppearanceSettingsScreen extends StatelessWidget {
             ),
           ),
           SwitchListTile(
-            secondary: const Icon(Icons.auto_awesome_outlined),
+            secondary: const Icon(Icons.pattern_outlined),
             title: Text(s.patterns),
             subtitle: Text(s.patternsSub),
             value: controller.patternsEnabled,

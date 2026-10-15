@@ -1,0 +1,26 @@
+{
+  "en": {
+    "prayerCountdownTitle": "Next prayer countdown",
+    "prayerCountdownSubtitle": "Keep a silent countdown in your Android notifications.",
+    "prayerCountdownUnavailable": "Available on Android. The system controls how the countdown appears.",
+    "prayerCountdownChannelDescription": "Silent countdown to the next prayer"
+  },
+  "ar": {
+    "prayerCountdownTitle": "العد التنازلي للصلاة القادمة",
+    "prayerCountdownSubtitle": "اعرض عدًا تنازليًا صامتًا في إشعارات أندرويد.",
+    "prayerCountdownUnavailable": "متاح على أندرويد. يتحكم النظام في طريقة عرض العد التنازلي.",
+    "prayerCountdownChannelDescription": "عد تنازلي صامت للصلاة القادمة"
+  },
+  "id": {
+    "prayerCountdownTitle": "Hitung mundur salat berikutnya",
+    "prayerCountdownSubtitle": "Tampilkan hitung mundur senyap di notifikasi Android.",
+    "prayerCountdownUnavailable": "Tersedia di Android. Sistem mengatur tampilan hitung mundur.",
+    "prayerCountdownChannelDescription": "Hitung mundur senyap menuju salat berikutnya"
+  },
+  "ur": {
+    "prayerCountdownTitle": "اگلی نماز کی الٹی گنتی",
+    "prayerCountdownSubtitle": "اینڈرائیڈ کی اطلاعات میں نماز کی خاموش الٹی گنتی دکھائیں۔",
+    "prayerCountdownUnavailable": "اینڈرائیڈ پر دستیاب ہے۔ الٹی گنتی کی شکل نظام طے کرتا ہے۔",
+    "prayerCountdownChannelDescription": "اگلی نماز تک خاموش الٹی گنتی"
+  }
+}

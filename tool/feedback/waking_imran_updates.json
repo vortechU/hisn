@@ -1,0 +1,64 @@
+{
+  "sources": [
+    {
+      "url": "https://sunnah.com/bukhari:183",
+      "reference": "Sahih al-Bukhari 183",
+      "note": "Ibn Abbas reports reciting the concluding verses on waking at night. The narration uses 'ten'. Do not label the modern 190–200 range as exactly ten numbered verses."
+    },
+    {
+      "url": "https://sunnah.com/muslim:763b",
+      "reference": "Sahih Muslim 763b",
+      "note": "Parallel primary report of recitation on waking at night."
+    },
+    {
+      "url": "https://sunnah.com/bukhari:4569",
+      "reference": "Sahih al-Bukhari 4569",
+      "note": "Explicitly names the beginning verse: Inna fi khalqis-samawati (3:190)."
+    },
+    {
+      "url": "https://sunnah.com/hisn:4",
+      "reference": "Hisn al-Muslim 4",
+      "note": "Established compilation supplies Quran 3:190–200 under waking. This has eleven numbered verses in the bundled Quran; title the range explicitly. No threefold repeat is specified."
+    }
+  ],
+  "bundledContent": {
+    "arabic": "assets/data/quran/surah_3.json",
+    "en": "assets/data/quran/trans/en/surah_3.json",
+    "id": "assets/data/quran/trans/id/surah_3.json",
+    "range": [
+      190,
+      200
+    ],
+    "verseCount": 11,
+    "note": "Arabic and both meaning editions copied exactly, with verse markers added. Transliteration is a conventional ASCII rendering of the same full verses."
+  },
+  "insertAfter": {
+    "waking_imran_190_200": "waking_afani"
+  },
+  "additions": [
+    {
+      "id": "waking_imran_190_200",
+      "categoryId": "waking",
+      "title": "Aal Imran (3:190–200)",
+      "titleArabic": "آل عمران (١٩٠–٢٠٠)",
+      "arabic": "إِنَّ فِي خَلۡقِ ٱلسَّمَٰوَٰتِ وَٱلۡأَرۡضِ وَٱخۡتِلَٰفِ ٱلَّيۡلِ وَٱلنَّهَارِ لَأٓيَٰتࣲ لِّأُوْلِي ٱلۡأَلۡبَٰبِ ﴿١٩٠﴾\n\nٱلَّذِينَ يَذۡكُرُونَ ٱللَّهَ قِيَٰمࣰا وَقُعُودࣰا وَعَلَىٰ جُنُوبِهِمۡ وَيَتَفَكَّرُونَ فِي خَلۡقِ ٱلسَّمَٰوَٰتِ وَٱلۡأَرۡضِ رَبَّنَا مَا خَلَقۡتَ هَٰذَا بَٰطِلࣰا سُبۡحَٰنَكَ فَقِنَا عَذَابَ ٱلنَّارِ ﴿١٩١﴾\n\nرَبَّنَآ إِنَّكَ مَن تُدۡخِلِ ٱلنَّارَ فَقَدۡ أَخۡزَيۡتَهُۥۖ وَمَا لِلظَّٰلِمِينَ مِنۡ أَنصَارࣲ‏ ﴿١٩٢﴾\n\nرَّبَّنَآ إِنَّنَا سَمِعۡنَا مُنَادِيࣰا يُنَادِي لِلۡإِيمَٰنِ أَنۡ ءَامِنُواْ بِرَبِّكُمۡ فَـَٔامَنَّاۚ رَبَّنَا فَٱغۡفِرۡ لَنَا ذُنُوبَنَا وَكَفِّرۡ عَنَّا سَيِّـَٔاتِنَا وَتَوَفَّنَا مَعَ ٱلۡأَبۡرَارِ ﴿١٩٣﴾\n\nرَبَّنَا وَءَاتِنَا مَا وَعَدتَّنَا عَلَىٰ رُسُلِكَ وَلَا تُخۡزِنَا يَوۡمَ ٱلۡقِيَٰمَةِۖ إِنَّكَ لَا تُخۡلِفُ ٱلۡمِيعَادَ ﴿١٩٤﴾\n\nفَٱسۡتَجَابَ لَهُمۡ رَبُّهُمۡ أَنِّي لَآ أُضِيعُ عَمَلَ عَٰمِلࣲ مِّنكُم مِّن ذَكَرٍ أَوۡ أُنثَىٰۖ بَعۡضُكُم مِّنۢ بَعۡضࣲۖ فَٱلَّذِينَ هَاجَرُواْ وَأُخۡرِجُواْ مِن دِيَٰرِهِمۡ وَأُوذُواْ فِي سَبِيلِي وَقَٰتَلُواْ وَقُتِلُواْ لَأُكَفِّرَنَّ عَنۡهُمۡ سَيِّـَٔاتِهِمۡ وَلَأُدۡخِلَنَّهُمۡ جَنَّٰتࣲ تَجۡرِي مِن تَحۡتِهَا ٱلۡأَنۡهَٰرُ ثَوَابࣰا مِّنۡ عِندِ ٱللَّهِۚ وَٱللَّهُ عِندَهُۥ حُسۡنُ ٱلثَّوَابِ ﴿١٩٥﴾\n\nلَا يَغُرَّنَّكَ تَقَلُّبُ ٱلَّذِينَ كَفَرُواْ فِي ٱلۡبِلَٰدِ ﴿١٩٦﴾\n\nمَتَٰعࣱ قَلِيلࣱ ثُمَّ مَأۡوَىٰهُمۡ جَهَنَّمُۖ وَبِئۡسَ ٱلۡمِهَادُ ﴿١٩٧﴾\n\nلَٰكِنِ ٱلَّذِينَ ٱتَّقَوۡاْ رَبَّهُمۡ لَهُمۡ جَنَّٰتࣱ تَجۡرِي مِن تَحۡتِهَا ٱلۡأَنۡهَٰرُ خَٰلِدِينَ فِيهَا نُزُلࣰا مِّنۡ عِندِ ٱللَّهِۗ وَمَا عِندَ ٱللَّهِ خَيۡرࣱ لِّلۡأَبۡرَارِ ﴿١٩٨﴾\n\nوَإِنَّ مِنۡ أَهۡلِ ٱلۡكِتَٰبِ لَمَن يُؤۡمِنُ بِٱللَّهِ وَمَآ أُنزِلَ إِلَيۡكُمۡ وَمَآ أُنزِلَ إِلَيۡهِمۡ خَٰشِعِينَ لِلَّهِ لَا يَشۡتَرُونَ بِـَٔايَٰتِ ٱللَّهِ ثَمَنࣰا قَلِيلًاۚ أُوْلَٰٓئِكَ لَهُمۡ أَجۡرُهُمۡ عِندَ رَبِّهِمۡۗ إِنَّ ٱللَّهَ سَرِيعُ ٱلۡحِسَابِ ﴿١٩٩﴾\n\nيَٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُواْ ٱصۡبِرُواْ وَصَابِرُواْ وَرَابِطُواْ وَٱتَّقُواْ ٱللَّهَ لَعَلَّكُمۡ تُفۡلِحُونَ ﴿٢٠٠﴾",
+      "transliteration": "(190) Inna fi khalqis-samawati wal-ardi wakhtilafil-layli wan-nahari la-ayatin li-ulil-albab.\n\n(191) Alladhina yadhkurunallaha qiyaman wa qu'udan wa 'ala junubihim wa yatafakkaruna fi khalqis-samawati wal-ard. Rabbana ma khalaqta hadha batilan subhanaka faqina 'adhaban-nar.\n\n(192) Rabbana innaka man tudkhilin-nara faqad akhzaytah, wa ma liz-zalimina min ansar.\n\n(193) Rabbana innana sami'na munadiyan yunadi lil-imani an aminu bi-Rabbikum fa-amanna. Rabbana faghfir lana dhunubana wa kaffir 'anna sayyi-atina wa tawaffana ma'al-abrar.\n\n(194) Rabbana wa atina ma wa'adtana 'ala rusulika wa la tukhzina yawmal-qiyamah. Innaka la tukhliful-mi'ad.\n\n(195) Fastajaba lahum Rabbuhum anni la udi'u 'amala 'amilin minkum min dhakarin aw untha, ba'dukum min ba'd. Falladhina hajaru wa ukhriju min diyarihim wa udhu fi sabili wa qatalu wa qutilu la-ukaffiranna 'anhum sayyi-atihim wa la-udkhilannahum jannatin tajri min tahtihal-anharu thawaban min 'indillah. Wallahu 'indahu husnuth-thawab.\n\n(196) La yaghurrannaka taqallubul-ladhina kafaru fil-bilad.\n\n(197) Mata'un qalilun thumma ma'wahum jahannamu wa bi'sal-mihad.\n\n(198) Lakinil-ladhinat-taqaw Rabbahum lahum jannatun tajri min tahtihal-anharu khalidina fiha nuzulan min 'indillah. Wa ma 'indallahi khayrun lil-abrar.\n\n(199) Wa inna min ahlil-kitabi laman yu'minu billahi wa ma unzila ilaykum wa ma unzila ilayhim khashi'ina lillahi la yashtaruna bi-ayatillahi thamanan qalila. Ula'ika lahum ajruhum 'inda Rabbihim. Innallaha sari'ul-hisab.\n\n(200) Ya ayyuhal-ladhina amanusbiru wa sabiru wa rabitu wattaqullaha la'allakum tuflihun.",
+      "translation": "(190) Verily! In the creation of the heavens and the earth, and in the alternation of night and day, there are indeed signs for men of understanding.\n\n(191) Those who remember Allah (always, and in prayers) standing, sitting, and lying down on their sides, and think deeply about the creation of the heavens and the earth, (saying): \"Our Lord! You have not created (all) this without purpose, glory to You! (Exalted be You above all that they associate with You as partners). Give us salvation from the torment of the Fire.\n\n(192) \"Our Lord! Verily, whom You admit to the Fire, indeed, You have disgraced him, and never will the Zalimun (polytheists and wrong-doers) find any helpers.\n\n(193) \"Our Lord! Verily, we have heard the call of one (Muhammad SAW) calling to Faith: 'Believe in your Lord,' and we have believed. Our Lord! Forgive us our sins and remit from us our evil deeds, and make us die in the state of righteousness along with Al-Abrar (those who are obedient to Allah and follow strictly His Orders).\n\n(194) \"Our Lord! Grant us what You promised unto us through Your Messengers and disgrace us not on the Day of Resurrection, for You never break (Your) Promise.\"\n\n(195) So their Lord accepted of them (their supplication and answered them), \"Never will I allow to be lost the work of any of you, be he male or female. You are (members) one of another, so those who emigrated and were driven out from their homes, and suffered harm in My Cause, and who fought, and were killed (in My Cause), verily, I will remit from them their evil deeds and admit them into Gardens under which rivers flow (in Paradise); a reward from Allah, and with Allah is the best of rewards.\"\n\n(196) Let not the free disposal (and affluence) of the disbelievers throughout the land deceive you.\n\n(197) A brief enjoyment; then, their ultimate abode is Hell; and worst indeed is that place for rest.\n\n(198) But, for those who fear their Lord, are Gardens under which rivers flow (in Paradise); therein are they to dwell (for ever), an entertainment from Allah; and that which is with Allah is the Best for Al-Abrar (those who are obedient to Allah and follow strictly His Orders).\n\n(199) And there are, certainly, among the people of the Scripture (Jews and Christians), those who believe in Allah and in that which has been revealed to you, and in that which has been revealed to them, humbling themselves before Allah. They do not sell the Verses of Allah for a little price, for them is a reward with their Lord. Surely, Allah is Swift in account.\n\n(200) O you who believe! Endure and be more patient (than your enemy), and guard your territory by stationing army units permanently at the places from where the enemy can attack you, and fear Allah, so that you may be successful.",
+      "reference": "Qur'an 3:190–200; Sahih al-Bukhari 183, 4569; Sahih Muslim 763b",
+      "repeat": 1,
+      "instruction": "When waking during the night, recite these concluding verses of Aal Imran (3:190–200)."
+    }
+  ],
+  "ar": {
+    "waking_imran_190_200": {
+      "reference": "القرآن الكريم، آل عمران ١٩٠–٢٠٠؛ صحيح البخاري ١٨٣، ٤٥٦٩؛ صحيح مسلم ٧٦٣",
+      "instruction": "عند الاستيقاظ من النوم ليلًا، تُقرأ هذه الآيات من خواتيم سورة آل عمران (١٩٠–٢٠٠)."
+    }
+  },
+  "id": {
+    "waking_imran_190_200": {
+      "translation": "(190) Sesungguhnya dalam penciptaan langit dan bumi, dan silih bergantinya malam dan siang terdapat tanda-tanda bagi orang-orang yang berakal,\n\n(191) (yaitu) orang-orang yang mengingat Allah sambil berdiri atau duduk atau dalam keadan berbaring dan mereka memikirkan tentang penciptaan langit dan bumi (seraya berkata): \"Ya Tuhan kami, tiadalah Engkau menciptakan ini dengan sia-sia, Maha Suci Engkau, maka peliharalah kami dari siksa neraka.\n\n(192) Ya Tuhan kami, sesungguhnya barangsiapa yang Engkau masukkan ke dalam neraka, maka sungguh telah Engkau hinakan ia, dan tidak ada bagi orang-orang yang zalim seorang penolongpun.\n\n(193) Ya Tuhan kami, sesungguhnya kami mendengar (seruan) yang menyeru kepada iman, (yaitu): \"Berimanlah kamu kepada Tuhanmu\", maka kamipun beriman. Ya Tuhan kami, ampunilah bagi kami dosa-dosa kami dan hapuskanlah dari kami kesalahan-kesalahan kami, dan wafatkanlah kami beserta orang-orang yang banyak berbakti.\n\n(194) Ya Tuhan kami, berilah kami apa yang telah Engkau janjikan kepada kami dengan perantaraan rasul-rasul Engkau. Dan janganlah Engkau hinakan kami di hari kiamat. Sesungguhnya Engkau tidak menyalahi janji\".\n\n(195) Maka Tuhan mereka memperkenankan permohonannya (dengan berfirman): \"Sesungguhnya Aku tidak menyia-nyiakan amal orang-orang yang beramal di antara kamu, baik laki-laki atau perempuan, (karena) sebagian kamu adalah turunan dari sebagian yang lain. Maka orang-orang yang berhijrah, yang diusir dari kampung halamannya, yang disakiti pada jalan-Ku, yang berperang dan yang dibunuh, pastilah akan Ku-hapuskan kesalahan-kesalahan mereka dan pastilah Aku masukkan mereka ke dalam surga yang mengalir sungai-sungai di bawahnya, sebagai pahala di sisi Allah. Dan Allah pada sisi-Nya pahala yang baik\".\n\n(196) Janganlah sekali-kali kamu terperdaya oleh kebebasan orang-orang kafir bergerak di dalam negeri.\n\n(197) Itu hanyalah kesenangan sementara, kemudian tempat tinggal mereka ialah Jahannam; dan Jahannam itu adalah tempat yang seburuk-buruknya.\n\n(198) Akan tetapi orang-orang yang bertakwa kepada Tuhannya, bagi mereka surga yang mengalir sungai-sungai di dalamnya, sedang mereka kekal di dalamnya sebagai tempat tinggal (anugerah) dari sisi Allah. Dan apa yang di sisi Allah adalah lebih baik bagi orang-orang yang berbakti.\n\n(199) Dan sesungguhnya diantara ahli kitab ada orang yang beriman kepada Allah dan kepada apa yang diturunkan kepada kamu dan yang diturunkan kepada mereka sedang mereka berendah hati kepada Allah dan mereka tidak menukarkan ayat-ayat Allah dengan harga yang sedikit. Mereka memperoleh pahala di sisi Tuhannya. Sesungguhnya Allah amat cepat perhitungan-Nya.\n\n(200) Hai orang-orang yang beriman, bersabarlah kamu dan kuatkanlah kesabaranmu dan tetaplah bersiap siaga (di perbatasan negerimu) dan bertakwalah kepada Allah, supaya kamu beruntung.",
+      "instruction": "Saat terbangun pada malam hari, bacalah ayat-ayat penutup surah Ali Imran ini (3:190–200)."
+    }
+  }
+}

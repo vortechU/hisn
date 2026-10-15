@@ -419,7 +419,7 @@ class _MushafScreenState extends State<MushafScreen>
       title: ValueListenableBuilder<int>(
         valueListenable: _currentPage,
         builder: (context, page, _) => Text('${s.surahWord} '
-            '${repo.surahForPage(page).nameFor(s.ar)}'),
+            '${repo.surahForPage(page).nameFor(s.rtl)}'),
       ),
       actions: [
         IconButton(
@@ -648,13 +648,13 @@ class _PinchDetectorState extends State<_PinchDetector> {
 // given a fixed box for the same reason; it sets one line either way.
 const double _headHeight = 30;
 const double _headGap = 5;
-const double _folioHeight = 36; // 4 of padding above a 32 medallion.
-const EdgeInsets _framedPadding = EdgeInsets.fromLTRB(14, 4, 14, 2);
+const double _folioHeight = 32; // 4 of padding above a 28 medallion.
+const EdgeInsets _framedPadding = EdgeInsets.fromLTRB(8, 4, 8, 2);
 const EdgeInsets _zoomedPadding = EdgeInsets.fromLTRB(6, 4, 6, 4);
 // Rule, gutter, hairline, and the inner block's own padding — one side of the
 // double gold frame.
-const double _frameInsetX = Ms.stroke + Ms.gutter + 2 + Ms.hair + 10;
-const double _frameInsetY = Ms.stroke + Ms.gutter + 2 + Ms.hair + 8;
+const double _frameInsetX = Ms.stroke + Ms.gutter + 2 + Ms.hair + 8;
+const double _frameInsetY = Ms.stroke + Ms.gutter + 2 + Ms.hair + 6;
 
 /// Where the text block sits at each end of the zoom, worked out from the page
 /// box alone.
@@ -930,7 +930,7 @@ class _MushafPageViewState extends State<_MushafPageView> {
               child: Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: StarMedallion(
-                  size: 32,
+                  size: 28,
                   color: inks.gold,
                   child: ArabicText(
                     toArabicDigits(widget.pageNumber),
@@ -1041,11 +1041,34 @@ class _GoToAyahSheet extends StatefulWidget {
 class _GoToAyahSheetState extends State<_GoToAyahSheet> {
   late int _surah = widget.currentSurah;
   final _ayahController = TextEditingController(text: '1');
+  final _ayahFocus = FocusNode();
+  bool _selectOnFocus = true;
   bool _loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _ayahFocus.addListener(_onAyahFocus);
+  }
+
+  void _onAyahFocus() {
+    if (!_ayahFocus.hasFocus || !_selectOnFocus) return;
+    _selectOnFocus = false;
+    // Apply after the tap has positioned the caret, so replacing the initial
+    // number works on the first keystroke even in an Arabic interface.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_ayahFocus.hasFocus) return;
+      _ayahController.selection = TextSelection(
+        baseOffset: 0,
+        extentOffset: _ayahController.text.length,
+      );
+    });
+  }
 
   @override
   void dispose() {
     _ayahController.dispose();
+    _ayahFocus.dispose();
     super.dispose();
   }
 
@@ -1056,15 +1079,20 @@ class _GoToAyahSheetState extends State<_GoToAyahSheet> {
     setState(() {
       _surah = value;
       // Keep the verse field within the new surah's range.
-      final cur = int.tryParse(_ayahController.text.trim()) ?? 1;
+      final cur = _parseAyahNumber(_ayahController.text);
       final clamped = cur.clamp(1, widget.repo.surahByNumber(value)!.ayahCount);
-      _ayahController.text = '$clamped';
+      final text = '$clamped';
+      _ayahController.value = TextEditingValue(
+        text: text,
+        selection: TextSelection(baseOffset: 0, extentOffset: text.length),
+      );
+      _selectOnFocus = true;
     });
   }
 
   Future<void> _go() async {
     final max = _selected.ayahCount;
-    final n = (int.tryParse(_ayahController.text.trim()) ?? 1).clamp(1, max);
+    final n = _parseAyahNumber(_ayahController.text).clamp(1, max);
     setState(() => _loading = true);
     final page = await widget.repo.pageForAyah(_surah, n);
     if (mounted) Navigator.of(context).pop(page);
@@ -1110,7 +1138,7 @@ class _GoToAyahSheetState extends State<_GoToAyahSheet> {
                       child: Row(
                         children: [
                           Expanded(
-                            child: Text('${su.number} · ${su.nameFor(s.ar)}',
+                            child: Text('${su.number} · ${su.nameFor(s.rtl)}',
                                 overflow: TextOverflow.ellipsis,
                                 style: theme.textTheme.bodyLarge),
                           ),
@@ -1132,7 +1160,17 @@ class _GoToAyahSheetState extends State<_GoToAyahSheet> {
           const SizedBox(height: 5),
           TextField(
             controller: _ayahController,
+            focusNode: _ayahFocus,
+            textDirection: TextDirection.ltr,
+            textAlign: TextAlign.start,
             keyboardType: TextInputType.number,
+            // The platform owns its keyboard palette; Flutter can request its
+            // light/dark appearance on iOS, while Android follows the IME.
+            keyboardAppearance: theme.brightness,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp('[0-9٠-٩۰-۹]')),
+            ],
+            textInputAction: TextInputAction.go,
             decoration: InputDecoration(hintText: s.verseRange(max)),
             onSubmitted: (_) => _go(),
           ),
@@ -1156,6 +1194,17 @@ class _GoToAyahSheetState extends State<_GoToAyahSheet> {
       ),
     );
   }
+}
+
+int _parseAyahNumber(String value) {
+  final western = String.fromCharCodes(
+    value.trim().runes.map((rune) {
+      if (rune >= 0x0660 && rune <= 0x0669) return rune - 0x0660 + 0x30;
+      if (rune >= 0x06F0 && rune <= 0x06F9) return rune - 0x06F0 + 0x30;
+      return rune;
+    }),
+  );
+  return int.tryParse(western) ?? 1;
 }
 
 /// The label above a field in the go-to-verse sheet, in the apparatus face.
@@ -1314,15 +1363,42 @@ class _PageBody extends StatelessWidget {
                     width: layout.width,
                     height: slot,
                     child: _isSpecialLine(page.lines[li])
-                        // Headers and the basmalah name no verse, so they are
-                        // left as they were — undecorated and untouchable.
-                        ? Center(
+                        // Keep the printed glyphs and line slots intact. Only
+                        // surah titles receive a frame; basmalah stays plain.
+                        ? Container(
+                            key: page.lines[li].any((word) => word.isHeader)
+                                ? ValueKey(
+                                    'mushaf-surah-header-${page.page}-$li',
+                                  )
+                                : null,
+                            margin: page.lines[li].any((word) => word.isHeader)
+                                ? EdgeInsets.symmetric(vertical: slot * 0.1)
+                                : EdgeInsets.zero,
+                            padding: const EdgeInsets.symmetric(horizontal: 6),
+                            decoration: page.lines[li]
+                                    .any((word) => word.isHeader)
+                                ? BoxDecoration(
+                                    color: inks.green.withValues(alpha: 0.04),
+                                    border: Border.all(
+                                      color: inks.gold.withValues(alpha: 0.65),
+                                      width: Ms.hair,
+                                    ),
+                                    borderRadius: BorderRadius.circular(
+                                      Ms.rSmall,
+                                    ),
+                                  )
+                                : null,
+                            alignment: Alignment.center,
                             child: FittedBox(
                               fit: BoxFit.scaleDown,
                               child: Text.rich(
                                 TextSpan(
                                     children: _spans(page.lines[li], verses[li],
                                         layout.fontSize)),
+                                // QCF glyphs form a fitted printed page. Keep
+                                // painting at the same scale as measurement
+                                // and verse hit testing; pinch zoom sizes it.
+                                textScaler: TextScaler.noScaling,
                                 textDirection: TextDirection.ltr,
                               ),
                             ),
@@ -1340,6 +1416,7 @@ class _PageBody extends StatelessWidget {
                                 TextSpan(
                                     children: _spans(page.lines[li], verses[li],
                                         layout.fontSize)),
+                                textScaler: TextScaler.noScaling,
                                 textDirection: TextDirection.ltr,
                                 textAlign: TextAlign.center,
                                 maxLines: 1,

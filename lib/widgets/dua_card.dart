@@ -12,14 +12,14 @@ import '../theme/app_theme.dart';
 import '../theme/reading_theme.dart';
 import '../util/arabic.dart';
 import 'arabic_text.dart';
+import 'dua_instruction.dart';
 import 'ornament.dart';
 
 /// One dua, set as a text block in a ruled frame.
 ///
 /// The block follows the order a critical edition uses: heading, then the
-/// Arabic, then the transliteration and translation, then the apparatus —
-/// virtue, source, and the actions. Nothing that belongs to the apparatus is
-/// allowed to sit above the text it annotates.
+/// practical guidance when needed, the Arabic, then its transliteration and
+/// translation, followed by the virtue, source, and actions.
 ///
 /// In an Arabic interface the transliteration and translation drop out
 /// regardless of the display settings: both exist to render the Arabic for
@@ -59,20 +59,21 @@ class DuaCard extends StatelessWidget {
     final lang = AppStrings.read(context).lang.name;
     // Same body the share sheet sends, so what is copied and what is shared
     // can't drift apart — including which rendering lines the language keeps.
-    Clipboard.setData(
-        ClipboardData(text: Shareable.dua(dua, lang).asText()));
+    Clipboard.setData(ClipboardData(text: Shareable.dua(dua, lang).asText()));
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
-          SnackBar(content: Text(AppStrings.read(context).duaCopied)));
+        SnackBar(content: Text(AppStrings.read(context).duaCopied)),
+      );
   }
 
   @override
   Widget build(BuildContext context) {
     // Apply the reading-surface tint (sepia / night) above the card so the
     // Arabic, translation, rules and paper all pick it up. `system` is a no-op.
-    final reading =
-        context.select<DisplaySettings, ReadingTheme>((d) => d.readingTheme);
+    final reading = context.select<DisplaySettings, ReadingTheme>(
+      (d) => d.readingTheme,
+    );
     return Theme(
       data: reading.apply(Theme.of(context)),
       child: Builder(builder: _buildCard),
@@ -85,8 +86,10 @@ class DuaCard extends StatelessWidget {
     final ms = ManuscriptTheme.of(context);
     final display = context.watch<DisplaySettings>();
     final s = AppStrings.of(context);
-    final showArabicTitle = s.ar && dua.titleArabic != null;
+    final showArabicTitle = s.rtl;
     final virtue = dua.virtueFor(s.lang.name);
+
+    final instruction = dua.instructionFor(s.lang.name);
 
     final card = Padding(
       padding: const EdgeInsets.only(bottom: 14),
@@ -112,7 +115,9 @@ class DuaCard extends StatelessWidget {
                 Expanded(
                   child: showArabicTitle
                       ? ArabicText(
-                          stripHarakat(dua.titleArabic!),
+                          s.ar
+                              ? stripHarakat(dua.titleForLang(s.lang.name))
+                              : dua.titleForLang(s.lang.name),
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                           textAlign: TextAlign.start,
@@ -120,7 +125,7 @@ class DuaCard extends StatelessWidget {
                           maxLines: 2,
                         )
                       : Text(
-                          dua.title,
+                          dua.titleForLang(s.lang.name),
                           style: theme.textTheme.titleMedium,
                         ),
                 ),
@@ -141,6 +146,11 @@ class DuaCard extends StatelessWidget {
             Container(height: Ms.hair, color: ms.rule),
             const SizedBox(height: 16),
 
+            if (instruction != null && instruction.trim().isNotEmpty) ...[
+              DuaInstruction(text: instruction, arabic: s.rtl),
+              const SizedBox(height: 16),
+            ],
+
             // The text itself.
             ArabicText(dua.arabic, block: true),
 
@@ -157,8 +167,10 @@ class DuaCard extends StatelessWidget {
             ],
             if (display.showTranslation && !s.ar) ...[
               const SizedBox(height: 10),
-              Text(dua.translationFor(s.lang.name),
-                  style: theme.textTheme.bodyLarge),
+              Text(
+                dua.translationFor(s.lang.name),
+                style: theme.textTheme.bodyLarge,
+              ),
             ],
 
             // Apparatus.
@@ -170,8 +182,8 @@ class DuaCard extends StatelessWidget {
             _Colophon(
               reference: dua.referenceFor(s.lang.name),
               onCopy: () => _copy(context),
-              onShare: () => showSharePreview(
-                  context, Shareable.dua(dua, s.lang.name)),
+              onShare: () =>
+                  showSharePreview(context, Shareable.dua(dua, s.lang.name)),
               onEdit: onEdit,
               onDelete: onDelete,
               duaId: dua.id,
@@ -183,9 +195,9 @@ class DuaCard extends StatelessWidget {
 
     // Apply the user's text-size preference to everything inside the card.
     return MediaQuery(
-      data: MediaQuery.of(context).copyWith(
-        textScaler: TextScaler.linear(display.fontScale),
-      ),
+      data: MediaQuery.of(
+        context,
+      ).copyWith(textScaler: TextScaler.linear(display.fontScale)),
       child: card,
     );
   }
@@ -217,12 +229,12 @@ class _Tally extends StatelessWidget {
     final tint = complete ? ms.gilt : ms.rubric;
 
     Widget sizer(String label) => Visibility(
-          visible: false,
-          maintainSize: true,
-          maintainAnimation: true,
-          maintainState: true,
-          child: Cartouche(label: label, color: tint),
-        );
+      visible: false,
+      maintainSize: true,
+      maintainAnimation: true,
+      maintainState: true,
+      child: Cartouche(label: label, color: tint),
+    );
 
     return Stack(
       alignment: Alignment.center,
@@ -377,12 +389,12 @@ class _Action extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => IconButton(
-        icon: Icon(icon, size: 19),
-        color: color,
-        tooltip: tooltip,
-        visualDensity: VisualDensity.compact,
-        constraints: const BoxConstraints.tightFor(width: 38, height: 38),
-        padding: EdgeInsets.zero,
-        onPressed: onPressed,
-      );
+    icon: Icon(icon, size: 19),
+    color: color,
+    tooltip: tooltip,
+    visualDensity: VisualDensity.compact,
+    constraints: const BoxConstraints.tightFor(width: 38, height: 38),
+    padding: EdgeInsets.zero,
+    onPressed: onPressed,
+  );
 }

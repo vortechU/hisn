@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../data/dua_repository.dart';
 import '../l10n/app_strings.dart';
+import '../models/dua.dart';
 import '../models/dua_category.dart';
+import '../services/dua_progress_service.dart';
 import '../theme/app_theme.dart';
 import '../theme/category_visuals.dart';
 import 'arabic_text.dart';
@@ -35,29 +39,73 @@ class CategoryCard extends StatelessWidget {
     final theme = Theme.of(context);
     final ms = ManuscriptTheme.of(context);
     final visuals = CategoryVisuals.of(category.id);
-    final tint = visuals.color(context);
     final s = AppStrings.of(context);
+    final duas = category.id == Dua.customCategoryId
+        ? const <Dua>[]
+        : context.read<DuaRepository>().duasForCategory(category.id);
+    final completed = context.select<DuaProgressService, int>(
+      (progress) =>
+          duas.where((dua) => progress.countOf(dua.id) >= dua.repeat).length,
+    );
+    final allDone = duas.isNotEmpty && completed == duas.length;
+    final tint = allDone ? ms.gilt : visuals.color(context);
+    // Keep the numeric fraction in reading order inside Arabic/Urdu text.
+    final tally = '\u2066$completed / ${duas.length}\u2069';
+    final status = duas.isEmpty || completed == 0
+        ? s.duaCount(count)
+        : allDone
+            ? '${s.done} · $tally'
+            : tally;
 
     return JadwalFrame(
       onTap: onTap,
-      accent: featured ? tint : null,
-      emphasis: featured,
+      background: allDone
+          ? Color.alphaBlend(
+              ms.gilt.withValues(
+                alpha: theme.brightness == Brightness.dark ? 0.18 : 0.12,
+              ),
+              ms.paper,
+            )
+          : null,
+      accent: allDone || featured ? tint : null,
+      emphasis: allDone || featured,
       padding: EdgeInsets.all(featured ? 15 : 13),
       child: featured
-          ? _featuredLayout(context, theme, ms, visuals, tint, s)
-          : _tileLayout(context, theme, ms, visuals, tint, s),
+          ? _featuredLayout(
+              context,
+              theme,
+              ms,
+              visuals,
+              tint,
+              s,
+              status,
+              allDone,
+            )
+          : _tileLayout(context, theme, ms, visuals, tint, s, status, allDone),
     );
   }
 
   /// The wide entry: mark and text side by side, with the subtitle shown.
-  Widget _featuredLayout(BuildContext context, ThemeData theme,
-      ManuscriptTheme ms, CategoryVisuals visuals, Color tint, AppStrings s) {
+  Widget _featuredLayout(
+    BuildContext context,
+    ThemeData theme,
+    ManuscriptTheme ms,
+    CategoryVisuals visuals,
+    Color tint,
+    AppStrings s,
+    String status,
+    bool allDone,
+  ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 2),
-          child: Icon(visuals.icon, size: 26, color: tint),
+          child: Icon(
+            allDone ? Icons.check_circle_outline : visuals.icon,
+            size: 26,
+            color: tint,
+          ),
         ),
         const SizedBox(width: 13),
         Expanded(
@@ -78,8 +126,12 @@ class CategoryCard extends StatelessWidget {
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
                         alignment: AlignmentDirectional.centerEnd,
-                        child: ArabicText(category.titleArabic,
-                            fontSize: 20, color: tint, height: 1.5),
+                        child: ArabicText(
+                          category.titleArabic,
+                          fontSize: 20,
+                          color: tint,
+                          height: 1.5,
+                        ),
                       ),
                     ),
                   ],
@@ -87,7 +139,7 @@ class CategoryCard extends StatelessWidget {
               ),
               const SizedBox(height: 3),
               Text(
-                category.subtitleFor(s.ar),
+                category.subtitleForLang(s.lang.name),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.bodySmall,
@@ -95,9 +147,18 @@ class CategoryCard extends StatelessWidget {
               const SizedBox(height: 10),
               Row(
                 children: [
-                  Cartouche(label: s.duaCount(count), color: tint),
+                  Flexible(
+                    flex: 3,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: AlignmentDirectional.centerStart,
+                      child: Cartouche(label: status, color: tint),
+                    ),
+                  ),
                   const SizedBox(width: 10),
-                  Expanded(child: Container(height: Ms.hair, color: ms.rule)),
+                  Expanded(
+                    child: Container(height: Ms.hair, color: ms.rule),
+                  ),
                 ],
               ),
             ],
@@ -109,23 +170,39 @@ class CategoryCard extends StatelessWidget {
 
   /// The narrow entry: mark and Arabic on one line, title anchored to the
   /// foot of the tile so titles align across a row regardless of length.
-  Widget _tileLayout(BuildContext context, ThemeData theme, ManuscriptTheme ms,
-      CategoryVisuals visuals, Color tint, AppStrings s) {
+  Widget _tileLayout(
+    BuildContext context,
+    ThemeData theme,
+    ManuscriptTheme ms,
+    CategoryVisuals visuals,
+    Color tint,
+    AppStrings s,
+    String status,
+    bool allDone,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(visuals.icon, size: 23, color: tint),
+            Icon(
+              allDone ? Icons.check_circle_outline : visuals.icon,
+              size: 23,
+              color: tint,
+            ),
             const SizedBox(width: 8),
             if (!s.ar)
               Expanded(
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   alignment: AlignmentDirectional.centerEnd,
-                  child: ArabicText(category.titleArabic,
-                      fontSize: 17, color: tint, height: 1.5),
+                  child: ArabicText(
+                    category.titleArabic,
+                    fontSize: 17,
+                    color: tint,
+                    height: 1.5,
+                  ),
                 ),
               ),
           ],
@@ -137,7 +214,7 @@ class CategoryCard extends StatelessWidget {
         Container(height: Ms.hair, color: ms.rule),
         const SizedBox(height: 7),
         Text(
-          s.duaCount(count),
+          status,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: theme.textTheme.labelMedium?.copyWith(
@@ -149,9 +226,9 @@ class CategoryCard extends StatelessWidget {
   }
 
   Widget _title(ThemeData theme, AppStrings s, {required bool large}) {
-    if (s.ar) {
+    if (s.rtl) {
       return ArabicText(
-        category.titleArabic,
+        category.titleForLang(s.lang.name),
         fontSize: large ? 21 : 18,
         fontWeight: FontWeight.w600,
         textAlign: TextAlign.start,
@@ -160,7 +237,7 @@ class CategoryCard extends StatelessWidget {
       );
     }
     return Text(
-      category.title,
+      category.titleForLang(s.lang.name),
       maxLines: 2,
       overflow: TextOverflow.ellipsis,
       style: large ? theme.textTheme.titleLarge : theme.textTheme.titleMedium,

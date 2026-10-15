@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../data/dua_id_migrations.dart';
+
 /// Persists per-dua repetition counts for the current day, so a partially
 /// completed remembrance set survives leaving the screen (and reopening the
 /// app). It resets at the calendar-day boundary — the same rollover the streak
@@ -70,6 +72,18 @@ class DuaProgressService extends ChangeNotifier {
       }
     }
     _rolloverIfNeeded();
+    var migrated = false;
+    for (final entry in splitDuaIds.entries) {
+      final count = _counts.remove(entry.key);
+      if (count == null) continue;
+      for (final id in entry.value) {
+        // A restored backup may carry both generations of ids. An explicit
+        // count on an individual card is newer than the shared count.
+        _counts.putIfAbsent(id, () => count);
+      }
+      migrated = true;
+    }
+    if (migrated) _persist();
   }
 
   /// On a new calendar day, wipe the counts so each day starts fresh.

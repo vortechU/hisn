@@ -66,8 +66,9 @@ class ShareCard extends StatelessWidget {
                       : Text(
                           passage.title ?? '',
                           textAlign: TextAlign.center,
-                          style: theme.textTheme.titleSmall
-                              ?.copyWith(color: ms.rubric),
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            color: ms.rubric,
+                          ),
                         ),
                 ),
               Padding(
@@ -93,7 +94,8 @@ class ShareCard extends StatelessWidget {
                       // and a right-to-left line — set below the verse and
                       // smaller than it, so the card still reads as a verse
                       // with an explanation rather than two blocks of Arabic.
-                      if (passage.translationIsArabic)
+                      if (passage.translationIsArabic ||
+                          passage.translationIsRtl)
                         ArabicText(
                           passage.translation!,
                           block: true,
@@ -102,8 +104,10 @@ class ShareCard extends StatelessWidget {
                           color: theme.colorScheme.onSurfaceVariant,
                         )
                       else
-                        Text(passage.translation!,
-                            style: theme.textTheme.bodyLarge),
+                        Text(
+                          passage.translation!,
+                          style: theme.textTheme.bodyLarge,
+                        ),
                     ],
                     // The translator, set small and directly under their work.
                     // The card is going somewhere the app isn't, so the person
@@ -135,15 +139,18 @@ class ShareCard extends StatelessWidget {
                         const SizedBox(width: 10),
                         if (passage.repeat > 1) ...[
                           Cartouche(
-                              label: '×${passage.repeat}', color: ms.gilt),
+                            label: '×${passage.repeat}',
+                            color: ms.gilt,
+                          ),
                           const SizedBox(width: 8),
                         ],
                         Rosette(size: 12, color: ms.gilt, lobes: 6),
                         const SizedBox(width: 5),
                         Text(
                           s.appName,
-                          style: theme.textTheme.labelSmall
-                              ?.copyWith(color: ms.rubric),
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: ms.rubric,
+                          ),
                         ),
                       ],
                     ),

@@ -44,8 +44,9 @@ class VerseRow extends StatelessWidget {
     final saved = quran.isVerseBookmarked(verse.key);
     // The same preference that governs a dua's meaning: one reader's choice
     // about whether they want the rendering, not two.
-    final showTranslation =
-        context.select<DisplaySettings, bool>((d) => d.showTranslation);
+    final showTranslation = context.select<DisplaySettings, bool>(
+      (d) => d.showTranslation,
+    );
 
     return Material(
       type: MaterialType.transparency,
@@ -73,7 +74,7 @@ class VerseRow extends StatelessWidget {
                   Expanded(
                     child: Text(
                       showSurahName
-                          ? '${verse.surah.nameFor(s.ar)} · ${verse.reference}'
+                          ? '${verse.surah.nameFor(s.rtl)} · ${verse.reference}'
                           : verse.reference,
                       style: theme.textTheme.labelSmall,
                     ),
@@ -88,17 +89,24 @@ class VerseRow extends StatelessWidget {
                     icon: Icon(
                       saved ? Icons.bookmark : Icons.bookmark_border,
                       size: 19,
-                      color: saved ? ms.gilt : theme.colorScheme.onSurfaceVariant,
+                      color: saved
+                          ? ms.gilt
+                          : theme.colorScheme.onSurfaceVariant,
                     ),
                     tooltip: saved ? s.unsaveVerse : s.saveVerse,
                     onPressed: () {
-                      context.read<QuranService>().toggleVerseBookmark(verse.key);
+                      context.read<QuranService>().toggleVerseBookmark(
+                        verse.key,
+                      );
                       ScaffoldMessenger.of(context)
                         ..hideCurrentSnackBar()
-                        ..showSnackBar(SnackBar(
-                          content: Text(
-                              saved ? s.bookmarkRemoved : s.bookmarkAdded),
-                        ));
+                        ..showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              saved ? s.bookmarkRemoved : s.bookmarkAdded,
+                            ),
+                          ),
+                        );
                     },
                   ),
                   IconButton(
@@ -106,15 +114,17 @@ class VerseRow extends StatelessWidget {
                     icon: const Icon(Icons.copy_outlined, size: 18),
                     tooltip: s.copy,
                     onPressed: () {
-                      Clipboard.setData(ClipboardData(
-                        text: '${verse.ayah.text}\n'
-                            '(${verse.surah.nameFor(s.ar)} '
-                            '${verse.reference})',
-                      ));
+                      Clipboard.setData(
+                        ClipboardData(
+                          text:
+                              '${verse.ayah.text}\n'
+                              '(${verse.surah.nameFor(s.rtl)} '
+                              '${verse.reference})',
+                        ),
+                      );
                       ScaffoldMessenger.of(context)
                         ..hideCurrentSnackBar()
-                        ..showSnackBar(
-                            SnackBar(content: Text(s.duaCopied)));
+                        ..showSnackBar(SnackBar(content: Text(s.duaCopied)));
                     },
                   ),
                   IconButton(
@@ -122,7 +132,9 @@ class VerseRow extends StatelessWidget {
                     icon: const Icon(Icons.ios_share, size: 18),
                     tooltip: s.share,
                     onPressed: () => showSharePreview(
-                        context, Shareable.verse(verse, s.lang.name)),
+                      context,
+                      Shareable.verse(verse, s.lang.name),
+                    ),
                   ),
                 ],
               ),
@@ -137,7 +149,7 @@ class VerseRow extends StatelessWidget {
               // two.
               if (showTranslation && verse.translation != null) ...[
                 const SizedBox(height: 8),
-                if (verse.translationIsArabic)
+                if (verse.translationIsArabic || s.lang.name == 'ur')
                   ArabicText(
                     verse.translation!,
                     block: true,

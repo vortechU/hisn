@@ -52,6 +52,7 @@ class AyahWidgetProvider : AppWidgetProvider() {
         val views = RemoteViews(context.packageName, R.layout.ayah_widget)
 
         WidgetChrome.applySheet(views, ms)
+        WidgetChrome.applyDirection(context, views, R.id.ayah_root)
         WidgetChrome.open(context, WidgetChrome.ROUTE_HOME)?.let {
             views.setOnClickPendingIntent(R.id.ayah_root, it)
         }

@@ -1,10 +1,16 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../data/dua_id_migrations.dart';
+
 /// Tracks which duas the user has bookmarked, persisted across launches.
 class FavoritesService extends ChangeNotifier {
   FavoritesService(this._prefs) {
     _ids = _prefs.getStringList(_key)?.toSet() ?? <String>{};
+    if (_ids.any(splitDuaIds.containsKey)) {
+      _ids = expandLegacyDuaIds(_ids);
+      _prefs.setStringList(_key, _ids.toList());
+    }
   }
 
   static const _key = 'favorite_dua_ids';

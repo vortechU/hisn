@@ -66,10 +66,11 @@ the content is authentic but intentionally small, and it's built to grow.
   to, the other records where reading stopped.
 - **Verse meanings** — each verse carries its meaning in the interface language:
   *The Noble Qur'an* (Hilali & Khan) in English, the Kementerian Agama rendering in
-  Indonesian, and in Arabic *at-Tafsīr al-Muyassar* (التفسير الميسر) from the King Fahd
+  Indonesian, Muhammad Junagarhi's rendering in Urdu, and in Arabic
+  *at-Tafsīr al-Muyassar* (التفسير الميسر) from the King Fahd
   Complex — a tafsir rather than a translation, because rendering Arabic into Arabic
-  would say nothing but explaining it does. All three from the
-  [Tanzil Project](https://tanzil.net). The tafsir is set in Arabic type and
+  would say nothing but explaining it does. All four from the
+  [Tanzil Project](https://tanzil.net/trans/). The tafsir is set in Arabic type and
   right-to-left, smaller than the verse it explains, so the āyah stays the larger of
   the two. The mushaf page itself stays a facsimile; the meanings live in the verse
   list beside it, never interleaved into the glyph page. **The translator travels with

@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "categoryId": "mosque",
+  "baseEntries": [
+    {
+      "id": "mosque_adhan_testimony",
+      "categoryId": "mosque",
+      "title": "Testimony on hearing the adhan",
+      "titleArabic": "الشَّهَادَةُ عِنْدَ سَمَاعِ الْأَذَانِ",
+      "arabic": "وَأَنَا أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، وَأَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ، رَضِيتُ بِاللَّهِ رَبًّا، وَبِمُحَمَّدٍ رَسُولًا، وَبِالْإِسْلَامِ دِينًا",
+      "transliteration": "Wa ana ash-hadu an la ilaha illallahu wahdahu la sharika lah, wa anna Muhammadan 'abduhu wa rasuluh, raditu billahi Rabban, wa bi Muhammadin Rasulan, wa bil-Islami dinan",
+      "translation": "I too bear witness that none has the right to be worshipped except Allah alone, with no partner, and that Muhammad is His servant and Messenger. I am content with Allah as my Lord, Muhammad as Messenger, and Islam as my religion.",
+      "reference": "Sahih Muslim 386",
+      "repeat": 1,
+      "virtue": "Said when hearing the mu'adhin; the Prophet ﷺ promised forgiveness of sins to the one who says it."
+    },
+    {
+      "id": "mosque_after_adhan_salawat",
+      "categoryId": "mosque",
+      "title": "Blessings on the Prophet after the adhan",
+      "titleArabic": "الصَّلَاةُ عَلَى النَّبِيِّ بَعْدَ الْأَذَانِ",
+      "arabic": "اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ، كَمَا صَلَّيْتَ عَلَى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ، اللَّهُمَّ بَارِكْ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ، كَمَا بَارَكْتَ عَلَى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ",
+      "transliteration": "Allahumma salli 'ala Muhammadin wa 'ala ali Muhammad, kama sallayta 'ala ali Ibrahim, innaka Hamidun Majid. Allahumma barik 'ala Muhammadin wa 'ala ali Muhammad, kama barakta 'ala ali Ibrahim, innaka Hamidun Majid",
+      "translation": "O Allah, bless Muhammad and the family of Muhammad as You blessed the family of Ibrahim. You are Praiseworthy, Glorious. O Allah, bestow Your favor on Muhammad and the family of Muhammad as You bestowed Your favor on the family of Ibrahim. You are Praiseworthy, Glorious.",
+      "reference": "Sahih Muslim 384, 406",
+      "repeat": 1,
+      "virtue": "After finishing the response to the mu'adhin, send blessings on the Prophet ﷺ before asking Allah to grant him al-Wasilah. Allah grants ten blessings for one. This is one established wording; the adhan hadith does not require this particular formula."
+    }
+  ],
+  "categoryOrder": [
+    "mosque_adhan_response_hayya",
+    "mosque_adhan_testimony",
+    "mosque_after_adhan_salawat",
+    "mosque_after_adhan",
+    "mosque_entering",
+    "mosque_leaving",
+    "mosque_going"
+  ],
+  "arabicOverlay": {
+    "mosque_adhan_testimony": {
+      "reference": "صحيح مسلم ٣٨٦",
+      "virtue": "تُقال عند سماع المؤذن؛ وقد وعد النبي صلى الله عليه وسلم من قالها بمغفرة ذنبه."
+    },
+    "mosque_after_adhan_salawat": {
+      "reference": "صحيح مسلم ٣٨٤، ٤٠٦",
+      "virtue": "بعد الفراغ من إجابة المؤذن يُصلَّى على النبي صلى الله عليه وسلم، ثم تُسأل له الوسيلة. ومن صلّى عليه صلاةً صلّى الله عليه بها عشرًا. وهذه إحدى الصيغ الثابتة، وحديث الأذان لا يخصّها دون غيرها."
+    }
+  },
+  "indonesianOverlay": {
+    "mosque_adhan_testimony": {
+      "translation": "Aku pun bersaksi bahwa tidak ada yang berhak disembah selain Allah semata, tidak ada sekutu bagi-Nya, dan bahwa Muhammad adalah hamba dan utusan-Nya. Aku rida kepada Allah sebagai Tuhanku, kepada Muhammad sebagai Rasul, dan kepada Islam sebagai agamaku.",
+      "virtue": "Dibaca ketika mendengar muazin; Nabi ﷺ menjanjikan ampunan dosa bagi orang yang mengucapkannya."
+    },
+    "mosque_after_adhan_salawat": {
+      "translation": "Ya Allah, limpahkanlah selawat kepada Muhammad dan keluarga Muhammad sebagaimana Engkau telah melimpahkan selawat kepada keluarga Ibrahim. Sesungguhnya Engkau Maha Terpuji lagi Mahamulia. Ya Allah, limpahkanlah keberkahan kepada Muhammad dan keluarga Muhammad sebagaimana Engkau telah melimpahkan keberkahan kepada keluarga Ibrahim. Sesungguhnya Engkau Maha Terpuji lagi Mahamulia.",
+      "virtue": "Setelah selesai menjawab azan, berselawatlah kepada Nabi ﷺ, lalu mohonkanlah wasilah untuk beliau kepada Allah. Allah membalas satu selawat dengan sepuluh selawat. Ini salah satu lafal yang sahih; hadis tentang azan tidak mewajibkan lafal khusus ini."
+    }
+  },
+  "generatorVirtues": {
+    "mosque_adhan_testimony": "تُقال عند سماع المؤذن؛ وقد وعد النبي صلى الله عليه وسلم من قالها بمغفرة ذنبه.",
+    "mosque_after_adhan_salawat": "بعد الفراغ من إجابة المؤذن يُصلَّى على النبي صلى الله عليه وسلم، ثم تُسأل له الوسيلة. ومن صلّى عليه صلاةً صلّى الله عليه بها عشرًا. وهذه إحدى الصيغ الثابتة، وحديث الأذان لا يخصّها دون غيرها."
+  },
+  "sources": [
+    {
+      "url": "https://sunnah.com/muslim:384",
+      "supports": "Response to the mu'adhin, then salawat, then al-Wasilah, and ten blessings for one. Does not specify a salawat formula."
+    },
+    {
+      "url": "https://sunnah.com/muslim:386",
+      "supports": "Complete testimony with 'raditu billahi Rabban wa bi Muhammadin Rasulan wa bil-Islami dinan', including the authenticated Ibn Rumh variant beginning 'wa ana ash-hadu'. Timing in this hadith is when hearing the mu'adhin; do not label it as a morning/evening threefold formula."
+    },
+    {
+      "url": "https://sunnah.com/muslim:406a",
+      "supports": "Exact complete salawat formula offered as one authenticated example, independent of the adhan-specific instruction. Base reference uses 406 because the overlay reference generator does not recognize Latin suffixes."
+    },
+    {
+      "url": "https://sunnah.com/hisn:24",
+      "supports": "Hisn al-Muslim's salawat instruction after finishing the response to the mu'adhin."
+    }
+  ],
+  "integrationNotes": [
+    "Only the two new entries are missing. Preserve existing mosque_after_adhan text, reference, and virtue.",
+    "Reposition existing mosque_adhan_response_hayya alongside the new adhan entries so salawat directly precedes the existing al-Wasilah dua. Preserve non-adhan entries' relative order.",
+    "Add generatorVirtues to VIRTUES in tool/gen_ar_overlay.py, then regenerate Arabic overlay. Existing collection/reference support already handles both references.",
+    "The testimony timing remains the wording of Muslim 386. Hisn 23 separately places it after the mu'adhin's shahadah and cites Ibn Khuzaymah; that more specific instruction is deliberately not attributed to Muslim 386.",
+    "No audio entry is proposed: no verified recording exists for these new cards."
+  ]
+}

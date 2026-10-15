@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -5,8 +7,11 @@ import '../data/quran_repository.dart';
 import '../l10n/app_strings.dart';
 import '../models/quran.dart';
 import '../services/quran_service.dart';
+import '../services/feature_tour_controller.dart';
 import '../theme/app_theme.dart';
+import '../util/arabic.dart';
 import '../widgets/arabic_text.dart';
+import '../widgets/feature_tour_anchor.dart';
 import '../widgets/ornament.dart';
 import 'mushaf_screen.dart';
 import 'quran_bookmarks_screen.dart';
@@ -23,16 +28,80 @@ class QuranScreen extends StatefulWidget {
 class _QuranScreenState extends State<QuranScreen> {
   final _searchController = TextEditingController();
   String _query = '';
+  Timer? _searchDelay;
+  int _searchVersion = 0;
+  List<PageVerse> _verseResults = const [];
+  bool _searchingVerses = false;
+  bool _verseSearchFailed = false;
+  bool _moreVerses = false;
+
+  bool get _wordSearch =>
+      normalizeArabic(_query.trim()).length >= 2 && isArabicScript(_query);
+
+  void _search(String query, {bool immediate = false}) {
+    _searchDelay?.cancel();
+    final version = ++_searchVersion;
+    setState(() {
+      _query = query;
+      _verseResults = const [];
+      _verseSearchFailed = false;
+      _moreVerses = false;
+      _searchingVerses = _wordSearch;
+    });
+    if (!_wordSearch) return;
+    if (immediate) {
+      _findVerses(query, version);
+    } else {
+      _searchDelay = Timer(
+        const Duration(milliseconds: 250),
+        () => _findVerses(query, version),
+      );
+    }
+  }
+
+  Future<void> _findVerses(String query, int version) async {
+    try {
+      final results = await context.read<QuranRepository>().searchVerses(
+        query,
+        limit: 51,
+      );
+      if (!mounted || version != _searchVersion) return;
+      setState(() {
+        _verseResults = results.take(50).toList();
+        _moreVerses = results.length > 50;
+        _searchingVerses = false;
+      });
+    } catch (_) {
+      if (!mounted || version != _searchVersion) return;
+      setState(() {
+        _searchingVerses = false;
+        _verseSearchFailed = true;
+      });
+    }
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _searchDelay?.cancel();
     super.dispose();
   }
 
-  void _openPage(int page) => Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => MushafScreen(startPage: page)),
-      );
+  void _openPage(int page) => Navigator.of(
+    context,
+  ).push(MaterialPageRoute(builder: (_) => MushafScreen(startPage: page)));
+
+  void _openVerse(PageVerse verse) => Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (_) => MushafScreen(
+        startPage: context.read<QuranRepository>().pageOfAyah(
+          verse.surah.number,
+          verse.ayah.number,
+        ),
+        highlightVerse: verse.key,
+      ),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -62,22 +131,26 @@ class _QuranScreenState extends State<QuranScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(Ms.margin, 4, Ms.margin, 10),
-            child: TextField(
-              controller: _searchController,
-              onChanged: (v) => setState(() => _query = v),
-              decoration: InputDecoration(
-                hintText: s.searchSurah,
-                prefixIcon: const Icon(Icons.search, size: 19),
-                suffixIcon: _query.isEmpty
-                    ? null
-                    : IconButton(
-                        icon: const Icon(Icons.close, size: 18),
-                        tooltip: s.clear,
-                        onPressed: () {
-                          _searchController.clear();
-                          setState(() => _query = '');
-                        },
-                      ),
+            child: FeatureTourAnchor(
+              target: FeatureTourTarget.quranSearch,
+              child: TextField(
+                controller: _searchController,
+                onChanged: _search,
+                keyboardAppearance: Theme.of(context).brightness,
+                decoration: InputDecoration(
+                  hintText: s.searchQuran,
+                  prefixIcon: const Icon(Icons.search, size: 19),
+                  suffixIcon: _query.isEmpty
+                      ? null
+                      : IconButton(
+                          icon: const Icon(Icons.close, size: 18),
+                          tooltip: s.clear,
+                          onPressed: () {
+                            _searchController.clear();
+                            _search('');
+                          },
+                        ),
+                ),
               ),
             ),
           ),
@@ -88,25 +161,123 @@ class _QuranScreenState extends State<QuranScreen> {
               onTap: () => _openPage(quran.lastPage!),
             ),
           Expanded(
-            child: ListView.separated(
-              itemCount: results.length,
-              separatorBuilder: (_, _) => Divider(
-                height: 1,
-                indent: Ms.margin + 52,
-                endIndent: Ms.margin,
-                color: ManuscriptTheme.of(context).rule,
-              ),
-              itemBuilder: (context, i) {
-                final surah = results[i];
-                return _SurahTile(
-                  surah: surah,
-                  onTap: () => _openPage(surah.page),
-                );
-              },
-            ),
+            child: _query.trim().isNotEmpty
+                ? _searchResults(context, results, s)
+                : ListView.separated(
+                    itemCount: results.length,
+                    separatorBuilder: (_, _) => Divider(
+                      height: 1,
+                      indent: Ms.margin + 52,
+                      endIndent: Ms.margin,
+                      color: ManuscriptTheme.of(context).rule,
+                    ),
+                    itemBuilder: (context, i) {
+                      final surah = results[i];
+                      return _SurahTile(
+                        surah: surah,
+                        onTap: () => _openPage(surah.page),
+                      );
+                    },
+                  ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _searchResults(
+    BuildContext context,
+    List<Surah> surahs,
+    AppStrings s,
+  ) {
+    final theme = Theme.of(context);
+    Widget heading(String text) => Padding(
+      padding: const EdgeInsets.fromLTRB(Ms.margin, 12, Ms.margin, 6),
+      child: Text(text, style: theme.textTheme.titleSmall),
+    );
+    return ListView(
+      children: [
+        if (surahs.isNotEmpty) ...[
+          heading(s.quranSearchSurahs),
+          for (final surah in surahs)
+            _SurahTile(surah: surah, onTap: () => _openPage(surah.page)),
+        ],
+        if (_wordSearch) ...[
+          heading(s.quranSearchVerses),
+          if (_searchingVerses)
+            const Padding(
+              padding: EdgeInsets.all(24),
+              child: Center(child: CircularProgressIndicator()),
+            )
+          else if (_verseSearchFailed)
+            Padding(
+              padding: const EdgeInsets.all(Ms.margin),
+              child: Column(
+                children: [
+                  Text(s.quranSearchFailed),
+                  TextButton(
+                    onPressed: () => _search(_query, immediate: true),
+                    child: Text(s.retrySearch),
+                  ),
+                ],
+              ),
+            )
+          else if (_verseResults.isEmpty)
+            Padding(
+              padding: const EdgeInsets.all(Ms.margin),
+              child: Text(s.noResults(_query)),
+            )
+          else ...[
+            if (_moreVerses)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: Ms.margin),
+                child: Text(
+                  s.quranSearchLimit,
+                  style: theme.textTheme.bodySmall,
+                ),
+              ),
+            for (final verse in _verseResults)
+              _VerseSearchTile(verse: verse, onTap: () => _openVerse(verse)),
+          ],
+        ] else if (surahs.isEmpty)
+          Padding(
+            padding: const EdgeInsets.all(Ms.margin),
+            child: Text(s.noResults(_query)),
+          ),
+      ],
+    );
+  }
+}
+
+class _VerseSearchTile extends StatelessWidget {
+  const _VerseSearchTile({required this.verse, required this.onTap});
+  final PageVerse verse;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = AppStrings.of(context);
+    final theme = Theme.of(context);
+    return ListTile(
+      key: ValueKey('quran-search-${verse.key}'),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: Ms.margin,
+        vertical: 8,
+      ),
+      title: Text(
+        '${verse.surah.nameFor(s.rtl)} · ${verse.reference}',
+        style: theme.textTheme.titleSmall,
+      ),
+      subtitle: Padding(
+        padding: const EdgeInsets.only(top: 6),
+        child: ArabicText(
+          verse.ayah.text,
+          fontSize: 21,
+          height: 1.7,
+          maxLines: 3,
+        ),
+      ),
+      onTap: onTap,
     );
   }
 }
@@ -140,7 +311,9 @@ class _ContinueBanner extends StatelessWidget {
             decoration: BoxDecoration(
               border: Border(
                 top: BorderSide(
-                    color: ms.gilt.withValues(alpha: 0.7), width: Ms.stroke),
+                  color: ms.gilt.withValues(alpha: 0.7),
+                  width: Ms.stroke,
+                ),
                 bottom: BorderSide(color: ms.rule),
               ),
             ),
@@ -153,12 +326,13 @@ class _ContinueBanner extends StatelessWidget {
                     children: [
                       Text(
                         s.continueReading.toUpperCase(),
-                        style:
-                            theme.textTheme.labelSmall?.copyWith(color: ms.gilt),
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: ms.gilt,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${s.surahWord} ${surah.nameFor(s.ar)} · '
+                        '${s.surahWord} ${surah.nameFor(s.rtl)} · '
                         '${s.juzLabel(surah.juz)}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -171,8 +345,12 @@ class _ContinueBanner extends StatelessWidget {
                 // repeating it here would set the same word twice.
                 if (!s.ar) ...[
                   const SizedBox(width: 12),
-                  ArabicText(surah.name,
-                      fontSize: 22, color: ms.rubric, height: 1.5),
+                  ArabicText(
+                    surah.name,
+                    fontSize: 22,
+                    color: ms.rubric,
+                    height: 1.5,
+                  ),
                 ],
               ],
             ),
@@ -202,8 +380,10 @@ class _SurahTile extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding:
-              const EdgeInsets.symmetric(horizontal: Ms.margin, vertical: 10),
+          padding: const EdgeInsets.symmetric(
+            horizontal: Ms.margin,
+            vertical: 10,
+          ),
           child: Row(
             children: [
               StarMedallion(number: surah.number, size: 38, color: ms.rubric),
@@ -215,7 +395,7 @@ class _SurahTile extends StatelessWidget {
                     // The name leads the entry in whichever script the reader
                     // is in: Arabic takes the title slot outright rather than
                     // sitting behind a transliteration they don't read.
-                    if (s.ar)
+                    if (s.rtl)
                       ArabicText(
                         surah.name,
                         fontSize: 20,
@@ -240,8 +420,12 @@ class _SurahTile extends StatelessWidget {
               ),
               if (!s.ar) ...[
                 const SizedBox(width: 10),
-                ArabicText(surah.name,
-                    fontSize: 21, color: ms.rubric, height: 1.5),
+                ArabicText(
+                  surah.name,
+                  fontSize: 21,
+                  color: ms.rubric,
+                  height: 1.5,
+                ),
               ],
             ],
           ),

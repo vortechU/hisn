@@ -19,8 +19,7 @@ class LanguageSettingsScreen extends StatelessWidget {
     final locale = context.watch<LocaleController>();
     final s = AppStrings.of(context);
 
-    void select(AppLang lang) =>
-        context.read<LocaleController>().setLang(lang);
+    void select(AppLang lang) => context.read<LocaleController>().setLang(lang);
 
     return Scaffold(
       appBar: AppBar(title: Text(s.secLanguage)),
@@ -44,6 +43,13 @@ class LanguageSettingsScreen extends StatelessWidget {
             code: 'ID',
             selected: locale.lang == AppLang.id,
             onTap: () => select(AppLang.id),
+          ),
+          _LanguageRow(
+            label: s.languageUrdu,
+            code: 'UR',
+            arabic: true,
+            selected: locale.lang == AppLang.ur,
+            onTap: () => select(AppLang.ur),
           ),
         ],
       ),
@@ -82,7 +88,9 @@ class _LanguageRow extends StatelessWidget {
           onTap: onTap,
           child: Container(
             padding: const EdgeInsets.symmetric(
-                horizontal: Ms.margin, vertical: 13),
+              horizontal: Ms.margin,
+              vertical: 13,
+            ),
             decoration: BoxDecoration(
               color: selected ? ms.rubric.withValues(alpha: 0.07) : null,
               border: Border(bottom: BorderSide(color: ms.rule)),
@@ -106,11 +114,13 @@ class _LanguageRow extends StatelessWidget {
                   child: arabic
                       ? Align(
                           alignment: AlignmentDirectional.centerStart,
-                          child: ArabicText(label,
-                              fontSize: 23,
-                              textAlign: TextAlign.start,
-                              height: 1.7,
-                              maxLines: 1),
+                          child: ArabicText(
+                            label,
+                            fontSize: 23,
+                            textAlign: TextAlign.start,
+                            height: 1.7,
+                            maxLines: 1,
+                          ),
                         )
                       : Text(label, style: theme.textTheme.titleSmall),
                 ),

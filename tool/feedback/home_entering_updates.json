@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "baseUpdates": {
+    "daily_entering_home": {
+      "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ الْمَوْلِجِ وَخَيْرَ الْمَخْرَجِ، بِسْمِ اللَّهِ وَلَجْنَا، وَبِسْمِ اللَّهِ خَرَجْنَا، وَعَلَى اللَّهِ رَبِّنَا تَوَكَّلْنَا",
+      "transliteration": "Allahumma inni as'aluka khayral-mawliji wa khayral-makhraj, bismillahi walajna, wa bismillahi kharajna, wa 'alallahi Rabbina tawakkalna",
+      "translation": "O Allah, I ask You for goodness in entering and goodness in leaving. In Allah's name we enter, and in Allah's name we leave, and in Allah our Lord we place our trust.",
+      "reference": "Sunan Abi Dawud 5096; Sahih Muslim 2018; Qur'an 24:61",
+      "instruction": "Remember Allah when entering and greet your household with salam. These practices are established independently in Muslim 2018 and Qur'an 24:61. The grading of this reported supplication is disputed: Ibn Baz regarded it as hasan; al-Albani regarded it as weak."
+    }
+  },
+  "removeBaseFields": {
+    "daily_entering_home": ["virtue"]
+  },
+  "arabicOverlay": {
+    "daily_entering_home": {
+      "reference": "سنن أبي داود ٥٠٩٦؛ صحيح مسلم ٢٠١٨؛ القرآن الكريم، النور: ٦١",
+      "instruction": "اذكر الله عند الدخول وسلّم على أهل بيتك. وقد ثبت هذان الأمران مستقلّين في صحيح مسلم ٢٠١٨ والقرآن الكريم، النور: ٦١. واختلف العلماء في درجة هذا الدعاء المروي؛ حسّنه ابن باز وضعّفه الألباني."
+    }
+  },
+  "indonesianOverlay": {
+    "daily_entering_home": {
+      "translation": "Ya Allah, aku memohon kepada-Mu kebaikan ketika masuk dan kebaikan ketika keluar. Dengan nama Allah kami masuk, dan dengan nama Allah kami keluar, serta kepada Allah, Tuhan kami, kami bertawakal.",
+      "instruction": "Ingatlah Allah ketika masuk dan ucapkan salam kepada keluarga di rumah. Kedua amalan ini memiliki dalil tersendiri dalam Muslim 2018 dan Al-Qur'an 24:61. Penilaian terhadap hadis doa ini diperselisihkan: Ibnu Baz menilainya hasan, sedangkan al-Albani menilainya lemah."
+    }
+  },
+  "removeOverlayFields": {
+    "daily_entering_home": ["virtue"]
+  },
+  "generatorRemoveVirtues": ["daily_entering_home"],
+  "generatorInstructions": {
+    "daily_entering_home": "اذكر الله عند الدخول وسلّم على أهل بيتك. وقد ثبت هذان الأمران مستقلّين في صحيح مسلم ٢٠١٨ والقرآن الكريم، النور: ٦١. واختلف العلماء في درجة هذا الدعاء المروي؛ حسّنه ابن باز وضعّفه الألباني."
+  },
+  "generatorSurahs": {
+    "24": "النور"
+  },
+  "sources": [
+    {
+      "url": "https://sunnah.com/abudawud:5096",
+      "supports": "The complete requested supplication and then greeting one's household. The displayed al-Albani grading is weak; do not claim consensus on authenticity."
+    },
+    {
+      "url": "https://binbaz.org.sa/fatwas/9871/ما-صحة-حديث-باسم-الله-ولجنا-وباسم-الله-خرجنا",
+      "supports": "Official Ibn Baz fatwa grading the report hasan and recommending the complete supplication."
+    },
+    {
+      "url": "https://sunnah.com/muslim:2018a",
+      "supports": "Authentic independent instruction to remember Allah on entering the home; does not establish the full wording of Abu Dawud 5096."
+    },
+    {
+      "url": "https://quran.com/24/61",
+      "supports": "Independent Quranic instruction to greet on entering houses."
+    }
+  ],
+  "integrationNotes": [
+    "Complete the already-used Abu Dawud 5096 formula, preserving entry ID, category, title and repeat count. The visible instruction qualifies grading and distinguishes independent evidence for home-entry remembrance and salam.",
+    "Remove prior virtue field in base and both overlays because the greeting is practice guidance, now in instruction.",
+    "Remove VIRTUES['daily_entering_home'], add localized instruction to the Arabic generator's instruction table, and add SURAHS['24']='النور' for the compound source reference.",
+    "The previous transliteration omitted Allah from 'wa ala Allah Rabbina'; the new transliteration now matches the full Arabic."
+  ]
+}

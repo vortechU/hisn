@@ -19,11 +19,11 @@ class AdhanAlarm {
   final String usage; // 'media' | 'notification' | 'alarm'
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'at': time.millisecondsSinceEpoch,
-        'fajr': fajr,
-        'usage': usage,
-      };
+    'id': id,
+    'at': time.millisecondsSinceEpoch,
+    'fajr': fajr,
+    'usage': usage,
+  };
 
   @override
   bool operator ==(Object other) =>
@@ -42,16 +42,34 @@ class AdhanAlarm {
 /// notification's sound (which MIUI and others drop). No-op off Android.
 class AdhanScheduler {
   static const _channel = MethodChannel('hisn/adhan');
+  static const _playbackChannel = EventChannel('hisn/adhan_playback');
+  static Stream<bool>? _playback;
+
+  /// Actual native scheduled playback, independent of the foreground preview.
+  static Stream<bool> get playback => _supported
+      ? (_playback ??= _playbackChannel.receiveBroadcastStream().map(
+          (value) => value == true,
+        ))
+      : const Stream<bool>.empty();
+
+  static Future<bool> isPlaying() async {
+    if (!_supported) return false;
+    try {
+      return await _channel.invokeMethod<bool>('isPlaying') ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
 
   static bool get _supported =>
       !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
 
   /// Native audio-attributes usage string for a volume stream.
   static String usageFor(AdhanVolumeStream stream) => switch (stream) {
-        AdhanVolumeStream.media => 'media',
-        AdhanVolumeStream.ring => 'notification',
-        AdhanVolumeStream.alarm => 'alarm',
-      };
+    AdhanVolumeStream.media => 'media',
+    AdhanVolumeStream.ring => 'notification',
+    AdhanVolumeStream.alarm => 'alarm',
+  };
 
   static Future<void> schedule(List<AdhanAlarm> alarms) async {
     if (!_supported) return;
@@ -75,7 +93,10 @@ class AdhanScheduler {
 
   /// Play the adhan immediately through the foreground service (used by the
   /// test button to verify the closed-app playback path works).
-  static Future<void> playNow({required bool fajr, required String usage}) async {
+  static Future<void> playNow({
+    required bool fajr,
+    required String usage,
+  }) async {
     if (!_supported) return;
     try {
       await _channel.invokeMethod('playNow', {'fajr': fajr, 'usage': usage});

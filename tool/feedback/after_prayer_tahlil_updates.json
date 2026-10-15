@@ -1,0 +1,28 @@
+{
+  "sources": [{
+    "url": "https://sunnah.com/muslim:597a",
+    "reference": "Sahih Muslim 597a",
+    "note": "The 33 tasbih + 33 tahmid + 33 takbir sequence is completed to 100 with this tahlil once. Existing salah_tahlil is a separate, longer supplication (Bukhari 844/Muslim 593), so give this final phrase its own stable ID."
+  }],
+  "insertAfter": {"salah_tasbih_tahlil_final": "salah_allahu_akbar"},
+  "additions": [{
+    "id": "salah_tasbih_tahlil_final",
+    "categoryId": "after_salah",
+    "title": "Completing the hundred after prayer",
+    "titleArabic": "تَمَامُ الْمِائَةِ بَعْدَ الصَّلَاةِ",
+    "arabic": "لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",
+    "transliteration": "La ilaha illallahu wahdahu la sharika lah, lahul-mulku wa lahul-hamdu wa huwa 'ala kulli shay'in qadir",
+    "translation": "There is no deity except Allah alone, without partner. Sovereignty and praise belong to Him, and He has power over all things.",
+    "reference": "Sahih Muslim 597a",
+    "repeat": 1,
+    "instruction": "After SubhanAllah 33 times, Alhamdulillah 33 times and Allahu Akbar 33 times, say this once to complete one hundred."
+  }],
+  "ar": {"salah_tasbih_tahlil_final": {
+    "reference": "صحيح مسلم ٥٩٧أ",
+    "instruction": "بعد قول سبحان الله ٣٣ مرة، والحمد لله ٣٣ مرة، والله أكبر ٣٣ مرة، يُقال هذا الذكر مرة واحدة لإتمام المائة."
+  }},
+  "id": {"salah_tasbih_tahlil_final": {
+    "translation": "Tidak ada tuhan selain Allah semata, tanpa sekutu bagi-Nya. Milik-Nya segala kerajaan dan segala pujian, dan Dia Mahakuasa atas segala sesuatu.",
+    "instruction": "Setelah membaca SubhanAllah 33 kali, Alhamdulillah 33 kali, dan Allahu Akbar 33 kali, bacalah zikir ini sekali untuk melengkapi seratus."
+  }}
+}
