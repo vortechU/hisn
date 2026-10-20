@@ -146,7 +146,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get noCustomBody => 'اضغط + لإضافة دعائك والاحتفاظ به هنا.';
 	@override String get recommendedNow => 'مُقترَحٌ الآن';
 	@override String get readNowOne => 'اقرأ الآن · دعاء واحد';
-	@override String readNowOther({required Object count}) => 'اقرأ الآن · ${count}';
+	@override String readNowOther({required Object count}) => 'اقرأ الآن · ${count} من الأذكار';
 	@override String get duaCountOne => 'ذِكْر واحد';
 	@override String duaCountOther({required Object count}) => '${count} ذِكْر';
 	@override String get now => 'الآن';
@@ -237,6 +237,15 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	];
 	@override String get previewAdhan => 'تجربة الأذان';
 	@override String get stopAdhan => 'إيقاف الأذان';
+	@override String get adhanVoice => 'صوت الأذان';
+	@override String get adhanVoiceDefault => 'الأذان المدمج';
+	@override String get adhanVoiceCustom => 'ملف صوتي من جهازك';
+	@override String get adhanVoiceCustomHint => 'يُشغَّل لكل الصلوات، ومنها الفجر';
+	@override String get adhanVoiceChooseFile => 'اختر ملفًا…';
+	@override String get adhanVoiceChangeFile => 'اختر ملفًا آخر';
+	@override String get adhanVoiceUnreadable => 'تعذّرت قراءة هذا الملف.';
+	@override String get adhanVoiceTooLarge => 'الملف كبير جدًا. اختر ملفًا صوتيًا أصغر من 20 ميغابايت.';
+	@override String get adhanVoiceNotPlayable => 'تعذّر تشغيل هذا الملف. اختر ملفًا صوتيًا مثل MP3 أو OGG.';
 	@override String get adhanPlaying => 'جارٍ تشغيل الأذان…';
 	@override String get notifBlocked => 'الإشعارات محظورة. فعّلها لتطبيق Hisn من إعدادات جهازك.';
 	@override String get textSize => 'حجم الخط';
@@ -334,6 +343,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get themeLight => 'فاتح';
 	@override String get themeDark => 'داكن';
 	@override String get themeSystem => 'النظام';
+	@override String get paletteQibla => 'القبلة والنحاس';
 	@override String get paletteEmerald => 'زمرّدي وذهبي';
 	@override String get paletteSapphire => 'أزرق ياقوتي وسماوي';
 	@override String get paletteAmethyst => 'أرجواني ووردي';
@@ -652,7 +662,7 @@ extension on TranslationsAr {
 			'noCustomBody' => 'اضغط + لإضافة دعائك والاحتفاظ به هنا.',
 			'recommendedNow' => 'مُقترَحٌ الآن',
 			'readNowOne' => 'اقرأ الآن · دعاء واحد',
-			'readNowOther' => ({required Object count}) => 'اقرأ الآن · ${count}',
+			'readNowOther' => ({required Object count}) => 'اقرأ الآن · ${count} من الأذكار',
 			'duaCountOne' => 'ذِكْر واحد',
 			'duaCountOther' => ({required Object count}) => '${count} ذِكْر',
 			'now' => 'الآن',
@@ -737,6 +747,15 @@ extension on TranslationsAr {
 			'streamHints.2' => 'المنبّه: يستخدم مستوى صوت المنبّه في هاتفك. كتم الرنين لا يكتم المنبّهات عادةً؛ راجع السماح بالمنبّهات في إعدادات عدم الإزعاج.',
 			'previewAdhan' => 'تجربة الأذان',
 			'stopAdhan' => 'إيقاف الأذان',
+			'adhanVoice' => 'صوت الأذان',
+			'adhanVoiceDefault' => 'الأذان المدمج',
+			'adhanVoiceCustom' => 'ملف صوتي من جهازك',
+			'adhanVoiceCustomHint' => 'يُشغَّل لكل الصلوات، ومنها الفجر',
+			'adhanVoiceChooseFile' => 'اختر ملفًا…',
+			'adhanVoiceChangeFile' => 'اختر ملفًا آخر',
+			'adhanVoiceUnreadable' => 'تعذّرت قراءة هذا الملف.',
+			'adhanVoiceTooLarge' => 'الملف كبير جدًا. اختر ملفًا صوتيًا أصغر من 20 ميغابايت.',
+			'adhanVoiceNotPlayable' => 'تعذّر تشغيل هذا الملف. اختر ملفًا صوتيًا مثل MP3 أو OGG.',
 			'adhanPlaying' => 'جارٍ تشغيل الأذان…',
 			'notifBlocked' => 'الإشعارات محظورة. فعّلها لتطبيق Hisn من إعدادات جهازك.',
 			'textSize' => 'حجم الخط',
@@ -832,6 +851,7 @@ extension on TranslationsAr {
 			'themeLight' => 'فاتح',
 			'themeDark' => 'داكن',
 			'themeSystem' => 'النظام',
+			'paletteQibla' => 'القبلة والنحاس',
 			'paletteEmerald' => 'زمرّدي وذهبي',
 			'paletteSapphire' => 'أزرق ياقوتي وسماوي',
 			'paletteAmethyst' => 'أرجواني ووردي',

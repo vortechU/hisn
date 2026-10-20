@@ -14,6 +14,7 @@ import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import java.io.File
 
 /**
  * A foreground service that plays the adhan once, then stops itself. Used so the
@@ -109,17 +110,6 @@ class AdhanPlayerService : Service() {
             publishPlayback(true)
             if (Build.VERSION.SDK_INT >= 24) PrayerSilencer.refresh(this)
             player?.release()
-            // Static R.raw reference (not getIdentifier-by-name): gives the exact
-            // resource id and, critically, forces the release optimizer to KEEP
-            // the audio in the APK. A dynamic name lookup made the shrinker think
-            // these were unused, so it stripped them (resId resolved to 0).
-            val resId = if (fajr) R.raw.adhan_fajr else R.raw.adhan1
-            if (resId == 0) {
-                Log.e(TAG, "raw resource missing — aborting")
-                stopEverything()
-                return
-            }
-            val uri = Uri.parse("android.resource://$packageName/$resId")
             val attrs = AudioAttributes.Builder()
                 .setUsage(usageToInt(usage))
                 .setContentType(
@@ -127,22 +117,65 @@ class AdhanPlayerService : Service() {
                     else AudioAttributes.CONTENT_TYPE_SONIFICATION
                 )
                 .build()
-            player = MediaPlayer().apply {
-                setAudioAttributes(attrs)
-                setDataSource(this@AdhanPlayerService, uri)
-                setOnCompletionListener { stopEverything() }
-                setOnErrorListener { _, what, extra ->
-                    Log.e(TAG, "MediaPlayer error what=$what extra=$extra")
-                    stopEverything(); true
+
+            // The user's own file, if chosen and still there. Anything wrong
+            // with it — deleted, not audio — falls back to the bundled voice:
+            // a silent prayer time is worse than the wrong muezzin.
+            val voice = FlutterPrefs.getString(this, "adhan_sound_voice", DEFAULT_VOICE)
+            if (voice == CUSTOM_VOICE) {
+                val path = FlutterPrefs.getString(this, "adhan_custom_file")
+                if (path != null && File(path).isFile) {
+                    try {
+                        player = startPlayer(attrs) { setDataSource(path) }
+                        return
+                    } catch (e: Exception) {
+                        Log.e(TAG, "custom adhan failed, using bundled", e)
+                        player?.release()
+                        player = null
+                    }
                 }
-                prepare()
-                start()
-                publishPlayback(true)
             }
+
+            val resId = rawFor(voice, fajr)
+            if (resId == 0) {
+                Log.e(TAG, "raw resource missing — aborting")
+                stopEverything()
+                return
+            }
+            val uri = Uri.parse("android.resource://$packageName/$resId")
+            player = startPlayer(attrs) { setDataSource(this@AdhanPlayerService, uri) }
         } catch (e: Exception) {
             Log.e(TAG, "play() threw", e)
             stopEverything()
         }
+    }
+
+    private fun startPlayer(
+        attrs: AudioAttributes,
+        source: MediaPlayer.() -> Unit,
+    ): MediaPlayer = MediaPlayer().apply {
+        setAudioAttributes(attrs)
+        source()
+        setOnCompletionListener { stopEverything() }
+        setOnErrorListener { _, what, extra ->
+            Log.e(TAG, "MediaPlayer error what=$what extra=$extra")
+            stopEverything(); true
+        }
+        prepare()
+        start()
+        publishPlayback(true)
+    }
+
+    /**
+     * The bundled recording for [voice] — ids match `AdhanAudioService.bundledVoices`.
+     * Static R.raw references (not getIdentifier-by-name): they give the exact
+     * resource id and, critically, force the release optimizer to KEEP the audio
+     * in the APK. A dynamic name lookup made the shrinker think these were
+     * unused, so it stripped them (resId resolved to 0). Unknown ids, including
+     * "custom" without a usable file, play the default.
+     */
+    private fun rawFor(voice: String?, fajr: Boolean): Int = when (voice) {
+        else -> if (fajr) R.raw.adhan_fajr else R.raw.adhan1
     }
 
     private fun usageToInt(usage: String): Int = when (usage) {
@@ -185,6 +218,8 @@ class AdhanPlayerService : Service() {
         const val CHANNEL_ID = "adhan_playback"
         const val NOTIF_ID = 73101
         const val PLAYBACK_CHANNEL = "hisn/adhan_playback"
+        const val DEFAULT_VOICE = "default"
+        const val CUSTOM_VOICE = "custom"
 
         @Volatile var isPlaying: Boolean = false
             private set

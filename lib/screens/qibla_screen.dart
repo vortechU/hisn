@@ -404,7 +404,7 @@ class _Compass extends StatelessWidget {
       child: CustomPaint(
         size: const Size.square(288),
         painter: _DialPainter(
-          rule: ms.rule,
+          rule: ms.ruleStrong,
           ink: scheme.onSurfaceVariant,
           north: ms.rubric,
           face: scheme.onSurface,
@@ -418,8 +418,6 @@ class _Compass extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         const SizedBox(height: 6),
-        Text(location, style: theme.textTheme.bodySmall),
-        const SizedBox(height: 2),
         Text(
           s.qiblaFromNorth(qibla.toStringAsFixed(0)),
           style: theme.textTheme.titleMedium,
@@ -428,9 +426,11 @@ class _Compass extends StatelessWidget {
         // Which north the needle is actually on. Small, but it is the whole
         // difference between a Qibla and a bearing that is merely nearby.
         Text(
-          fix.corrected ? s.qiblaTrueNorth : s.qiblaMagneticOnly,
+          '$location · '
+          '${fix.corrected ? s.qiblaTrueNorth : s.qiblaMagneticOnly}',
+          textAlign: TextAlign.center,
           style: theme.textTheme.bodySmall?.copyWith(
-            color: fix.corrected ? scheme.onSurfaceVariant : ms.gilt,
+            color: fix.corrected ? scheme.onSurfaceVariant : scheme.error,
           ),
         ),
         Padding(
@@ -545,13 +545,13 @@ class _FaultNote extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 17, color: ms.gilt),
+          Icon(icon, size: 17, color: ms.rubric),
           const SizedBox(width: 7),
           Flexible(
             child: Text(
               message,
               textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(color: ms.gilt),
+              style: theme.textTheme.bodyMedium?.copyWith(color: ms.rubric),
             ),
           ),
         ],

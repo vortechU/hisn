@@ -56,7 +56,7 @@ class SunnahCalendarScreen extends StatelessWidget {
             Container(
               margin: const EdgeInsets.symmetric(horizontal: Ms.margin),
               decoration: BoxDecoration(
-                border: Border.all(color: ManuscriptTheme.of(context).rule),
+                color: ManuscriptTheme.of(context).paper,
                 borderRadius: BorderRadius.circular(Ms.rPanel),
               ),
               clipBehavior: Clip.antiAlias,

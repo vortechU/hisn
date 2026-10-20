@@ -7,30 +7,189 @@ import '../services/theme_controller.dart';
 import '../theme/app_theme.dart';
 import '../theme/motion.dart';
 
-/// The manuscript ornament vocabulary: ruled frames, illuminated headpieces,
-/// verse rosettes, and the geometric ground.
+/// The prayer-hall vocabulary: the mihrab field, soft panels, rings and bars,
+/// and the few marks the app draws itself.
 ///
-/// These are the pieces that carry the app's identity, so they are drawn
-/// rather than approximated with borders and emoji. Everything here is
-/// constructed from the real geometry — the tessellation is a genuine
-/// octagon-and-square (*khātam*) tiling, and the rosettes are lobed the way
-/// verse markers are lobed — because an approximation of a geometric tradition
-/// reads as an approximation.
+/// The rule the pieces share: nothing is outlined. A group is a fill a shade
+/// off the ground, the one thing a screen is about sits in the mihrab, and
+/// completion is the lamp colour arriving — not a frame thickening.
 
 // ---------------------------------------------------------------------------
-// Ruled frames
+// The mihrab
 // ---------------------------------------------------------------------------
 
-/// A *jadwal*: the ruled frame that borders a manuscript text block.
+/// The niche a screen is built around: a field whose top edge rises to a low
+/// pointed arch, the way a mihrab marks the qibla wall.
 ///
-/// Two rules — a heavier outer and a hairline inner, separated by a narrow
-/// gutter — instead of a drop shadow. This is the app's primary container, and
-/// the reason nothing in the theme needs elevation.
+/// One per screen, at most. Filled with the qibla ink by default, with its
+/// content in [ManuscriptTheme.onField]; [soft] fills it with the raised paper
+/// instead, for a niche that holds something drawn in page colours (the Qibla
+/// compass).
+class MihrabField extends StatelessWidget {
+  const MihrabField({
+    super.key,
+    required this.child,
+    this.padding = const EdgeInsets.fromLTRB(20, 18, 20, 20),
+    this.onTap,
+    this.soft = false,
+    this.pattern = true,
+    this.rise,
+  });
+
+  final Widget child;
+
+  /// Overrides the arch's height, for a compact field. By default the arch
+  /// rises in proportion to the field's width ([riseFor]).
+  final double? rise;
+
+  /// Padding inside the field, below the arch. The arch's own rise is added
+  /// to the top on top of this.
+  final EdgeInsetsGeometry padding;
+  final VoidCallback? onTap;
+  final bool soft;
+
+  /// Whether the carved-screen pattern shows faintly under the arch.
+  final bool pattern;
+
+  /// How high the arch rises for a field [width] wide.
+  static double riseFor(double width) => math.min(60, width * 0.15);
+
+  @override
+  Widget build(BuildContext context) {
+    final ms = ManuscriptTheme.of(context);
+    final fill = soft ? ms.paper : ms.field;
+    final ink = soft ? ms.rubric : ms.onField;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final rise = this.rise ?? riseFor(constraints.maxWidth);
+        final shape = MihrabBorder(rise: rise);
+
+        Widget body = Padding(
+          padding: EdgeInsets.only(top: rise).add(padding),
+          child: child,
+        );
+
+        if (pattern) {
+          body = Stack(
+            children: [
+              Positioned(
+                left: 0,
+                right: 0,
+                top: 0,
+                height: rise + 70,
+                child: GirihField(
+                  color: ink,
+                  opacity: soft ? 0.05 : 0.075,
+                  side: 15,
+                  fade: true,
+                ),
+              ),
+              body,
+            ],
+          );
+        }
+
+        return Material(
+          color: fill,
+          shape: shape,
+          clipBehavior: Clip.antiAlias,
+          child: onTap == null ? body : InkWell(onTap: onTap, child: body),
+        );
+      },
+    );
+  }
+}
+
+/// The outline of a [MihrabField]: straight jambs with softened foot corners,
+/// rising into a low two-centred arch that meets in a gentle point.
+class MihrabBorder extends OutlinedBorder {
+  const MihrabBorder({this.rise = 40, this.radius = Ms.rPanel, super.side});
+
+  /// Height of the arch above its springing line.
+  final double rise;
+
+  /// Radius of the two foot corners.
+  final double radius;
+
+  @override
+  EdgeInsetsGeometry get dimensions => EdgeInsets.all(side.width);
+
+  @override
+  Path getInnerPath(Rect rect, {TextDirection? textDirection}) =>
+      getOuterPath(rect.deflate(side.width), textDirection: textDirection);
+
+  @override
+  Path getOuterPath(Rect rect, {TextDirection? textDirection}) {
+    final l = rect.left, t = rect.top, r = rect.right, b = rect.bottom;
+    final w = rect.width;
+    final mid = l + w / 2;
+    final h = math.min(rise, rect.height / 3);
+    final rad = math.min(radius, math.min(w, rect.height) / 4);
+
+    return Path()
+      ..moveTo(l, b - rad)
+      ..lineTo(l, t + h)
+      // Left half of the arch: up off the jamb, flattening, then turning in
+      // to meet its twin at the apex at an angle — the point.
+      ..cubicTo(l, t + h * 0.30, mid - w * 0.14, t + h * 0.26, mid, t)
+      ..cubicTo(mid + w * 0.14, t + h * 0.26, r, t + h * 0.30, r, t + h)
+      ..lineTo(r, b - rad)
+      ..arcToPoint(Offset(r - rad, b), radius: Radius.circular(rad))
+      ..lineTo(l + rad, b)
+      ..arcToPoint(Offset(l, b - rad), radius: Radius.circular(rad))
+      ..close();
+  }
+
+  @override
+  void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) {
+    if (side.style == BorderStyle.none || side.width == 0) return;
+    canvas.drawPath(
+      getOuterPath(rect, textDirection: textDirection),
+      side.toPaint(),
+    );
+  }
+
+  @override
+  MihrabBorder scale(double t) =>
+      MihrabBorder(rise: rise * t, radius: radius * t, side: side.scale(t));
+
+  @override
+  MihrabBorder copyWith({BorderSide? side, double? rise, double? radius}) =>
+      MihrabBorder(
+        rise: rise ?? this.rise,
+        radius: radius ?? this.radius,
+        side: side ?? this.side,
+      );
+
+  @override
+  bool operator ==(Object other) =>
+      other is MihrabBorder &&
+      other.rise == rise &&
+      other.radius == radius &&
+      other.side == side;
+
+  @override
+  int get hashCode => Object.hash(rise, radius, side);
+}
+
+// ---------------------------------------------------------------------------
+// Panels
+// ---------------------------------------------------------------------------
+
+/// The app's container: a soft panel a shade off the ground, no outline.
+///
+/// [accent] tints the fill toward a colour — the lamp, when what it holds is
+/// finished — and [emphasis] deepens that tint. The fill eases between states,
+/// because it changes under the reader's thumb (a dua reaching its count), and
+/// the geometry never changes with it, so nothing reflows.
+///
+/// The name is kept from the manuscript frame this replaced.
 class JadwalFrame extends StatelessWidget {
   const JadwalFrame({
     super.key,
     required this.child,
-    this.padding = const EdgeInsets.all(16),
+    this.padding = const EdgeInsets.all(18),
     this.background,
     this.accent,
     this.emphasis = false,
@@ -40,15 +199,13 @@ class JadwalFrame extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
 
-  /// Fill for the inner block. Defaults to the palette's paper.
+  /// Fill for the panel. Defaults to the palette's paper.
   final Color? background;
 
-  /// Overrides the rule colour — used to mark a block as belonging to a
-  /// particular section, or as complete.
+  /// Tints the fill toward this colour.
   final Color? accent;
 
-  /// Draws the outer rule at full strength. Used for the one dominant block
-  /// on a screen, so that a page has a clear first read.
+  /// Deepens the [accent] tint.
   final bool emphasis;
 
   final VoidCallback? onTap;
@@ -56,71 +213,121 @@ class JadwalFrame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ms = ManuscriptTheme.of(context);
-    final outer = accent?.withValues(alpha: emphasis ? 0.85 : 0.5) ??
-        (emphasis ? ms.ruleStrong : ms.rule);
-    final inner = accent?.withValues(alpha: 0.32) ?? ms.rule;
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final base = background ?? ms.paper;
+    final fill = accent == null
+        ? base
+        : Color.alphaBlend(
+            accent!.withValues(
+              alpha: (emphasis ? 0.085 : 0.05) * (dark ? 1.6 : 1),
+            ),
+            base,
+          );
 
-    // Animated, because a frame's colours change under the reader: a dua
-    // reaching its count gilds its rules where it stands. Switching the ink in
-    // one frame reads as a glitch next to the page turn; easing it in reads as
-    // the mark being made. Nothing here moves — the geometry is held constant
-    // by the gutter below, and the two containers ease in step.
-    final beat = Motion.of(context, Motion.settle);
-
-    Widget content = AnimatedContainer(
-      duration: beat,
+    return TweenAnimationBuilder<Color?>(
+      tween: ColorTween(end: fill),
+      duration: Motion.of(context, Motion.settle),
       curve: Curves.easeOut,
-      decoration: BoxDecoration(
-        color: background ?? ms.paper,
-        border: Border.all(color: inner, width: Ms.hair),
-        borderRadius: BorderRadius.circular(Ms.rPanel - 1),
-      ),
-      padding: padding,
-      child: child,
-    );
-
-    if (onTap != null) {
-      content = Material(
-        type: MaterialType.transparency,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(Ms.rPanel - 1),
-          child: content,
-        ),
-      );
-    }
-
-    // The heavier rule is taken out of the gutter, not out of the block it
-    // frames. A border widens inwards, so letting it grow would narrow the
-    // content by the difference — and a card that gains emphasis while it is
-    // being read (a dua reaching its count) would reflow its text and pick up
-    // a line. The gutter gives the extra pixel back, leaving the inner block
-    // the same size whether the frame is emphasised or not.
-    final rule = emphasis ? Ms.stroke : Ms.hair;
-
-    return AnimatedContainer(
-      duration: beat,
-      curve: Curves.easeOut,
-      decoration: BoxDecoration(
-        border: Border.all(color: outer, width: rule),
+      builder: (context, color, inner) => Material(
+        color: color,
         borderRadius: BorderRadius.circular(Ms.rPanel),
+        clipBehavior: Clip.antiAlias,
+        child: inner,
       ),
-      padding: EdgeInsets.all(Ms.gutter + Ms.hair - rule),
-      child: content,
+      child: onTap == null
+          ? Padding(padding: padding, child: child)
+          : InkWell(
+              onTap: onTap,
+              child: Padding(padding: padding, child: child),
+            ),
+    );
+  }
+}
+
+/// A group of rows on one panel, with faint separators inset past the rows'
+/// leading marks — the settings list, the category lists, the timetable.
+class RowGroup extends StatelessWidget {
+  const RowGroup({super.key, required this.children, this.indent = 72});
+
+  final List<Widget> children;
+
+  /// Where the separators start, so they line up with the row titles rather
+  /// than running under the icons.
+  final double indent;
+
+  @override
+  Widget build(BuildContext context) {
+    final ms = ManuscriptTheme.of(context);
+    return Material(
+      color: ms.paper,
+      borderRadius: BorderRadius.circular(Ms.rPanel),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          for (var i = 0; i < children.length; i++) ...[
+            if (i > 0)
+              Padding(
+                padding: EdgeInsetsDirectional.only(start: indent),
+                child: Container(height: Ms.hair, color: ms.rule),
+              ),
+            children[i],
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// A round, tinted well for a row's leading icon.
+class IconWell extends StatelessWidget {
+  const IconWell({
+    super.key,
+    required this.icon,
+    this.color,
+    this.size = 40,
+    this.filled = false,
+  });
+
+  final IconData icon;
+  final Color? color;
+  final double size;
+
+  /// Fills the well solid with [color] and sets the icon in the page colour —
+  /// the completed state.
+  final bool filled;
+
+  @override
+  Widget build(BuildContext context) {
+    final ms = ManuscriptTheme.of(context);
+    final tint = color ?? ms.rubric;
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    return AnimatedContainer(
+      duration: Motion.of(context, Motion.settle),
+      curve: Curves.easeOut,
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: filled ? tint : tint.withValues(alpha: dark ? 0.18 : 0.11),
+        shape: BoxShape.circle,
+      ),
+      child: Icon(
+        icon,
+        size: size * 0.5,
+        color: filled ? ms.paper : tint,
+      ),
     );
   }
 }
 
 // ---------------------------------------------------------------------------
-// Rosettes and rules
+// Marks, rings and bars
 // ---------------------------------------------------------------------------
 
-/// A lobed verse-rosette, the marker that separates āyāt in a mushaf.
+/// A small round mark: an open ring, or — [filled] — a solid disc with a
+/// check, for something finished.
 ///
-/// This is a *mark in its own right* — a bullet, a divider's centre, a
-/// completion tick. It deliberately takes no child: wrapping an icon in it put
-/// two ornaments on the same job and made every list read as a row of medallions.
-/// Icons in this app stand on their own, tinted, with no container.
+/// The name and [lobes] are kept from the verse rosette this replaced; the
+/// lobes no longer draw.
 class Rosette extends StatelessWidget {
   const Rosette({
     super.key,
@@ -133,112 +340,38 @@ class Rosette extends StatelessWidget {
   final double size;
   final Color? color;
   final int lobes;
-
-  /// Fills the centre with [color] at low alpha — used to mark completion.
   final bool filled;
 
   @override
   Widget build(BuildContext context) {
-    final tint = color ?? ManuscriptTheme.of(context).gilt;
-    return SizedBox(
+    final ms = ManuscriptTheme.of(context);
+    final tint = color ?? ms.gilt;
+    return AnimatedContainer(
+      duration: Motion.of(context, Motion.settle),
+      curve: Curves.easeOut,
       width: size,
       height: size,
-      child: Stack(
-        children: [
-          // The completion ink, laid under the outline and brought up rather
-          // than switched on between one frame and the next — this mark fills
-          // while the reader is looking straight at it, as they finish a dua
-          // or a set. AnimatedOpacity holds still on its first build, so a mark
-          // that was already complete when it came on screen is simply drawn
-          // complete; only a mark that fills in front of you fades.
-          Positioned.fill(
-            child: AnimatedOpacity(
-              opacity: filled ? 1 : 0,
-              duration: Motion.of(context, Motion.settle),
-              curve: Curves.easeOut,
-              child: CustomPaint(painter: _RosetteFillPainter(tint, lobes)),
-            ),
-          ),
-          Positioned.fill(
-            child: CustomPaint(painter: _RosettePainter(tint, lobes)),
-          ),
-        ],
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: filled ? tint : Colors.transparent,
+        border: Border.all(
+          color: filled ? tint : tint.withValues(alpha: 0.55),
+          width: math.max(1.2, size * 0.09),
+        ),
       ),
+      child: filled
+          ? Icon(Icons.check_rounded, size: size * 0.7, color: ms.paper)
+          : null,
     );
   }
 }
 
-/// The three radii a rosette is drawn on, in one place so the outline and the
-/// ink it holds can never disagree about where the centre disc ends.
-({double ring, double lobe, double inner}) _rosetteGeometry(
-    Size size, int lobes) {
-  final outer = size.shortestSide / 2;
-  final ring = outer * 0.74;
-  // The lobe radius that makes adjacent lobes just touch on the ring.
-  final lobe = ring * math.sin(math.pi / lobes) * 1.05;
-  return (ring: ring, lobe: lobe, inner: ring - lobe * 0.35);
-}
-
-class _RosettePainter extends CustomPainter {
-  _RosettePainter(this.color, this.lobes);
-
-  final Color color;
-  final int lobes;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final centre = size.center(Offset.zero);
-    final g = _rosetteGeometry(size, lobes);
-
-    final stroke = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = math.max(0.8, (size.shortestSide / 2) * 0.075)
-      ..isAntiAlias = true;
-
-    for (var i = 0; i < lobes; i++) {
-      final a = (i / lobes) * 2 * math.pi - math.pi / 2;
-      canvas.drawCircle(
-        centre + Offset(math.cos(a) * g.ring, math.sin(a) * g.ring),
-        g.lobe,
-        stroke,
-      );
-    }
-
-    canvas.drawCircle(centre, g.inner, stroke);
-  }
-
-  @override
-  bool shouldRepaint(_RosettePainter old) =>
-      old.color != color || old.lobes != lobes;
-}
-
-/// The centre disc on its own, so it can be faded independently of the rules.
-class _RosetteFillPainter extends CustomPainter {
-  _RosetteFillPainter(this.color, this.lobes);
-
-  final Color color;
-  final int lobes;
-
-  @override
-  void paint(Canvas canvas, Size size) => canvas.drawCircle(
-        size.center(Offset.zero),
-        _rosetteGeometry(size, lobes).inner,
-        Paint()..color = color.withValues(alpha: 0.16),
-      );
-
-  @override
-  bool shouldRepaint(_RosetteFillPainter old) =>
-      old.color != color || old.lobes != lobes;
-}
-
-/// A round meter that illuminates as a count advances.
+/// A round meter.
 ///
-/// With [lobes] above zero it reads twice: a continuous arc for the exact
-/// fraction, and beads that ink in one at a time so partial progress is
-/// countable at a glance. That belongs on the tasbih, where the beads *are*
-/// the subject. Pass `lobes: 0` everywhere else for the plain arc — a ring of
-/// beads around every meter in the app is too much ornament for the job.
+/// A continuous arc for the exact fraction; with [lobes] above zero, beads
+/// around it that fill one at a time, so partial progress is countable at a
+/// glance — that belongs on the tasbih, where the beads are the subject. Pass
+/// `lobes: 0` everywhere else.
 class ProgressRosette extends StatelessWidget {
   const ProgressRosette({
     super.key,
@@ -261,7 +394,7 @@ class ProgressRosette extends StatelessWidget {
   Widget build(BuildContext context) {
     final ms = ManuscriptTheme.of(context);
     final tint = color ?? ms.gilt;
-    final rail = track ?? ms.rule;
+    final rail = track ?? tint.withValues(alpha: 0.16);
 
     return SizedBox(
       width: size,
@@ -271,7 +404,7 @@ class ProgressRosette extends StatelessWidget {
         curve: Curves.easeOut,
         tween: Tween(begin: 0, end: fraction.clamp(0.0, 1.0)),
         builder: (context, value, inner) => CustomPaint(
-          painter: _ProgressRosettePainter(value, tint, rail, lobes),
+          painter: _RingPainter(value, tint, rail, lobes),
           child: inner,
         ),
         child: child == null ? null : Center(child: child),
@@ -280,8 +413,8 @@ class ProgressRosette extends StatelessWidget {
   }
 }
 
-class _ProgressRosettePainter extends CustomPainter {
-  _ProgressRosettePainter(this.value, this.color, this.track, this.lobes);
+class _RingPainter extends CustomPainter {
+  _RingPainter(this.value, this.color, this.track, this.lobes);
 
   final double value;
   final Color color;
@@ -292,49 +425,42 @@ class _ProgressRosettePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final centre = size.center(Offset.zero);
     final outer = size.shortestSide / 2;
-    final ring = outer * 0.80;
-    final lobe = lobes == 0 ? 0.0 : ring * math.sin(math.pi / lobes);
-    final weight = math.max(1.0, outer * 0.055);
+    final weight = math.max(3.0, outer * 0.075);
+    final bead = lobes == 0 ? 0.0 : math.max(2.5, outer * 0.035);
+    final arcR = outer - weight / 2 - (lobes == 0 ? 0 : bead * 2 + 6);
 
     final rail = Paint()
       ..color = track
       ..style = PaintingStyle.stroke
       ..strokeWidth = weight
       ..isAntiAlias = true;
-    final inked = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = weight
-      ..isAntiAlias = true;
-    final solid = Paint()
-      ..color = color.withValues(alpha: 0.22)
-      ..isAntiAlias = true;
+    canvas.drawCircle(centre, arcR, rail);
 
-    final filled = (value * lobes).floor();
-    for (var i = 0; i < lobes; i++) {
-      final a = (i / lobes) * 2 * math.pi - math.pi / 2;
-      final at = centre + Offset(math.cos(a) * ring, math.sin(a) * ring);
-      final done = i < filled;
-      if (done) canvas.drawCircle(at, lobe, solid);
-      canvas.drawCircle(at, lobe, done ? inked : rail);
+    if (value > 0) {
+      canvas.drawArc(
+        Rect.fromCircle(center: centre, radius: arcR),
+        -math.pi / 2,
+        value * 2 * math.pi,
+        false,
+        Paint()
+          ..color = color
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = weight
+          ..strokeCap = StrokeCap.round
+          ..isAntiAlias = true,
+      );
     }
 
-    // The exact fraction, as an arc — just inside the beads when there are
-    // any, otherwise out at the rim on its own.
-    final arcR = lobes == 0 ? ring : ring - lobe - weight;
-    if (arcR > 0) {
-      canvas.drawCircle(centre, arcR, rail);
-      if (value > 0) {
-        canvas.drawArc(
-          Rect.fromCircle(center: centre, radius: arcR),
-          -math.pi / 2,
-          value * 2 * math.pi,
-          false,
+    if (lobes > 0) {
+      final ringR = outer - bead - 1;
+      final filled = (value * lobes).floor();
+      for (var i = 0; i < lobes; i++) {
+        final a = (i / lobes) * 2 * math.pi - math.pi / 2;
+        canvas.drawCircle(
+          centre + Offset(math.cos(a) * ringR, math.sin(a) * ringR),
+          bead,
           Paint()
-            ..color = color
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = weight * 1.2
-            ..strokeCap = StrokeCap.butt
+            ..color = i < filled ? color : track
             ..isAntiAlias = true,
         );
       }
@@ -342,22 +468,21 @@ class _ProgressRosettePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_ProgressRosettePainter old) =>
+  bool shouldRepaint(_RingPainter old) =>
       old.value != value ||
       old.color != color ||
       old.track != track ||
       old.lobes != lobes;
 }
 
-/// A rule that inks in from the leading edge as a value advances — the app's
-/// linear meter. A 2px mark, not a capsule.
+/// The app's linear meter: a rounded bar that fills from the leading edge.
 class ProgressRule extends StatelessWidget {
   const ProgressRule({
     super.key,
     required this.value,
     this.color,
     this.track,
-    this.thickness = 2,
+    this.thickness = 4,
   });
 
   final double value;
@@ -368,17 +493,29 @@ class ProgressRule extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ms = ManuscriptTheme.of(context);
+    final tint = color ?? ms.gilt;
+    final radius = BorderRadius.circular(thickness);
     return SizedBox(
       height: thickness,
       child: LayoutBuilder(
         builder: (context, constraints) => Stack(
           children: [
-            Container(color: track ?? ms.rule),
-            AnimatedContainer(
-              duration: Motion.of(context, Motion.settle),
-              curve: Curves.easeOut,
-              width: constraints.maxWidth * value.clamp(0.0, 1.0),
-              color: color ?? ms.gilt,
+            Container(
+              decoration: BoxDecoration(
+                color: track ?? tint.withValues(alpha: 0.15),
+                borderRadius: radius,
+              ),
+            ),
+            PositionedDirectional(
+              start: 0,
+              top: 0,
+              bottom: 0,
+              child: AnimatedContainer(
+                duration: Motion.of(context, Motion.settle),
+                curve: Curves.easeOut,
+                width: constraints.maxWidth * value.clamp(0.0, 1.0),
+                decoration: BoxDecoration(color: tint, borderRadius: radius),
+              ),
             ),
           ],
         ),
@@ -387,8 +524,10 @@ class ProgressRule extends StatelessWidget {
   }
 }
 
-/// A horizontal rule, optionally broken at the centre by a rosette — the way a
-/// manuscript separates one movement of text from the next.
+/// A quiet break between two blocks: space with a faint line through it.
+///
+/// [ornament] is kept from the manuscript divider this replaced and no longer
+/// draws anything extra.
 class RuleDivider extends StatelessWidget {
   const RuleDivider({
     super.key,
@@ -404,30 +543,15 @@ class RuleDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ms = ManuscriptTheme.of(context);
-    final line = color ?? ms.rule;
-    final side = Expanded(child: Container(height: Ms.hair, color: line));
-
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: indent, vertical: 10),
-      child: Row(
-        children: ornament
-            ? [
-                side,
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Rosette(size: 13, color: color ?? ms.gilt, lobes: 6),
-                ),
-                side,
-              ]
-            : [side],
-      ),
+      padding: EdgeInsets.symmetric(horizontal: indent, vertical: 12),
+      child: Container(height: Ms.hair, color: color ?? ms.rule),
     );
   }
 }
 
-/// A section mark: a short rule, a label in the apparatus face, and a trailing
-/// rule that runs to the page edge. Replaces the free-floating uppercase
-/// caption that every list section otherwise gets.
+/// A section heading: a title in sentence case, with an optional trailing
+/// widget at the far end. The heading speaks for itself — no rule, no caps.
 class SectionMark extends StatelessWidget {
   const SectionMark({
     super.key,
@@ -443,28 +567,22 @@ class SectionMark extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final ms = ManuscriptTheme.of(context);
-    final tint = color ?? ms.rubric;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(Ms.margin, 26, Ms.margin, 12),
+      padding: const EdgeInsets.fromLTRB(Ms.margin + 4, 30, Ms.margin + 4, 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(width: 14, height: Ms.stroke, color: tint),
-          const SizedBox(width: 9),
-          Flexible(
+          Expanded(
             child: Text(
-              label.toUpperCase(),
+              label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.labelSmall?.copyWith(color: tint),
+              style: theme.textTheme.titleMedium?.copyWith(color: color),
             ),
           ),
-          const SizedBox(width: 10),
-          Expanded(child: Container(height: Ms.hair, color: ms.rule)),
           if (trailing != null) ...[
-            const SizedBox(width: 10),
+            const SizedBox(width: 12),
             trailing!,
           ],
         ],
@@ -473,82 +591,7 @@ class SectionMark extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// The illuminated headpiece
-// ---------------------------------------------------------------------------
-
-/// An *ʿunwān*: the illuminated panel that opens a manuscript.
-///
-/// A framed band carrying a title between two rosettes, laid over the
-/// geometric ground. Used for the app's one hero surface per screen.
-class UnwanPlate extends StatelessWidget {
-  const UnwanPlate({
-    super.key,
-    required this.child,
-    this.padding = const EdgeInsets.fromLTRB(18, 16, 18, 18),
-    this.onTap,
-    this.pattern = true,
-  });
-
-  final Widget child;
-  final EdgeInsetsGeometry padding;
-  final VoidCallback? onTap;
-
-  /// Whether the geometric ground shows behind the content.
-  final bool pattern;
-
-  @override
-  Widget build(BuildContext context) {
-    final ms = ManuscriptTheme.of(context);
-
-    Widget body = Stack(
-      children: [
-        if (pattern)
-          Positioned.fill(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(Ms.rPanel - 1),
-              // Kept faint and on a large cell: the ground should be felt
-              // rather than read, and a tight tessellation behind a clock
-              // starts competing with it.
-              child: GirihField(color: ms.rubric, opacity: 0.055, side: 26),
-            ),
-          ),
-        Padding(padding: padding, child: child),
-      ],
-    );
-
-    if (onTap != null) {
-      body = Material(
-        type: MaterialType.transparency,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(Ms.rPanel - 1),
-          child: body,
-        ),
-      );
-    }
-
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: ms.rubric.withValues(alpha: 0.55), width: Ms.stroke),
-        borderRadius: BorderRadius.circular(Ms.rPanel),
-      ),
-      padding: const EdgeInsets.all(Ms.gutter),
-      child: Container(
-        decoration: BoxDecoration(
-          color: ms.paper,
-          border: Border.all(color: ms.gilt.withValues(alpha: 0.45), width: Ms.hair),
-          borderRadius: BorderRadius.circular(Ms.rPanel - 1),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: body,
-      ),
-    );
-  }
-}
-
-/// The title band of an [UnwanPlate]: a centred heading flanked by rosettes,
-/// on a tinted ground.
+/// A title band: a centred heading on a light tint of [color].
 class UnwanBand extends StatelessWidget {
   const UnwanBand({super.key, required this.child, this.color});
 
@@ -562,26 +605,12 @@ class UnwanBand extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         color: tint.withValues(alpha: 0.08),
-        border: Border.symmetric(
-          horizontal: BorderSide(color: tint.withValues(alpha: 0.35)),
-        ),
+        borderRadius: BorderRadius.circular(Ms.rSmall),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Rosette(size: 15, color: ms.gilt, lobes: 8),
-          Flexible(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: child,
-            ),
-          ),
-          Rosette(size: 15, color: ms.gilt, lobes: 8),
-        ],
-      ),
+      child: Center(child: child),
     );
   }
 }
@@ -591,18 +620,20 @@ class UnwanBand extends StatelessWidget {
 // ---------------------------------------------------------------------------
 
 /// The *khātam* ground: a true octagon-and-square tessellation with the
-/// eight-point star polygon inscribed in each octagon.
+/// eight-point star polygon inscribed in each octagon — here only ever a faint
+/// carved screen under a mihrab's arch.
 ///
-/// This is the classical construction — regular octagons on a square lattice
-/// of spacing `s(1+√2)`, the gaps filled by squares of the same side, and the
-/// {8/3} star drawn inside each octagon by joining every third vertex. It
-/// paints only when the user has patterns enabled (Appearance settings).
+/// Regular octagons on a square lattice of spacing `s(1+√2)`, the gaps filled
+/// by squares of the same side, and the {8/3} star drawn inside each octagon by
+/// joining every third vertex. It paints only when the user has patterns
+/// enabled (Appearance settings).
 class GirihField extends StatelessWidget {
   const GirihField({
     super.key,
     required this.color,
     this.opacity = 0.08,
     this.side = 19,
+    this.fade = false,
   });
 
   /// Base colour of the strokes; [opacity] is applied to it.
@@ -612,48 +643,59 @@ class GirihField extends StatelessWidget {
   /// Side length of the octagons, in logical pixels.
   final double side;
 
+  /// Fades the strokes out toward the bottom edge, so the screen dissolves
+  /// into the field rather than stopping at a line.
+  final bool fade;
+
   @override
   Widget build(BuildContext context) {
     final enabled =
-        context.select<ThemeController, bool>((c) => c.patternsEnabled);
+        context.select<ThemeController?, bool>((c) => c?.patternsEnabled ?? true);
     if (!enabled) return const SizedBox.shrink();
     return CustomPaint(
       size: Size.infinite,
       isComplex: true,
       willChange: false,
-      painter: _KhatamPainter(color.withValues(alpha: opacity), side),
+      painter: _KhatamPainter(color.withValues(alpha: opacity), side, fade),
     );
   }
 }
 
 class _KhatamPainter extends CustomPainter {
-  _KhatamPainter(this.color, this.side);
+  _KhatamPainter(this.color, this.side, this.fade);
 
   final Color color;
   final double side;
+  final bool fade;
 
   @override
   void paint(Canvas canvas, Size size) {
+    // With a shader the paint's own alpha still multiplies in, so it is held
+    // opaque and the gradient alone carries the strokes' strength.
     final paint = Paint()
-      ..color = color
+      ..color = fade ? const Color(0xFF000000) : color
+      ..shader = fade
+          ? LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [color, color.withValues(alpha: 0)],
+            ).createShader(Offset.zero & size)
+          : null
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1
       ..strokeJoin = StrokeJoin.miter
       ..isAntiAlias = true;
 
-    // Regular octagon of side `side`: circumradius, and the lattice spacing
-    // that lets the octagons meet edge-to-edge with square gaps between.
     final r = side / (2 * math.sin(math.pi / 8));
     final pitch = side * (1 + math.sqrt2);
     final squareR = side / math.sqrt2;
 
     final path = Path();
-
+    // Centred on the field, so the pattern sits symmetrically under the apex.
+    final x0 = (size.width / 2) % pitch - pitch;
     for (double cy = 0; cy <= size.height + pitch; cy += pitch) {
-      for (double cx = 0; cx <= size.width + pitch; cx += pitch) {
+      for (double cx = x0; cx <= size.width + pitch; cx += pitch) {
         _octagonAndStar(path, Offset(cx, cy), r);
-        // The square that fills the gap sits at the lattice half-offset,
-        // rotated 45° so its corners meet the octagons' edges.
         _polygon(path, Offset(cx + pitch / 2, cy + pitch / 2), squareR, 4,
             math.pi / 4);
       }
@@ -661,10 +703,7 @@ class _KhatamPainter extends CustomPainter {
     canvas.drawPath(path, paint);
   }
 
-  /// A regular octagon plus the {8/3} star polygon inscribed in it — the
-  /// eight-point *khātam* formed by joining every third vertex.
   void _octagonAndStar(Path path, Offset c, double r) {
-    // Rotated by half a step so the octagon presents flat top and sides.
     const twist = math.pi / 8;
     final v = List<Offset>.generate(8, (i) {
       final a = twist + i * math.pi / 4;
@@ -689,18 +728,18 @@ class _KhatamPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_KhatamPainter old) =>
-      old.color != color || old.side != side;
+      old.color != color || old.side != side || old.fade != fade;
 }
 
 // ---------------------------------------------------------------------------
-// Small marks
+// Small pieces
 // ---------------------------------------------------------------------------
 
-/// The app's empty and hint page: a rosette mark, a heading, a rule, and one
+/// The app's empty and hint page: an icon in a tinted well, a heading, and one
 /// line of explanation.
 ///
 /// One shared component so that "nothing saved yet", "no results", and "start
-/// typing" all read as the same blank leaf rather than as four differently
+/// typing" all read as the same quiet page rather than as four differently
 /// improvised screens.
 class EmptyPage extends StatelessWidget {
   const EmptyPage({
@@ -719,29 +758,30 @@ class EmptyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final ms = ManuscriptTheme.of(context);
 
     return Center(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(34),
+        padding: const EdgeInsets.all(36),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 44, color: ms.rubric.withValues(alpha: 0.55)),
-            const SizedBox(height: 18),
+            IconWell(icon: icon, size: 72),
+            const SizedBox(height: 20),
             if (title != null) ...[
               Text(title!,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.titleLarge),
-              const RuleDivider(indent: 46),
+              const SizedBox(height: 8),
             ],
             Text(
               body,
               textAlign: TextAlign.center,
-              style: theme.textTheme.bodyLarge,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
             if (action != null) ...[
-              const SizedBox(height: 20),
+              const SizedBox(height: 22),
               action!,
             ],
           ],
@@ -751,11 +791,8 @@ class EmptyPage extends StatelessWidget {
   }
 }
 
-/// An eight-point *khātam* medallion with a numeral inside — the mark a mushaf
-/// uses to number a sūrah or a juzʾ.
-///
-/// The star is the real {8/3} polygon (every third vertex of an octagon
-/// joined), not a rounded square turned 45°.
+/// An eight-point *khātam* with a numeral inside — the mark a mushaf uses to
+/// number a sūrah or a juzʾ, here set as a soft tinted star.
 class StarMedallion extends StatelessWidget {
   const StarMedallion({
     super.key,
@@ -779,6 +816,7 @@ class StarMedallion extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tint = color ?? ManuscriptTheme.of(context).rubric;
+    final dark = Theme.of(context).brightness == Brightness.dark;
     final inner = child ??
         (number == null
             ? null
@@ -786,11 +824,10 @@ class StarMedallion extends StatelessWidget {
                 '$number',
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
                       fontSize: size * 0.3,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                       height: 1,
                       letterSpacing: 0,
                       color: tint,
-                      fontFeatures: const [FontFeature.tabularFigures()],
                     ),
               ));
 
@@ -798,7 +835,9 @@ class StarMedallion extends StatelessWidget {
       width: size,
       height: size,
       child: CustomPaint(
-        painter: _StarMedallionPainter(tint, filled),
+        painter: _StarMedallionPainter(
+          tint.withValues(alpha: (filled ? 0.22 : 0.11) * (dark ? 1.6 : 1)),
+        ),
         child: inner == null ? null : Center(child: inner),
       ),
     );
@@ -806,51 +845,37 @@ class StarMedallion extends StatelessWidget {
 }
 
 class _StarMedallionPainter extends CustomPainter {
-  _StarMedallionPainter(this.color, this.filled);
+  _StarMedallionPainter(this.color);
 
   final Color color;
-  final bool filled;
 
   @override
   void paint(Canvas canvas, Size size) {
     final c = size.center(Offset.zero);
-    final r = size.shortestSide / 2 - 1;
+    final r = size.shortestSide / 2;
 
-    // The khātam is two squares of equal circumradius, one turned 45° over the
-    // other — an octagram {8/2}, which leaves a regular octagon at the centre
-    // for the numeral to sit in.
-    final path = Path()..fillType = PathFillType.nonZero;
+    // Two squares of equal circumradius, one turned 45° over the other, with
+    // their corners softened so the star reads as a tile, not a badge.
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill
+      ..isAntiAlias = true;
     for (final twist in [0.0, math.pi / 4]) {
-      path.addPolygon(
-        List<Offset>.generate(4, (i) {
-          final a = twist + i * math.pi / 2;
-          return Offset(c.dx + r * math.cos(a), c.dy + r * math.sin(a));
-        }),
-        true,
-      );
+      final pts = List<Offset>.generate(4, (i) {
+        final a = twist + i * math.pi / 2;
+        return Offset(c.dx + r * 0.94 * math.cos(a),
+            c.dy + r * 0.94 * math.sin(a));
+      });
+      final rrect = Path()..addPolygon(pts, true);
+      canvas.drawPath(rrect, paint);
     }
-
-    if (filled) {
-      canvas.drawPath(path, Paint()..color = color.withValues(alpha: 0.15));
-    }
-    canvas.drawPath(
-      path,
-      Paint()
-        ..color = color.withValues(alpha: 0.8)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1
-        ..strokeJoin = StrokeJoin.miter
-        ..isAntiAlias = true,
-    );
   }
 
   @override
-  bool shouldRepaint(_StarMedallionPainter old) =>
-      old.color != color || old.filled != filled;
+  bool shouldRepaint(_StarMedallionPainter old) => old.color != color;
 }
 
-/// A quantity set in the apparatus face inside a hairline cartouche — the
-/// app's counter, repeat badge, and tally mark.
+/// A quantity in a soft pill — the app's counter, repeat badge, and tally.
 class Cartouche extends StatelessWidget {
   const Cartouche({
     super.key,
@@ -863,40 +888,51 @@ class Cartouche extends StatelessWidget {
   final String label;
   final Color? color;
   final IconData? icon;
+
+  /// A solid pill in [color], for a finished count.
   final bool filled;
 
   @override
   Widget build(BuildContext context) {
     final ms = ManuscriptTheme.of(context);
     final tint = color ?? ms.rubric;
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    // On its own tint the raw colour falls short of 4.5:1 at this size, so
+    // the label is deepened toward the body ink.
+    final ink = filled
+        ? ms.paper
+        : Color.lerp(tint, Theme.of(context).colorScheme.onSurface, 0.3)!;
 
-    return Container(
-      padding: EdgeInsets.fromLTRB(icon == null ? 7 : 6, 3, 7, 3),
+    return AnimatedContainer(
+      duration: Motion.of(context, Motion.settle),
+      curve: Curves.easeOut,
+      padding: EdgeInsets.fromLTRB(icon == null ? 11 : 9, 5, 11, 5),
       decoration: BoxDecoration(
-        color: filled ? tint.withValues(alpha: 0.13) : null,
-        border: Border.all(color: tint.withValues(alpha: 0.45)),
-        borderRadius: BorderRadius.circular(Ms.rSmall),
+        color: filled ? tint : tint.withValues(alpha: dark ? 0.18 : 0.11),
+        borderRadius: BorderRadius.circular(Ms.rButton),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[
-            Icon(icon, size: 12.5, color: tint),
+            Icon(icon, size: 14, color: ink),
             const SizedBox(width: 4),
           ],
           // Derived from the theme's label style rather than built from
-          // scratch, so it inherits the Arabic fallback — a cartouche can hold
-          // a translated word ("تم"), not only a numeral.
-          Text(
-            label,
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  height: 1.15,
-                  color: tint,
-                  // Tabular figures keep a live counter from reflowing.
-                  fontFeatures: const [FontFeature.tabularFigures()],
-                ),
+          // scratch, so it inherits the Arabic fallback — a pill can hold a
+          // translated word ("تم"), not only a numeral.
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                    height: 1.15,
+                    color: ink,
+                  ),
+            ),
           ),
         ],
       ),
@@ -904,8 +940,10 @@ class Cartouche extends StatelessWidget {
   }
 }
 
-/// A numeral set in the serif with tabular figures — for clocks, counters and
-/// anything that updates in place without shifting its neighbours.
+/// A numeral set for clocks, counters and anything that updates in place.
+///
+/// [serif] picks the display style (large figures) over the label style; the
+/// name is kept from the serif numerals this replaced.
 class Numeral extends StatelessWidget {
   const Numeral(
     this.text, {
@@ -935,9 +973,13 @@ class Numeral extends StatelessWidget {
         fontSize: size,
         fontWeight: weight,
         height: 1.05,
-        letterSpacing: 0,
+        // Large figures close up; anything set right-to-left keeps its
+        // natural spacing so joined letters stay joined.
+        letterSpacing:
+            serif && Directionality.of(context) == TextDirection.ltr
+                ? -size * 0.02
+                : 0,
         color: color ?? theme.colorScheme.onSurface,
-        fontFeatures: const [FontFeature.tabularFigures()],
       ),
     );
   }

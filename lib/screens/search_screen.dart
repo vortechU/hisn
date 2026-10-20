@@ -47,7 +47,11 @@ class _SearchScreenState extends State<SearchScreen> {
           textInputAction: TextInputAction.search,
           decoration: InputDecoration(
             hintText: s.searchHint,
+            filled: false,
             border: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            focusedBorder: InputBorder.none,
+            contentPadding: EdgeInsets.zero,
           ),
           style: theme.textTheme.titleMedium,
           onChanged: (value) => setState(() => _query = value),
@@ -80,20 +84,9 @@ class _SearchScreenState extends State<SearchScreen> {
                     if (index == 0) {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 14),
-                        child: Row(
-                          children: [
-                            Text(
-                              s.resultsCount(results.length).toUpperCase(),
-                              style: theme.textTheme.labelSmall,
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Container(
-                                height: Ms.hair,
-                                color: ManuscriptTheme.of(context).rule,
-                              ),
-                            ),
-                          ],
+                        child: Text(
+                          s.resultsCount(results.length),
+                          style: theme.textTheme.bodySmall,
                         ),
                       );
                     }

@@ -57,21 +57,32 @@ void main() {
           ),
         ));
         JadwalFrame frame() => tester.widget<JadwalFrame>(find.byType(JadwalFrame));
-        expect(frame().background, isNull);
+        IconWell well() => tester.widget<IconWell>(find.byType(IconWell));
+        Color fill() => tester
+            .widget<Material>(find
+                .descendant(
+                  of: find.byType(JadwalFrame),
+                  matching: find.byType(Material),
+                )
+                .first)
+            .color!;
+        expect(frame().accent, isNull);
+        expect(well().filled, isFalse);
         for (final dua in duas.take(duas.length - 1)) {
           progress.setCount(dua.id, dua.repeat);
         }
         // A count below the last dua's repetition target cannot finish a tile.
         progress.setCount(duas.last.id, duas.last.repeat - 1);
         await tester.pumpAndSettle();
-        expect(frame().background, isNull);
-        expect(find.byIcon(Icons.check_circle_outline), findsNothing);
+        expect(frame().accent, isNull);
+        expect(find.byIcon(Icons.check_rounded), findsNothing);
         progress.setCount(duas.last.id, duas.last.repeat);
         await tester.pumpAndSettle();
-        expect(frame().background, isNotNull);
+        expect(frame().accent, isNotNull);
         expect(frame().emphasis, isTrue);
-        expect(find.byIcon(Icons.check_circle_outline), findsOneWidget);
-        final background = frame().background!;
+        expect(well().filled, isTrue);
+        expect(find.byIcon(Icons.check_rounded), findsOneWidget);
+        final background = fill();
         final context = tester.element(find.byType(CategoryCard));
         final foreground = Theme.of(context).colorScheme.onSurface;
         final a = background.computeLuminance();
@@ -80,8 +91,9 @@ void main() {
         expect(contrast, greaterThanOrEqualTo(4.5));
         progress.resetDuas(duas.map((dua) => dua.id));
         await tester.pumpAndSettle();
-        expect(frame().background, isNull);
-        expect(find.byIcon(Icons.check_circle_outline), findsNothing);
+        expect(frame().accent, isNull);
+        expect(well().filled, isFalse);
+        expect(find.byIcon(Icons.check_rounded), findsNothing);
         expect(tester.takeException(), isNull);
       });
     }

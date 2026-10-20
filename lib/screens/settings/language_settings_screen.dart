@@ -24,32 +24,38 @@ class LanguageSettingsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(s.secLanguage)),
       body: ListView(
+        padding: const EdgeInsets.fromLTRB(Ms.margin, 6, Ms.margin, 32),
         children: [
-          _LanguageRow(
-            label: s.languageEnglish,
-            code: 'EN',
-            selected: locale.lang == AppLang.en,
-            onTap: () => select(AppLang.en),
-          ),
-          _LanguageRow(
-            label: s.languageArabic,
-            code: 'AR',
-            arabic: true,
-            selected: locale.lang == AppLang.ar,
-            onTap: () => select(AppLang.ar),
-          ),
-          _LanguageRow(
-            label: s.languageIndonesian,
-            code: 'ID',
-            selected: locale.lang == AppLang.id,
-            onTap: () => select(AppLang.id),
-          ),
-          _LanguageRow(
-            label: s.languageUrdu,
-            code: 'UR',
-            arabic: true,
-            selected: locale.lang == AppLang.ur,
-            onTap: () => select(AppLang.ur),
+          RowGroup(
+            indent: 66,
+            children: [
+              _LanguageRow(
+                label: s.languageEnglish,
+                code: 'EN',
+                selected: locale.lang == AppLang.en,
+                onTap: () => select(AppLang.en),
+              ),
+              _LanguageRow(
+                label: s.languageArabic,
+                code: 'AR',
+                arabic: true,
+                selected: locale.lang == AppLang.ar,
+                onTap: () => select(AppLang.ar),
+              ),
+              _LanguageRow(
+                label: s.languageIndonesian,
+                code: 'ID',
+                selected: locale.lang == AppLang.id,
+                onTap: () => select(AppLang.id),
+              ),
+              _LanguageRow(
+                label: s.languageUrdu,
+                code: 'UR',
+                arabic: true,
+                selected: locale.lang == AppLang.ur,
+                onTap: () => select(AppLang.ur),
+              ),
+            ],
           ),
         ],
       ),
@@ -87,21 +93,15 @@ class _LanguageRow extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: Ms.margin,
-              vertical: 13,
-            ),
-            decoration: BoxDecoration(
-              color: selected ? ms.rubric.withValues(alpha: 0.07) : null,
-              border: Border(bottom: BorderSide(color: ms.rule)),
-            ),
+            padding: const EdgeInsets.fromLTRB(20, 12, 18, 12),
+            constraints: const BoxConstraints(minHeight: 64),
             child: Row(
               children: [
                 SizedBox(
-                  width: 34,
+                  width: 46,
                   child: Text(
                     code,
-                    style: theme.textTheme.labelSmall?.copyWith(
+                    style: theme.textTheme.labelMedium?.copyWith(
                       color: selected
                           ? ms.rubric
                           : theme.colorScheme.onSurfaceVariant,
@@ -124,7 +124,7 @@ class _LanguageRow extends StatelessWidget {
                         )
                       : Text(label, style: theme.textTheme.titleSmall),
                 ),
-                if (selected) Rosette(size: 16, color: ms.gilt, filled: true),
+                if (selected) Icon(Icons.check_rounded, color: ms.rubric),
               ],
             ),
           ),

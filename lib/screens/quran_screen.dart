@@ -138,8 +138,27 @@ class _QuranScreenState extends State<QuranScreen> {
                 onChanged: _search,
                 keyboardAppearance: Theme.of(context).brightness,
                 decoration: InputDecoration(
+                  border: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(Ms.rButton)),
+                    borderSide: BorderSide.none,
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(Ms.rButton)),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius:
+                        const BorderRadius.all(Radius.circular(Ms.rButton)),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.primary,
+                      width: 1.5,
+                    ),
+                  ),
                   hintText: s.searchQuran,
-                  prefixIcon: const Icon(Icons.search, size: 19),
+                  prefixIcon: const Padding(
+                    padding: EdgeInsetsDirectional.only(start: 8),
+                    child: Icon(Icons.search, size: 22),
+                  ),
                   suffixIcon: _query.isEmpty
                       ? null
                       : IconButton(
@@ -167,7 +186,7 @@ class _QuranScreenState extends State<QuranScreen> {
                     itemCount: results.length,
                     separatorBuilder: (_, _) => Divider(
                       height: 1,
-                      indent: Ms.margin + 52,
+                      indent: Ms.margin + 56,
                       endIndent: Ms.margin,
                       color: ManuscriptTheme.of(context).rule,
                     ),
@@ -282,8 +301,8 @@ class _VerseSearchTile extends StatelessWidget {
   }
 }
 
-/// Where the reader left off, set as a rubric ruled into the page rather than
-/// as a tinted box — the same treatment the Adhkar tab gives its suggestion.
+/// Where the reader left off: the tab's mihrab, holding the sūrah's name in
+/// both scripts, where in the Qurʾān it sits, and the way back in.
 class _ContinueBanner extends StatelessWidget {
   const _ContinueBanner({
     required this.surah,
@@ -300,61 +319,61 @@ class _ContinueBanner extends StatelessWidget {
     final theme = Theme.of(context);
     final ms = ManuscriptTheme.of(context);
     final s = AppStrings.of(context);
+    final quiet = ms.onField.withValues(alpha: 0.88);
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(Ms.margin, 4, Ms.margin, 8),
-      child: Material(
-        type: MaterialType.transparency,
-        child: InkWell(
-          onTap: onTap,
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(
-                  color: ms.gilt.withValues(alpha: 0.7),
-                  width: Ms.stroke,
-                ),
-                bottom: BorderSide(color: ms.rule),
-              ),
-            ),
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        s.continueReading.toUpperCase(),
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: ms.gilt,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${s.surahWord} ${surah.nameFor(s.rtl)} · '
-                        '${s.juzLabel(surah.juz)}',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleSmall,
-                      ),
-                    ],
+      padding: const EdgeInsets.fromLTRB(Ms.margin, 2, Ms.margin, 12),
+      child: MihrabField(
+        rise: 34,
+        onTap: onTap,
+        padding: const EdgeInsets.fromLTRB(20, 0, 16, 16),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${s.surahWord} ${surah.nameFor(s.rtl)}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleLarge
+                        ?.copyWith(color: ms.onField),
                   ),
-                ),
-                // In Arabic the line above already names the surah in Arabic;
-                // repeating it here would set the same word twice.
-                if (!s.ar) ...[
-                  const SizedBox(width: 12),
-                  ArabicText(
-                    surah.name,
-                    fontSize: 22,
-                    color: ms.rubric,
-                    height: 1.5,
+                  Text(
+                    '${s.continueReading} · ${s.juzLabel(surah.juz)}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodySmall?.copyWith(color: quiet),
                   ),
                 ],
-              ],
+              ),
             ),
-          ),
+            // In Arabic the line above already names the surah in Arabic;
+            // repeating it here would set the same word twice.
+            if (!s.ar) ...[
+              const SizedBox(width: 12),
+              // Capped, so the name in the reader's script keeps the room.
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 120),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: ArabicText(
+                    surah.name,
+                    fontSize: 30,
+                    color: ms.onField,
+                    height: 1.5,
+                  ),
+                ),
+              ),
+            ],
+            const SizedBox(width: 8),
+            Icon(
+              s.rtl ? Icons.arrow_back_rounded : Icons.arrow_forward_rounded,
+              color: ms.onField,
+            ),
+          ],
         ),
       ),
     );
@@ -386,7 +405,7 @@ class _SurahTile extends StatelessWidget {
           ),
           child: Row(
             children: [
-              StarMedallion(number: surah.number, size: 38, color: ms.rubric),
+              StarMedallion(number: surah.number, size: 42, color: ms.rubric),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
@@ -400,7 +419,6 @@ class _SurahTile extends StatelessWidget {
                         surah.name,
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
-                        color: ms.rubric,
                         textAlign: TextAlign.start,
                         height: 1.5,
                         maxLines: 1,
@@ -422,8 +440,8 @@ class _SurahTile extends StatelessWidget {
                 const SizedBox(width: 10),
                 ArabicText(
                   surah.name,
-                  fontSize: 21,
-                  color: ms.rubric,
+                  fontSize: 22,
+                  color: theme.colorScheme.onSurface,
                   height: 1.5,
                 ),
               ],

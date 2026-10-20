@@ -1,4 +1,5 @@
 import 'package:adhan/adhan.dart';
+import 'package:file_selector/file_selector.dart' show openFile;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -191,6 +192,7 @@ class NotificationsSettingsScreen extends StatelessWidget {
                   ],
                 ),
               ),
+            const _AdhanVoiceTile(),
             Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(72, 0, 16, 4),
               child: Align(
@@ -239,12 +241,14 @@ class NotificationsSettingsScreen extends StatelessWidget {
               child: Align(
                 alignment: AlignmentDirectional.centerStart,
                 child: FilledButton.tonalIcon(
-                  onPressed: () {
+                  onPressed: () async {
                     final svc = context.read<AdhanAudioService>();
                     if (adhan.isPlaying) {
-                      svc.stop();
-                    } else {
-                      svc.playPreview();
+                      await svc.stop();
+                    } else if (!await svc.playPreview() && context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(s.adhanVoiceNotPlayable)),
+                      );
                     }
                   },
                   icon: Icon(adhan.isPlaying ? Icons.stop : Icons.play_arrow),
@@ -256,6 +260,126 @@ class NotificationsSettingsScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+/// Which recording plays at prayer time: one of the bundled voices, or a file
+/// the user imports. Opens a sheet; importing a file selects it and plays it
+/// straight away, so the user hears at once whether it's the one they meant.
+class _AdhanVoiceTile extends StatelessWidget {
+  const _AdhanVoiceTile();
+
+  static const _pickFile = '\u0000pick';
+
+  static String _label(AppStrings s, AdhanAudioService adhan, String id) =>
+      switch (id) {
+        AdhanAudioService.customVoiceId =>
+          adhan.customFileName ?? s.adhanVoiceCustom,
+        _ => s.adhanVoiceDefault,
+      };
+
+  @override
+  Widget build(BuildContext context) {
+    final adhan = context.watch<AdhanAudioService>();
+    final s = AppStrings.of(context);
+    return ListTile(
+      leading: const Icon(Icons.record_voice_over_outlined),
+      title: Text(s.adhanVoice),
+      subtitle: Text(
+        _label(s, adhan, adhan.effectiveVoiceId),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () => _open(context),
+    );
+  }
+
+  Future<void> _open(BuildContext context) async {
+    final adhan = context.read<AdhanAudioService>();
+    final s = AppStrings.of(context);
+    final current = adhan.effectiveVoiceId;
+    final hasFile = adhan.customFilePath != null;
+    final choice = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (sheetContext) => SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: Text(
+                    s.adhanVoice,
+                    style: Theme.of(sheetContext).textTheme.titleSmall,
+                  ),
+                ),
+              ),
+              for (final voice in AdhanAudioService.bundledVoices)
+                ListTile(
+                  title: Text(_label(s, adhan, voice.id)),
+                  trailing: voice.id == current
+                      ? const Icon(Icons.check)
+                      : null,
+                  onTap: () => Navigator.of(sheetContext).pop(voice.id),
+                ),
+              if (hasFile)
+                ListTile(
+                  title: Text(s.adhanVoiceCustom),
+                  subtitle: Text(
+                    '${adhan.customFileName ?? ''}\n${s.adhanVoiceCustomHint}',
+                  ),
+                  isThreeLine: true,
+                  trailing: current == AdhanAudioService.customVoiceId
+                      ? const Icon(Icons.check)
+                      : null,
+                  onTap: () => Navigator.of(
+                    sheetContext,
+                  ).pop(AdhanAudioService.customVoiceId),
+                ),
+              ListTile(
+                leading: const Icon(Icons.audio_file_outlined),
+                title: Text(
+                  hasFile ? s.adhanVoiceChangeFile : s.adhanVoiceChooseFile,
+                ),
+                subtitle: hasFile ? null : Text(s.adhanVoiceCustomHint),
+                onTap: () => Navigator.of(sheetContext).pop(_pickFile),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (choice == null || !context.mounted) return;
+    if (choice != _pickFile) {
+      await adhan.setVoice(choice);
+      return;
+    }
+
+    // No type filter, for the reason given in BackupIo.pick: Android reports
+    // MIME types inconsistently by source, and a wrong guess hides the file.
+    final file = await openFile();
+    if (file == null || !context.mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    final result = await adhan.importCustom(file);
+    switch (result) {
+      case CustomAdhanResult.unreadable:
+        messenger.showSnackBar(SnackBar(content: Text(s.adhanVoiceUnreadable)));
+      case CustomAdhanResult.tooLarge:
+        messenger.showSnackBar(SnackBar(content: Text(s.adhanVoiceTooLarge)));
+      case CustomAdhanResult.imported:
+        if (!await adhan.playPreview()) {
+          // Not audio after all: go back to what played before.
+          await adhan.setVoice(current);
+          messenger.showSnackBar(
+            SnackBar(content: Text(s.adhanVoiceNotPlayable)),
+          );
+        }
+    }
   }
 }
 

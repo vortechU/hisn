@@ -20,7 +20,7 @@ void main() {
         expect(border, isA<OutlineInputBorder>());
         expect(
           (border! as OutlineInputBorder).borderRadius,
-          BorderRadius.circular(12),
+          BorderRadius.circular(Ms.rInput),
         );
       }
     }

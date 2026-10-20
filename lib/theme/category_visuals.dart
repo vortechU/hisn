@@ -29,8 +29,9 @@ class CategoryVisuals {
 
   /// The colour for this category under the active theme.
   Color color(BuildContext context) {
-    final ms = ManuscriptTheme.of(context);
-    return tone == CategoryTone.rubric ? ms.rubric : ms.gilt;
+    // Every set is drawn in the accent: the lamp colour is kept for a set
+    // that is finished, so the tone no longer changes the colour.
+    return ManuscriptTheme.of(context).rubric;
   }
 
   // Icons are all drawn from one library at one weight (outlined), monochrome,

@@ -14,7 +14,6 @@ import '../widgets/feature_tour_anchor.dart';
 import '../widgets/muhassan_card.dart';
 import '../widgets/ornament.dart';
 import '../widgets/prayer_header.dart';
-import '../widgets/recommended_adhkar.dart';
 import 'category_duas_screen.dart';
 import 'custom_duas_screen.dart';
 import 'favorites_screen.dart';
@@ -22,12 +21,12 @@ import 'search_screen.dart';
 import 'tasbih_screen.dart';
 import 'settings/appearance_settings_screen.dart';
 
-/// The Adhkar tab, laid out as the opening of a book: an illuminated plate,
-/// the day's tally, the rubric pointing at what to read now, then the sections
-/// of the table of contents.
+/// The Adhkar tab: the mihrab at the head — the next prayer, the day, and the
+/// adhkar to read now — then the ways in (search, tasbih, saved), then every
+/// set as calm rows in three groups.
 ///
-/// Each section leads with one wide entry and continues in two columns, so the
-/// page has a first read rather than an undifferentiated field of tiles.
+/// One thing on the page is filled and arched; everything else sits on the
+/// plain ground, so the eye always knows where to land first.
 class AdhkarScreen extends StatelessWidget {
   const AdhkarScreen({super.key});
 
@@ -45,7 +44,7 @@ class AdhkarScreen extends StatelessWidget {
         .where((c) => c.group == DuaCategory.groupSituational)
         .toList();
 
-    // A synthetic category card for the user's own duas, shown in its own group.
+    // A synthetic category row for the user's own duas, in its own group.
     final customCategory = DuaCategory(
       id: Dua.customCategoryId,
       title: s.myDuas,
@@ -61,20 +60,23 @@ class AdhkarScreen extends StatelessWidget {
           slivers: [
             const SliverToBoxAdapter(child: PrayerHeader()),
             const SliverToBoxAdapter(child: _Toolbar()),
-            const SliverToBoxAdapter(child: MuhassanCard()),
-            const SliverToBoxAdapter(child: RecommendedAdhkar()),
             SliverToBoxAdapter(child: SectionMark(label: s.groupDaily)),
-            _CategorySection(categories: daily, countOf: repo.countForCategory),
+            _CategoryGroup(
+              categories: daily,
+              countOf: repo.countForCategory,
+              leading: const MuhassanCard(),
+            ),
             SliverToBoxAdapter(child: SectionMark(label: s.groupSituational)),
-            _CategorySection(
+            _CategoryGroup(
               categories: situational,
               countOf: repo.countForCategory,
             ),
             SliverToBoxAdapter(child: SectionMark(label: s.groupMine)),
-            _CategorySection(
+            _CategoryGroup(
               categories: [customCategory],
               countOf: (_) => custom.count,
-              bottomPadding: 28,
+              featured: true,
+              bottomPadding: 32,
               onTapOverride: (context, _) => Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const CustomDuasScreen()),
               ),
@@ -86,11 +88,11 @@ class AdhkarScreen extends StatelessWidget {
   }
 }
 
-/// Search, tasbih and saved on one ruled strip.
+/// Search, tasbih and saved: the ways *into* the book rather than parts of it.
 ///
-/// These are the three ways *into* the book rather than parts of it, so they
-/// share a single line of chrome instead of taking a card each — search
-/// stretches, while Tasbih carries a visible label so its purpose is clear.
+/// Search is a wide pill with the appearance switch beside it; Tasbih and
+/// Saved sit under it as a matched pair of labelled buttons, so every way in
+/// has the same weight and a name.
 class _Toolbar extends StatelessWidget {
   const _Toolbar();
 
@@ -101,80 +103,78 @@ class _Toolbar extends StatelessWidget {
     final s = AppStrings.of(context);
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(Ms.margin, 8, Ms.margin, 2),
+      padding: const EdgeInsets.fromLTRB(Ms.margin, 16, Ms.margin, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Material(
-            type: MaterialType.transparency,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(Ms.rSmall),
-              onTap: () => Navigator.of(
-                context,
-              ).push(MaterialPageRoute(builder: (_) => const SearchScreen())),
-              child: Container(
-                height: 44,
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
-                  border: Border.all(color: ms.rule),
-                  borderRadius: BorderRadius.circular(Ms.rSmall),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.search,
-                      size: 19,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        s.searchDuas,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            alignment: WrapAlignment.spaceBetween,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: 12,
-            runSpacing: 8,
+          Row(
             children: [
-              FeatureTourAnchor(
-                target: FeatureTourTarget.tasbih,
-                child: OutlinedButton.icon(
-                  key: const ValueKey('open_tasbih'),
-                  icon: const Icon(Icons.radio_button_checked, size: 19),
-                  label: Text(s.navTasbih),
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const TasbihScreen()),
-                  ),
-                ),
-              ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const _HomeAppearanceMenu(),
-                  const SizedBox(width: 8),
-                  _ToolMark(
-                    icon: Icons.bookmark_border,
-                    tooltip: s.navSaved,
+              Expanded(
+                child: Material(
+                  color: ms.paper,
+                  shape: const StadiumBorder(),
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
                     onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const FavoritesScreen(),
+                      MaterialPageRoute(builder: (_) => const SearchScreen()),
+                    ),
+                    child: SizedBox(
+                      height: 52,
+                      child: Row(
+                        children: [
+                          const SizedBox(width: 18),
+                          Icon(
+                            Icons.search,
+                            size: 22,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              s.searchDuas,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              const _HomeAppearanceMenu(),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: FeatureTourAnchor(
+                  target: FeatureTourTarget.tasbih,
+                  child: FilledButton.tonalIcon(
+                    key: const ValueKey('open_tasbih'),
+                    icon: const Icon(Icons.radio_button_checked, size: 20),
+                    label: Text(s.navTasbih),
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const TasbihScreen()),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: FilledButton.tonalIcon(
+                  key: const ValueKey('open_saved'),
+                  icon: const Icon(Icons.bookmark_border, size: 20),
+                  label: Text(s.navSaved),
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const FavoritesScreen()),
+                  ),
+                ),
               ),
             ],
           ),
@@ -200,6 +200,10 @@ class _HomeAppearanceMenu extends StatelessWidget {
       child: PopupMenuButton<String>(
         key: const ValueKey('home_appearance'),
         tooltip: s.secAppearance,
+        style: IconButton.styleFrom(
+          backgroundColor: ms.paper,
+          fixedSize: const Size(52, 52),
+        ),
         icon: Icon(
           Theme.of(context).brightness == Brightness.dark
               ? Icons.dark_mode_outlined
@@ -237,57 +241,28 @@ class _HomeAppearanceMenu extends StatelessWidget {
   }
 }
 
-class _ToolMark extends StatelessWidget {
-  const _ToolMark({
-    required this.icon,
-    required this.tooltip,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String tooltip;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final ms = ManuscriptTheme.of(context);
-    return Tooltip(
-      message: tooltip,
-      child: Material(
-        type: MaterialType.transparency,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(Ms.rSmall),
-          onTap: onTap,
-          child: Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              border: Border.all(color: ms.rule),
-              borderRadius: BorderRadius.circular(Ms.rSmall),
-            ),
-            child: Icon(icon, size: 19, color: ms.rubric),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// A section of the table of contents: one wide entry, then two columns.
-class _CategorySection extends StatelessWidget {
-  const _CategorySection({
+/// A group of sets on one panel, one row each, optionally headed by a row of
+/// its own ([leading]).
+class _CategoryGroup extends StatelessWidget {
+  const _CategoryGroup({
     required this.categories,
     required this.countOf,
+    this.leading,
     this.onTapOverride,
-    this.bottomPadding = 4,
+    this.featured = false,
+    this.bottomPadding = 0,
   });
 
   final List<DuaCategory> categories;
   final int Function(String id) countOf;
+  final Widget? leading;
 
   /// Optional custom tap handler (used for the "My Duas" entry).
   final void Function(BuildContext context, DuaCategory category)?
   onTapOverride;
+
+  /// Shows each row's subtitle — for a group of one, where there is room.
+  final bool featured;
   final double bottomPadding;
 
   void _open(BuildContext context, DuaCategory category) {
@@ -304,53 +279,23 @@ class _CategorySection extends StatelessWidget {
   Widget build(BuildContext context) {
     if (categories.isEmpty) return const SliverToBoxAdapter();
 
-    final lead = categories.first;
-    final rest = categories.skip(1).toList();
-
-    return SliverMainAxisGroup(
-      slivers: [
-        SliverPadding(
-          padding: EdgeInsets.fromLTRB(
-            Ms.margin,
-            0,
-            Ms.margin,
-            rest.isEmpty ? bottomPadding : 12,
-          ),
-          sliver: SliverToBoxAdapter(
-            child: CategoryCard(
-              category: lead,
-              count: countOf(lead.id),
-              featured: true,
-              onTap: () => _open(context, lead),
-            ),
-          ),
-        ),
-        if (rest.isNotEmpty)
-          SliverPadding(
-            padding: EdgeInsets.fromLTRB(
-              Ms.margin,
-              0,
-              Ms.margin,
-              bottomPadding,
-            ),
-            sliver: SliverGrid(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                childAspectRatio: 1.06,
+    return SliverPadding(
+      padding: EdgeInsets.fromLTRB(Ms.margin, 0, Ms.margin, bottomPadding),
+      sliver: SliverToBoxAdapter(
+        child: RowGroup(
+          indent: 70,
+          children: [
+            ?leading,
+            for (final category in categories)
+              CategoryCard(
+                category: category,
+                count: countOf(category.id),
+                featured: featured,
+                onTap: () => _open(context, category),
               ),
-              delegate: SliverChildBuilderDelegate((context, index) {
-                final category = rest[index];
-                return CategoryCard(
-                  category: category,
-                  count: countOf(category.id),
-                  onTap: () => _open(context, category),
-                );
-              }, childCount: rest.length),
-            ),
-          ),
-      ],
+          ],
+        ),
+      ),
     );
   }
 }

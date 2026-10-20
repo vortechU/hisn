@@ -71,17 +71,17 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// en: 'Search duas…'
 	String get searchDuas => 'Search duas…';
 
-	/// en: 'ALL ADHKAR'
-	String get allAdhkar => 'ALL ADHKAR';
+	/// en: 'All adhkar'
+	String get allAdhkar => 'All adhkar';
 
-	/// en: 'DAILY ADHKAR'
-	String get groupDaily => 'DAILY ADHKAR';
+	/// en: 'Daily adhkar'
+	String get groupDaily => 'Daily adhkar';
 
-	/// en: 'FOR EVERY SITUATION'
-	String get groupSituational => 'FOR EVERY SITUATION';
+	/// en: 'For every situation'
+	String get groupSituational => 'For every situation';
 
-	/// en: 'MINE'
-	String get groupMine => 'MINE';
+	/// en: 'Mine'
+	String get groupMine => 'Mine';
 
 	/// en: 'Muhassan'
 	String get muhassanHeading => 'Muhassan';
@@ -339,8 +339,8 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// en: 'Tap + to add your own dua and keep it here.'
 	String get noCustomBody => 'Tap + to add your own dua and keep it here.';
 
-	/// en: 'RECOMMENDED NOW'
-	String get recommendedNow => 'RECOMMENDED NOW';
+	/// en: 'Recommended now'
+	String get recommendedNow => 'Recommended now';
 
 	/// en: 'Read now · 1 dua'
 	String get readNowOne => 'Read now · 1 dua';
@@ -354,11 +354,11 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// en: '$count duas'
 	String duaCountOther({required Object count}) => '${count} duas';
 
-	/// en: 'NOW'
-	String get now => 'NOW';
+	/// en: 'Now'
+	String get now => 'Now';
 
-	/// en: 'NEXT'
-	String get next => 'NEXT';
+	/// en: 'Next'
+	String get next => 'Next';
 
 	/// en: 'remaining'
 	String get remaining => 'remaining';
@@ -366,8 +366,8 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// en: 'now'
 	String get countdownNow => 'now';
 
-	/// en: 'SINCE ADHAN'
-	String get sinceAdhan => 'SINCE ADHAN';
+	/// en: 'Since adhan'
+	String get sinceAdhan => 'Since adhan';
 
 	/// en: 'Today's prayers · $location'
 	String todaysPrayers({required Object location}) => 'Today\'s prayers · ${location}';
@@ -588,6 +588,33 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// en: 'Stop adhan'
 	String get stopAdhan => 'Stop adhan';
 
+	/// en: 'Adhan voice'
+	String get adhanVoice => 'Adhan voice';
+
+	/// en: 'Built-in adhan'
+	String get adhanVoiceDefault => 'Built-in adhan';
+
+	/// en: 'Your own audio file'
+	String get adhanVoiceCustom => 'Your own audio file';
+
+	/// en: 'Plays for every prayer, including Fajr'
+	String get adhanVoiceCustomHint => 'Plays for every prayer, including Fajr';
+
+	/// en: 'Choose a file…'
+	String get adhanVoiceChooseFile => 'Choose a file…';
+
+	/// en: 'Choose a different file'
+	String get adhanVoiceChangeFile => 'Choose a different file';
+
+	/// en: 'That file couldn't be read.'
+	String get adhanVoiceUnreadable => 'That file couldn\'t be read.';
+
+	/// en: 'That file is too large. Choose an audio file under 20 MB.'
+	String get adhanVoiceTooLarge => 'That file is too large. Choose an audio file under 20 MB.';
+
+	/// en: 'That file couldn't be played. Choose an audio file such as MP3 or OGG.'
+	String get adhanVoiceNotPlayable => 'That file couldn\'t be played. Choose an audio file such as MP3 or OGG.';
+
 	/// en: 'Playing adhan…'
 	String get adhanPlaying => 'Playing adhan…';
 
@@ -619,8 +646,8 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// en: 'Dua & Adhkar companion · prototype Prayer times via the Adhan library.'
 	String get aboutBody => 'Dua & Adhkar companion · prototype\nPrayer times via the Adhan library.';
 
-	/// en: 'AUTOMATIC'
-	String get automatic => 'AUTOMATIC';
+	/// en: 'Automatic'
+	String get automatic => 'Automatic';
 
 	/// en: 'Use my device location'
 	String get useDeviceLocation => 'Use my device location';
@@ -631,8 +658,8 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// en: 'Detect via GPS (asks for permission)'
 	String get gpsDetect => 'Detect via GPS (asks for permission)';
 
-	/// en: 'CHOOSE A CITY'
-	String get chooseCity => 'CHOOSE A CITY';
+	/// en: 'Choose a city'
+	String get chooseCity => 'Choose a city';
 
 	/// en: 'A chosen city's times are shown in your device's current timezone — accurate when the city is in your region.'
 	String get cityNote => 'A chosen city\'s times are shown in your device\'s current timezone — accurate when the city is in your region.';
@@ -867,6 +894,9 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
 	/// en: 'System'
 	String get themeSystem => 'System';
+
+	/// en: 'Qibla & Brass'
+	String get paletteQibla => 'Qibla & Brass';
 
 	/// en: 'Emerald & Gold'
 	String get paletteEmerald => 'Emerald & Gold';
@@ -1403,10 +1433,10 @@ extension on Translations {
 			'prayerQiblaTitle' => 'Prayer & Qibla',
 			'weeklySchedule' => 'Weekly schedule',
 			'searchDuas' => 'Search duas…',
-			'allAdhkar' => 'ALL ADHKAR',
-			'groupDaily' => 'DAILY ADHKAR',
-			'groupSituational' => 'FOR EVERY SITUATION',
-			'groupMine' => 'MINE',
+			'allAdhkar' => 'All adhkar',
+			'groupDaily' => 'Daily adhkar',
+			'groupSituational' => 'For every situation',
+			'groupMine' => 'Mine',
 			'muhassanHeading' => 'Muhassan',
 			'muhassanToday' => ({required Object percent}) => 'You\'re ${percent}% fortified today',
 			'muhassanComplete' => 'Fully fortified — masha\'Allah',
@@ -1496,16 +1526,16 @@ extension on Translations {
 			'edit' => 'Edit',
 			'noCustomTitle' => 'No duas yet',
 			'noCustomBody' => 'Tap + to add your own dua and keep it here.',
-			'recommendedNow' => 'RECOMMENDED NOW',
+			'recommendedNow' => 'Recommended now',
 			'readNowOne' => 'Read now · 1 dua',
 			'readNowOther' => ({required Object count}) => 'Read now · ${count} duas',
 			'duaCountOne' => '1 dua',
 			'duaCountOther' => ({required Object count}) => '${count} duas',
-			'now' => 'NOW',
-			'next' => 'NEXT',
+			'now' => 'Now',
+			'next' => 'Next',
 			'remaining' => 'remaining',
 			'countdownNow' => 'now',
-			'sinceAdhan' => 'SINCE ADHAN',
+			'sinceAdhan' => 'Since adhan',
 			'todaysPrayers' => ({required Object location}) => 'Today\'s prayers · ${location}',
 			'searchHint' => 'Search duas, meanings, sources…',
 			'clear' => 'Clear',
@@ -1583,6 +1613,15 @@ extension on Translations {
 			'streamHints.2' => 'Alarm: uses your phone\'s alarm volume slider. A silent ringer usually does not mute alarms; check whether Do Not Disturb allows alarms.',
 			'previewAdhan' => 'Preview adhan',
 			'stopAdhan' => 'Stop adhan',
+			'adhanVoice' => 'Adhan voice',
+			'adhanVoiceDefault' => 'Built-in adhan',
+			'adhanVoiceCustom' => 'Your own audio file',
+			'adhanVoiceCustomHint' => 'Plays for every prayer, including Fajr',
+			'adhanVoiceChooseFile' => 'Choose a file…',
+			'adhanVoiceChangeFile' => 'Choose a different file',
+			'adhanVoiceUnreadable' => 'That file couldn\'t be read.',
+			'adhanVoiceTooLarge' => 'That file is too large. Choose an audio file under 20 MB.',
+			'adhanVoiceNotPlayable' => 'That file couldn\'t be played. Choose an audio file such as MP3 or OGG.',
 			'adhanPlaying' => 'Playing adhan…',
 			'notifBlocked' => 'Notifications are blocked. Enable them for Hisn in your device settings.',
 			'textSize' => 'Text size',
@@ -1595,11 +1634,11 @@ extension on Translations {
 			'showTranslation' => 'Show translation',
 			'showTranslationSub' => 'The English meaning',
 			'aboutBody' => 'Dua & Adhkar companion · prototype\nPrayer times via the Adhan library.',
-			'automatic' => 'AUTOMATIC',
+			'automatic' => 'Automatic',
 			'useDeviceLocation' => 'Use my device location',
 			'gpsActive' => 'Active · times match where you are',
 			'gpsDetect' => 'Detect via GPS (asks for permission)',
-			'chooseCity' => 'CHOOSE A CITY',
+			'chooseCity' => 'Choose a city',
 			'cityNote' => 'A chosen city\'s times are shown in your device\'s current timezone — accurate when the city is in your region.',
 			'madhabStandard' => 'Standard (Shafi, Maliki, Hanbali)',
 			'madhabHanafi' => 'Hanafi',
@@ -1678,6 +1717,7 @@ extension on Translations {
 			'themeLight' => 'Light',
 			'themeDark' => 'Dark',
 			'themeSystem' => 'System',
+			'paletteQibla' => 'Qibla & Brass',
 			'paletteEmerald' => 'Emerald & Gold',
 			'paletteSapphire' => 'Sapphire & Sky',
 			'paletteAmethyst' => 'Amethyst & Rose',

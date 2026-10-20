@@ -84,10 +84,9 @@ class AppearanceSettingsScreen extends StatelessWidget {
   }
 }
 
-/// A palette shown as the page it actually produces: its own paper, its ruled
-/// frame, a line of rubricated heading over two lines of ink, and its gilt
-/// rosette. A flat colour chip cannot show that these schemes differ in paper
-/// temperature as much as in accent, so the swatch is a miniature instead.
+/// A palette shown as the screen it actually produces: its ground, its mihrab
+/// with the lamp, and a group of rows. A flat colour chip cannot show how the
+/// accent fills a field and tints the ground, so the swatch is a miniature.
 class _Swatch extends StatelessWidget {
   const _Swatch({
     required this.palette,
@@ -107,16 +106,21 @@ class _Swatch extends StatelessWidget {
     // Preview each palette in the brightness the user is actually reading in.
     final brightness = theme.brightness;
 
+    final ground = palette.groundFor(brightness);
     final paper = palette.paperFor(brightness);
     final ink = palette.inkFor(brightness);
     final rubric = palette.rubricFor(brightness);
     final gilt = palette.giltFor(brightness);
+    final field = palette.fieldFor(brightness);
+    final onField = palette.onFieldFor(brightness);
 
-    Widget line(double width) => Container(
-          height: 2.5,
+    Widget line(Color color, double width) => Container(
+          height: 3,
           width: width,
-          margin: const EdgeInsets.only(bottom: 3),
-          color: ink.withValues(alpha: 0.55),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(2),
+          ),
         );
 
     return Semantics(
@@ -129,53 +133,88 @@ class _Swatch extends StatelessWidget {
         child: Column(
           children: [
             Expanded(
-              child: Container(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
                 width: double.infinity,
-                padding: const EdgeInsets.all(2),
+                padding: const EdgeInsets.all(3),
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: selected ? rubric : scheme.outlineVariant,
-                    width: selected ? Ms.stroke : Ms.hair,
+                    color: selected ? rubric : Colors.transparent,
+                    width: Ms.stroke,
                   ),
                   borderRadius: BorderRadius.circular(Ms.rPanel),
                 ),
+                // A miniature of the hall in this palette: the ground, the
+                // mihrab with its lamp, and a group of rows beneath.
                 child: Container(
-                  padding: const EdgeInsets.fromLTRB(8, 7, 8, 7),
+                  padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: paper,
-                    border: Border.all(color: gilt.withValues(alpha: 0.5)),
-                    borderRadius: BorderRadius.circular(Ms.rPanel - 1),
+                    color: ground,
+                    borderRadius: BorderRadius.circular(Ms.rPanel - 4),
                   ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Row(
-                        children: [
-                          Rosette(size: 12, color: gilt, lobes: 8),
-                          const SizedBox(width: 5),
-                          Expanded(
-                            child: Container(height: 3, color: rubric),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      // The body of the miniature takes whatever height is
-                      // left. Three columns of these land at ~45 logical
-                      // pixels tall on a 320 px screen, so nothing below the
-                      // heading may claim a fixed share.
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            line(double.infinity),
-                            line(26),
-                            const Spacer(),
-                            Container(
-                                height: Ms.hair,
-                                color: ink.withValues(alpha: 0.3)),
-                            const SizedBox(height: 5),
-                            Container(width: 16, height: 2, color: gilt),
-                          ],
+                        flex: 5,
+                        child: Container(
+                          decoration: ShapeDecoration(
+                            color: field,
+                            shape: const MihrabBorder(rise: 7, radius: 8),
+                          ),
+                          padding: const EdgeInsets.fromLTRB(7, 10, 7, 6),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              line(onField.withValues(alpha: 0.85), 22),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: line(
+                                        onField.withValues(alpha: 0.3), 0),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Container(
+                                    width: 6,
+                                    height: 6,
+                                    decoration: BoxDecoration(
+                                      color: gilt,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Expanded(
+                        flex: 3,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                          decoration: BoxDecoration(
+                            color: paper,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 7,
+                                height: 7,
+                                decoration: BoxDecoration(
+                                  color: rubric.withValues(alpha: 0.6),
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: line(ink.withValues(alpha: 0.45), 0),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],

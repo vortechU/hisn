@@ -49,10 +49,10 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get prayerQiblaTitle => 'Salat & Kiblat';
 	@override String get weeklySchedule => 'Jadwal mingguan';
 	@override String get searchDuas => 'Cari doa…';
-	@override String get allAdhkar => 'SEMUA ZIKIR';
-	@override String get groupDaily => 'ZIKIR HARIAN';
-	@override String get groupSituational => 'UNTUK SETIAP KEADAAN';
-	@override String get groupMine => 'MILIK SAYA';
+	@override String get allAdhkar => 'Semua zikir';
+	@override String get groupDaily => 'Zikir harian';
+	@override String get groupSituational => 'Untuk setiap keadaan';
+	@override String get groupMine => 'Milik saya';
 	@override String get muhassanHeading => 'Muhassan';
 	@override String muhassanToday({required Object percent}) => 'Anda ${percent}% terbentengi hari ini';
 	@override String get muhassanComplete => 'Terbentengi penuh — masha Allah';
@@ -144,16 +144,16 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get edit => 'Edit';
 	@override String get noCustomTitle => 'Belum ada doa';
 	@override String get noCustomBody => 'Ketuk + untuk menambah doa Anda dan menyimpannya di sini.';
-	@override String get recommendedNow => 'DISARANKAN SEKARANG';
+	@override String get recommendedNow => 'Disarankan sekarang';
 	@override String get readNowOne => 'Baca sekarang · 1 doa';
 	@override String readNowOther({required Object count}) => 'Baca sekarang · ${count} doa';
 	@override String get duaCountOne => '1 doa';
 	@override String duaCountOther({required Object count}) => '${count} doa';
-	@override String get now => 'SEKARANG';
-	@override String get next => 'BERIKUTNYA';
+	@override String get now => 'Sekarang';
+	@override String get next => 'Berikutnya';
 	@override String get remaining => 'tersisa';
 	@override String get countdownNow => 'sekarang';
-	@override String get sinceAdhan => 'SEJAK AZAN';
+	@override String get sinceAdhan => 'Sejak azan';
 	@override String todaysPrayers({required Object location}) => 'Salat hari ini · ${location}';
 	@override String get searchHint => 'Cari doa, makna, sumber…';
 	@override String get clear => 'Hapus';
@@ -237,6 +237,15 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	];
 	@override String get previewAdhan => 'Pratinjau azan';
 	@override String get stopAdhan => 'Hentikan azan';
+	@override String get adhanVoice => 'Suara azan';
+	@override String get adhanVoiceDefault => 'Azan bawaan';
+	@override String get adhanVoiceCustom => 'File audio Anda sendiri';
+	@override String get adhanVoiceCustomHint => 'Diputar untuk setiap salat, termasuk Subuh';
+	@override String get adhanVoiceChooseFile => 'Pilih file…';
+	@override String get adhanVoiceChangeFile => 'Pilih file lain';
+	@override String get adhanVoiceUnreadable => 'File itu tidak dapat dibaca.';
+	@override String get adhanVoiceTooLarge => 'File terlalu besar. Pilih file audio di bawah 20 MB.';
+	@override String get adhanVoiceNotPlayable => 'File itu tidak dapat diputar. Pilih file audio seperti MP3 atau OGG.';
 	@override String get adhanPlaying => 'Memutar azan…';
 	@override String get notifBlocked => 'Notifikasi diblokir. Aktifkan untuk Hisn di pengaturan perangkat Anda.';
 	@override String get textSize => 'Ukuran teks';
@@ -251,11 +260,11 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get showTranslation => 'Tampilkan terjemahan';
 	@override String get showTranslationSub => 'Makna dalam bahasa Inggris';
 	@override String get aboutBody => 'Pendamping Doa & Zikir · prototipe\nWaktu salat via pustaka Adhan.';
-	@override String get automatic => 'OTOMATIS';
+	@override String get automatic => 'Otomatis';
 	@override String get useDeviceLocation => 'Gunakan lokasi perangkat saya';
 	@override String get gpsActive => 'Aktif · waktu sesuai lokasi Anda';
 	@override String get gpsDetect => 'Deteksi via GPS (meminta izin)';
-	@override String get chooseCity => 'PILIH KOTA';
+	@override String get chooseCity => 'Pilih kota';
 	@override String get cityNote => 'Waktu kota yang dipilih ditampilkan dalam zona waktu perangkat Anda saat ini — akurat bila kota berada di wilayah Anda.';
 	@override String get madhabStandard => 'Standar (Syafi\'i, Maliki, Hanbali)';
 	@override String get madhabHanafi => 'Hanafi';
@@ -334,6 +343,7 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get themeLight => 'Terang';
 	@override String get themeDark => 'Gelap';
 	@override String get themeSystem => 'Sistem';
+	@override String get paletteQibla => 'Kiblat & Kuningan';
 	@override String get paletteEmerald => 'Zamrud & Emas';
 	@override String get paletteSapphire => 'Safir & Langit';
 	@override String get paletteAmethyst => 'Kecubung & Mawar';
@@ -557,10 +567,10 @@ extension on TranslationsId {
 			'prayerQiblaTitle' => 'Salat & Kiblat',
 			'weeklySchedule' => 'Jadwal mingguan',
 			'searchDuas' => 'Cari doa…',
-			'allAdhkar' => 'SEMUA ZIKIR',
-			'groupDaily' => 'ZIKIR HARIAN',
-			'groupSituational' => 'UNTUK SETIAP KEADAAN',
-			'groupMine' => 'MILIK SAYA',
+			'allAdhkar' => 'Semua zikir',
+			'groupDaily' => 'Zikir harian',
+			'groupSituational' => 'Untuk setiap keadaan',
+			'groupMine' => 'Milik saya',
 			'muhassanHeading' => 'Muhassan',
 			'muhassanToday' => ({required Object percent}) => 'Anda ${percent}% terbentengi hari ini',
 			'muhassanComplete' => 'Terbentengi penuh — masha Allah',
@@ -650,16 +660,16 @@ extension on TranslationsId {
 			'edit' => 'Edit',
 			'noCustomTitle' => 'Belum ada doa',
 			'noCustomBody' => 'Ketuk + untuk menambah doa Anda dan menyimpannya di sini.',
-			'recommendedNow' => 'DISARANKAN SEKARANG',
+			'recommendedNow' => 'Disarankan sekarang',
 			'readNowOne' => 'Baca sekarang · 1 doa',
 			'readNowOther' => ({required Object count}) => 'Baca sekarang · ${count} doa',
 			'duaCountOne' => '1 doa',
 			'duaCountOther' => ({required Object count}) => '${count} doa',
-			'now' => 'SEKARANG',
-			'next' => 'BERIKUTNYA',
+			'now' => 'Sekarang',
+			'next' => 'Berikutnya',
 			'remaining' => 'tersisa',
 			'countdownNow' => 'sekarang',
-			'sinceAdhan' => 'SEJAK AZAN',
+			'sinceAdhan' => 'Sejak azan',
 			'todaysPrayers' => ({required Object location}) => 'Salat hari ini · ${location}',
 			'searchHint' => 'Cari doa, makna, sumber…',
 			'clear' => 'Hapus',
@@ -737,6 +747,15 @@ extension on TranslationsId {
 			'streamHints.2' => 'Alarm: memakai pengatur volume alarm ponsel. Mode dering senyap biasanya tidak membisukan alarm; periksa izin alarm dalam pengaturan Jangan Ganggu.',
 			'previewAdhan' => 'Pratinjau azan',
 			'stopAdhan' => 'Hentikan azan',
+			'adhanVoice' => 'Suara azan',
+			'adhanVoiceDefault' => 'Azan bawaan',
+			'adhanVoiceCustom' => 'File audio Anda sendiri',
+			'adhanVoiceCustomHint' => 'Diputar untuk setiap salat, termasuk Subuh',
+			'adhanVoiceChooseFile' => 'Pilih file…',
+			'adhanVoiceChangeFile' => 'Pilih file lain',
+			'adhanVoiceUnreadable' => 'File itu tidak dapat dibaca.',
+			'adhanVoiceTooLarge' => 'File terlalu besar. Pilih file audio di bawah 20 MB.',
+			'adhanVoiceNotPlayable' => 'File itu tidak dapat diputar. Pilih file audio seperti MP3 atau OGG.',
 			'adhanPlaying' => 'Memutar azan…',
 			'notifBlocked' => 'Notifikasi diblokir. Aktifkan untuk Hisn di pengaturan perangkat Anda.',
 			'textSize' => 'Ukuran teks',
@@ -749,11 +768,11 @@ extension on TranslationsId {
 			'showTranslation' => 'Tampilkan terjemahan',
 			'showTranslationSub' => 'Makna dalam bahasa Inggris',
 			'aboutBody' => 'Pendamping Doa & Zikir · prototipe\nWaktu salat via pustaka Adhan.',
-			'automatic' => 'OTOMATIS',
+			'automatic' => 'Otomatis',
 			'useDeviceLocation' => 'Gunakan lokasi perangkat saya',
 			'gpsActive' => 'Aktif · waktu sesuai lokasi Anda',
 			'gpsDetect' => 'Deteksi via GPS (meminta izin)',
-			'chooseCity' => 'PILIH KOTA',
+			'chooseCity' => 'Pilih kota',
 			'cityNote' => 'Waktu kota yang dipilih ditampilkan dalam zona waktu perangkat Anda saat ini — akurat bila kota berada di wilayah Anda.',
 			'madhabStandard' => 'Standar (Syafi\'i, Maliki, Hanbali)',
 			'madhabHanafi' => 'Hanafi',
@@ -832,6 +851,7 @@ extension on TranslationsId {
 			'themeLight' => 'Terang',
 			'themeDark' => 'Gelap',
 			'themeSystem' => 'Sistem',
+			'paletteQibla' => 'Kiblat & Kuningan',
 			'paletteEmerald' => 'Zamrud & Emas',
 			'paletteSapphire' => 'Safir & Langit',
 			'paletteAmethyst' => 'Kecubung & Mawar',

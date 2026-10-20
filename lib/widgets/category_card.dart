@@ -11,15 +11,15 @@ import '../theme/category_visuals.dart';
 import 'arabic_text.dart';
 import 'ornament.dart';
 
-/// A category as an entry in the book's table of contents.
+/// A category as one row of a group: its mark in a tinted well, its name and
+/// where today's reading of it stands, and its Arabic name at the far end.
 ///
-/// The mark at the head of each entry is a rosette lobed to that category —
-/// six points for the sleep adhkar, twelve for the morning — so entries are
-/// told apart by their geometry rather than by eleven different accent hues.
+/// A set finished today takes the lamp: the row's fill warms, the well fills
+/// solid with a check, and the status says so — and all of it eases back when
+/// the set is started again.
 ///
-/// [featured] gives the first entry of a section the wider, two-column
-/// treatment, so each section of the grid has a clear first read instead of
-/// repeating one tile shape down the page.
+/// The name and [featured] are kept from the grid tile this replaced;
+/// [featured] now only shows the subtitle under the name.
 class CategoryCard extends StatelessWidget {
   const CategoryCard({
     super.key,
@@ -48,6 +48,7 @@ class CategoryCard extends StatelessWidget {
           duas.where((dua) => progress.countOf(dua.id) >= dua.repeat).length,
     );
     final allDone = duas.isNotEmpty && completed == duas.length;
+    final started = completed > 0 && !allDone;
     final tint = allDone ? ms.gilt : visuals.color(context);
     // Keep the numeric fraction in reading order inside Arabic/Urdu text.
     final tally = '\u2066$completed / ${duas.length}\u2069';
@@ -59,188 +60,112 @@ class CategoryCard extends StatelessWidget {
 
     return JadwalFrame(
       onTap: onTap,
-      background: allDone
-          ? Color.alphaBlend(
-              ms.gilt.withValues(
-                alpha: theme.brightness == Brightness.dark ? 0.18 : 0.12,
-              ),
-              ms.paper,
-            )
-          : null,
-      accent: allDone || featured ? tint : null,
-      emphasis: allDone || featured,
-      padding: EdgeInsets.all(featured ? 15 : 13),
-      child: featured
-          ? _featuredLayout(
-              context,
-              theme,
-              ms,
-              visuals,
-              tint,
-              s,
-              status,
-              allDone,
-            )
-          : _tileLayout(context, theme, ms, visuals, tint, s, status, allDone),
-    );
-  }
-
-  /// The wide entry: mark and text side by side, with the subtitle shown.
-  Widget _featuredLayout(
-    BuildContext context,
-    ThemeData theme,
-    ManuscriptTheme ms,
-    CategoryVisuals visuals,
-    Color tint,
-    AppStrings s,
-    String status,
-    bool allDone,
-  ) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 2),
-          child: Icon(
-            allDone ? Icons.check_circle_outline : visuals.icon,
-            size: 26,
+      // Transparent rather than paper, so the row sits on its group's fill
+      // and only a finished set adds a tint of its own.
+      background: allDone ? null : Colors.transparent,
+      accent: allDone ? ms.gilt : null,
+      emphasis: allDone,
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 18, 14),
+      child: Row(
+        children: [
+          IconWell(
+            icon: allDone ? Icons.check_rounded : visuals.icon,
             color: tint,
+            filled: allDone,
           ),
-        ),
-        const SizedBox(width: 13),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // The Latin title leads and gets the room it needs; the
-                  // Arabic takes what is left rather than an equal share, so
-                  // a two-word title doesn't wrap while space sits unused.
-                  Flexible(flex: 3, child: _title(theme, s, large: true)),
-                  if (!s.ar) ...[
-                    const SizedBox(width: 10),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _title(theme, s),
+                if (featured) ...[
+                  const SizedBox(height: 1),
+                  Text(
+                    category.subtitleForLang(s.lang.name),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodySmall,
+                  ),
+                ],
+                const SizedBox(height: 3),
+                Row(
+                  children: [
                     Flexible(
-                      flex: 2,
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: AlignmentDirectional.centerEnd,
-                        child: ArabicText(
-                          category.titleArabic,
-                          fontSize: 20,
-                          color: tint,
-                          height: 1.5,
+                      child: Text(
+                        status,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: allDone
+                              ? Color.lerp(
+                                  ms.gilt,
+                                  theme.colorScheme.onSurface,
+                                  0.3,
+                                )
+                              : started
+                                  ? ms.rubric
+                                  : null,
+                          fontWeight:
+                              allDone || started ? FontWeight.w500 : null,
                         ),
                       ),
                     ),
+                    if (started) ...[
+                      const SizedBox(width: 10),
+                      SizedBox(
+                        width: 56,
+                        child: ProgressRule(
+                          value: completed / duas.length,
+                          color: ms.rubric,
+                          thickness: 3,
+                        ),
+                      ),
+                    ],
                   ],
-                ],
-              ),
-              const SizedBox(height: 3),
-              Text(
-                category.subtitleForLang(s.lang.name),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodySmall,
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Flexible(
-                    flex: 3,
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: AlignmentDirectional.centerStart,
-                      child: Cartouche(label: status, color: tint),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Container(height: Ms.hair, color: ms.rule),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  /// The narrow entry: mark and Arabic on one line, title anchored to the
-  /// foot of the tile so titles align across a row regardless of length.
-  Widget _tileLayout(
-    BuildContext context,
-    ThemeData theme,
-    ManuscriptTheme ms,
-    CategoryVisuals visuals,
-    Color tint,
-    AppStrings s,
-    String status,
-    bool allDone,
-  ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(
-              allDone ? Icons.check_circle_outline : visuals.icon,
-              size: 23,
-              color: tint,
+                ),
+              ],
             ),
-            const SizedBox(width: 8),
-            if (!s.ar)
-              Expanded(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: AlignmentDirectional.centerEnd,
-                  child: ArabicText(
-                    category.titleArabic,
-                    fontSize: 17,
-                    color: tint,
-                    height: 1.5,
-                  ),
+          ),
+          if (!s.ar) ...[
+            const SizedBox(width: 10),
+            // A capped column at the far end: the Arabic name gives way to
+            // the title, never the other way round.
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 118),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: AlignmentDirectional.centerEnd,
+                child: ArabicText(
+                  category.titleArabic,
+                  fontSize: 18,
+                  color: theme.colorScheme.onSurfaceVariant,
+                  height: 1.5,
                 ),
               ),
+            ),
           ],
-        ),
-        const Spacer(),
-        const SizedBox(height: 10),
-        _title(theme, s, large: false),
-        const SizedBox(height: 7),
-        Container(height: Ms.hair, color: ms.rule),
-        const SizedBox(height: 7),
-        Text(
-          status,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
-  Widget _title(ThemeData theme, AppStrings s, {required bool large}) {
+  Widget _title(ThemeData theme, AppStrings s) {
     if (s.rtl) {
       return ArabicText(
         category.titleForLang(s.lang.name),
-        fontSize: large ? 21 : 18,
-        fontWeight: FontWeight.w600,
+        fontSize: 18,
+        fontWeight: FontWeight.w500,
         textAlign: TextAlign.start,
         height: 1.45,
-        maxLines: 2,
+        maxLines: 1,
       );
     }
     return Text(
       category.titleForLang(s.lang.name),
-      maxLines: 2,
+      maxLines: 1,
       overflow: TextOverflow.ellipsis,
-      style: large ? theme.textTheme.titleLarge : theme.textTheme.titleMedium,
+      style: theme.textTheme.titleSmall,
     );
   }
 }

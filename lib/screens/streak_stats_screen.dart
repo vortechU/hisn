@@ -73,7 +73,7 @@ class _Hero extends StatelessWidget {
           Numeral('$streak', size: 76, weight: FontWeight.w600, color: tint),
           const SizedBox(height: 8),
           Text(
-            s.streakWord.toUpperCase(),
+            s.streakWord,
             style: theme.textTheme.labelSmall?.copyWith(color: tint),
           ),
           const RuleDivider(indent: 40),
@@ -101,7 +101,7 @@ class _Register extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: ms.rule),
+        color: ms.paper,
         borderRadius: BorderRadius.circular(Ms.rPanel),
       ),
       child: IntrinsicHeight(
@@ -119,7 +119,7 @@ class _Register extends StatelessWidget {
                       Numeral(entries[i].$2, size: 27),
                       const SizedBox(height: 4),
                       Text(
-                        entries[i].$1.toUpperCase(),
+                        entries[i].$1,
                         textAlign: TextAlign.center,
                         style: theme.textTheme.labelSmall,
                       ),

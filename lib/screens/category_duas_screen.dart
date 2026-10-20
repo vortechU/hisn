@@ -18,7 +18,8 @@ import 'adhkar_player_screen.dart';
 import 'after_prayer_tasbih_screen.dart';
 
 /// Every dua in a category, read as a session: tap a block to advance through
-/// its repetitions, with the set's progress ruled across the head of the page.
+/// its repetitions, with the set's progress in the field at the head of the
+/// page.
 /// Progress persists for the rest of the day (via [DuaProgressService]) so
 /// leaving and returning keeps your place.
 class CategoryDuasScreen extends StatefulWidget {
@@ -93,7 +94,7 @@ class _CategoryDuasScreenState extends State<CategoryDuasScreen> {
           if (widget.category.id == 'after_salah')
             Padding(
               padding: const EdgeInsets.fromLTRB(Ms.margin, 12, Ms.margin, 0),
-              child: OutlinedButton.icon(
+              child: FilledButton.tonalIcon(
                 key: const ValueKey('start_after_prayer_tasbih'),
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute(
@@ -135,8 +136,9 @@ int _completedCount(BuildContext context, List<Dua> duas) =>
       (p) => duas.where((d) => p.countOf(d.id) >= d.repeat).length,
     );
 
-/// The head of the session: the set's name in Arabic, its mark, and the tally
-/// of blocks finished — the page's one dominant element.
+/// The head of the session: a compact mihrab holding the set's Arabic name,
+/// what to do, and the tally of duas finished — the page's one filled field,
+/// above the text it introduces.
 class _SessionHead extends StatelessWidget {
   const _SessionHead({
     required this.category,
@@ -157,61 +159,67 @@ class _SessionHead extends StatelessWidget {
     final s = AppStrings.of(context);
     final completed = _completedCount(context, duas);
     final allDone = completed == duas.length && duas.isNotEmpty;
+    final quiet = ms.onField.withValues(alpha: 0.88);
+    final lamp = Color.lerp(ms.gilt, ms.onField, 0.7)!;
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(Ms.margin, 0, Ms.margin, 12),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: ms.rule)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(
-                allDone ? Icons.check : icon,
-                size: 24,
-                color: allDone ? ms.gilt : tint,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (!s.ar)
-                      ArabicText(
-                        category.titleArabic,
-                        fontSize: 21,
-                        color: tint,
-                        textAlign: TextAlign.start,
-                        height: 1.5,
-                        maxLines: 1,
-                      ),
-                    Text(
-                      allDone ? s.setComplete : s.tapEachDua,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodySmall,
-                    ),
-                  ],
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(Ms.margin, 4, Ms.margin, 0),
+      child: MihrabField(
+        rise: 30,
+        pattern: false,
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  allDone ? Icons.check_rounded : icon,
+                  size: 24,
+                  color: allDone ? lamp : ms.onField,
                 ),
-              ),
-              const SizedBox(width: 10),
-              Cartouche(
-                label: '$completed / ${duas.length}',
-                color: allDone ? ms.gilt : tint,
-                filled: allDone,
-              ),
-            ],
-          ),
-          const SizedBox(height: 11),
-          ProgressRule(
-            value: duas.isEmpty ? 0 : completed / duas.length,
-            color: allDone ? ms.gilt : tint,
-          ),
-        ],
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (!s.ar)
+                        ArabicText(
+                          category.titleArabic,
+                          fontSize: 22,
+                          color: ms.onField,
+                          textAlign: TextAlign.start,
+                          height: 1.5,
+                          maxLines: 1,
+                        ),
+                      Text(
+                        allDone ? s.setComplete : s.tapEachDua,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall
+                            ?.copyWith(color: quiet),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  '\u2066$completed / ${duas.length}\u2069',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: allDone ? lamp : ms.onField,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            ProgressRule(
+              value: duas.isEmpty ? 0 : completed / duas.length,
+              color: allDone ? lamp : ms.onField,
+              track: ms.onField.withValues(alpha: 0.18),
+            ),
+          ],
+        ),
       ),
     );
   }

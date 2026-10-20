@@ -35,7 +35,7 @@ class TranslationsUr extends Translations with BaseTranslations<AppLocale, Trans
 
 	late final TranslationsUr _root = this; // ignore: unused_field
 
-	@override
+	@override 
 	TranslationsUr $copyWith({TranslationMetadata<AppLocale, Translations>? meta}) => TranslationsUr(meta: meta ?? this.$meta);
 
 	// Translations
@@ -237,6 +237,15 @@ class TranslationsUr extends Translations with BaseTranslations<AppLocale, Trans
 	];
 	@override String get previewAdhan => 'اذان سن کر دیکھیں';
 	@override String get stopAdhan => 'اذان بند کریں';
+	@override String get adhanVoice => 'اذان کی آواز';
+	@override String get adhanVoiceDefault => 'ایپ کی اپنی اذان';
+	@override String get adhanVoiceCustom => 'آپ کی اپنی آڈیو فائل';
+	@override String get adhanVoiceCustomHint => 'ہر نماز کے لیے چلے گی، فجر سمیت';
+	@override String get adhanVoiceChooseFile => 'فائل منتخب کریں…';
+	@override String get adhanVoiceChangeFile => 'دوسری فائل منتخب کریں';
+	@override String get adhanVoiceUnreadable => 'یہ فائل پڑھی نہیں جا سکی۔';
+	@override String get adhanVoiceTooLarge => 'فائل بہت بڑی ہے۔ 20 MB سے چھوٹی آڈیو فائل منتخب کریں۔';
+	@override String get adhanVoiceNotPlayable => 'یہ فائل چل نہیں سکی۔ MP3 یا OGG جیسی آڈیو فائل منتخب کریں۔';
 	@override String get adhanPlaying => 'اذان چل رہی ہے…';
 	@override String get notifBlocked => 'اطلاعات بند ہیں۔ فون کی ترتیبات میں Hisn کی اطلاعات فعال کریں۔';
 	@override String get textSize => 'متن کا سائز';
@@ -334,6 +343,7 @@ class TranslationsUr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get themeLight => 'روشن';
 	@override String get themeDark => 'تاریک';
 	@override String get themeSystem => 'آلے کے مطابق';
+	@override String get paletteQibla => 'قبلہ اور پیتل';
 	@override String get paletteEmerald => 'زمردی اور سنہری';
 	@override String get paletteSapphire => 'نیلمی اور آسمانی';
 	@override String get paletteAmethyst => 'بنفشی اور گلابی';
@@ -737,6 +747,15 @@ extension on TranslationsUr {
 			'streamHints.2' => 'الارم: فون کا الارم کی آواز والا کنٹرول استعمال ہوتا ہے۔ خاموش رنگر عموماً اسے بند نہیں کرتا؛ ڈو ناٹ ڈسٹرب میں الارم کی اجازت بھی دیکھیں۔',
 			'previewAdhan' => 'اذان سن کر دیکھیں',
 			'stopAdhan' => 'اذان بند کریں',
+			'adhanVoice' => 'اذان کی آواز',
+			'adhanVoiceDefault' => 'ایپ کی اپنی اذان',
+			'adhanVoiceCustom' => 'آپ کی اپنی آڈیو فائل',
+			'adhanVoiceCustomHint' => 'ہر نماز کے لیے چلے گی، فجر سمیت',
+			'adhanVoiceChooseFile' => 'فائل منتخب کریں…',
+			'adhanVoiceChangeFile' => 'دوسری فائل منتخب کریں',
+			'adhanVoiceUnreadable' => 'یہ فائل پڑھی نہیں جا سکی۔',
+			'adhanVoiceTooLarge' => 'فائل بہت بڑی ہے۔ 20 MB سے چھوٹی آڈیو فائل منتخب کریں۔',
+			'adhanVoiceNotPlayable' => 'یہ فائل چل نہیں سکی۔ MP3 یا OGG جیسی آڈیو فائل منتخب کریں۔',
 			'adhanPlaying' => 'اذان چل رہی ہے…',
 			'notifBlocked' => 'اطلاعات بند ہیں۔ فون کی ترتیبات میں Hisn کی اطلاعات فعال کریں۔',
 			'textSize' => 'متن کا سائز',
@@ -832,6 +851,7 @@ extension on TranslationsUr {
 			'themeLight' => 'روشن',
 			'themeDark' => 'تاریک',
 			'themeSystem' => 'آلے کے مطابق',
+			'paletteQibla' => 'قبلہ اور پیتل',
 			'paletteEmerald' => 'زمردی اور سنہری',
 			'paletteSapphire' => 'نیلمی اور آسمانی',
 			'paletteAmethyst' => 'بنفشی اور گلابی',

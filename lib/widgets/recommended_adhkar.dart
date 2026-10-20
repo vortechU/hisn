@@ -11,18 +11,18 @@ import '../models/dua_category.dart';
 import '../screens/adhkar_player_screen.dart';
 import '../screens/category_duas_screen.dart';
 import '../services/adhkar_audio_library.dart';
+import '../services/dua_progress_service.dart';
 import '../services/prayer_service.dart';
 import '../theme/app_theme.dart';
-import '../theme/category_visuals.dart';
 import 'arabic_text.dart';
 import 'ornament.dart';
 
 /// A time-aware pointer to the set of adhkar most relevant to the current part
 /// of the day.
 ///
-/// Set as a *rubric* — an instruction ruled into the page rather than boxed —
-/// so it reads differently from the framed category entries below it and gives
-/// the screen an asymmetric moment instead of a third identical panel.
+/// It sits at the foot of the mihrab, under the countdown, as the screen's one
+/// expanded entry: every other set is a compact row below. Its progress and
+/// its button are the shortest way from opening the app to reading.
 ///
 /// The choice follows the current prayer period (more meaningful than the wall
 /// clock — morning adhkar are tied to Fajr, evening to Asr), with an hour-based
@@ -86,129 +86,119 @@ class _RecommendedAdhkarState extends State<RecommendedAdhkar> {
     final category = repo.categoryById(_recommendedCategoryId(current, now));
     if (category == null) return const SizedBox.shrink();
 
-    final visuals = CategoryVisuals.of(category.id);
     final duas = repo.duasForCategory(category.id);
     final count = duas.length;
+    final completed = context.select<DuaProgressService, int>(
+      (p) => duas.where((d) => p.countOf(d.id) >= d.repeat).length,
+    );
+    final done = count > 0 && completed == count;
+    final quiet = ms.onField.withValues(alpha: 0.88);
+    final lamp = Color.lerp(ms.gilt, ms.onField, 0.7)!;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(Ms.margin, 18, Ms.margin, 2),
-      child: Material(
-        type: MaterialType.transparency,
-        child: InkWell(
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => CategoryDuasScreen(category: category),
+    void open() => Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => CategoryDuasScreen(category: category)),
+    );
+
+    return InkWell(
+      onTap: open,
+      borderRadius: BorderRadius.circular(Ms.rSmall),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 2),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              height: Ms.hair,
+              color: ms.onField.withValues(alpha: 0.16),
             ),
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              // Ruled top and bottom only — the band runs to the page margins
-              // instead of sitting in a box of its own.
-              border: Border(
-                top: BorderSide(
-                  color: ms.gilt.withValues(alpha: 0.7),
-                  width: Ms.stroke,
-                ),
-                bottom: BorderSide(color: ms.rule),
-              ),
-            ),
-            padding: const EdgeInsets.only(top: 11, bottom: 12),
-            child: Column(
+            const SizedBox(height: 16),
+            Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Text(
-                      s.recommendedNow.toUpperCase(),
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: ms.gilt,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ArabicText(
+                        s.ar
+                            ? category.titleForLang(s.lang.name)
+                            : category.titleArabic,
+                        fontSize: 23,
+                        color: ms.onField,
+                        textAlign: TextAlign.start,
+                        height: 1.5,
+                        maxLines: 1,
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Rosette(size: 12, color: ms.gilt, lobes: visuals.lobes),
-                    const Spacer(),
-                    // Listening is the other way into the same set, so it sits
-                    // on the rubric rather than replacing the tap that opens
-                    // it — the band still reads as one instruction.
-                    _ListenMark(category: category, duas: duas),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                // The Arabic name is the dominant element here — in a book,
-                // the rubric names the chapter you are being sent to.
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Expanded(
-                      child: s.rtl
-                          ? ArabicText(
-                              category.titleForLang(s.lang.name),
-                              fontSize: 27,
-                              fontWeight: FontWeight.w600,
-                              textAlign: TextAlign.start,
-                              height: 1.45,
-                              maxLines: 1,
-                            )
-                          : Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ArabicText(
-                                  category.titleArabic,
-                                  fontSize: 24,
-                                  textAlign: TextAlign.start,
-                                  height: 1.5,
-                                  maxLines: 1,
-                                ),
-                                Text(
-                                  category.titleForLang(s.lang.name),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.titleMedium,
-                                ),
-                              ],
-                            ),
-                    ),
-                    const SizedBox(width: 12),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 2),
-                      child: Row(
-                        children: [
-                          Text(
-                            s.readNow(count),
-                            style: theme.textTheme.labelMedium?.copyWith(
-                              color: ms.rubric,
-                            ),
+                      if (!s.ar)
+                        Text(
+                          category.titleForLang(s.lang.name),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: ms.onField,
                           ),
-                          const SizedBox(width: 5),
-                          Icon(
-                            s.rtl
-                                ? Icons.arrow_back_rounded
-                                : Icons.arrow_forward_rounded,
-                            size: 15,
-                            color: ms.rubric,
-                          ),
-                        ],
+                        ),
+                      const SizedBox(height: 2),
+                      Text(
+                        category.subtitleForLang(s.lang.name),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: quiet,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 3),
+                // Listening is the other way into the same set, so it sits
+                // beside the title rather than replacing the tap that opens
+                // it.
+                _ListenMark(category: category, duas: duas),
+              ],
+            ),
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Expanded(
+                  child: ProgressRule(
+                    value: count == 0 ? 0 : completed / count,
+                    color: done ? lamp : ms.onField,
+                    track: ms.onField.withValues(alpha: 0.18),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                if (done) ...[
+                  Icon(Icons.check_rounded, size: 16, color: lamp),
+                  const SizedBox(width: 4),
+                ],
                 Text(
-                  category.subtitleForLang(s.lang.name),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodySmall,
+                  // Isolated so the tally keeps its order in RTL text.
+                  '\u2066$completed / $count\u2069',
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: done ? lamp : ms.onField,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),
-          ),
+            const SizedBox(height: 16),
+            FilledButton(
+              key: const ValueKey('recommended_read_now'),
+              style: FilledButton.styleFrom(
+                backgroundColor: ms.onField,
+                foregroundColor: ms.field,
+              ),
+              onPressed: open,
+              child: Text(s.readNow(count)),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-/// The headphone mark on the rubric: have this set recited aloud instead of
+/// The headphone mark beside the title: have this set recited aloud instead of
 /// reading it. Hidden when nothing in the set is recorded.
 class _ListenMark extends StatelessWidget {
   const _ListenMark({required this.category, required this.duas});
@@ -223,11 +213,8 @@ class _ListenMark extends StatelessWidget {
     }
     final ms = ManuscriptTheme.of(context);
     return IconButton(
-      icon: const Icon(Icons.headset_outlined, size: 19),
-      color: ms.rubric,
-      visualDensity: VisualDensity.compact,
-      padding: EdgeInsets.zero,
-      constraints: const BoxConstraints(minWidth: 34, minHeight: 26),
+      icon: const Icon(Icons.headset_outlined, size: 22),
+      color: ms.onField,
       tooltip: AppStrings.of(context).listenAction,
       onPressed: () => Navigator.of(context).push(
         MaterialPageRoute(

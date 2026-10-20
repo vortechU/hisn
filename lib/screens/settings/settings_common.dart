@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/ornament.dart';
 
-/// The section header used within the settings sub-screens — the same ruled
-/// mark the rest of the app uses, so settings don't drift into their own
-/// visual dialect.
+/// The section header used within the settings sub-screens — the same heading
+/// the rest of the app uses, so settings don't drift into their own visual
+/// dialect.
 class SettingsSectionHeader extends StatelessWidget {
   const SettingsSectionHeader(this.label, {super.key});
   final String label;
@@ -39,35 +39,26 @@ Future<T?> showSettingsPicker<T>({
             mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(Ms.margin, 0, Ms.margin, 4),
+                padding: const EdgeInsets.fromLTRB(Ms.margin + 4, 0, Ms.margin, 10),
                 child: Align(
                   alignment: AlignmentDirectional.centerStart,
-                  child: Text(title, style: theme.textTheme.titleMedium),
+                  child: Text(title, style: theme.textTheme.titleLarge),
                 ),
               ),
-              const RuleDivider(indent: Ms.margin),
               Flexible(
                 child: ListView(
                   shrinkWrap: true,
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
                   children: options.map((option) {
                     final isSelected = option == current;
-                    return Container(
-                      decoration: BoxDecoration(
-                        border: Border(bottom: BorderSide(color: ms.rule)),
-                      ),
-                      child: ListTile(
-                        title: Text(labelOf(option)),
-                        subtitle: hintOf != null ? Text(hintOf(option)) : null,
-                        leading: SizedBox(
-                          width: 20,
-                          child: isSelected
-                              ? Rosette(
-                                  size: 16, color: ms.gilt, filled: true)
-                              : null,
-                        ),
-                        selected: isSelected,
-                        onTap: () => Navigator.of(context).pop(option),
-                      ),
+                    return ListTile(
+                      title: Text(labelOf(option)),
+                      subtitle: hintOf != null ? Text(hintOf(option)) : null,
+                      trailing: isSelected
+                          ? Icon(Icons.check_rounded, color: ms.rubric)
+                          : null,
+                      selected: isSelected,
+                      onTap: () => Navigator.of(context).pop(option),
                     );
                   }).toList(),
                 ),

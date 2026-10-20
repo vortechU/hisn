@@ -123,7 +123,7 @@ class _Register extends StatelessWidget {
     final ms = ManuscriptTheme.of(context);
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: ms.rule),
+        color: ms.paper,
         borderRadius: BorderRadius.circular(Ms.rPanel),
       ),
       clipBehavior: Clip.antiAlias,
@@ -244,7 +244,7 @@ class _FontSpecimen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      font.family.toUpperCase(),
+                      font.family,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.labelSmall,

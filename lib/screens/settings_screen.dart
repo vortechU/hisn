@@ -20,7 +20,8 @@ import 'settings/notifications_settings_screen.dart';
 import 'settings/prayer_times_settings_screen.dart';
 import 'sunnah_calendar_screen.dart';
 
-/// Settings hub — one ruled entry per section, each opening its own screen.
+/// Settings hub — one row per section, each opening its own screen, on one
+/// group; the app guide stands apart in a group of its own.
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
@@ -100,53 +101,56 @@ class SettingsScreen extends StatelessWidget {
       ),
     ];
 
+    final tour = context.read<FeatureTourController?>();
+
     return Scaffold(
       appBar: AppBar(title: Text(s.settings)),
-      body: ListView(
-        padding: const EdgeInsets.only(bottom: 28),
-        children: [
-          Container(
-            margin: const EdgeInsets.fromLTRB(Ms.margin, 6, Ms.margin, 0),
-            decoration: BoxDecoration(
-              border: Border.all(color: ms.rule),
-              borderRadius: BorderRadius.circular(Ms.rPanel),
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: Column(
+      // Eager rather than lazy: the list is short, and the guide row at its
+      // foot has to exist for the tour to scroll to it on a small screen.
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(Ms.margin, 6, Ms.margin, 32),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            RowGroup(
               children: [
                 for (var i = 0; i < entries.length; i++)
                   if (i == 1)
                     FeatureTourAnchor(
                       target: FeatureTourTarget.notifications,
-                      child: _SettingsRow(entry: entries[i], first: false),
+                      child: _SettingsRow(entry: entries[i]),
                     )
                   else
-                    _SettingsRow(entry: entries[i], first: i == 0),
-                if (context.read<FeatureTourController?>() != null)
-                  ListTile(
-                    key: const ValueKey('replay_feature_guide'),
-                    leading: Icon(
-                      Icons.help_outline,
-                      size: 20,
-                      color: ms.rubric,
-                    ),
-                    title: Text(s.replayGuide),
-                    subtitle: Text(s.replayGuideSub),
-                    onTap: context.read<FeatureTourController>().start,
-                  ),
+                    _SettingsRow(entry: entries[i]),
               ],
             ),
-          ),
-          const RuleDivider(indent: Ms.margin),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: Ms.margin),
-            child: Text(
+            if (tour != null) ...[
+              const SizedBox(height: 14),
+              RowGroup(
+                children: [
+                  _SettingsRow(
+                    key: const ValueKey('replay_feature_guide'),
+                    entry: _Entry(
+                      Icons.help_outline,
+                      s.replayGuide,
+                      s.replayGuideSub,
+                      null,
+                    ),
+                    onTap: tour.start,
+                  ),
+                ],
+              ),
+            ],
+            const SizedBox(height: 28),
+            Text(
               s.appName,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.labelSmall,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: ms.rubric.withValues(alpha: 0.7),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -157,60 +161,57 @@ class _Entry {
   final IconData icon;
   final String title;
   final String subtitle;
-  final WidgetBuilder builder;
+  final WidgetBuilder? builder;
 }
 
 class _SettingsRow extends StatelessWidget {
-  const _SettingsRow({required this.entry, required this.first});
+  const _SettingsRow({super.key, required this.entry, this.onTap});
 
   final _Entry entry;
-  final bool first;
+
+  /// Overrides opening [_Entry.builder].
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final ms = ManuscriptTheme.of(context);
 
-    return Material(
-      type: MaterialType.transparency,
-      child: InkWell(
-        onTap: () => Navigator.of(
-          context,
-        ).push(MaterialPageRoute(builder: entry.builder)),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
-          decoration: BoxDecoration(
-            border: first ? null : Border(top: BorderSide(color: ms.rule)),
-          ),
-          child: Row(
-            children: [
-              Icon(entry.icon, size: 20, color: ms.rubric),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(entry.title, style: theme.textTheme.titleSmall),
-                    const SizedBox(height: 1),
-                    Text(
-                      entry.subtitle,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodySmall,
-                    ),
-                  ],
-                ),
+    return InkWell(
+      onTap:
+          onTap ??
+          () => Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: entry.builder!)),
+      child: Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 12, 14),
+        child: Row(
+          children: [
+            IconWell(icon: entry.icon),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(entry.title, style: theme.textTheme.titleSmall),
+                  const SizedBox(height: 2),
+                  Text(
+                    entry.subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodySmall,
+                  ),
+                ],
               ),
-              const SizedBox(width: 8),
-              Icon(
-                Directionality.of(context) == TextDirection.rtl
-                    ? Icons.chevron_left
-                    : Icons.chevron_right,
-                size: 18,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(width: 8),
+            Icon(
+              Directionality.of(context) == TextDirection.rtl
+                  ? Icons.chevron_left
+                  : Icons.chevron_right,
+              size: 20,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ],
         ),
       ),
     );

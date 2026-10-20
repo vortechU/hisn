@@ -51,3 +51,6 @@ tool/.cache/
 # tool/gen_play_graphics.py, and the screenshots are device captures. The
 # paperwork in play/ is tracked; the images it describes are not.
 /play/graphics/
+
+# Local design-preview process state.
+/.impeccable/questions/

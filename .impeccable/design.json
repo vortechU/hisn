@@ -1,0 +1,1460 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-20T19:00:00Z",
+  "title": "Design System: Hisn",
+  "extensions": {
+    "colorMeta": {
+      "qibla-ink": {
+        "role": "primary",
+        "displayName": "Qibla Ink",
+        "canonical": "oklch(33.7% 0.055 224.0)",
+        "derivation": "accent (light): mihrab fill and rubric",
+        "tonalRamp": [
+          "#000E14",
+          "#002A37",
+          "#1C4858",
+          "#3D6878",
+          "#5E8A9B",
+          "#80ADBF",
+          "#A3D2E4",
+          "#D8F4FF"
+        ]
+      },
+      "qibla-ink-night": {
+        "role": "primary",
+        "displayName": "Qibla Ink, Night",
+        "canonical": "oklch(78.3% 0.065 204.7)",
+        "derivation": "accentNight: rubric on the night ground",
+        "tonalRamp": [
+          "#000E10",
+          "#002B2F",
+          "#004C52",
+          "#2D6C73",
+          "#508E95",
+          "#73B1B8",
+          "#97D6DD",
+          "#C7F9FF"
+        ]
+      },
+      "mihrab-night": {
+        "role": "primary",
+        "displayName": "Mihrab, Night",
+        "canonical": "oklch(38.7% 0.056 220.3)",
+        "derivation": "lerp(accent, accentNight, 0.10)",
+        "tonalRamp": [
+          "#000E13",
+          "#002A35",
+          "#184957",
+          "#3A6978",
+          "#5B8B9A",
+          "#7EAEBE",
+          "#A1D2E3",
+          "#D6F5FF"
+        ]
+      },
+      "on-field": {
+        "role": "primary",
+        "displayName": "On-Field Linen",
+        "canonical": "oklch(95.8% 0.012 91.5)",
+        "derivation": "constant #F4F1E8, both modes",
+        "tonalRamp": [
+          "#0D0B06",
+          "#27251E",
+          "#44423B",
+          "#646159",
+          "#85827A",
+          "#A8A59C",
+          "#CCC9C0",
+          "#F1EEE5"
+        ]
+      },
+      "on-field-quiet": {
+        "role": "primary",
+        "displayName": "On-Field Quiet",
+        "canonical": "oklch(95.8% 0.012 91.5)",
+        "derivation": "on-field at 88% alpha",
+        "tonalRamp": [
+          "#0D0B06",
+          "#27251E",
+          "#44423B",
+          "#646159",
+          "#85827A",
+          "#A8A59C",
+          "#CCC9C0",
+          "#F1EEE5"
+        ]
+      },
+      "field-passed": {
+        "role": "primary",
+        "displayName": "On-Field Passed",
+        "canonical": "oklch(95.8% 0.012 91.5)",
+        "derivation": "on-field at 80% alpha: passed prayers in the field timetable",
+        "tonalRamp": [
+          "#0D0B06",
+          "#27251E",
+          "#44423B",
+          "#646159",
+          "#85827A",
+          "#A8A59C",
+          "#CCC9C0",
+          "#F1EEE5"
+        ]
+      },
+      "field-rule": {
+        "role": "primary",
+        "displayName": "Field Rule",
+        "canonical": "oklch(95.8% 0.012 91.5)",
+        "derivation": "on-field at 16% alpha: the hairline between parts of the mihrab",
+        "tonalRamp": [
+          "#0D0B06",
+          "#27251E",
+          "#44423B",
+          "#646159",
+          "#85827A",
+          "#A8A59C",
+          "#CCC9C0",
+          "#F1EEE5"
+        ]
+      },
+      "field-band": {
+        "role": "primary",
+        "displayName": "Field Band",
+        "canonical": "oklch(95.8% 0.012 91.5)",
+        "derivation": "on-field at 12% alpha: the next-prayer row in the field timetable",
+        "tonalRamp": [
+          "#0D0B06",
+          "#27251E",
+          "#44423B",
+          "#646159",
+          "#85827A",
+          "#A8A59C",
+          "#CCC9C0",
+          "#F1EEE5"
+        ]
+      },
+      "lamp-brass": {
+        "role": "tertiary",
+        "displayName": "Lamp Brass",
+        "canonical": "oklch(54.9% 0.103 76.6)",
+        "derivation": "brass (light): completion",
+        "tonalRamp": [
+          "#130900",
+          "#342100",
+          "#593B00",
+          "#825800",
+          "#A57932",
+          "#CA9C56",
+          "#EFC07A",
+          "#FFEBD0"
+        ]
+      },
+      "lamp-brass-night": {
+        "role": "tertiary",
+        "displayName": "Lamp Brass, Night",
+        "canonical": "oklch(75.6% 0.109 80.2)",
+        "derivation": "brassNight: completion after dark",
+        "tonalRamp": [
+          "#120900",
+          "#332100",
+          "#573C00",
+          "#7F5900",
+          "#A47A28",
+          "#C99D4F",
+          "#EEC173",
+          "#FFECCC"
+        ]
+      },
+      "lamp-on-field": {
+        "role": "tertiary",
+        "displayName": "Lamp on Field",
+        "canonical": "oklch(83.8% 0.043 83.9)",
+        "derivation": "lerp(gilt, onField, 0.7), light (tasbih 0.65)",
+        "tonalRamp": [
+          "#110A00",
+          "#2F230A",
+          "#4D4027",
+          "#6D5F45",
+          "#8F8166",
+          "#B2A387",
+          "#D6C7AA",
+          "#FCEDCF"
+        ]
+      },
+      "lamp-on-field-night": {
+        "role": "tertiary",
+        "displayName": "Lamp on Field, Night",
+        "canonical": "oklch(89.6% 0.043 84.6)",
+        "derivation": "lerp(gilt, onField, 0.7), dark (tasbih 0.65)",
+        "tonalRamp": [
+          "#110A00",
+          "#2F2309",
+          "#4D4027",
+          "#6D6045",
+          "#8E8165",
+          "#B2A387",
+          "#D6C8AA",
+          "#FCEDCE"
+        ]
+      },
+      "lamp-panel": {
+        "role": "tertiary",
+        "displayName": "Lamp Panel",
+        "canonical": "oklch(94.4% 0.013 86.8)",
+        "derivation": "gilt at 8.5% over paper",
+        "tonalRamp": [
+          "#0D0B06",
+          "#28251E",
+          "#45423A",
+          "#646159",
+          "#86827A",
+          "#A8A59C",
+          "#CDC9C0",
+          "#F2EEE5"
+        ]
+      },
+      "lamp-panel-night": {
+        "role": "tertiary",
+        "displayName": "Lamp Panel, Night",
+        "canonical": "oklch(35.9% 0.024 183.6)",
+        "derivation": "gilt at 13.6% over paper",
+        "tonalRamp": [
+          "#010E0C",
+          "#182926",
+          "#344643",
+          "#536663",
+          "#738784",
+          "#96AAA6",
+          "#B9CECB",
+          "#DEF4F0"
+        ]
+      },
+      "lamp-text": {
+        "role": "tertiary",
+        "displayName": "Lamp Text",
+        "canonical": "oklch(45.5% 0.078 78.9)",
+        "derivation": "lerp(gilt, onSurface, 0.3): the done status on the lamp panel",
+        "tonalRamp": [
+          "#120900",
+          "#332100",
+          "#583C01",
+          "#795C29",
+          "#9C7D4A",
+          "#C0A06C",
+          "#E5C48F",
+          "#FFECCE"
+        ]
+      },
+      "lamp-text-night": {
+        "role": "tertiary",
+        "displayName": "Lamp Text, Night",
+        "canonical": "oklch(80.4% 0.083 81.5)",
+        "derivation": "lerp(gilt, onSurface, 0.3), dark",
+        "tonalRamp": [
+          "#120A00",
+          "#322200",
+          "#573D00",
+          "#795C23",
+          "#9B7D46",
+          "#BFA068",
+          "#E5C48B",
+          "#FFECCB"
+        ]
+      },
+      "plaster": {
+        "role": "neutral",
+        "displayName": "Plaster",
+        "canonical": "oklch(94.1% 0.007 115.7)",
+        "derivation": "ground: lerp(#F2F1EC, accent, 0.03)",
+        "tonalRamp": [
+          "#0B0C08",
+          "#252522",
+          "#42423E",
+          "#61625D",
+          "#82837E",
+          "#A5A6A1",
+          "#C9CAC5",
+          "#EEEFEA"
+        ]
+      },
+      "stone": {
+        "role": "neutral",
+        "displayName": "Stone",
+        "canonical": "oklch(97.8% 0.004 106.5)",
+        "derivation": "paper: lerp(#FBFAF7, accent, 0.012)",
+        "tonalRamp": [
+          "#0B0B09",
+          "#252523",
+          "#424240",
+          "#61615F",
+          "#828280",
+          "#A5A5A2",
+          "#C9C9C6",
+          "#EFEFEC"
+        ]
+      },
+      "hall-night": {
+        "role": "neutral",
+        "displayName": "Hall at Night",
+        "canonical": "oklch(25.3% 0.035 224.4)",
+        "derivation": "ground: lerp(#0B0F11, accent, 0.5)",
+        "tonalRamp": [
+          "#000D14",
+          "#102932",
+          "#2D4650",
+          "#4C6670",
+          "#6C8792",
+          "#8EAAB6",
+          "#B2CFDA",
+          "#D8F4FF"
+        ]
+      },
+      "stone-night": {
+        "role": "neutral",
+        "displayName": "Stone at Night",
+        "canonical": "oklch(29.6% 0.037 221.4)",
+        "derivation": "paper: lerp(ground, accentNight, 0.07)",
+        "tonalRamp": [
+          "#000E13",
+          "#0D2932",
+          "#2B4750",
+          "#496670",
+          "#6A8892",
+          "#8CABB6",
+          "#AFCFDB",
+          "#D7F4FF"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "oklch(21.4% 0.007 229.2)",
+        "derivation": "body text, light",
+        "tonalRamp": [
+          "#080C0E",
+          "#222628",
+          "#3E4345",
+          "#5D6264",
+          "#7E8386",
+          "#A1A6A9",
+          "#C5CACD",
+          "#EAEFF2"
+        ]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Muted Ink",
+        "canonical": "oklch(49.0% 0.004 197.0)",
+        "derivation": "lerp(ink, paper, 0.32)",
+        "tonalRamp": [
+          "#090C0C",
+          "#232626",
+          "#404343",
+          "#5F6262",
+          "#808383",
+          "#A2A6A6",
+          "#C6CACA",
+          "#ECEFEF"
+        ]
+      },
+      "ink-night": {
+        "role": "neutral",
+        "displayName": "Lamplit Ink",
+        "canonical": "oklch(92.2% 0.014 88.7)",
+        "derivation": "body text, dark",
+        "tonalRamp": [
+          "#0E0B05",
+          "#28251D",
+          "#45423A",
+          "#646158",
+          "#868279",
+          "#A8A59B",
+          "#CDC9BF",
+          "#F2EEE4"
+        ]
+      },
+      "ink-muted-night": {
+        "role": "neutral",
+        "displayName": "Muted Ink, Night",
+        "canonical": "oklch(72.5% 0.010 161.3)",
+        "derivation": "lerp(ink, paper, 0.34)",
+        "tonalRamp": [
+          "#080C0A",
+          "#212723",
+          "#3E4440",
+          "#5D635F",
+          "#7D8480",
+          "#A0A7A3",
+          "#C4CBC7",
+          "#E9F1EC"
+        ]
+      },
+      "on-rubric": {
+        "role": "neutral",
+        "displayName": "On-Accent",
+        "canonical": "oklch(97.0% 0.008 91.5)",
+        "derivation": "whichever of #111416 / #F7F5EF contrasts more with rubric (light)",
+        "tonalRamp": [
+          "#0C0B07",
+          "#262521",
+          "#43423D",
+          "#63615C",
+          "#84827D",
+          "#A7A59F",
+          "#CBC9C3",
+          "#F0EEE8"
+        ]
+      },
+      "on-rubric-night": {
+        "role": "neutral",
+        "displayName": "On-Accent, Night",
+        "canonical": "oklch(18.9% 0.006 236.9)",
+        "derivation": "whichever of #111416 / #F7F5EF contrasts more with rubric (dark)",
+        "tonalRamp": [
+          "#090C0D",
+          "#222628",
+          "#3F4345",
+          "#5E6264",
+          "#7F8386",
+          "#A1A6A8",
+          "#C5CACD",
+          "#EBEFF2"
+        ]
+      },
+      "accent-tint": {
+        "role": "neutral",
+        "displayName": "Accent Tint",
+        "canonical": "oklch(91.9% 0.005 179.7)",
+        "derivation": "lerp(paper, rubric, 0.10)",
+        "tonalRamp": [
+          "#090C0B",
+          "#232625",
+          "#404342",
+          "#5F6261",
+          "#808382",
+          "#A2A6A5",
+          "#C6CAC9",
+          "#EBEFEE"
+        ]
+      },
+      "accent-tint-night": {
+        "role": "neutral",
+        "displayName": "Accent Tint, Night",
+        "canonical": "oklch(38.3% 0.042 214.6)",
+        "derivation": "lerp(paper, rubric, 0.16)",
+        "tonalRamp": [
+          "#000E12",
+          "#062A32",
+          "#264850",
+          "#456870",
+          "#668992",
+          "#88ACB5",
+          "#ABD1DA",
+          "#D2F6FF"
+        ]
+      },
+      "well": {
+        "role": "neutral",
+        "displayName": "Well",
+        "canonical": "oklch(91.2% 0.005 179.7)",
+        "derivation": "rubric at 11% over paper",
+        "tonalRamp": [
+          "#090C0B",
+          "#232625",
+          "#404342",
+          "#5F6261",
+          "#808382",
+          "#A2A6A5",
+          "#C6CAC9",
+          "#EBEFEE"
+        ]
+      },
+      "well-night": {
+        "role": "neutral",
+        "displayName": "Well, Night",
+        "canonical": "oklch(39.4% 0.042 214.5)",
+        "derivation": "rubric at 18% over paper",
+        "tonalRamp": [
+          "#000E12",
+          "#062A32",
+          "#264850",
+          "#456870",
+          "#668992",
+          "#88ACB5",
+          "#ABD1DA",
+          "#D2F6FF"
+        ]
+      },
+      "nav-indicator": {
+        "role": "neutral",
+        "displayName": "Navigation Indicator",
+        "canonical": "oklch(86.8% 0.007 174.3)",
+        "derivation": "lerp(ground, rubric, 0.13)",
+        "tonalRamp": [
+          "#080C0B",
+          "#222625",
+          "#3E4342",
+          "#5D6361",
+          "#7E8482",
+          "#A1A6A5",
+          "#C5CBC9",
+          "#EAF0EE"
+        ]
+      },
+      "nav-indicator-night": {
+        "role": "neutral",
+        "displayName": "Navigation Indicator, Night",
+        "canonical": "oklch(38.4% 0.041 215.1)",
+        "derivation": "lerp(ground, rubric, 0.22)",
+        "tonalRamp": [
+          "#000E12",
+          "#072A31",
+          "#274850",
+          "#466770",
+          "#668992",
+          "#88ACB5",
+          "#ACD1DA",
+          "#D2F6FF"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Rule",
+        "canonical": "oklch(21.4% 0.007 229.2)",
+        "derivation": "#161A1C at 8% alpha",
+        "tonalRamp": [
+          "#080C0E",
+          "#222628",
+          "#3E4345",
+          "#5D6264",
+          "#7E8386",
+          "#A1A6A9",
+          "#C5CACD",
+          "#EAEFF2"
+        ]
+      },
+      "rule-night": {
+        "role": "neutral",
+        "displayName": "Rule, Night",
+        "canonical": "oklch(92.2% 0.014 88.7)",
+        "derivation": "#E9E5DB at 9% alpha",
+        "tonalRamp": [
+          "#0E0B05",
+          "#28251D",
+          "#45423A",
+          "#646158",
+          "#868279",
+          "#A8A59B",
+          "#CDC9BF",
+          "#F2EEE4"
+        ]
+      },
+      "rule-strong": {
+        "role": "neutral",
+        "displayName": "Strong Rule",
+        "canonical": "oklch(82.8% 0.003 128.5)",
+        "derivation": "lerp(paper, ink, 0.22)",
+        "tonalRamp": [
+          "#0B0B0A",
+          "#252524",
+          "#414241",
+          "#616160",
+          "#828381",
+          "#A4A5A3",
+          "#C8C9C7",
+          "#EEEFED"
+        ]
+      },
+      "rule-strong-night": {
+        "role": "neutral",
+        "displayName": "Strong Rule, Night",
+        "canonical": "oklch(48.6% 0.023 212.7)",
+        "derivation": "lerp(paper, ink, 0.28)",
+        "tonalRamp": [
+          "#010E11",
+          "#18282C",
+          "#344549",
+          "#536569",
+          "#73868A",
+          "#96A9AD",
+          "#B9CDD2",
+          "#DEF3F8"
+        ]
+      },
+      "error": {
+        "role": "error",
+        "displayName": "Madder Error",
+        "canonical": "oklch(48.5% 0.150 28.1)",
+        "derivation": "constant",
+        "tonalRamp": [
+          "#1F0000",
+          "#4D0002",
+          "#7F0608",
+          "#A6342C",
+          "#CD584D",
+          "#F57C6E",
+          "#FFB3A8",
+          "#FFE9E5"
+        ]
+      },
+      "error-night": {
+        "role": "error",
+        "displayName": "Madder Error, Night",
+        "canonical": "oklch(76.8% 0.103 28.5)",
+        "derivation": "constant",
+        "tonalRamp": [
+          "#1F0000",
+          "#4C0303",
+          "#6F2720",
+          "#93483F",
+          "#B8695E",
+          "#DE8C80",
+          "#FFB3A8",
+          "#FFE9E5"
+        ]
+      },
+      "plaster-base": {
+        "role": "neutral",
+        "displayName": "Plaster Base",
+        "canonical": "oklch(95.8% 0.007 97.4)",
+        "derivation": "derivation input, light ground",
+        "tonalRamp": [
+          "#0C0B08",
+          "#262521",
+          "#43423E",
+          "#62615D",
+          "#83827E",
+          "#A6A5A0",
+          "#CAC9C4",
+          "#EFEEEA"
+        ]
+      },
+      "sheet-base": {
+        "role": "neutral",
+        "displayName": "Sheet Base",
+        "canonical": "oklch(98.5% 0.004 91.4)",
+        "derivation": "derivation input, light paper",
+        "tonalRamp": [
+          "#0C0B09",
+          "#262523",
+          "#434240",
+          "#62615F",
+          "#838280",
+          "#A6A5A2",
+          "#CAC9C6",
+          "#EFEEEB"
+        ]
+      },
+      "night-base": {
+        "role": "neutral",
+        "displayName": "Night Base",
+        "canonical": "oklch(16.5% 0.008 229.5)",
+        "derivation": "derivation input, dark ground",
+        "tonalRamp": [
+          "#080C0E",
+          "#212628",
+          "#3E4345",
+          "#5D6265",
+          "#7E8386",
+          "#A0A6A9",
+          "#C4CACD",
+          "#E9F0F3"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "numeral-tasbih": {
+        "displayName": "Tasbih Numeral",
+        "purpose": "The tasbih count inside the bead ring on the mihrab; rolls on change."
+      },
+      "numeral-countdown": {
+        "displayName": "Countdown Numeral",
+        "purpose": "The wait until the next adhan on the Home mihrab; scales down to fit."
+      },
+      "display-sm": {
+        "displayName": "Display",
+        "purpose": "Base style the Numeral widget derives from."
+      },
+      "headline-md": {
+        "displayName": "Headline",
+        "purpose": "The app's name in About."
+      },
+      "headline-sm": {
+        "displayName": "Dialog Title",
+        "purpose": "Dialog titles."
+      },
+      "title-lg": {
+        "displayName": "Page Title",
+        "purpose": "App bars, sheet titles, empty-page headings, the resume surah on the Quran mihrab."
+      },
+      "title-md": {
+        "displayName": "Section Title",
+        "purpose": "Section marks, dua titles, card headings, the session tally, the field timetable's 'Today'."
+      },
+      "title-sm": {
+        "displayName": "Row Title",
+        "purpose": "Every list row title, the timetable, and the 'Next · Isha 7:21 PM' line under the countdown."
+      },
+      "body-lg": {
+        "displayName": "Reading",
+        "purpose": "Translations and empty-page explanations."
+      },
+      "body-md": {
+        "displayName": "Body",
+        "purpose": "Prose, transliteration, hints, the search pill, snackbars."
+      },
+      "body-sm": {
+        "displayName": "Caption",
+        "purpose": "Subtitles, status lines and references, in muted ink."
+      },
+      "label-lg": {
+        "displayName": "Button Label",
+        "purpose": "Buttons and the tasbih phrase chips."
+      },
+      "label-md": {
+        "displayName": "Label",
+        "purpose": "Navigation labels, the Hijri date, chips, counter pills (at 12.5px/600)."
+      },
+      "label-sm": {
+        "displayName": "Small Label",
+        "purpose": "Small metadata in muted ink."
+      },
+      "sacred-block": {
+        "displayName": "Sacred Text",
+        "purpose": "The dua itself: full width, right-aligned, in the reader's chosen Naskh."
+      },
+      "sacred-field": {
+        "displayName": "Sacred Name, Large",
+        "purpose": "The current prayer and the resume surah on the mihrab (28 to 30px)."
+      },
+      "sacred-name": {
+        "displayName": "Sacred Name",
+        "purpose": "Arabic names beside Latin titles in rows and the timetable (18px; 22 to 23px on the session head and the adhkar for now)."
+      }
+    },
+    "shadows": [
+      {
+        "name": "none",
+        "value": "none",
+        "purpose": "Every app bar, card, sheet, dialog, navigation bar, button and snackbar: elevation 0, shadow colour transparent. Depth is tonal."
+      },
+      {
+        "name": "popup-menu",
+        "value": "0 1px 3px rgba(0,0,0,0.20)",
+        "purpose": "Material elevation 2 with shadow colour #00000033 on popup menus: the only shadow the theme draws (listed as an open issue against the contract)."
+      }
+    ],
+    "motion": [
+      {
+        "name": "quick",
+        "value": "120ms",
+        "purpose": "State inside a control: a counter ticking, a chip selecting, the tasbih numeral rolling."
+      },
+      {
+        "name": "settle",
+        "value": "260ms ease-out",
+        "purpose": "Fills, wells, pills, rings and rules easing to a new state."
+      },
+      {
+        "name": "flourish",
+        "value": "420ms",
+        "purpose": "The one longer beat: a completed tasbih set (9% swell)."
+      },
+      {
+        "name": "tap-swell",
+        "value": "240ms, scale 1.035, ease-out 40% then ease-in 60%",
+        "purpose": "The tasbih ring answering each tap."
+      },
+      {
+        "name": "page",
+        "value": "fade + 4% horizontal slide, easeOutCubic cubic-bezier(0.215, 0.61, 0.355, 1) in, easeInCubic cubic-bezier(0.55, 0.055, 0.675, 0.19) out",
+        "purpose": "Every route push; nothing scales or bounces."
+      },
+      {
+        "name": "reduced",
+        "value": "0ms",
+        "purpose": "Every duration collapses to zero when the platform asks for reduced motion (Motion.of)."
+      }
+    ],
+    "breakpoints": [],
+    "lines": [
+      {
+        "name": "hair",
+        "value": "1px",
+        "purpose": "Row separators inside a group."
+      },
+      {
+        "name": "stroke",
+        "value": "2px",
+        "purpose": "The few firmer marks (selection ring on a palette swatch)."
+      },
+      {
+        "name": "focus",
+        "value": "1.5px",
+        "purpose": "Focused field edge, checkbox side."
+      }
+    ],
+    "mihrab": {
+      "rise": "min(60px, 0.15 * width); compact 30px (set head) and 34px (Quran resume); clamped to height / 3",
+      "footRadius": "22px, clamped to min(width, height) / 4",
+      "archCurve": "per half: cubic from (jamb, rise) via (jamb, 0.30 * rise) and (centre -/+ 0.14 * width, 0.26 * rise) to the apex",
+      "pattern": "khatam: octagon side 15px, lattice pitch side*(1+sqrt2), {8/3} star per octagon, 1px stroke at 7.5% of on-field (5% on the soft field), fading over rise + 70px; off when Appearance > Geometric pattern is off"
+    },
+    "rtl": [
+      "Interface styles drop letter-spacing to 0 and multiply line-height by 1.2 when the interface is right-to-left.",
+      "Numerals lose their negative tracking outside left-to-right text.",
+      "Tallies are wrapped in U+2066 ... U+2069 so \"1 / 20\" keeps its order.",
+      "Chevrons and arrows mirror; insets, alignment and the progress rule are directional; the day strip runs right to left.",
+      "In the Arabic interface the Arabic echo columns, transliteration and translation drop out; Urdu chrome is set in Noto Naskh Arabic.",
+      "ArabicText is always laid out right to left, whatever the interface direction."
+    ],
+    "palettes": [
+      {
+        "id": "qibla",
+        "displayName": "Qibla & Brass",
+        "default": true,
+        "inputs": {
+          "accent": "#0F3D4C",
+          "accentNight": "#86C5CC",
+          "brass": "#93681D",
+          "brassNight": "#D4A85A"
+        },
+        "light": {
+          "ground": "#EBECE7",
+          "paper": "#F8F8F5",
+          "ink": "#161A1C",
+          "ink-muted": "#5E6161",
+          "rubric": "#0F3D4C",
+          "on-rubric": "#F7F5EF",
+          "gilt": "#93681D",
+          "field": "#0F3D4C",
+          "on-field": "#F4F1E8",
+          "lamp-on-field": "#D7C8AB",
+          "rule": "#161A1C14",
+          "rule-strong": "#C6C7C5",
+          "accent-tint": "#E1E5E4",
+          "nav-indicator": "#CFD5D3",
+          "icon-well": "#DFE3E2",
+          "complete-panel": "#F0ECE3",
+          "done-text": "#6E511D",
+          "field-rule": "#345A65",
+          "field-band": "#2A535F",
+          "on-field-quiet": "#F4F1E8E0",
+          "field-passed": "#F4F1E8CC"
+        },
+        "dark": {
+          "ground": "#0D262F",
+          "paper": "#15313A",
+          "ink": "#E9E5DB",
+          "ink-muted": "#A1A8A4",
+          "rubric": "#86C5CC",
+          "on-rubric": "#111416",
+          "gilt": "#D4A85A",
+          "field": "#1B4B59",
+          "on-field": "#F4F1E8",
+          "lamp-on-field": "#EADBBD",
+          "rule": "#E9E5DB17",
+          "rule-strong": "#516367",
+          "accent-tint": "#274951",
+          "nav-indicator": "#284951",
+          "icon-well": "#2A4C54",
+          "complete-panel": "#2F413E",
+          "done-text": "#DABA81",
+          "field-rule": "#3E6570",
+          "field-band": "#355F6A",
+          "on-field-quiet": "#F4F1E8E0",
+          "field-passed": "#F4F1E8CC"
+        }
+      },
+      {
+        "id": "emerald",
+        "displayName": "Emerald & Gold",
+        "default": false,
+        "inputs": {
+          "accent": "#0C5A4C",
+          "accentNight": "#6CCBB4",
+          "brass": "#93681D",
+          "brassNight": "#D4A85A"
+        },
+        "light": {
+          "ground": "#EBECE7",
+          "paper": "#F8F8F5",
+          "ink": "#161A1C",
+          "ink-muted": "#5E6161",
+          "rubric": "#0C5A4C",
+          "on-rubric": "#F7F5EF",
+          "gilt": "#93681D",
+          "field": "#0C5A4C",
+          "on-field": "#F4F1E8",
+          "lamp-on-field": "#D7C8AB",
+          "rule": "#161A1C14",
+          "rule-strong": "#C6C7C5",
+          "accent-tint": "#E1E8E4",
+          "nav-indicator": "#CED9D3",
+          "icon-well": "#DEE7E2",
+          "complete-panel": "#F0ECE3",
+          "done-text": "#6E511D",
+          "field-rule": "#317265",
+          "field-band": "#286C5F",
+          "on-field-quiet": "#F4F1E8E0",
+          "field-passed": "#F4F1E8CC"
+        },
+        "dark": {
+          "ground": "#0C342F",
+          "paper": "#123F38",
+          "ink": "#E9E5DB",
+          "ink-muted": "#A0ADA4",
+          "rubric": "#6CCBB4",
+          "on-rubric": "#111416",
+          "gilt": "#D4A85A",
+          "field": "#166556",
+          "on-field": "#F4F1E8",
+          "lamp-on-field": "#EADBBD",
+          "rule": "#E9E5DB17",
+          "rule-strong": "#4E6E66",
+          "accent-tint": "#21554C",
+          "nav-indicator": "#21564C",
+          "icon-well": "#22584E",
+          "complete-panel": "#2D4D3C",
+          "done-text": "#DABA81",
+          "field-rule": "#397C6E",
+          "field-band": "#307668",
+          "on-field-quiet": "#F4F1E8E0",
+          "field-passed": "#F4F1E8CC"
+        }
+      },
+      {
+        "id": "sapphire",
+        "displayName": "Sapphire & Sky",
+        "default": false,
+        "inputs": {
+          "accent": "#1B4B8F",
+          "accentNight": "#94B7EE",
+          "brass": "#93681D",
+          "brassNight": "#D4A85A"
+        },
+        "light": {
+          "ground": "#ECECE9",
+          "paper": "#F8F8F6",
+          "ink": "#161A1C",
+          "ink-muted": "#5E6162",
+          "rubric": "#1B4B8F",
+          "on-rubric": "#F7F5EF",
+          "gilt": "#93681D",
+          "field": "#1B4B8F",
+          "on-field": "#F4F1E8",
+          "lamp-on-field": "#D7C8AB",
+          "rule": "#161A1C14",
+          "rule-strong": "#C7C7C6",
+          "accent-tint": "#E2E7EB",
+          "nav-indicator": "#D0D7DD",
+          "icon-well": "#E0E5EA",
+          "complete-panel": "#F0ECE3",
+          "done-text": "#6E511D",
+          "field-rule": "#3E669D",
+          "field-band": "#355F9A",
+          "on-field-quiet": "#F4F1E8E0",
+          "field-passed": "#F4F1E8CC"
+        },
+        "dark": {
+          "ground": "#132D50",
+          "paper": "#1C375B",
+          "ink": "#E9E5DB",
+          "ink-muted": "#A3AAB0",
+          "rubric": "#94B7EE",
+          "on-rubric": "#111416",
+          "gilt": "#D4A85A",
+          "field": "#275698",
+          "on-field": "#F4F1E8",
+          "lamp-on-field": "#EADBBD",
+          "rule": "#E9E5DB17",
+          "rule-strong": "#55677F",
+          "accent-tint": "#2F4B73",
+          "nav-indicator": "#2F4B73",
+          "icon-well": "#324E76",
+          "complete-panel": "#35465B",
+          "done-text": "#DABA81",
+          "field-rule": "#486FA5",
+          "field-band": "#4068A2",
+          "on-field-quiet": "#F4F1E8E0",
+          "field-passed": "#F4F1E8CC"
+        }
+      },
+      {
+        "id": "amethyst",
+        "displayName": "Amethyst & Rose",
+        "default": false,
+        "inputs": {
+          "accent": "#5C3357",
+          "accentNight": "#CDA2C5",
+          "brass": "#93681D",
+          "brassNight": "#D4A85A"
+        },
+        "light": {
+          "ground": "#EDEBE8",
+          "paper": "#F9F8F5",
+          "ink": "#161A1C",
+          "ink-muted": "#5F6161",
+          "rubric": "#5C3357",
+          "on-rubric": "#F7F5EF",
+          "gilt": "#93681D",
+          "field": "#5C3357",
+          "on-field": "#F4F1E8",
+          "lamp-on-field": "#D7C8AB",
+          "rule": "#161A1C14",
+          "rule-strong": "#C7C7C5",
+          "accent-tint": "#E9E4E5",
+          "nav-indicator": "#DBD3D5",
+          "icon-well": "#E8E2E4",
+          "complete-panel": "#F0EBE3",
+          "done-text": "#6E511D",
+          "field-rule": "#74516E",
+          "field-band": "#6E4A68",
+          "on-field-quiet": "#F4F1E8E0",
+          "field-passed": "#F4F1E8CC"
+        },
+        "dark": {
+          "ground": "#342134",
+          "paper": "#3E2A3E",
+          "ink": "#E9E5DB",
+          "ink-muted": "#AFA5A6",
+          "rubric": "#CDA2C5",
+          "on-rubric": "#111416",
+          "gilt": "#D4A85A",
+          "field": "#673E62",
+          "on-field": "#F4F1E8",
+          "lamp-on-field": "#EADBBD",
+          "rule": "#E9E5DB17",
+          "rule-strong": "#6E5E6A",
+          "accent-tint": "#553D54",
+          "nav-indicator": "#553D54",
+          "icon-well": "#584056",
+          "complete-panel": "#533B42",
+          "done-text": "#DABA81",
+          "field-rule": "#7E5B77",
+          "field-band": "#785472",
+          "on-field-quiet": "#F4F1E8E0",
+          "field-passed": "#F4F1E8CC"
+        }
+      },
+      {
+        "id": "rosewood",
+        "displayName": "Rosewood",
+        "default": false,
+        "inputs": {
+          "accent": "#8E2F2E",
+          "accentNight": "#E8978D",
+          "brass": "#93681D",
+          "brassNight": "#D4A85A"
+        },
+        "light": {
+          "ground": "#EFEBE6",
+          "paper": "#FAF8F5",
+          "ink": "#161A1C",
+          "ink-muted": "#5F6161",
+          "rubric": "#8E2F2E",
+          "on-rubric": "#F7F5EF",
+          "gilt": "#93681D",
+          "field": "#8E2F2E",
+          "on-field": "#F4F1E8",
+          "lamp-on-field": "#D7C8AB",
+          "rule": "#161A1C14",
+          "rule-strong": "#C8C7C5",
+          "accent-tint": "#EFE4E1",
+          "nav-indicator": "#E2D3CE",
+          "icon-well": "#EEE2DF",
+          "complete-panel": "#F1EBE2",
+          "done-text": "#6E511D",
+          "field-rule": "#9E4E4C",
+          "field-band": "#9A4644",
+          "on-field-quiet": "#F4F1E8E0",
+          "field-passed": "#F4F1E8CC"
+        },
+        "dark": {
+          "ground": "#4D1F20",
+          "paper": "#572727",
+          "ink": "#E9E5DB",
+          "ink-muted": "#B7A59E",
+          "rubric": "#E8978D",
+          "on-rubric": "#111416",
+          "gilt": "#D4A85A",
+          "field": "#973938",
+          "on-field": "#F4F1E8",
+          "lamp-on-field": "#EADBBD",
+          "rule": "#E9E5DB17",
+          "rule-strong": "#805C5A",
+          "accent-tint": "#6F3937",
+          "nav-indicator": "#6F3938",
+          "icon-well": "#713B39",
+          "complete-panel": "#68392E",
+          "done-text": "#DABA81",
+          "field-rule": "#A65754",
+          "field-band": "#A24F4D",
+          "on-field-quiet": "#F4F1E8E0",
+          "field-passed": "#F4F1E8CC"
+        }
+      },
+      {
+        "id": "lagoon",
+        "displayName": "Lagoon",
+        "default": false,
+        "inputs": {
+          "accent": "#0A5552",
+          "accentNight": "#63CFC5",
+          "brass": "#A4532F",
+          "brassNight": "#E58F69"
+        },
+        "light": {
+          "ground": "#EBECE7",
+          "paper": "#F8F8F5",
+          "ink": "#161A1C",
+          "ink-muted": "#5E6161",
+          "rubric": "#0A5552",
+          "on-rubric": "#F7F5EF",
+          "gilt": "#A4532F",
+          "field": "#0A5552",
+          "on-field": "#F4F1E8",
+          "lamp-on-field": "#DCC2B0",
+          "rule": "#161A1C14",
+          "rule-strong": "#C6C7C5",
+          "accent-tint": "#E0E8E5",
+          "nav-indicator": "#CED9D4",
+          "icon-well": "#DEE6E3",
+          "complete-panel": "#F1EAE4",
+          "done-text": "#794229",
+          "field-rule": "#2F6E6A",
+          "field-band": "#266864",
+          "on-field-quiet": "#F4F1E8E0",
+          "field-passed": "#F4F1E8CC"
+        },
+        "dark": {
+          "ground": "#0A3232",
+          "paper": "#113D3C",
+          "ink": "#E9E5DB",
+          "ink-muted": "#9FACA5",
+          "rubric": "#63CFC5",
+          "on-rubric": "#111416",
+          "gilt": "#E58F69",
+          "field": "#13615E",
+          "on-field": "#F4F1E8",
+          "lamp-on-field": "#F0D4C2",
+          "rule": "#E9E5DB17",
+          "rule-strong": "#4D6C68",
+          "accent-tint": "#1E5452",
+          "nav-indicator": "#1E5552",
+          "icon-well": "#205755",
+          "complete-panel": "#2E4842",
+          "done-text": "#E6A98B",
+          "field-rule": "#377874",
+          "field-band": "#2E726E",
+          "on-field-quiet": "#F4F1E8E0",
+          "field-passed": "#F4F1E8CC"
+        }
+      },
+      {
+        "id": "desert",
+        "displayName": "Desert",
+        "default": false,
+        "inputs": {
+          "accent": "#683E1D",
+          "accentNight": "#DDA36C",
+          "brass": "#8A6A1F",
+          "brassNight": "#D0B061"
+        },
+        "light": {
+          "ground": "#EEECE6",
+          "paper": "#F9F8F4",
+          "ink": "#161A1C",
+          "ink-muted": "#5F6161",
+          "rubric": "#683E1D",
+          "on-rubric": "#F7F5EF",
+          "gilt": "#8A6A1F",
+          "field": "#683E1D",
+          "on-field": "#F4F1E8",
+          "lamp-on-field": "#D4C8AC",
+          "rule": "#161A1C14",
+          "rule-strong": "#C7C7C5",
+          "accent-tint": "#EBE5DF",
+          "nav-indicator": "#DCD5CC",
+          "icon-well": "#E9E3DD",
+          "complete-panel": "#F0ECE2",
+          "done-text": "#67521E",
+          "field-rule": "#7E5B3D",
+          "field-band": "#795335",
+          "on-field-quiet": "#F4F1E8E0",
+          "field-passed": "#F4F1E8CC"
+        },
+        "dark": {
+          "ground": "#392717",
+          "paper": "#452F1D",
+          "ink": "#E9E5DB",
+          "ink-muted": "#B1A79A",
+          "rubric": "#DDA36C",
+          "on-rubric": "#111416",
+          "gilt": "#D0B061",
+          "field": "#744825",
+          "on-field": "#F4F1E8",
+          "lamp-on-field": "#E9DEC0",
+          "rule": "#E9E5DB17",
+          "rule-strong": "#736252",
+          "accent-tint": "#5D422A",
+          "nav-indicator": "#5D422A",
+          "icon-well": "#60442B",
+          "complete-panel": "#584126",
+          "done-text": "#D8C086",
+          "field-rule": "#886344",
+          "field-band": "#835C3C",
+          "on-field-quiet": "#F4F1E8E0",
+          "field-passed": "#F4F1E8CC"
+        }
+      }
+    ],
+    "derivation": {
+      "note": "Flutter Color.lerp per sRGB channel in floating point; 8-bit rounding only at the end.",
+      "light": {
+        "ground": "lerp(#F2F1EC, accent, 0.03)",
+        "paper": "lerp(#FBFAF7, accent, 0.012)",
+        "ink": "#161A1C",
+        "rubric": "accent",
+        "gilt": "brass",
+        "field": "accent",
+        "onField": "#F4F1E8",
+        "rule": "#161A1C @ 8%",
+        "inkMuted": "lerp(ink, paper, 0.32)",
+        "accentTint": "lerp(paper, rubric, 0.10)",
+        "tertiaryContainer": "lerp(paper, gilt, 0.14)",
+        "ruleStrong": "lerp(paper, ink, 0.22)",
+        "navIndicator": "lerp(ground, rubric, 0.13)",
+        "surfaceContainerHigh": "lerp(paper, ink, 0.035)",
+        "surfaceContainerHighest": "lerp(paper, ink, 0.065)",
+        "switchTrackOff": "lerp(paper, ink, 0.10)",
+        "well": "rubric @ 11%",
+        "lampPanel": "gilt @ 8.5% over paper",
+        "virtueNote": "gilt @ 9% over paper"
+      },
+      "dark": {
+        "ground": "lerp(#0B0F11, accent, 0.5)",
+        "paper": "lerp(ground, accentNight, 0.07)",
+        "ink": "#E9E5DB",
+        "rubric": "accentNight",
+        "gilt": "brassNight",
+        "field": "lerp(accent, accentNight, 0.10)",
+        "onField": "#F4F1E8",
+        "rule": "#E9E5DB @ 9%",
+        "inkMuted": "lerp(ink, paper, 0.34)",
+        "accentTint": "lerp(paper, rubric, 0.16)",
+        "tertiaryContainer": "lerp(paper, gilt, 0.20)",
+        "ruleStrong": "lerp(paper, ink, 0.28)",
+        "navIndicator": "lerp(ground, rubric, 0.22)",
+        "surfaceContainerHigh": "lerp(paper, ink, 0.05)",
+        "surfaceContainerHighest": "lerp(paper, ink, 0.09)",
+        "switchTrackOff": "lerp(paper, ink, 0.16)",
+        "well": "rubric @ 18%",
+        "lampPanel": "gilt @ 13.6% over paper",
+        "virtueNote": "gilt @ 14% over paper"
+      },
+      "both": {
+        "onRubric": "whichever of #111416 / #F7F5EF has the higher contrast ratio against rubric (onTertiary likewise against gilt)",
+        "outline": "lerp(ink, paper, 0.6)",
+        "surfaceContainerLow": "lerp(ground, paper, 0.5)",
+        "lampOnField": "lerp(gilt, onField, 0.7) (tasbih: 0.65)",
+        "onFieldQuiet": "onField @ 88%",
+        "lampText": "lerp(gilt, onSurface, 0.3)",
+        "fieldPassed": "onField @ 80%",
+        "fieldRule": "onField @ 16%",
+        "fieldBand": "onField @ 12%",
+        "tasbihRingInProgress": "onField @ 90%",
+        "snackbarAction": "lerp(gilt, paper, 0.3)",
+        "dragHandle": "lerp(paper, ink, 0.2)"
+      }
+    },
+    "readingSurfaces": {
+      "sepia": {
+        "surface": "#F3E7CC",
+        "onSurface": "#3E2E1E",
+        "onSurfaceVariant": "#6E5C42"
+      },
+      "night": {
+        "surface": "#15140F",
+        "onSurface": "#E6DECB",
+        "onSurfaceVariant": "#A79E88"
+      },
+      "note": "Per-card override from Display settings; accent and brass stay the palette's own."
+    },
+    "openIssues": [
+      "Tabular numerals. The contract asks for a timetable with tabular numerals. The bundled Readex Pro statics carry no `tnum` feature, so the build aligns times with a fixed 96px end-aligned column instead (only the qibla screen requests tabular figures).",
+      "No drop shadows. The contract says none; the theme gives popup menus elevation 2 with a #00000033 shadow.",
+      "Naskh for sacred text only. The build also sets the Arabic names of prayers, categories and surahs in Naskh, sets category and dua titles in Naskh in right-to-left interfaces, and sets all Urdu chrome in Noto Naskh Arabic.",
+      "First viewport. The contract specifies the Home mihrab at about 45% of the viewport; the build's field is about 50% at default text size, and its primary action reads \"Read now · N duas\" rather than \"Continue\".",
+      "Brass outside completion. Brass still appears for things that are not completion: the virtue note on dua cards (a 9% brass tint, 14% at night, with a brass sparkle), the filled \"Today\" pill on the weekly schedule, selection marks in the location picker and in Display and Backup settings, the qibla dial's optional \"gold\" tone, the feature-tour spotlight, onboarding's hero and granted states, recommended fasts on the Sunnah calendar, the verse-row star, the share card, and the rosette in About.",
+      "Counter pill labels. The palette-wide contrast checks on the field, the night stone and the lamp panel now all clear 4.5:1, but the 12.5px pill labels set on their own 11% (18% at night) tint do not everywhere: an accent label at night measures 3.85 to 4.40:1 on every palette except Qibla (4.83:1), and the brass streak pill measures 3.73 to 4.49:1 on every palette in both modes.",
+      "Text scale. The dua card and the adhkar player replace the system font scale with the app's text-size step instead of multiplying it, so a reader with a large system font scale gets 1.0 inside the cards unless they also raise the in-app setting.",
+      "Outlines off the core screens. The weekly schedule outlines today's panel, the streak calendar outlines its cells, the Appearance theme picker uses Material's default outlined segmented button (no `segmentedButtonTheme` is set), the outlined button theme is still used on onboarding, backup, notifications, prayer silence and the share sheet, and the share card draws a 2px frame. The palette swatch's 2px selection ring is a selected state rather than a frame.",
+      "Capitals. The home-screen widget uppercases its \"recommended now\" label (`prayer_widget_service.dart`).",
+      "Leftover fonts. Crimson Pro and Karla remain bundled in `pubspec.yaml` and credited in About because the store-graphics tool (`tool/gen_play_graphics.py`) and test capture helpers load them. No screen uses them; they are not part of this system.",
+      "Khatam geometry. `_KhatamPainter` draws each gap's square with a 45-degree twist, but the gap between four octagons on this lattice is a diamond (vertices on the axes, twist 0), so the painted squares cross the octagons' diagonal sides instead of tiling with them. At 7.5% opacity it reads as texture, but it is not the \"true octagon-and-square tessellation\" its comment describes.",
+      "Legacy names. Several types keep the names of the manuscript system they replaced, with new behaviour: `ManuscriptTheme` (with `rubric` for the accent and `gilt` for brass), `JadwalFrame` (a soft panel), `Rosette` (`lobes` no longer draws), `Numeral.serif` (picks the display style), `AppTheme.serif` (an alias of Readex Pro), `UnwanBand`, `RuleDivider.ornament`, `CategoryTone` (its rubric/gilt tone no longer changes the colour), and `MihrabField.soft` (unused). `ProgressRosette`, `ProgressRule` and `Rosette` default to brass when no colour is passed."
+    ]
+  },
+  "components": [
+    {
+      "name": "Mihrab Field (Home)",
+      "kind": "custom",
+      "refersTo": "mihrab-field",
+      "description": "The one arch-topped field a screen is built around, here the Home tab's: Hijri date, the countdown with its caption on the line after it, the current prayer in Naskh, the day strip with the next prayer as an open ring, and, under a field rule, the on-field 'Read now' action (the build sets the adhkar-for-now title and progress just above it; trimmed here). The build also lays a faint khatam screen under the arch (omitted here).",
+      "html": "<div class=\"ds-mihrab\" role=\"group\" aria-label=\"Next prayer\"><p class=\"ds-mihrab-date\">9 Jumada al-Ula 1448 AH</p><div class=\"ds-mihrab-row\"><div class=\"ds-mihrab-next\"><p class=\"ds-mihrab-count\">48m</p><p class=\"ds-mihrab-prayer\">Next · Isha 7:21 PM</p></div><div class=\"ds-mihrab-now\"><p class=\"ds-mihrab-ar\" lang=\"ar\" dir=\"rtl\">المَغْرِب</p><p class=\"ds-mihrab-small\">Now · Maghrib</p></div></div><svg class=\"ds-daystrip\" width=\"300\" height=\"18\" viewBox=\"0 0 300 18\" aria-label=\"Fajr 5:03, Dhuhr 12:06, Asr 3:23, Maghrib 5:51, Isha 7:21\"><line x1=\"4.5\" y1=\"9\" x2=\"295.5\" y2=\"9\" stroke=\"#F4F1E8\" stroke-opacity=\".22\" stroke-width=\"2\" stroke-linecap=\"round\"/><line x1=\"4.5\" y1=\"9\" x2=\"250\" y2=\"9\" stroke=\"#F4F1E8\" stroke-opacity=\".6\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"18\" cy=\"9\" r=\"4.5\" fill=\"#F4F1E8\"/><circle cx=\"136\" cy=\"9\" r=\"4.5\" fill=\"#F4F1E8\"/><circle cx=\"190\" cy=\"9\" r=\"4.5\" fill=\"#F4F1E8\"/><circle cx=\"242\" cy=\"9\" r=\"4.5\" fill=\"#F4F1E8\"/><circle cx=\"278\" cy=\"9\" r=\"7\" fill=\"#F4F1E8\"/><circle cx=\"278\" cy=\"9\" r=\"4\" fill=\"#0F3D4C\"/><line x1=\"250\" y1=\"2\" x2=\"250\" y2=\"16\" stroke=\"#F4F1E8\" stroke-width=\"2.5\" stroke-linecap=\"round\"/></svg><div class=\"ds-mihrab-rule\"></div><button class=\"ds-mihrab-btn\" type=\"button\">Read now · 20 duas</button></div>",
+      "css": ".ds-mihrab { width: 340px; height: 330px; box-sizing: border-box; padding: 53px 20px 18px; background: #0F3D4C; color: #F4F1E8; clip-path: path('M0 308 L0 51 C0 15.3 122.4 13.26 170 0 C217.6 13.26 340 15.3 340 51 L340 308 A22 22 0 0 1 318 330 L22 330 A22 22 0 0 1 0 308 Z'); font-family: 'Readex Pro', system-ui, sans-serif; display: flex; flex-direction: column; } .ds-mihrab p { margin: 0; } .ds-mihrab-date { text-align: center; font-size: 13px; font-weight: 500; letter-spacing: 0.1px; color: rgba(244,241,232,.88); } .ds-mihrab-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: 14px; } .ds-mihrab-count { font-size: 52px; font-weight: 500; line-height: 1.05; letter-spacing: -1.04px; } .ds-mihrab-prayer { font-size: 15.5px; font-weight: 500; line-height: 1.32; margin-top: 6px !important; } .ds-mihrab-now { text-align: end; max-width: 130px; } .ds-mihrab-ar { font-family: 'Amiri', 'Noto Naskh Arabic', serif; font-size: 28px; line-height: 1.45; } .ds-mihrab-small { font-size: 13px; line-height: 1.45; color: rgba(244,241,232,.88); } .ds-daystrip { display: block; width: 100%; margin-top: 18px; } .ds-mihrab-rule { height: 1px; margin-top: 18px; background: rgba(244,241,232,.16); } .ds-mihrab-btn { margin-top: auto; height: 48px; border: none; border-radius: 100px; background: #F4F1E8; color: #0F3D4C; font: 600 14.5px/1.3 'Readex Pro', system-ui, sans-serif; letter-spacing: 0.1px; cursor: pointer; transition: background-color 120ms ease-out; } .ds-mihrab-btn:hover { background: #E2E3DC; } .ds-mihrab-btn:active { background: #DDDFD8; } .ds-mihrab-btn:focus-visible { outline: 2px solid #F4F1E8; outline-offset: 2px; }"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Filled stadium in qibla ink; the confirming action in dialogs and the on-state of controls.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\">View the guide</button>",
+      "css": ".ds-btn-primary { min-width: 64px; height: 48px; padding: 0 22px; border: none; border-radius: 100px; background: #0F3D4C; color: #F7F5EF; font: 600 14.5px/1.3 'Readex Pro', system-ui, sans-serif; letter-spacing: 0.1px; cursor: pointer; transition: background-color 120ms ease-out; } .ds-btn-primary:hover { background: #224C59; } .ds-btn-primary:active { background: #264F5C; } .ds-btn-primary:focus-visible { outline: 2px solid #0F3D4C; outline-offset: 2px; }"
+    },
+    {
+      "name": "Tonal Button",
+      "kind": "button",
+      "refersTo": "button-tonal",
+      "description": "Accent-tint stadium with a leading icon: the ways in on Home (Tasbih, Saved), set as a matched pair.",
+      "html": "<div class=\"ds-tonal-pair\"><button class=\"ds-btn-tonal\" type=\"button\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z\"/></svg><span>Tasbih</span></button><button class=\"ds-btn-tonal\" type=\"button\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2zm0 15-5-2.18L7 18V5h10v13z\"/></svg><span>Saved</span></button></div>",
+      "css": ".ds-tonal-pair { display: flex; gap: 10px; width: 340px; } .ds-btn-tonal { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 48px; padding: 0 22px; border: none; border-radius: 100px; background: #E1E5E4; color: #0F3D4C; font: 600 14.5px/1.3 'Readex Pro', system-ui, sans-serif; letter-spacing: 0.1px; cursor: pointer; transition: background-color 120ms ease-out; } .ds-btn-tonal:hover { background: #D0D8D8; } .ds-btn-tonal:active { background: #CCD4D5; } .ds-btn-tonal:focus-visible { outline: 2px solid #0F3D4C; outline-offset: 2px; }"
+    },
+    {
+      "name": "On-Field Button",
+      "kind": "button",
+      "refersTo": "button-on-field",
+      "description": "The mihrab's own primary action: a linen stadium with qibla-ink text, set straight on the field (shown here on the foot of a field).",
+      "html": "<div class=\"ds-onfield-wrap\"><button class=\"ds-btn-onfield\" type=\"button\">Read now · 20 duas</button></div>",
+      "css": ".ds-onfield-wrap { width: 340px; padding: 16px 20px 18px; background: #0F3D4C; border-radius: 0 0 22px 22px; box-sizing: border-box; } .ds-btn-onfield { width: 100%; height: 48px; border: none; border-radius: 100px; background: #F4F1E8; color: #0F3D4C; font: 600 14.5px/1.3 'Readex Pro', system-ui, sans-serif; letter-spacing: 0.1px; cursor: pointer; transition: background-color 120ms ease-out; } .ds-btn-onfield:hover { background: #E2E3DC; } .ds-btn-onfield:active { background: #DDDFD8; } .ds-btn-onfield:focus-visible { outline: 2px solid #F4F1E8; outline-offset: 2px; }"
+    },
+    {
+      "name": "Search Pill",
+      "kind": "input",
+      "refersTo": "search-pill",
+      "description": "Stone stadium, no border at rest; a 1.5px qibla-ink edge on focus.",
+      "html": "<label class=\"ds-search\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z\"/></svg><input class=\"ds-search-input\" type=\"search\" placeholder=\"Search duas…\" aria-label=\"Search duas\"></label>",
+      "css": ".ds-search { display: flex; align-items: center; gap: 12px; width: 340px; height: 52px; padding: 0 18px; box-sizing: border-box; background: #F8F8F5; color: #5E6161; border-radius: 100px; box-shadow: inset 0 0 0 1.5px transparent; transition: box-shadow 120ms ease-out; } .ds-search:hover { background: #EFEFEC; } .ds-search:focus-within { box-shadow: inset 0 0 0 1.5px #0F3D4C; } .ds-search-input { flex: 1; min-width: 0; border: none; outline: none; background: transparent; color: #161A1C; font: 400 15px/1.5 'Readex Pro', system-ui, sans-serif; caret-color: #0F3D4C; } .ds-search-input::placeholder { color: #5E6161; }"
+    },
+    {
+      "name": "Row Group",
+      "kind": "card",
+      "refersTo": "row-group",
+      "description": "Stone panel of rows with hairline separators inset 72px; a started set shows its tally in ink and a short rule, a finished one warms to the lamp panel with a brass well.",
+      "html": "<div class=\"ds-group\"><a class=\"ds-row\" href=\"#\"><span class=\"ds-well\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linejoin=\"round\" d=\"M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z\"/></svg></span><span class=\"ds-row-text\"><span class=\"ds-row-title\">Evening Adhkar</span><span class=\"ds-row-status ds-started\">1 / 20 <span class=\"ds-mini-rule\"><span style=\"width:5%\"></span></span></span></span><span class=\"ds-row-ar\" lang=\"ar\" dir=\"rtl\">أَذْكَارُ الْمَسَاء</span></a><div class=\"ds-sep\"></div><a class=\"ds-row ds-row-done\" href=\"#\"><span class=\"ds-well ds-well-done\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg></span><span class=\"ds-row-text\"><span class=\"ds-row-title\">Upon Waking</span><span class=\"ds-row-status ds-done\">Done · 3 / 3</span></span><span class=\"ds-row-ar\" lang=\"ar\" dir=\"rtl\">أَذْكَارُ الِاسْتِيقَاظ</span></a><div class=\"ds-sep\"></div><a class=\"ds-row\" href=\"#\"><span class=\"ds-well\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z\"/></svg></span><span class=\"ds-row-text\"><span class=\"ds-row-title\">Prayer times</span><span class=\"ds-row-status\">Madinah (fixed city)</span></span><span class=\"ds-chev\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\"/></svg></span></a></div>",
+      "css": ".ds-group { width: 340px; background: #F8F8F5; border-radius: 22px; overflow: hidden; font-family: 'Readex Pro', system-ui, sans-serif; } .ds-row { display: flex; align-items: center; gap: 14px; padding: 14px 18px 14px 16px; color: #161A1C; text-decoration: none; transition: background-color 260ms ease-out; } .ds-row:hover { background: rgba(22,26,28,.04); } .ds-row:active { background: rgba(22,26,28,.08); } .ds-row:focus-visible { outline: 2px solid #0F3D4C; outline-offset: -2px; border-radius: 22px; } .ds-row-done { background: #F0ECE3; } .ds-row-done:hover { background: #E7E4DB; } .ds-well { flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: #DFE3E2; color: #0F3D4C; transition: background-color 260ms ease-out; } .ds-well-done { background: #93681D; color: #F8F8F5; } .ds-row-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; } .ds-row-title { font-size: 15.5px; font-weight: 500; line-height: 1.32; } .ds-row-status { display: flex; align-items: center; gap: 10px; font-size: 13px; line-height: 1.45; color: #5E6161; } .ds-started { color: #0F3D4C; font-weight: 500; } .ds-done { color: #93681D; font-weight: 500; } .ds-mini-rule { display: inline-block; width: 56px; height: 3px; border-radius: 3px; background: rgba(15,61,76,.15); overflow: hidden; } .ds-mini-rule span { display: block; height: 100%; background: #0F3D4C; border-radius: 3px; } .ds-row-ar { flex: none; max-width: 118px; font-family: 'Amiri', 'Noto Naskh Arabic', serif; font-size: 18px; line-height: 1.5; color: #5E6161; white-space: nowrap; overflow: hidden; } .ds-chev { color: #5E6161; display: grid; } .ds-sep { height: 1px; margin-inline-start: 72px; background: rgba(22,26,28,.08); }"
+    },
+    {
+      "name": "Cartouche",
+      "kind": "chip",
+      "refersTo": "cartouche",
+      "description": "The counter pill: accent-tinted while a count is in progress, solid brass with a stone label when it is done. Holds the width of its widest state.",
+      "html": "<div class=\"ds-pills\"><span class=\"ds-pill\">7 / 10</span><span class=\"ds-pill ds-pill-done\">Done</span><span class=\"ds-pill ds-pill-brass\">12 days</span></div>",
+      "css": ".ds-pills { display: flex; gap: 8px; align-items: center; } .ds-pill { display: inline-flex; align-items: center; padding: 5px 11px; border-radius: 100px; background: rgba(15,61,76,.11); color: #11333E; font: 600 12.5px/1.15 'Readex Pro', system-ui, sans-serif; letter-spacing: 0.1px; min-width: 64px; justify-content: center; transition: background-color 260ms ease-out, color 260ms ease-out; } .ds-pill-done { background: #93681D; color: #F8F8F5; } .ds-pill-brass { background: rgba(147,104,29,.11); color: #6E511D; min-width: 0; }"
+    },
+    {
+      "name": "Choice Chips",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Stone stadiums with no border or checkmark; the selected chip takes the accent tint. Shown as the tasbih's phrase selector.",
+      "html": "<div class=\"ds-chips\" role=\"radiogroup\" aria-label=\"Phrase\"><button class=\"ds-chip\" role=\"radio\" aria-checked=\"true\" type=\"button\">SubhanAllah</button><button class=\"ds-chip\" role=\"radio\" aria-checked=\"false\" type=\"button\">Alhamdulillah</button><button class=\"ds-chip\" role=\"radio\" aria-checked=\"false\" type=\"button\">Allahu Akbar</button></div>",
+      "css": ".ds-chips { display: flex; gap: 8px; } .ds-chip { padding: 8px 12px; min-height: 40px; border: none; border-radius: 100px; background: #F8F8F5; color: #5E6161; font: 600 14.5px/1.3 'Readex Pro', system-ui, sans-serif; letter-spacing: 0.1px; cursor: pointer; transition: background-color 120ms ease-out, color 120ms ease-out; } .ds-chip:hover { background: #EFEFEC; } .ds-chip[aria-checked='true'] { background: #E1E5E4; color: #0F3D4C; } .ds-chip:focus-visible { outline: 2px solid #0F3D4C; outline-offset: 2px; }"
+    },
+    {
+      "name": "Prayer Timetable (in the field)",
+      "kind": "custom",
+      "refersTo": "timetable-row-next-in-field",
+      "description": "The Prayer tab's mihrab holds the day's timetable in fixed columns: passed prayers at 80% linen, the prayer now in force at full strength with a 7px dot, the next prayer lifted on a 12% linen band, later prayers at regular weight. On stone (the Home sheet) the same rows use ink and muted ink, the dot is qibla ink, and the next row takes the field colour.",
+      "html": "<div class=\"ds-tt\" role=\"table\" aria-label=\"Today\"><div class=\"ds-tt-head\"><span class=\"ds-tt-title\">Today</span><span class=\"ds-tt-place\">Madinah</span></div><div class=\"ds-tt-row ds-tt-passed\"><span class=\"ds-tt-mark\"></span><span class=\"ds-tt-name\">Fajr</span><span class=\"ds-tt-ar\" lang=\"ar\" dir=\"rtl\">الفَجْر</span><span class=\"ds-tt-time\">5:03 AM</span></div><div class=\"ds-tt-row ds-tt-passed\"><span class=\"ds-tt-mark\"></span><span class=\"ds-tt-name\">Dhuhr</span><span class=\"ds-tt-ar\" lang=\"ar\" dir=\"rtl\">الظُّهْر</span><span class=\"ds-tt-time\">12:06 PM</span></div><div class=\"ds-tt-row ds-tt-passed\"><span class=\"ds-tt-mark\"></span><span class=\"ds-tt-name\">Asr</span><span class=\"ds-tt-ar\" lang=\"ar\" dir=\"rtl\">العَصْر</span><span class=\"ds-tt-time\">3:23 PM</span></div><div class=\"ds-tt-row ds-tt-now\"><span class=\"ds-tt-mark\"></span><span class=\"ds-tt-name\">Maghrib</span><span class=\"ds-tt-ar\" lang=\"ar\" dir=\"rtl\">المَغْرِب</span><span class=\"ds-tt-time\">5:51 PM</span></div><div class=\"ds-tt-row ds-tt-next\" aria-current=\"true\"><span class=\"ds-tt-mark\"></span><span class=\"ds-tt-name\">Isha</span><span class=\"ds-tt-ar\" lang=\"ar\" dir=\"rtl\">العِشَاء</span><span class=\"ds-tt-time\">7:21 PM</span></div></div>",
+      "css": ".ds-tt { width: 340px; height: 350px; box-sizing: border-box; padding: 51px 8px 10px; background: #0F3D4C; color: #F4F1E8; clip-path: path('M0 328 L0 51 C0 15.3 122.4 13.26 170 0 C217.6 13.26 340 15.3 340 51 L340 328 A22 22 0 0 1 318 350 L22 350 A22 22 0 0 1 0 328 Z'); font-family: 'Readex Pro', system-ui, sans-serif; } .ds-tt-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 0 14px 8px; } .ds-tt-title { font-size: 17px; font-weight: 600; line-height: 1.3; letter-spacing: -0.1px; } .ds-tt-place { font-size: 13px; line-height: 1.45; color: rgba(244,241,232,.88); } .ds-tt-row { display: flex; align-items: center; padding: 10px 14px; border-radius: 16px; transition: background-color 120ms ease-out; cursor: pointer; } .ds-tt-row:hover { background: rgba(244,241,232,.06); } .ds-tt-mark { flex: none; width: 16px; } .ds-tt-now .ds-tt-mark::before { content: ''; display: block; width: 7px; height: 7px; border-radius: 50%; background: #F4F1E8; } .ds-tt-passed { color: rgba(244,241,232,.80); } .ds-tt-next, .ds-tt-next:hover { background: rgba(244,241,232,.12); } .ds-tt-name { flex: 1; font-size: 15.5px; font-weight: 500; line-height: 1.32; } .ds-tt-now .ds-tt-name, .ds-tt-now .ds-tt-time, .ds-tt-next .ds-tt-name, .ds-tt-next .ds-tt-time { font-weight: 600; } .ds-tt-ar { width: 72px; text-align: end; font-family: 'Amiri', 'Noto Naskh Arabic', serif; font-size: 18px; line-height: 1.5; } .ds-tt-time { width: 96px; text-align: end; font-size: 15.5px; font-weight: 400; line-height: 1.32; }"
+    },
+    {
+      "name": "Navigation Bar",
+      "kind": "nav",
+      "refersTo": "nav-bar",
+      "description": "Four destinations on the plaster ground with no top edge; the selected one sits in a stadium indicator with a qibla-ink icon and an ink label.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Primary\"><a class=\"ds-nav-item\" href=\"#\" aria-current=\"page\"><span class=\"ds-nav-ind\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z\"/></svg></span><span>Adhkar</span></a><a class=\"ds-nav-item\" href=\"#\"><span class=\"ds-nav-ind\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linejoin=\"round\" d=\"M12 6.5C10 5 7 4.5 3 5v13c4-.5 7 0 9 1.5 2-1.5 5-2 9-1.5V5c-4-.5-7 0-9 1.5zM12 6.5v13\"/></svg></span><span>Quran</span></a><a class=\"ds-nav-item\" href=\"#\"><span class=\"ds-nav-ind\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z\"/></svg></span><span>Prayer</span></a><a class=\"ds-nav-item\" href=\"#\"><span class=\"ds-nav-ind\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z\"/></svg></span><span>Settings</span></a></nav>",
+      "css": ".ds-nav { display: flex; width: 360px; height: 74px; background: #EBECE7; font-family: 'Readex Pro', system-ui, sans-serif; } .ds-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #5E6161; text-decoration: none; font-size: 13px; font-weight: 500; letter-spacing: 0.1px; } .ds-nav-ind { display: grid; place-items: center; width: 64px; height: 32px; border-radius: 100px; transition: background-color 260ms ease-out; } .ds-nav-item:hover .ds-nav-ind { background: rgba(22,26,28,.06); } .ds-nav-item[aria-current='page'] { color: #161A1C; font-weight: 600; } .ds-nav-item[aria-current='page'] .ds-nav-ind { background: #CFD5D3; color: #0F3D4C; } .ds-nav-item:focus-visible { outline: none; } .ds-nav-item:focus-visible .ds-nav-ind { outline: 2px solid #0F3D4C; outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Prayer Hall",
+    "overview": "Hisn is a quiet, daylit prayer hall. Each screen is built around one mihrab: a single arch-topped field filled with the qibla ink, holding the one thing the screen is about (the next prayer and the adhkar for now, the day's prayer times, the set being read, the place to resume the Quran, the tasbih count). Everything else sits unboxed on plaster in calm rows, like the saff, grouped by a pale stone fill and never by an outline. Night is the same hall after Isha: the ground a deep shade of the accent itself, the mihrab lifted a step toward the lit accent so it still stands out of the dark, and the text in a warm lamplit off-white.\n\nThe interface speaks in two voices. Readex Pro carries every piece of apparatus in Latin and in Arabic at four weights, in sentence case, ordered by size and weight alone. The reader's chosen Naskh (Amiri by default) carries the sacred text and the Arabic names, so the text and the machinery around it are never confused. Brass is the lamp, and it is lit only when something is finished.\n\nDensity is a one-handed phone at Fajr: one column, 20px margins, 48px-plus touch rows, a counter pushed into the thumb's reach, and a text-size setting that reflows rather than clips. Depth comes from fill and space; the theme's shadow colour is transparent everywhere except the popup menu. Motion is short fades and settles that collapse to nothing under the platform's reduce-motion setting; the one longer beat is a completed tasbih set. The hall refuses the category default (green and gold, a mosque-photo header, a grid of shadowed cards) and the incumbent manuscript it replaced (cream paper, double-ruled frames, tracked capitals everywhere).",
+    "keyCharacteristics": [
+      "One arch-topped mihrab field per screen, in qibla ink, with a faint carved khatam screen under the arch.",
+      "Plaster ground, stone groups told apart by value alone, hairline rules only between rows inside a group.",
+      "One accent per palette, derived neutrals, brass reserved for completion.",
+      "Readex Pro for all chrome, Naskh for sacred text and Arabic names, no capitals or tracked labels.",
+      "Soft graded corners (10 to 28px) and stadium controls; no frames, no drop shadows.",
+      "Full mirroring for Arabic and Urdu, with letter-spacing removed and leading opened."
+    ],
+    "rules": [
+      {
+        "name": "The Quarantined Ink Rule",
+        "body": "The qibla ink is a full-strength fill only in the mihrab field, the next-prayer row of a timetable set on stone, and a control in its on state (switch track, checkbox, badge, the primary button in a dialog). Everywhere else it is a foreground mark or a tint of 16% or less. It never decorates.",
+        "section": "colors"
+      },
+      {
+        "name": "The Lamp Rule",
+        "body": "Brass means done, and nothing else. It is lit when a dua's count is reached, a set is complete, the day is fortified, a streak is alive, or a tasbih set is full; on the mihrab it is mixed 70% of the way toward on-field linen, and as text on a lamp panel it is deepened 30% toward ink. Progress toward something is drawn in the accent (on the page) or in on-field linen (on the mihrab), never in brass. Brass is never body text.",
+        "section": "colors"
+      },
+      {
+        "name": "The Derived Hall Rule",
+        "body": "Neutrals are computed from the accent, never tuned per palette. A new palette supplies exactly four colours (accent, accentNight, brass, brassNight); the plaster, stone, night ground, mihrab and every tint follow from the formulas.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Voices Rule",
+        "body": "Readex Pro for everything that is apparatus; Naskh for the sacred text and the Arabic names that echo a Latin title. Never a Naskh button label in a Latin or Arabic interface, never Readex for a dua.",
+        "section": "typography"
+      },
+      {
+        "name": "The Sentence-Case Rule",
+        "body": "Hierarchy is carried by size and weight, never by capitals, tracking or eyebrow labels. Labels are set in sentence case with at most +0.2px of tracking in Latin; display sizes close up slightly instead. A figure's caption follows it on one line (\"Next · Isha 7:21 PM\", \"Continue reading · Juz 1\") rather than standing above it.",
+        "section": "typography"
+      },
+      {
+        "name": "The Cursive Rule",
+        "body": "When the interface is right-to-left, every style drops its letter-spacing to 0 and multiplies its line-height by 1.2, and numerals lose their negative tracking, so joined letters stay joined and marks above and below the line never collide.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Mihrab Rule",
+        "body": "A screen has at most one arched field, and it holds the one thing that screen is for. Home: the next prayer and the adhkar for now. Prayer & Qibla: the day's timetable. A set: its progress. Quran: where to resume. Tasbih: the count. Nothing is nested inside the mihrab as a card of its own; its parts are separated by space and a field rule.",
+        "section": "layout"
+      },
+      {
+        "name": "The Saff Rule",
+        "body": "Everything that is not the mihrab is a calm row in a group on plaster. Only one item on a screen is expanded (the adhkar for now); every other set is a compact row below it.",
+        "section": "layout"
+      },
+      {
+        "name": "The Fill-Not-Frame Rule",
+        "body": "Groups and cards are separated by fill and space, never by an outline. A hairline rule appears only between rows inside one group, inset past the leading marks, or across the mihrab between its parts. State changes move the fill (and ease over 260ms); the geometry never changes, so nothing reflows.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do give a screen at most one `MihrabField`, filled with the field colour, and put the screen's primary content and action straight on it, divided by space and field rules.",
+      "Do group rows on a stone `RowGroup` (22px radius) inside the 20px page margin, with hairline rules only between rows, inset 72px.",
+      "Do take every neutral from the palette's derivation functions (`groundFor`, `paperFor`, `fieldFor`, `ruleFor`) or the ManuscriptTheme tokens; never hard-code a palette hex in a widget.",
+      "Do keep brass for completion: the finished dua, the finished set, the fortified day, the streak, the full tasbih set.",
+      "Do draw progress in the accent on the page and in on-field linen on the mihrab.",
+      "Do set sacred text and Arabic names with `ArabicText` in the reader's chosen Naskh, and everything else in the theme's Readex Pro styles.",
+      "Do write labels and headings in sentence case, order them by size and weight, and put a figure's caption on the line after it.",
+      "Do use directional insets and alignments, wrap numeric tallies in a left-to-right isolate (U+2066 before, U+2069 after) so \"1 / 20\" keeps its order, mirror chevrons and arrows, and drop letter-spacing in right-to-left interfaces.",
+      "Do take animation durations from `Motion` so reduce-motion stops them, and change fills rather than geometry when state changes."
+    ],
+    "donts": [
+      "Don't add a second arched or field-filled hero to a screen, nest a card inside the mihrab, or fill a large area with the accent outside it.",
+      "Don't outline a group, card or panel; separate with fill and space.",
+      "Don't add drop shadows or elevation to cards, sheets, dialogs, bars or buttons.",
+      "Don't set labels in capitals, add tracking to them, or stack an eyebrow label over a heading or figure; never letter-space Arabic or Urdu.",
+      "Don't give each category its own hue; the category icon is wayfinding in the palette's accent, not a colour code.",
+      "Don't use brass for progress, selection, decoration, body text, or any state that is not completion.",
+      "Don't reproduce the green-and-gold category default, a mosque-photo header, or a grid of shadowed cards.",
+      "Don't bring back the manuscript look: cream paper, double-ruled frames, tracked capitals."
+    ]
+  }
+}

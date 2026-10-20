@@ -285,6 +285,15 @@ class AppStrings {
   String get previewAdhan => _t.previewAdhan;
   String get stopAdhan => _t.stopAdhan;
   String get adhanPlaying => _t.adhanPlaying;
+  String get adhanVoice => _t.adhanVoice;
+  String get adhanVoiceDefault => _t.adhanVoiceDefault;
+  String get adhanVoiceCustom => _t.adhanVoiceCustom;
+  String get adhanVoiceCustomHint => _t.adhanVoiceCustomHint;
+  String get adhanVoiceChooseFile => _t.adhanVoiceChooseFile;
+  String get adhanVoiceChangeFile => _t.adhanVoiceChangeFile;
+  String get adhanVoiceUnreadable => _t.adhanVoiceUnreadable;
+  String get adhanVoiceTooLarge => _t.adhanVoiceTooLarge;
+  String get adhanVoiceNotPlayable => _t.adhanVoiceNotPlayable;
   String get notifBlocked => _t.notifBlocked;
 
   String get textSize => _t.textSize;
@@ -510,6 +519,8 @@ class AppStrings {
   /// Localized display name for the palette with [id].
   String paletteName(String id) {
     switch (id) {
+      case 'emerald':
+        return _t.paletteEmerald;
       case 'sapphire':
         return _t.paletteSapphire;
       case 'amethyst':
@@ -521,7 +532,7 @@ class AppStrings {
       case 'desert':
         return _t.paletteDesert;
       default:
-        return _t.paletteEmerald;
+        return _t.paletteQibla;
     }
   }
 
@@ -757,7 +768,8 @@ class AppStrings {
     BackupError.empty => _t.restoreErrEmpty,
   };
 
-  String get prayerCountdownChannelDescription => _t.prayerCountdownChannelDescription;
+  String get prayerCountdownChannelDescription =>
+      _t.prayerCountdownChannelDescription;
   String get prayerCountdownSubtitle => _t.prayerCountdownSubtitle;
   String get prayerCountdownTitle => _t.prayerCountdownTitle;
   String get prayerCountdownUnavailable => _t.prayerCountdownUnavailable;
@@ -766,13 +778,15 @@ class AppStrings {
   String get guideDone => _t.guideDone;
   String get guideNotificationsBody => _t.guideNotificationsBody;
   String get guidePrayerBody => _t.guidePrayerBody;
-  String guideProgress(int current, int total) => _t.guideProgress(current: current, total: total);
+  String guideProgress(int current, int total) =>
+      _t.guideProgress(current: current, total: total);
   String get guideQuranBody => _t.guideQuranBody;
   String get guideTasbihBody => _t.guideTasbihBody;
   String get guideTitle => _t.guideTitle;
   String get guideWelcomeBody => _t.guideWelcomeBody;
   String get guideWelcomeTitle => _t.guideWelcomeTitle;
-  String prayerSilenceActiveUntil(String time) => _t.prayerSilenceActiveUntil(time: time);
+  String prayerSilenceActiveUntil(String time) =>
+      _t.prayerSilenceActiveUntil(time: time);
   String get prayerSilenceBody => _t.prayerSilenceBody;
   String get prayerSilenceDisabled => _t.prayerSilenceDisabled;
   String get prayerSilenceEnable => _t.prayerSilenceEnable;
@@ -782,7 +796,8 @@ class AppStrings {
   String get prayerSilenceExactButton => _t.prayerSilenceExactButton;
   String get prayerSilenceExpiryNote => _t.prayerSilenceExpiryNote;
   String get prayerSilenceLocation => _t.prayerSilenceLocation;
-  String prayerSilenceMinutes(int minutes) => _t.prayerSilenceMinutes(minutes: minutes);
+  String prayerSilenceMinutes(int minutes) =>
+      _t.prayerSilenceMinutes(minutes: minutes);
   String get prayerSilencePermission => _t.prayerSilencePermission;
   String get prayerSilencePolicyButton => _t.prayerSilencePolicyButton;
   String get prayerSilenceReady => _t.prayerSilenceReady;

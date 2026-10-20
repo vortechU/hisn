@@ -51,6 +51,7 @@ class AboutSettingsScreen extends StatelessWidget {
       'Mushaf pages · King Fahd Glorious Quran Printing Complex',
       'KFGQPC',
     ),
+    ('Readex Pro', 'Interface', 'SIL OFL 1.1'),
     ('Crimson Pro', 'Latin text', 'SIL OFL 1.1'),
     ('Karla', 'Latin apparatus', 'SIL OFL 1.1'),
   ];
@@ -156,7 +157,7 @@ class _CreditPanel extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: Ms.margin),
       decoration: BoxDecoration(
-        border: Border.all(color: ms.rule),
+        color: ms.paper,
         borderRadius: BorderRadius.circular(Ms.rPanel),
       ),
       child: Column(

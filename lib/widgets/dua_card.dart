@@ -15,7 +15,7 @@ import 'arabic_text.dart';
 import 'dua_instruction.dart';
 import 'ornament.dart';
 
-/// One dua, set as a text block in a ruled frame.
+/// One dua, set as a text block on a soft panel.
 ///
 /// The block follows the order a critical edition uses: heading, then the
 /// practical guidance when needed, the Arabic, then its transliteration and
@@ -27,7 +27,7 @@ import 'ornament.dart';
 ///
 /// When [onCount] is provided the card enters "read & count" mode: the whole
 /// card becomes a tap target that advances [count] toward the dua's repetition
-/// target, and the head mark fills as the target is reached.
+/// target, and the panel takes the lamp colour as the target is reached.
 class DuaCard extends StatelessWidget {
   const DuaCard({
     super.key,
@@ -97,88 +97,89 @@ class DuaCard extends StatelessWidget {
         onTap: onCount,
         accent: _complete ? ms.gilt : null,
         emphasis: _complete,
-        padding: const EdgeInsets.fromLTRB(16, 13, 16, 14),
+        padding: const EdgeInsets.fromLTRB(20, 16, 12, 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Heading: the mark, the title, and the tally.
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Rosette(
-                  size: 20,
-                  color: _complete ? ms.gilt : ms.rubric,
-                  lobes: 8,
-                  filled: _complete,
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: showArabicTitle
-                      ? ArabicText(
-                          s.ar
-                              ? stripHarakat(dua.titleForLang(s.lang.name))
-                              : dua.titleForLang(s.lang.name),
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          textAlign: TextAlign.start,
-                          height: 1.5,
-                          maxLines: 2,
-                        )
-                      : Text(
-                          dua.titleForLang(s.lang.name),
-                          style: theme.textTheme.titleMedium,
-                        ),
-                ),
-                if (_counting) ...[
-                  const SizedBox(width: 8),
-                  _Tally(
-                    count: count ?? 0,
-                    repeat: dua.repeat,
-                    complete: _complete,
+            // Heading: the title and the tally.
+            Padding(
+              padding: const EdgeInsetsDirectional.only(end: 8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: showArabicTitle
+                        ? ArabicText(
+                            s.ar
+                                ? stripHarakat(dua.titleForLang(s.lang.name))
+                                : dua.titleForLang(s.lang.name),
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            textAlign: TextAlign.start,
+                            height: 1.5,
+                            maxLines: 2,
+                          )
+                        : Text(
+                            dua.titleForLang(s.lang.name),
+                            style: theme.textTheme.titleMedium,
+                          ),
                   ),
-                ] else if (dua.repeat > 1) ...[
-                  const SizedBox(width: 8),
-                  Cartouche(label: '×${dua.repeat}', color: ms.gilt),
+                  if (_counting) ...[
+                    const SizedBox(width: 10),
+                    _Tally(
+                      count: count ?? 0,
+                      repeat: dua.repeat,
+                      complete: _complete,
+                    ),
+                  ] else if (dua.repeat > 1) ...[
+                    const SizedBox(width: 10),
+                    Cartouche(label: '×${dua.repeat}', color: ms.rubric),
+                  ],
                 ],
-              ],
+              ),
             ),
-            const SizedBox(height: 11),
-            Container(height: Ms.hair, color: ms.rule),
-            const SizedBox(height: 16),
+            const SizedBox(height: 18),
 
-            if (instruction != null && instruction.trim().isNotEmpty) ...[
-              DuaInstruction(text: instruction, arabic: s.rtl),
-              const SizedBox(height: 16),
-            ],
+            Padding(
+              padding: const EdgeInsetsDirectional.only(end: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (instruction != null && instruction.trim().isNotEmpty) ...[
+                    DuaInstruction(text: instruction, arabic: s.rtl),
+                    const SizedBox(height: 16),
+                  ],
 
-            // The text itself.
-            ArabicText(dua.arabic, block: true),
+                  // The text itself.
+                  ArabicText(dua.arabic, block: true),
 
-            if (display.showTransliteration && !s.ar) ...[
-              const SizedBox(height: 14),
-              Text(
-                dua.transliteration,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontStyle: FontStyle.italic,
-                  color: scheme.onSurfaceVariant,
-                  height: 1.55,
-                ),
+                  if (display.showTransliteration && !s.ar) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      dua.transliteration,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                        height: 1.6,
+                      ),
+                    ),
+                  ],
+                  if (display.showTranslation && !s.ar) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      dua.translationFor(s.lang.name),
+                      style: theme.textTheme.bodyLarge,
+                    ),
+                  ],
+
+                  // Apparatus.
+                  if (virtue != null) ...[
+                    const SizedBox(height: 16),
+                    _VirtueNote(text: virtue),
+                  ],
+                ],
               ),
-            ],
-            if (display.showTranslation && !s.ar) ...[
-              const SizedBox(height: 10),
-              Text(
-                dua.translationFor(s.lang.name),
-                style: theme.textTheme.bodyLarge,
-              ),
-            ],
-
-            // Apparatus.
-            if (virtue != null) ...[
-              const SizedBox(height: 16),
-              _VirtueNote(text: virtue),
-            ],
-            const SizedBox(height: 14),
+            ),
+            const SizedBox(height: 10),
             _Colophon(
               reference: dua.referenceFor(s.lang.name),
               onCopy: () => _copy(context),
@@ -253,8 +254,8 @@ class _Tally extends StatelessWidget {
   }
 }
 
-/// The note on a dua's virtue, set the way a manuscript sets a gloss: smaller,
-/// in the second ink, inside its own light rule — not hung off an accent bar.
+/// The note on a dua's virtue: a warm, lamp-tinted aside under the text — set
+/// apart by its fill, not hung off an accent bar.
 class _VirtueNote extends StatelessWidget {
   const _VirtueNote({required this.text});
 
@@ -264,30 +265,29 @@ class _VirtueNote extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final ms = ManuscriptTheme.of(context);
+    final dark = theme.brightness == Brightness.dark;
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 11),
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 13),
       decoration: BoxDecoration(
-        color: ms.gilt.withValues(alpha: 0.06),
-        border: Border.all(color: ms.gilt.withValues(alpha: 0.32)),
-        borderRadius: BorderRadius.circular(Ms.rSmall),
+        color: ms.gilt.withValues(alpha: dark ? 0.14 : 0.09),
+        borderRadius: BorderRadius.circular(Ms.rSmall + 4),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 2),
-            child: Rosette(size: 14, color: ms.gilt, lobes: 6),
+            child: Icon(Icons.auto_awesome_outlined, size: 17, color: ms.gilt),
           ),
-          const SizedBox(width: 9),
+          const SizedBox(width: 10),
           Expanded(
             child: Text(
               text,
               style: theme.textTheme.bodyMedium?.copyWith(
-                fontStyle: FontStyle.italic,
-                height: 1.45,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.88),
+                height: 1.5,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.86),
               ),
             ),
           ),
@@ -325,8 +325,6 @@ class _Colophon extends StatelessWidget {
 
     return Column(
       children: [
-        Container(height: Ms.hair, color: ms.rule),
-        const SizedBox(height: 4),
         Row(
           children: [
             Expanded(
@@ -341,7 +339,7 @@ class _Colophon extends StatelessWidget {
             _Action(
               icon: isFavorite ? Icons.bookmark : Icons.bookmark_border,
               tooltip: isFavorite ? s.removeBookmark : s.bookmark,
-              color: isFavorite ? ms.gilt : null,
+              color: isFavorite ? ms.rubric : null,
               onPressed: () => context.read<FavoritesService>().toggle(duaId),
             ),
             _Action(
@@ -392,8 +390,7 @@ class _Action extends StatelessWidget {
     icon: Icon(icon, size: 19),
     color: color,
     tooltip: tooltip,
-    visualDensity: VisualDensity.compact,
-    constraints: const BoxConstraints.tightFor(width: 38, height: 38),
+    constraints: const BoxConstraints.tightFor(width: 44, height: 44),
     padding: EdgeInsets.zero,
     onPressed: onPressed,
   );

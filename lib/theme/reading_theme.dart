@@ -81,7 +81,7 @@ extension ReadingThemeX on ReadingTheme {
       onSurfaceVariant: colors.onSurfaceVariant,
     );
     final ms = base.extension<ManuscriptTheme>()!;
-    final rule = Color.lerp(colors.onSurface, colors.surface, 0.62)!;
+    final rule = colors.onSurface.withValues(alpha: 0.09);
 
     return cache[this] = base.copyWith(
       colorScheme: scheme,
@@ -105,7 +105,7 @@ extension ReadingThemeX on ReadingTheme {
           paper: colors.surface,
           ground: Color.lerp(colors.surface, colors.onSurface, 0.06)!,
           rule: rule,
-          ruleStrong: Color.lerp(rule, colors.onSurface, 0.4)!,
+          ruleStrong: Color.lerp(colors.surface, colors.onSurface, 0.25)!,
         ),
       ],
     );

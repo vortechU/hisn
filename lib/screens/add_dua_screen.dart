@@ -187,7 +187,7 @@ class _Label extends StatelessWidget {
     return Row(
       children: [
         Flexible(
-          child: Text(text.toUpperCase(), style: theme.textTheme.labelSmall),
+          child: Text(text, style: theme.textTheme.labelMedium),
         ),
         if (required) ...[
           const SizedBox(width: 4),

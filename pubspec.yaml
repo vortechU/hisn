@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.15.1+27
+version: 1.15.1+28
 
 environment:
   sdk: ^3.12.0
@@ -63,6 +63,7 @@ dependencies:
   file_selector: ^1.1.0
   share_plus: ^13.3.0
   url_launcher: ^6.3.2
+  path_provider: 2.1.5
 
 dev_dependencies:
   flutter_test:
@@ -130,6 +131,20 @@ flutter:
     - assets/audio/adhkar/
 
   fonts:
+    # The interface face. Readex Pro sets every piece of chrome, Latin and
+    # Arabic alike, so an English and an Arabic screen share one voice. SIL OFL
+    # 1.1; static instances (HEXP 0) cut from the upstream variable font. It has
+    # no Urdu-specific letters, so an Urdu interface sets its chrome in Noto
+    # Naskh Arabic instead (see AppTheme).
+    - family: Readex Pro
+      fonts:
+        - asset: assets/fonts/ui/ReadexPro-Regular.ttf
+        - asset: assets/fonts/ui/ReadexPro-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/ui/ReadexPro-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/ui/ReadexPro-Bold.ttf
+          weight: 700
     # Latin text faces. Crimson Pro carries content (headings, prose,
     # translations) — it is the Latin companion Amiri was designed to sit
     # beside. Karla carries the apparatus (labels, numerals, buttons). Both are

@@ -14,9 +14,9 @@ import '../widgets/ornament.dart';
 
 /// The Tasbih: pick a phrase, then tap anywhere to count.
 ///
-/// The counter is a rosette that illuminates lobe by lobe as the set fills, so
-/// a glance tells you roughly where you are without reading the numeral —
-/// which is what a hand on a string of beads gives you.
+/// The counter is a ring of beads that fill one by one as the set does, so a
+/// glance tells you roughly where you are without reading the numeral — which
+/// is what a hand on a string of beads gives you.
 ///
 /// Light haptics on each tap, a stronger pulse when a full set completes.
 ///
@@ -92,6 +92,8 @@ class TasbihScreen extends StatelessWidget {
     final dhikr = dhikrList[index];
     final count = controller.countFor(dhikr.id);
     final laps = controller.lapsFor(dhikr.id);
+    final lamp = Color.lerp(ms.gilt, ms.onField, 0.65)!;
+    final quiet = ms.onField.withValues(alpha: 0.88);
 
     return Scaffold(
       appBar: AppBar(
@@ -138,84 +140,114 @@ class TasbihScreen extends StatelessWidget {
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: () => _count(context, dhikr),
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(
-                  Ms.margin,
-                  20,
-                  Ms.margin,
-                  28,
-                ),
-                child: Column(
-                  children: [
-                    ArabicText(
-                      dhikr.arabic,
-                      fontSize: 34,
-                      textAlign: TextAlign.center,
-                      color: ms.rubric,
+              child: LayoutBuilder(
+                builder: (context, viewport) => SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(
+                    Ms.margin,
+                    20,
+                    Ms.margin,
+                    28,
+                  ),
+                  // At least as tall as the screen and pushed to its foot, so
+                  // the counter sits in the thumb's reach, not under the bar.
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: viewport.maxHeight - 48,
                     ),
-                    // Both lines render the phrase for someone who can't read
-                    // it; in Arabic the phrase above them already did.
-                    if (!s.ar) ...[
-                      const SizedBox(height: 6),
-                      Text(
-                        dhikr.transliteration,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontStyle: FontStyle.italic,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      if (dhikr.translation.isNotEmpty) ...[
-                        const SizedBox(height: 3),
-                        Text(
-                          dhikr.translationFor(s.lang.name),
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                      ],
-                    ],
-                    const SizedBox(height: 26),
-                    _Beat(
-                      id: dhikr.id,
-                      count: count,
-                      laps: laps,
-                      child: ProgressRosette(
-                        fraction: dhikr.target == 0
-                            ? 0
-                            : (count / dhikr.target).clamp(0, 1),
-                        size: 244,
-                        lobes: 11,
-                        color: ms.gilt,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Column(
                           children: [
-                            _RollingNumeral('$count'),
-                            const SizedBox(height: 2),
-                            Text(
-                              s.ofTarget(dhikr.target),
-                              style: theme.textTheme.labelMedium?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
+                            ArabicText(
+                              dhikr.arabic,
+                              fontSize: 34,
+                              textAlign: TextAlign.center,
                             ),
+                            // Both lines render the phrase for someone who can't read
+                            // it; in Arabic the phrase above them already did.
+                            if (!s.ar) ...[
+                              const SizedBox(height: 6),
+                              Text(
+                                dhikr.transliteration,
+                                textAlign: TextAlign.center,
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  color: ms.rubric,
+                                ),
+                              ),
+                              if (dhikr.translation.isNotEmpty) ...[
+                                const SizedBox(height: 4),
+                                Text(
+                                  dhikr.translationFor(s.lang.name),
+                                  textAlign: TextAlign.center,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ],
+                            const SizedBox(height: 24),
                           ],
                         ),
-                      ),
+                        // The counter stands in the screen's one niche: the beads
+                        // are the lamp on the qibla ink.
+                        MihrabField(
+                          padding: const EdgeInsets.fromLTRB(16, 4, 16, 22),
+                          child: Column(
+                            children: [
+                              _Beat(
+                                id: dhikr.id,
+                                count: count,
+                                laps: laps,
+                                child: ProgressRosette(
+                                  fraction: dhikr.target == 0
+                                      ? 0
+                                      : (count / dhikr.target).clamp(0, 1),
+                                  size: 244,
+                                  lobes: 11,
+                                  color: count >= dhikr.target
+                                      ? lamp
+                                      : ms.onField.withValues(alpha: 0.9),
+                                  track: ms.onField.withValues(alpha: 0.16),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      _RollingNumeral(
+                                        '$count',
+                                        color: ms.onField,
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        s.ofTarget(dhikr.target),
+                                        style: theme.textTheme.labelMedium
+                                            ?.copyWith(color: quiet),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              if (laps > 0) ...[
+                                _LapTally(laps: laps, color: lamp),
+                                const SizedBox(height: 10),
+                              ],
+                              Text(
+                                count >= dhikr.target
+                                    ? s.nextSetOnTap
+                                    : laps == 0
+                                    ? s.tapToCount
+                                    : s.setsCompleted(laps),
+                                textAlign: TextAlign.center,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: quiet,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 20),
-                    if (laps > 0) ...[
-                      _LapTally(laps: laps),
-                      const SizedBox(height: 10),
-                    ],
-                    Text(
-                      count >= dhikr.target
-                          ? s.nextSetOnTap
-                          : laps == 0
-                          ? s.tapToCount
-                          : s.setsCompleted(laps),
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodySmall,
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -378,9 +410,10 @@ class _CustomDhikrDialogState extends State<_CustomDhikrDialog> {
 /// a numeral that simply swapped gave the tap nothing to land on — the haptic
 /// was doing all the work on its own.
 class _RollingNumeral extends StatelessWidget {
-  const _RollingNumeral(this.text);
+  const _RollingNumeral(this.text, {this.color});
 
   final String text;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) => AnimatedSwitcher(
@@ -402,8 +435,9 @@ class _RollingNumeral extends StatelessWidget {
     child: Numeral(
       text,
       key: ValueKey(text),
-      size: 62,
-      weight: FontWeight.w600,
+      size: 68,
+      weight: FontWeight.w500,
+      color: color,
     ),
   );
 }
@@ -504,16 +538,16 @@ class _BeatState extends State<_Beat> with SingleTickerProviderStateMixin {
   }
 }
 
-/// Completed sets, marked the way a count is kept on paper: one rosette per
-/// set, up to a point, then a numeral.
+/// Completed sets, marked the way a count is kept: one bead per set, up to a
+/// point, then a numeral.
 class _LapTally extends StatelessWidget {
-  const _LapTally({required this.laps});
+  const _LapTally({required this.laps, required this.color});
 
   final int laps;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
-    final ms = ManuscriptTheme.of(context);
     const shown = 8;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -521,7 +555,11 @@ class _LapTally extends StatelessWidget {
         for (var i = 0; i < (laps > shown ? shown : laps); i++)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 3),
-            child: Rosette(size: 13, color: ms.gilt, lobes: 6, filled: true),
+            child: Container(
+              width: 9,
+              height: 9,
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            ),
           ),
         if (laps > shown) ...[
           const SizedBox(width: 5),
@@ -530,7 +568,7 @@ class _LapTally extends StatelessWidget {
             size: 12,
             serif: false,
             weight: FontWeight.w700,
-            color: ms.gilt,
+            color: color,
           ),
         ],
       ],
@@ -538,8 +576,7 @@ class _LapTally extends StatelessWidget {
   }
 }
 
-/// The phrase selector: a ruled strip of names, the active one marked by a
-/// rule beneath it. A tab register, not a row of pills.
+/// The phrase selector: a scrolling row of chips, the active one tinted.
 class _PhraseSelector extends StatelessWidget {
   const _PhraseSelector({
     required this.phrases,
@@ -557,53 +594,33 @@ class _PhraseSelector extends StatelessWidget {
     final ms = ManuscriptTheme.of(context);
     final s = AppStrings.of(context);
 
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: ms.rule)),
-      ),
-      child: SizedBox(
-        height: 48,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: Ms.margin - 6),
-          itemCount: phrases.length,
-          itemBuilder: (context, index) {
-            final active = index == selected;
-            return Material(
-              type: MaterialType.transparency,
-              child: InkWell(
-                onTap: () => onSelect(index),
-                child: Container(
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: active ? ms.rubric : Colors.transparent,
-                        width: 2,
-                      ),
-                    ),
-                  ),
-                  child: Text(
-                    // Built-ins show their Arabic phrase in RTL; custom phrases
-                    // retain the user's name so identical texts stay distinct.
-                    s.rtl &&
-                            !context.read<TasbihController>().isCustom(
-                              phrases[index].id,
-                            )
-                        ? stripHarakat(phrases[index].arabic)
-                        : phrases[index].transliteration,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      color: active
-                          ? ms.rubric
-                          : theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
+    return SizedBox(
+      height: 60,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.fromLTRB(Ms.margin, 4, Ms.margin, 8),
+        itemCount: phrases.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 8),
+        itemBuilder: (context, index) {
+          final active = index == selected;
+          return ChoiceChip(
+            selected: active,
+            onSelected: (_) => onSelect(index),
+            label: Text(
+              // Built-ins show their Arabic phrase in RTL; custom phrases
+              // retain the user's name so identical texts stay distinct.
+              s.rtl &&
+                      !context.read<TasbihController>().isCustom(
+                        phrases[index].id,
+                      )
+                  ? stripHarakat(phrases[index].arabic)
+                  : phrases[index].transliteration,
+            ),
+            labelStyle: theme.textTheme.labelLarge?.copyWith(
+              color: active ? ms.rubric : theme.colorScheme.onSurfaceVariant,
+            ),
+          );
+        },
       ),
     );
   }

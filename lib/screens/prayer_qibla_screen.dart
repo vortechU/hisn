@@ -4,17 +4,18 @@ import 'package:provider/provider.dart';
 import '../l10n/app_strings.dart';
 import '../services/prayer_service.dart';
 import '../theme/app_theme.dart';
-import '../widgets/arabic_text.dart';
+import '../widgets/prayer_header.dart';
 import '../widgets/ornament.dart';
 import 'prayer_schedule_screen.dart';
 import 'qibla_screen.dart';
 import 'sunnah_calendar_screen.dart';
 
-/// The combined Prayer & Qibla tab: the live compass above, then today's
-/// prayers as a ruled register. Tapping any entry opens the weekly schedule.
+/// The combined Prayer & Qibla tab: today's prayers in the screen's one niche,
+/// as a timetable, then the live compass on the plain ground below. Tapping a
+/// prayer opens the weekly schedule.
 ///
-/// The register is a table, not a list of tiles — five times that want to be
-/// compared read best when their numerals sit in one column.
+/// The times lead because they are what this tab is opened for most; the
+/// compass is a turn of the phone away.
 class PrayerQiblaScreen extends StatelessWidget {
   const PrayerQiblaScreen({super.key});
 
@@ -30,9 +31,9 @@ class PrayerQiblaScreen extends StatelessWidget {
     // astronomy for the day again.
     final today = service.todaysPrayers;
 
-    void openSchedule() => Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const PrayerScheduleScreen()),
-        );
+    void openSchedule() => Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const PrayerScheduleScreen()));
 
     return Scaffold(
       appBar: AppBar(
@@ -54,128 +55,56 @@ class PrayerQiblaScreen extends StatelessWidget {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.only(bottom: 28),
+        padding: const EdgeInsets.only(bottom: 32),
         children: [
-          const QiblaCompass(),
-          SectionMark(
-            label: s.todayLabel,
-            trailing: Text(
-              s.place(service.locationLabel),
-              style: theme.textTheme.bodySmall,
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: Ms.margin),
-            decoration: BoxDecoration(
-              border: Border.all(color: ms.rule),
-              borderRadius: BorderRadius.circular(Ms.rPanel),
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: Column(
-              children: [
-                for (var i = 0; i < today.length; i++)
-                  _PrayerRow(
-                    timing: today[i],
-                    isNext: next != null &&
-                        next.prayer == today[i].prayer &&
-                        next.time == today[i].time,
-                    first: i == 0,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(Ms.margin, 8, Ms.margin, 0),
+            child: MihrabField(
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 0, 14, 8),
+                    child: Row(
+                      children: [
+                        Text(
+                          s.todayLabel,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: ms.onField,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        // Takes the rest of the row and sets the place at its
+                        // far end, over the time column.
+                        Expanded(
+                          child: Text(
+                            s.place(service.locationLabel),
+                            textAlign: TextAlign.end,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: ms.onField.withValues(alpha: 0.88),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  PrayerTimetable(
+                    prayers: today,
+                    next: next,
+                    now: now,
                     onTap: openSchedule,
+                    inField: true,
                   ),
-              ],
+                ],
+              ),
             ),
           ),
+          const SizedBox(height: 18),
+          const QiblaCompass(),
         ],
-      ),
-    );
-  }
-}
-
-/// One row of the day's register: mark, name, Arabic name, time.
-class _PrayerRow extends StatelessWidget {
-  const _PrayerRow({
-    required this.timing,
-    required this.isNext,
-    required this.first,
-    required this.onTap,
-  });
-
-  final PrayerTiming timing;
-  final bool isNext;
-  final bool first;
-  final VoidCallback onTap;
-
-  static int _hour12(int hour24) {
-    final h = hour24 % 12;
-    return h == 0 ? 12 : h;
-  }
-
-  static String _clock(DateTime t, AppStrings s) {
-    final m = t.minute.toString().padLeft(2, '0');
-    return '${_hour12(t.hour)}:$m ${s.ampm(t.hour)}';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final ms = ManuscriptTheme.of(context);
-    final s = AppStrings.of(context);
-    final tint = isNext ? ms.rubric : theme.colorScheme.onSurface;
-
-    return Material(
-      type: MaterialType.transparency,
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
-          decoration: BoxDecoration(
-            color: isNext ? ms.rubric.withValues(alpha: 0.07) : null,
-            border: first
-                ? null
-                : Border(top: BorderSide(color: ms.rule)),
-          ),
-          child: Row(
-            children: [
-              SizedBox(
-                width: 20,
-                child: isNext
-                    ? Rosette(size: 15, color: ms.gilt, lobes: 8, filled: true)
-                    : null,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                flex: 3,
-                child: Text(
-                  s.prayerName(timing.prayer),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.titleSmall?.copyWith(color: tint),
-                ),
-              ),
-              if (!s.ar) ...[
-                const SizedBox(width: 8),
-                Flexible(
-                  flex: 2,
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: AlignmentDirectional.centerEnd,
-                    child: ArabicText(timing.prayer.arabicName,
-                        fontSize: 19, color: tint, height: 1.6),
-                  ),
-                ),
-              ],
-              const SizedBox(width: 12),
-              Numeral(
-                _clock(timing.time, s),
-                size: 15,
-                serif: false,
-                weight: isNext ? FontWeight.w700 : FontWeight.w500,
-                color: isNext ? tint : theme.colorScheme.onSurfaceVariant,
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

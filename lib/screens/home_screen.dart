@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../l10n/app_strings.dart';
 import '../services/feature_tour_controller.dart';
-import '../theme/app_theme.dart';
 import '../theme/motion.dart';
 import '../widgets/feature_tour_anchor.dart';
 import '../widgets/feature_tour_overlay.dart';
@@ -200,7 +199,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
-    final ms = ManuscriptTheme.of(context);
     final active = _tour?.active ?? false;
     final step = _tour?.step ?? 0;
     final titles = [
@@ -220,41 +218,36 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     final home = Scaffold(
       body: IndexedStack(index: _index, children: _tabs),
-      // A ruled edge rather than a shadow, so the bar reads as the foot of the
-      // page it sits under.
-      bottomNavigationBar: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border(top: BorderSide(color: ms.rule)),
-        ),
-        child: NavigationBar(
-          selectedIndex: _index,
-          onDestinationSelected: (i) => HomeScreen.tab.value = i,
-          destinations: [
-            NavigationDestination(
-              icon: const Icon(Icons.menu_book_outlined),
-              selectedIcon: const Icon(Icons.menu_book),
-              label: s.navAdhkar,
+      // No edge at all: the bar shares the page's ground, and the stadium
+      // indicator alone says where you are.
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _index,
+        onDestinationSelected: (i) => HomeScreen.tab.value = i,
+        destinations: [
+          NavigationDestination(
+            icon: const Icon(Icons.menu_book_outlined),
+            selectedIcon: const Icon(Icons.menu_book),
+            label: s.navAdhkar,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.auto_stories_outlined),
+            selectedIcon: const Icon(Icons.auto_stories),
+            label: s.navQuran,
+          ),
+          FeatureTourAnchor(
+            target: FeatureTourTarget.prayerQibla,
+            child: NavigationDestination(
+              icon: const Icon(Icons.mosque_outlined),
+              selectedIcon: const Icon(Icons.mosque),
+              label: s.navPrayer,
             ),
-            NavigationDestination(
-              icon: const Icon(Icons.auto_stories_outlined),
-              selectedIcon: const Icon(Icons.auto_stories),
-              label: s.navQuran,
-            ),
-            FeatureTourAnchor(
-              target: FeatureTourTarget.prayerQibla,
-              child: NavigationDestination(
-                icon: const Icon(Icons.mosque_outlined),
-                selectedIcon: const Icon(Icons.mosque),
-                label: s.navPrayer,
-              ),
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.tune_outlined),
-              selectedIcon: const Icon(Icons.tune),
-              label: s.navSettings,
-            ),
-          ],
-        ),
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.tune_outlined),
+            selectedIcon: const Icon(Icons.tune),
+            label: s.navSettings,
+          ),
+        ],
       ),
     );
     return PopScope<Object?>(

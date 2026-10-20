@@ -245,14 +245,18 @@ class _DuaAppState extends State<DuaApp> {
                 ),
         ),
       ],
-      // DisplaySettings joins the theme because the Latin faces carry no
-      // Arabic: the chosen Arabic typeface is threaded in as the fallback so
-      // Arabic interface text is set in the same face as the dua text, rather
-      // than in whatever the platform substitutes.
+      // DisplaySettings joins the theme because the chosen Arabic typeface is
+      // threaded in as the fallback for anything the interface face lacks, so
+      // no interface text drops to whatever the platform substitutes.
       child: Consumer3<LocaleController, ThemeController, DisplaySettings>(
         builder: (context, localeController, themeController, display, _) {
           final arabicFamily = display.arabicFontFamily;
           final arabicUi = localeController.rtl;
+          // Readex Pro has no Urdu-specific letters; an Urdu interface sets
+          // its chrome in a Naskh that does.
+          final uiFamily = localeController.locale.languageCode == 'ur'
+              ? AppTheme.urduUiFont
+              : AppTheme.sans;
           return MaterialApp(
             title: 'Hisn',
             navigatorKey: appNavigatorKey,
@@ -261,11 +265,13 @@ class _DuaAppState extends State<DuaApp> {
               themeController.palette,
               arabicFamily: arabicFamily,
               arabicUi: arabicUi,
+              uiFamily: uiFamily,
             ),
             darkTheme: AppTheme.dark(
               themeController.palette,
               arabicFamily: arabicFamily,
               arabicUi: arabicUi,
+              uiFamily: uiFamily,
             ),
             themeMode: themeController.themeMode,
             locale: localeController.locale,

@@ -631,7 +631,7 @@ void main() {
 
       expect(find.text('Turn right 156°'), findsOneWidget);
       expect(find.text('Turn right 161°'), findsNothing);
-      expect(find.text('Corrected to true north'), findsOneWidget);
+      expect(find.textContaining('Corrected to true north'), findsOneWidget);
     });
 
     testWidgets('says to calibrate when the platform will not vouch for it',

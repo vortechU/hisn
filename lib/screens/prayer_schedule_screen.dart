@@ -50,11 +50,10 @@ class PrayerScheduleScreen extends StatelessWidget {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: Ms.margin),
                 decoration: BoxDecoration(
-                  border: Border.all(
-                    color: isToday
-                        ? ms.rubric.withValues(alpha: 0.45)
-                        : ms.rule,
-                  ),
+                  color: ms.paper,
+                  border: isToday
+                      ? Border.all(color: ms.rubric.withValues(alpha: 0.45))
+                      : null,
                   borderRadius: BorderRadius.circular(Ms.rPanel),
                 ),
                 child: Column(
