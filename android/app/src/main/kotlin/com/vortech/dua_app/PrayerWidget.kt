@@ -34,6 +34,9 @@ data class PrayerWidgetData(
     val pm: String,
 )
 
+/** The prayer a countdown is about, its adhan, and which way the count runs. */
+data class Countdown(val index: Int, val at: Date, val since: Boolean)
+
 /**
  * Storage + computation helpers for the home-screen prayer widgets.
  *
@@ -73,6 +76,7 @@ object PrayerWidget {
         refreshProvider(context, TasbihWidgetProvider::class.java)
         refreshProvider(context, AdhkarWidgetProvider::class.java)
         refreshProvider(context, AyahWidgetProvider::class.java)
+        refreshProvider(context, QuranWidgetProvider::class.java)
     }
 
     private fun refreshProvider(context: Context, cls: Class<*>) {
@@ -167,6 +171,53 @@ object PrayerWidget {
         val key = "since_minutes_${PRAYER_KEYS.getOrElse(index) { PRAYER_KEYS[0] }}"
         return (prefs(context).getString(key, null)?.toLongOrNull()
             ?: DEFAULT_SINCE_MINUTES).coerceAtLeast(0) * 60_000L
+    }
+
+    /**
+     * What a countdown shows at [now]: for the first minutes after an adhan
+     * (that prayer's iqāmah delay) the prayer just called, counting up from it;
+     * otherwise the next prayer, counting down to it. Null until the app has
+     * pushed a location.
+     */
+    fun countdown(context: Context, data: PrayerWidgetData, now: Long): Countdown? {
+        val next = data.nextTime ?: return null
+        val window = sinceWindowMillis(context, data.lastIndex)
+        val since = data.lastTime?.takeIf { now - it.time in 0 until window }
+        return if (since != null) {
+            Countdown(data.lastIndex, since, since = true)
+        } else {
+            Countdown(data.nextIndex, next, since = false)
+        }
+    }
+
+    /**
+     * When the prayer widgets next change face: the end of the count-up
+     * window if one is running, else the next adhan.
+     */
+    fun turnAt(context: Context, data: PrayerWidgetData, now: Long): Long? {
+        val next = data.nextTime ?: return null
+        val windowEnd = data.lastTime?.time?.plus(sinceWindowMillis(context, data.lastIndex))
+        return if (windowEnd != null && windowEnd > now) windowEnd else next.time
+    }
+
+    /**
+     * Where "now" falls on the day track, in column units: 0 at Fajr's node,
+     * 4 at Isha's, and the half-columns either side for the night before Fajr
+     * and after Isha. Null when there are no times to place it among.
+     */
+    fun nowOnTrack(data: PrayerWidgetData, now: Long): Float? {
+        val times = data.times ?: return null
+        val last = data.lastTime?.time ?: return null
+        val next = data.nextTime?.time ?: return null
+        val span = (next - last).coerceAtLeast(1)
+        val f = ((now - last).toFloat() / span).coerceIn(0f, 1f)
+        return when {
+            // Before Fajr: the last adhan was yesterday's Isha.
+            now < times.first().time -> -0.5f + 0.5f * f
+            // After Isha: the next is tomorrow's Fajr.
+            now >= times.last().time -> times.lastIndex + 0.5f * f
+            else -> data.lastIndex + f
+        }
     }
 
     private fun shiftDays(date: Date, days: Int): Date =

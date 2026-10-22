@@ -3,6 +3,7 @@ package com.vortech.dua_app
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Layout
 import android.view.View
@@ -48,28 +49,19 @@ class AyahWidgetProvider : AppWidgetProvider() {
         manager: AppWidgetManager,
         widgetId: Int,
     ): RemoteViews {
-        val ms = WidgetTheme.of(context)
+        val inks = WidgetTheme.inks(context)
         val views = RemoteViews(context.packageName, R.layout.ayah_widget)
 
-        WidgetChrome.applySheet(views, ms)
+        WidgetChrome.applyGround(views, inks) { it.sheet }
+        WidgetChrome.tint(views, R.id.ayah_mark, inks) { it.rubric }
         WidgetChrome.applyDirection(context, views, R.id.ayah_root)
         WidgetChrome.open(context, WidgetChrome.ROUTE_HOME)?.let {
             views.setOnClickPendingIntent(R.id.ayah_root, it)
         }
 
         val width = WidgetChrome.widthPx(context, manager, widgetId, FALLBACK_WIDTH_DP) -
-            WidgetChrome.dp(context, 30f)
+            WidgetChrome.dp(context, 36f)
         val box = width.coerceAtLeast(96)
-
-        views.setImageViewBitmap(
-            R.id.ayah_rule,
-            WidgetOrnament.ruleWithRosette(
-                widthPx = box,
-                heightPx = WidgetChrome.dp(context, 12f).coerceAtLeast(10),
-                color = ms.gilt,
-                ruleColor = ms.rule,
-            ),
-        )
 
         val item = today(context)
         if (item == null) {
@@ -86,28 +78,34 @@ class AyahWidgetProvider : AppWidgetProvider() {
             context = context,
             text = item.arabic,
             fontId = WidgetChrome.arabicFont(context),
-            textSizePx = context.resources.displayMetrics.scaledDensity * 19f,
-            color = ms.ink,
+            textSizePx = context.resources.displayMetrics.scaledDensity * 20f,
+            color = Color.WHITE,
             maxWidthPx = box,
             maxLines = 2,
             align = Layout.Alignment.ALIGN_CENTER,
         )
 
         if (drawn != null) {
-            views.setImageViewBitmap(R.id.ayah_arabic, drawn)
+            WidgetChrome.mask(views, R.id.ayah_arabic, drawn, inks) { it.ink }
             views.setViewVisibility(R.id.ayah_arabic, View.VISIBLE)
             views.setViewVisibility(R.id.ayah_arabic_text, View.GONE)
         } else {
             views.setTextViewText(R.id.ayah_arabic_text, item.arabic)
-            views.setTextColor(R.id.ayah_arabic_text, ms.ink)
+            WidgetChrome.textColor(views, R.id.ayah_arabic_text, inks) { it.ink }
             views.setViewVisibility(R.id.ayah_arabic_text, View.VISIBLE)
             views.setViewVisibility(R.id.ayah_arabic, View.GONE)
         }
 
-        views.setTextViewText(R.id.ayah_translation, item.translation)
-        views.setTextColor(R.id.ayah_translation, ms.muted)
-        views.setTextViewText(R.id.ayah_source, item.source)
-        views.setTextColor(R.id.ayah_source, ms.gilt)
+        views.setTextViewText(R.id.ayah_translation, WidgetChrome.ui(context, item.translation))
+        // An Arabic reader has the meaning in the line above; the pool carries
+        // an English rendering for them, which would only be noise here.
+        views.setViewVisibility(
+            R.id.ayah_translation,
+            if (WidgetChrome.isArabicUi(context) || item.translation.isBlank()) View.GONE else View.VISIBLE,
+        )
+        WidgetChrome.textColor(views, R.id.ayah_translation, inks) { it.muted }
+        views.setTextViewText(R.id.ayah_source, WidgetChrome.ui(context, item.source))
+        WidgetChrome.textColor(views, R.id.ayah_source, inks) { it.rubric }
         return views
     }
 

@@ -1,5 +1,6 @@
 package com.vortech.dua_app
 
+import android.app.AlarmManager
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.content.Context
@@ -9,9 +10,9 @@ import android.widget.RemoteViews
 import android.view.View
 
 /**
- * The chrome every Hisn widget shares: the ruled page it is drawn on, the
- * intents that open the app at the right place, and the size arithmetic the
- * drawn ornaments need.
+ * The chrome every Hisn widget shares: the ground it is drawn on, the intents
+ * that open the app at the right place, and the size arithmetic the drawn
+ * marks need.
  */
 object WidgetChrome {
 
@@ -24,17 +25,64 @@ object WidgetChrome {
     const val ROUTE_TASBIH = "tasbih"
     const val ROUTE_ADHKAR = "adhkar"
     const val ROUTE_HOME = "home"
+    const val ROUTE_QURAN = "quran"
 
     /**
-     * Lay the page: tint the sheet and its jadwal to the active palette.
-     *
-     * Both are ImageViews rather than backgrounds because `setColorFilter` is
-     * the one recolouring hook RemoteViews offers on every API level this app
-     * supports — see widget_sheet.xml.
+     * Call [method] on view [id] with the colour [role] picks from the
+     * palette — both palettes' colours where the launcher chooses between day
+     * and night itself (see [WidgetInks]), so the widget turns with the home
+     * screen without being redrawn.
      */
-    fun applySheet(views: RemoteViews, palette: WidgetPalette) {
-        views.setInt(R.id.widget_ground, "setColorFilter", palette.sheet)
-        views.setInt(R.id.widget_frame, "setColorFilter", palette.rule)
+    fun color(
+        views: RemoteViews,
+        id: Int,
+        method: String,
+        inks: WidgetInks,
+        role: (WidgetPalette) -> Int,
+    ) {
+        if (inks.follows && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            views.setColorInt(id, method, role(inks.day), role(inks.night))
+        } else {
+            views.setInt(id, method, role(inks.now))
+        }
+    }
+
+    fun textColor(views: RemoteViews, id: Int, inks: WidgetInks, role: (WidgetPalette) -> Int) =
+        color(views, id, "setTextColor", inks, role)
+
+    /**
+     * Recolour an ImageView — a shape, an icon, or a drawn mask — to the
+     * colour [role] picks.
+     *
+     * `setColorFilter` is the one recolouring hook RemoteViews offers on every
+     * API level this app supports (see widget_sheet.xml), and as a filter it
+     * also wins over the XML tints some views carry for the picker's preview.
+     */
+    fun tint(views: RemoteViews, id: Int, inks: WidgetInks, role: (WidgetPalette) -> Int) =
+        color(views, id, "setColorFilter", inks, role)
+
+    /** Lay the ground: the field or the paper. */
+    fun applyGround(views: RemoteViews, inks: WidgetInks, role: (WidgetPalette) -> Int) =
+        tint(views, R.id.widget_ground, inks, role)
+
+    /**
+     * Show [drawn] — drawn in white — as a mask tinted to [role].
+     *
+     * Drawn marks carry no colour of their own, so they turn day to night
+     * with the tint like everything else. Kept as alpha only, which is also a
+     * quarter of the bytes against the ~1 MB the whole update may use.
+     */
+    fun mask(
+        views: RemoteViews,
+        id: Int,
+        drawn: android.graphics.Bitmap,
+        inks: WidgetInks,
+        role: (WidgetPalette) -> Int,
+    ) {
+        val alpha = drawn.extractAlpha()
+        if (alpha !== drawn) drawn.recycle()
+        views.setImageViewBitmap(id, alpha)
+        tint(views, id, inks, role)
     }
 
     /**
@@ -109,6 +157,99 @@ object WidgetChrome {
             .coerceIn(120, 1200)
     }
 
+    /**
+     * How tall this widget currently is, in dp, as laid out in portrait.
+     *
+     * Layouts hide their secondary lines below a height rather than letting a
+     * launcher's smallest cell squeeze them into each other.
+     */
+    fun heightDp(manager: AppWidgetManager, widgetId: Int, fallbackDp: Int): Int = try {
+        manager.getAppWidgetOptions(widgetId)
+            ?.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, 0)
+            ?.takeIf { it > 0 }
+            ?: fallbackDp
+    } catch (_: Exception) {
+        fallbackDp
+    }
+
+    /** "7:21 PM", with the 12-hour markers the app pushed for its language. */
+    fun clock(date: java.util.Date, am: String, pm: String): String {
+        val c = java.util.Calendar.getInstance().apply { time = date }
+        val marker = if (c.get(java.util.Calendar.HOUR_OF_DAY) < 12) am else pm
+        val formatted = java.text.SimpleDateFormat("h:mm", java.util.Locale.US).format(date)
+        return "$formatted $marker"
+    }
+
+    /**
+     * Run [chrono] for [shown]: down to its adhan, or up from it.
+     *
+     * A [android.widget.Chronometer] ticks on its own inside the launcher, so
+     * there are no per-second redraws. Before Android 7 (no count-down
+     * chronometer) the static [fallback] shows "Xh Ym" instead.
+     */
+    fun setCountdown(
+        context: Context,
+        views: RemoteViews,
+        chrono: Int,
+        fallback: Int,
+        shown: Countdown,
+        now: Long,
+    ) {
+        val span = if (shown.since) now - shown.at.time else shown.at.time - now
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            views.setViewVisibility(chrono, View.VISIBLE)
+            views.setViewVisibility(fallback, View.GONE)
+            views.setChronometerCountDown(chrono, !shown.since)
+            // A count-down's base is the moment it reaches zero; a count-up's
+            // is the moment it started from.
+            val base = if (shown.since) {
+                android.os.SystemClock.elapsedRealtime() - span
+            } else {
+                android.os.SystemClock.elapsedRealtime() + span.coerceAtLeast(0)
+            }
+            views.setChronometer(chrono, base, null, true)
+        } else {
+            views.setViewVisibility(chrono, View.GONE)
+            views.setViewVisibility(fallback, View.VISIBLE)
+            views.setTextViewText(fallback, relative(context, span))
+        }
+    }
+
+    private fun relative(context: Context, millis: Long): String {
+        val mins = (millis / 60000).coerceAtLeast(0)
+        val h = mins / 60
+        val m = mins % 60
+        if (PrayerWidget.prefs(context).getString("lang", "en") == "ur") {
+            return if (h > 0) "$h گھنٹے $m منٹ" else "$m منٹ"
+        }
+        return if (h > 0) "${h}h ${m}m" else "${m}m"
+    }
+
+    /** A pushed label, or [fallback] before the app has pushed one. */
+    fun label(context: Context, key: String, fallback: String): CharSequence =
+        ui(context, PrayerWidget.prefs(context).getString(key, fallback) ?: fallback)
+
+    /**
+     * Interface text, ready for a TextView set in Readex Pro.
+     *
+     * Readex has Arabic but not the letters only Urdu uses (ہ, ے, ٹ…). Left to
+     * glyph fallback, a word would switch faces mid-word and lose its joins, so
+     * an Urdu interface's text is spanned whole onto the system sans — whose
+     * Arabic-script face does have them, as the app sets Urdu chrome in Noto
+     * Naskh. A family-name span is the one kind that survives the parcel.
+     */
+    fun ui(context: Context, text: String): CharSequence {
+        if (PrayerWidget.prefs(context).getString("lang", "en") != "ur" || text.isEmpty()) {
+            return text
+        }
+        return android.text.SpannableString(text).apply {
+            setSpan(
+                android.text.style.TypefaceSpan("sans-serif"),
+                0, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
+            )
+        }
+    }
+
     /** dp → px, for ornament geometry that should match the app's metrics. */
     fun dp(context: Context, value: Float): Int =
         (value * context.resources.displayMetrics.density).toInt()
@@ -147,6 +288,22 @@ object WidgetChrome {
         return out.toString()
     }
 
+    /**
+     * A tally ("3 / 12", "/ 33 · ×2") held left to right in any interface.
+     *
+     * Arabic-Indic digits count as right-to-left to the separators between
+     * them (Unicode bidi rule N1), so "٣ / ١٢" comes out as "١٢ / ٣" even inside
+     * a left-to-right isolate. A left-to-right mark either side of every
+     * separator anchors it between the numbers.
+     */
+    fun tally(text: String): String = buildString {
+        for (ch in text) {
+            if (ch.isDigit()) append(ch) else append(LRM).append(ch).append(LRM)
+        }
+    }
+
+    private const val LRM = '\u200E'
+
     private val ARABIC_DIGITS = charArrayOf(
         '٠', '١', '٢', '٣', '٤',
         '٥', '٦', '٧', '٨', '٩',
@@ -173,7 +330,61 @@ object WidgetChrome {
         )
     }
 
-    /** True on the versions where a launcher rounds widget corners for us. */
-    val launcherRoundsCorners: Boolean
-        get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    /**
+     * Redraw every widget that turns over with the prayers at [at]: the next
+     * adhan, or the end of the minutes counted up after one.
+     *
+     * One alarm serves them all — the timeline, the countdown and the adhkar
+     * set all change at the same moments. It does not wake the phone: a
+     * launcher nobody is looking at needs no redraw, and the alarm is delivered
+     * as soon as the screen comes on.
+     */
+    fun scheduleTurn(context: Context, at: Long) {
+        val am = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager ?: return
+        val pi = turnIntent(context, PendingIntent.FLAG_UPDATE_CURRENT) ?: return
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !am.canScheduleExactAlarms()) {
+                am.set(AlarmManager.RTC, at, pi)
+            } else {
+                am.setExact(AlarmManager.RTC, at, pi)
+            }
+        } catch (_: SecurityException) {
+            // Left to the ~30-min update tick.
+        }
+    }
+
+    /** Drop the turn alarm, once the last widget that needed it is removed. */
+    fun cancelTurnIfUnused(context: Context) {
+        val manager = AppWidgetManager.getInstance(context) ?: return
+        val inUse = TURNING.any {
+            manager.getAppWidgetIds(android.content.ComponentName(context, it)).isNotEmpty()
+        }
+        if (inUse) return
+        val am = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager ?: return
+        turnIntent(context, PendingIntent.FLAG_NO_CREATE)?.let { am.cancel(it) }
+    }
+
+    private fun turnIntent(context: Context, flag: Int): PendingIntent? {
+        val intent = Intent(context, WidgetTurnReceiver::class.java)
+        return PendingIntent.getBroadcast(
+            context, TURN_REQUEST, intent, flag or PendingIntent.FLAG_IMMUTABLE,
+        )
+    }
+
+    /** The providers whose face changes at a prayer boundary. */
+    val TURNING: List<Class<*>> = listOf(
+        PrayerWidgetProvider::class.java,
+        PrayerWidgetSmallProvider::class.java,
+        AdhkarWidgetProvider::class.java,
+    )
+
+    /** Request code of the redraw alarm set by [scheduleTurn]. */
+    private const val TURN_REQUEST = 0x7E1D
+}
+
+/** Where the turn alarm lands: redraw everything that turns with the prayers. */
+class WidgetTurnReceiver : android.content.BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        for (provider in WidgetChrome.TURNING) WidgetChrome.refresh(context, provider)
+    }
 }

@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart' show mapEquals;
 import 'package:flutter/material.dart';
 
 import '../data/dua_repository.dart';
+import '../data/quran_repository.dart';
 import '../l10n/app_strings.dart';
 import '../l10n/locale_controller.dart';
 import '../theme/app_palette.dart';
@@ -14,6 +15,7 @@ import 'display_settings.dart';
 import 'dua_progress_service.dart';
 import 'notification_service.dart';
 import 'prayer_service.dart';
+import 'quran_service.dart';
 import 'sunnah_calendar_service.dart';
 import 'tasbih_controller.dart';
 import 'theme_controller.dart';
@@ -30,9 +32,13 @@ import 'theme_controller.dart';
 /// The push is debounced so a burst of notifications (a GPS fix landing right
 /// after launch, say) results in one write.
 class PrayerWidgetService extends ChangeNotifier {
-  PrayerWidgetService(this._repository);
+  PrayerWidgetService(this._repository, [this._quranIndex]);
 
   final DuaRepository _repository;
+
+  /// The sūrah index, for naming where the reader left off. Optional so the
+  /// rest of the payload does not wait on it.
+  final QuranRepository? _quranIndex;
 
   Timer? _debounce;
   PrayerService? _prayer;
@@ -44,6 +50,7 @@ class PrayerWidgetService extends ChangeNotifier {
   DuaProgressService? _progress;
   TasbihController? _tasbih;
   NotificationService? _notifications;
+  QuranService? _quran;
 
   /// The adhkar sets the widget may show, in the order the day reaches them.
   /// Mirrored natively in `AdhkarWidgetProvider`; keep the two in step.
@@ -68,11 +75,18 @@ class PrayerWidgetService extends ChangeNotifier {
     DisplaySettings display,
     DuaProgressService progress,
     TasbihController tasbih,
-    NotificationService notifications,
-  ) {
+    NotificationService notifications, {
+    QuranService? quran,
+  }) {
     if (!identical(notifications, _notifications)) {
       _notifications?.removeListener(_schedulePush);
       _notifications = notifications..addListener(_schedulePush);
+    }
+    // Listened to directly, like the notification settings: a page turned in
+    // the mushaf moves the "continue reading" widget.
+    if (!identical(quran, _quran)) {
+      _quran?.removeListener(_schedulePush);
+      _quran = quran?..addListener(_schedulePush);
     }
     _prayer = prayer;
     _lang = locale.lang;
@@ -94,6 +108,7 @@ class PrayerWidgetService extends ChangeNotifier {
   void dispose() {
     _debounce?.cancel();
     _notifications?.removeListener(_schedulePush);
+    _quran?.removeListener(_schedulePush);
     super.dispose();
   }
 
@@ -118,6 +133,7 @@ class PrayerWidgetService extends ChangeNotifier {
       ..._appearance(),
       ..._adhkar(s),
       ..._tasbihPhrase(),
+      ..._quranPosition(s),
       'ayah_pool': _versePool(s),
     };
     if (_lastPushed != null && mapEquals(_lastPushed, data)) return;
@@ -185,7 +201,9 @@ class PrayerWidgetService extends ChangeNotifier {
     };
   }
 
-  /// The five ink roles, resolved for one brightness.
+  /// The colour roles, resolved for one brightness: the paper and what is
+  /// drawn on it, and the mihrab's field and its text. Everything else a
+  /// widget draws with is blended from these natively (see `WidgetTheme`).
   Map<String, Color> _roles(Brightness brightness) {
     final isLight = brightness == Brightness.light;
     final sheet = _palette.paperFor(brightness);
@@ -193,10 +211,13 @@ class PrayerWidgetService extends ChangeNotifier {
     return {
       'sheet': sheet,
       'ink': ink,
-      'muted': Color.lerp(ink, sheet, isLight ? 0.34 : 0.40)!,
+      // The app's own muted ink (see AppTheme).
+      'muted': Color.lerp(ink, sheet, isLight ? 0.32 : 0.34)!,
       'rubric': _palette.rubricFor(brightness),
       'gilt': _palette.giltFor(brightness),
       'rule': Color.alphaBlend(_palette.ruleFor(brightness), sheet),
+      'field': _palette.fieldFor(brightness),
+      'onfield': _palette.onFieldFor(brightness),
     };
   }
 
@@ -207,9 +228,12 @@ class PrayerWidgetService extends ChangeNotifier {
   /// from memory.
   Map<String, String> _adhkar(AppStrings s) {
     final progress = _progress;
-    // Uppercased to match how the app sets this label — small, tracked, and
-    // read as apparatus rather than as a sentence. A no-op in Arabic.
-    final data = <String, String>{'adhkar_label': s.recommendedNow.toUpperCase()};
+    final data = <String, String>{
+      'adhkar_label': s.recommendedNow,
+      // The two fortifying sets, as the chips under the bar name them.
+      'adhkar_morning_short': s.muhassanMorning,
+      'adhkar_evening_short': s.muhassanEvening,
+    };
     for (final id in _adhkarSets) {
       final category = _repository.categoryById(id);
       final duas = _repository.duasForCategory(id);
@@ -218,6 +242,7 @@ class PrayerWidgetService extends ChangeNotifier {
           : duas.where((d) => progress.countOf(d.id) >= d.repeat).length;
       data['adhkar_${id}_title'] = category?.titleForLang(s.lang.name) ?? '';
       data['adhkar_${id}_sub'] = category?.subtitleForLang(s.lang.name) ?? '';
+      data['adhkar_${id}_ar'] = category?.titleArabic ?? '';
       data['adhkar_${id}_done'] = done.toString();
       data['adhkar_${id}_total'] = duas.length.toString();
     }
@@ -238,6 +263,23 @@ class PrayerWidgetService extends ChangeNotifier {
       orElse: () => presets.first,
     );
     return TasbihController.widgetPayload(dhikr);
+  }
+
+  /// Where the reader left off in the mushaf, named as the Quran tab's banner
+  /// names it. Before anything has been read, the opening page.
+  Map<String, String> _quranPosition(AppStrings s) {
+    final index = _quranIndex;
+    if (index == null || index.surahs.isEmpty) return const {};
+    final last = _quran?.lastPage;
+    final page = last ?? 1;
+    final surah = index.surahForPage(page);
+    final lead = last == null ? s.quranTitle : s.continueReading;
+    return {
+      'quran_page': page.toString(),
+      'quran_title': '${s.surahWord} ${surah.nameFor(s.rtl)}',
+      'quran_sub': '$lead · ${s.juzLabel(surah.juz)}',
+      'quran_ar': surah.name,
+    };
   }
 
   /// The pool the "verse of the day" widget draws from.

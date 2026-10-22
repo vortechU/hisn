@@ -5,7 +5,7 @@
 -->
 <resources>
     <string name="widget_prayer_label">حصن — أوقات الصلاة</string>
-    <string name="widget_prayer_description">صلوات اليوم الخمس، مع تمييز الصلاة التالية.</string>
+    <string name="widget_prayer_description">صلوات اليوم الخمس على خطّ زمني، مع عدّ تنازلي للصلاة التالية.</string>
 
     <string name="widget_prayer_small_label">حصن — الصلاة التالية</string>
     <string name="widget_prayer_small_description">الصلاة التالية والوقت المتبقّي لها.</string>
@@ -14,8 +14,11 @@
     <string name="widget_tasbih_description">اضغط لتسبّح دون فتح التطبيق.</string>
 
     <string name="widget_adhkar_label">حصن — أذكار الآن</string>
-    <string name="widget_adhkar_description">أذكار هذا الوقت من اليوم، وما أتممته منها.</string>
+    <string name="widget_adhkar_description">أذكار هذا الوقت من اليوم، وما أتممته منها، وهل أتممت أذكار الصباح والمساء.</string>
 
     <string name="widget_ayah_label">حصن — آية اليوم</string>
     <string name="widget_ayah_description">آية أو دعاء يتغيّر كل يوم.</string>
+
+    <string name="widget_quran_label">حصن — متابعة القراءة</string>
+    <string name="widget_quran_description">تابع قراءة القرآن من حيث توقّفت.</string>
 </resources>

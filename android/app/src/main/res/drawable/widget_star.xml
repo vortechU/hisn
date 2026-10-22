@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The khatam: two squares interlaced into an eight-point star, ringed. The one
+    piece of ornament the widgets carry, set large and faint into a corner of
+    the field as the app sets its girih under the mihrab's arch.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.6"
+        android:pathData="M16,16H84V84H16Z" />
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.6"
+        android:pathData="M50,2L98,50L50,98L2,50Z" />
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.6"
+        android:pathData="M50,22a28,28 0,1 1,0 56a28,28 0,1 1,0 -56z" />
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.6"
+        android:pathData="M50,34L54.6,38.9L61.3,38.7L61.1,45.4L66,50L61.1,54.6L61.3,61.3L54.6,61.1L50,66L45.4,61.1L38.7,61.3L38.9,54.6L34,50L38.9,45.4L38.7,38.7L45.4,38.9Z" />
+</vector>

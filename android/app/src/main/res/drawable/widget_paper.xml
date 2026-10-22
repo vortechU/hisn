@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- widget_sheet, authored in paper for the reading widgets' previews. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#FAF9F6" />
+    <corners android:radius="@dimen/widget_radius" />
+</shape>

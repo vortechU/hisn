@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    The set of adhkar that belongs to this part of the day, and how far through
-    it you are.
+    The adhkar set for this part of the day, on paper: what it is, how far
+    through it you are, and whether the day's two fortifying sets are done.
 
-    Which set that is follows the current prayer period rather than the wall
-    clock — the same rule RecommendedAdhkar applies in the app, because morning
-    adhkar are tied to Fajr and evening to Asr, not to noon.
-
-    Progress is a drawn rule rather than two weighted views: a bar assembled
-    from layout_weight snaps to whole pixels, which makes "1 of 23" look like
-    nothing at all.
+    Reads the same way as the "recommended now" block in the app's mihrab: the
+    set's name in the reader's script with its Arabic name across from it, the
+    tally, a rounded bar. Under it, the morning and evening sets as two chips,
+    so a glance at the home screen answers "have I said them today?". Lines are
+    dropped from the bottom as the widget gets shorter (see AdhkarWidgetProvider).
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/adhkar_root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_mask"
+    android:clipToOutline="true">
 
     <ImageView
         android:id="@+id/widget_ground"
@@ -22,28 +22,21 @@
         android:layout_height="match_parent"
         android:scaleType="fitXY"
         android:contentDescription="@null"
-        android:src="@drawable/widget_sheet" />
-
-    <ImageView
-        android:id="@+id/widget_frame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="7dp"
-        android:scaleType="fitXY"
-        android:contentDescription="@null"
-        android:src="@drawable/widget_jadwal" />
+        android:src="@drawable/widget_paper" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="15dp">
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:baselineAligned="false"
             android:gravity="center_vertical">
 
             <TextView
@@ -51,64 +44,205 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textColor="#9C7B2E"
-                android:textSize="9sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.14"
+                android:fontFamily="@font/readex_pro_regular"
+                android:textColor="#5F6263"
+                android:textSize="12sp"
                 android:maxLines="1"
                 android:ellipsize="end"
-                android:text="NOW" />
+                android:text="Recommended now" />
 
             <TextView
                 android:id="@+id/adhkar_tally"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textDirection="ltr"
                 android:layout_marginStart="8dp"
-                android:textColor="#6B6459"
-                android:textSize="11sp"
-                android:maxLines="1" />
+                android:fontFamily="@font/readex_pro_medium"
+                android:textColor="#0F3D4C"
+                android:textSize="12sp"
+                android:maxLines="1"
+                android:text="3 / 12" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/adhkar_title"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:textColor="#221E18"
-            android:textSize="17sp"
-            android:textStyle="bold"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:text="—" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:baselineAligned="false">
 
-        <!-- Arabic title slot, used when the interface is Arabic. -->
-        <ImageView
-            android:id="@+id/adhkar_title_arabic"
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/adhkar_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/readex_pro_semibold"
+                    android:textColor="#161A1C"
+                    android:textSize="17sp"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:text="Morning adhkar" />
+
+                <TextView
+                    android:id="@+id/adhkar_subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:fontFamily="@font/readex_pro_regular"
+                    android:textColor="#5F6263"
+                    android:textSize="12sp"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:text="Recited after Fajr until sunrise" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/adhkar_title_arabic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:maxWidth="130dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:contentDescription="@null"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:adjustViewBounds="true"
-            android:scaleType="fitStart"
-            android:visibility="gone"
-            android:contentDescription="@null" />
+            android:layout_height="6dp"
+            android:layout_marginTop="12dp">
 
-        <TextView
-            android:id="@+id/adhkar_subtitle"
+            <ImageView
+                android:id="@+id/adhkar_progress_track"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:contentDescription="@null"
+                android:src="@drawable/widget_pill"
+                android:tint="#E6E9E7" />
+
+            <ImageView
+                android:id="@+id/adhkar_progress"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:contentDescription="@null" />
+        </FrameLayout>
+
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginTop="2dp"
-            android:textColor="#6B6459"
-            android:textSize="11sp"
-            android:maxLines="2"
-            android:ellipsize="end" />
+            android:minHeight="10dp" />
 
-        <ImageView
-            android:id="@+id/adhkar_progress"
+        <LinearLayout
+            android:id="@+id/adhkar_sessions"
             android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:layout_marginTop="6dp"
-            android:scaleType="fitXY"
-            android:contentDescription="@null" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/chip_morning_bg"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY"
+                    android:contentDescription="@null"
+                    android:src="@drawable/widget_pill"
+                    android:tint="#EEF0EE" />
+
+                <!-- match_parent so the frame stretches the pill behind it:
+                     FrameLayout only re-measures its match_parent children to
+                     its own size when there are two or more of them. -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp">
+
+                    <ImageView
+                        android:id="@+id/chip_morning_icon"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_widget_check"
+                        android:tint="#93681D" />
+
+                    <TextView
+                        android:id="@+id/chip_morning_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:fontFamily="@font/readex_pro_medium"
+                        android:textColor="#161A1C"
+                        android:textSize="12sp"
+                        android:maxLines="1"
+                        android:text="Morning" />
+                </LinearLayout>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp">
+
+                <ImageView
+                    android:id="@+id/chip_evening_bg"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY"
+                    android:contentDescription="@null"
+                    android:src="@drawable/widget_pill"
+                    android:tint="#EEF0EE" />
+
+                <!-- match_parent so the frame stretches the pill behind it:
+                     FrameLayout only re-measures its match_parent children to
+                     its own size when there are two or more of them. -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp">
+
+                    <ImageView
+                        android:id="@+id/chip_evening_icon"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:padding="2dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/widget_ring"
+                        android:tint="#8A8D8E" />
+
+                    <TextView
+                        android:id="@+id/chip_evening_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:fontFamily="@font/readex_pro_medium"
+                        android:textColor="#161A1C"
+                        android:textSize="12sp"
+                        android:maxLines="1"
+                        android:text="Evening" />
+                </LinearLayout>
+            </FrameLayout>
+        </LinearLayout>
     </LinearLayout>
 </FrameLayout>

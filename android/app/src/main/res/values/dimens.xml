@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        The widgets' corner. Before Android 12 the launcher draws whatever the
+        widget does, so it is set to the app's own panel radius; from 12 on it
+        follows the launcher's (values-v31), so a widget never shows a second,
+        mismatched corner inside the one the launcher clips to.
+    -->
+    <dimen name="widget_radius">24dp</dimen>
+</resources>

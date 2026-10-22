@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Urdu names for the widgets, matching the terms the app itself uses:
+    اذکار, تسبیح, نماز, قرآن (see lib/i18n/ur.i18n.json).
+-->
+<resources>
+    <string name="widget_prayer_label">حصن — نماز کے اوقات</string>
+    <string name="widget_prayer_description">آج کی پانچ نمازیں ایک ٹائم لائن پر، اگلی نماز کی الٹی گنتی کے ساتھ۔</string>
+
+    <string name="widget_prayer_small_label">حصن — اگلی نماز</string>
+    <string name="widget_prayer_small_description">اگلی نماز اور اس تک کا باقی وقت۔</string>
+
+    <string name="widget_tasbih_label">حصن — تسبیح</string>
+    <string name="widget_tasbih_description">ایپ کھولے بغیر ذکر گننے کے لیے ٹیپ کریں۔</string>
+
+    <string name="widget_adhkar_label">حصن — ابھی کے اذکار</string>
+    <string name="widget_adhkar_description">دن کے اس حصے کے اذکار، آپ کی پیش رفت، اور یہ کہ صبح و شام کے اذکار مکمل ہوئے یا نہیں۔</string>
+
+    <string name="widget_ayah_label">حصن — آج کی آیت</string>
+    <string name="widget_ayah_description">ہر روز بدلنے والی ایک آیت یا دعا۔</string>
+
+    <string name="widget_quran_label">حصن — پڑھنا جاری رکھیں</string>
+    <string name="widget_quran_description">قرآن وہیں سے پڑھیں جہاں آپ نے چھوڑا تھا۔</string>
+</resources>

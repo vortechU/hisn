@@ -6,12 +6,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:dua_app/data/dua_repository.dart';
+import 'package:dua_app/data/quran_repository.dart';
 import 'package:dua_app/l10n/locale_controller.dart';
 import 'package:dua_app/services/display_settings.dart';
 import 'package:dua_app/services/dua_progress_service.dart';
 import 'package:dua_app/services/notification_service.dart';
 import 'package:dua_app/services/prayer_service.dart';
 import 'package:dua_app/services/prayer_widget_service.dart';
+import 'package:dua_app/services/quran_service.dart';
 import 'package:dua_app/services/sunnah_calendar_service.dart';
 import 'package:dua_app/services/tasbih_controller.dart';
 import 'package:dua_app/services/theme_controller.dart';
@@ -30,11 +32,14 @@ void main() {
 
   const channel = MethodChannel('hisn/widget');
   late DuaRepository repo;
+  late QuranRepository quranIndex;
   late Map<String, String> pushed;
 
   setUpAll(() async {
     repo = DuaRepository();
     await repo.load();
+    quranIndex = QuranRepository();
+    await quranIndex.loadIndex();
   });
 
   setUp(() async {
@@ -75,7 +80,7 @@ void main() {
       ...extra,
     });
     final prefs = await SharedPreferences.getInstance();
-    final service = PrayerWidgetService(repo);
+    final service = PrayerWidgetService(repo, quranIndex);
     service.bind(
       PrayerService(prefs),
       LocaleController(prefs),
@@ -85,6 +90,7 @@ void main() {
       DuaProgressService(prefs),
       TasbihController(prefs),
       NotificationService(prefs, repo),
+      quran: QuranService(prefs),
     );
     // bind() debounces by 500ms so a burst of changes results in one write.
     await Future<void>.delayed(const Duration(milliseconds: 700));
@@ -109,11 +115,19 @@ void main() {
     }
     // Adhkar — all three candidate sets, since the native side picks one.
     for (final set in ['morning', 'evening', 'sleep']) {
-      for (final part in ['title', 'sub', 'done', 'total']) {
+      for (final part in ['title', 'sub', 'ar', 'done', 'total']) {
         expect(pushed, contains('adhkar_${set}_$part'));
       }
     }
+    for (final key in ['adhkar_label', 'adhkar_morning_short',
+      'adhkar_evening_short']) {
+      expect(pushed, contains(key));
+    }
     expect(pushed, contains('ayah_pool'));
+    // Continue reading.
+    for (final key in ['quran_page', 'quran_title', 'quran_sub', 'quran_ar']) {
+      expect(pushed, contains(key));
+    }
   });
 
   test('sends both brightnesses of every ink role, as opaque ARGB hex',
@@ -121,7 +135,8 @@ void main() {
     await push();
 
     for (final brightness in ['l', 'n']) {
-      for (final role in ['sheet', 'ink', 'muted', 'rubric', 'gilt', 'rule']) {
+      for (final role in ['sheet', 'ink', 'muted', 'rubric', 'gilt', 'rule',
+        'field', 'onfield']) {
         final hex = pushed['c_${brightness}_$role'];
         expect(hex, isNotNull, reason: 'missing c_${brightness}_$role');
         expect(hex, matches(RegExp(r'^[0-9A-F]{8}$')),
@@ -234,5 +249,22 @@ void main() {
     expect(pushed['lang'], 'en');
     expect(pushed['adhkar_morning_title'], isNot(arabicTitle),
         reason: 'category titles are localized');
+  });
+
+  test('continue reading names the page left off, or the opening', () async {
+    await push();
+    expect(pushed['quran_page'], '1',
+        reason: 'nothing read yet: offer the Quran from its opening');
+
+    await push(extra: {'quran_last_page': 293});
+    expect(pushed['quran_page'], '293');
+    expect(pushed['quran_title'], contains('Kahf'));
+    expect(pushed['quran_ar'], isNotEmpty);
+  });
+
+  test('labels are sent in sentence case, as the app sets them', () async {
+    await push();
+    expect(pushed['adhkar_label'], 'Recommended now');
+    expect(pushed['adhkar_morning_short'], 'Morning');
   });
 }

@@ -221,7 +221,7 @@ class _DuaAppState extends State<DuaApp> {
         >(
           // Eager so the home-screen widgets are refreshed at launch.
           lazy: false,
-          create: (_) => PrayerWidgetService(repository),
+          create: (_) => PrayerWidgetService(repository, quran),
           update:
               (
                 context,
@@ -232,7 +232,7 @@ class _DuaAppState extends State<DuaApp> {
                 display,
                 progress,
                 widget,
-              ) => (widget ?? PrayerWidgetService(repository))
+              ) => (widget ?? PrayerWidgetService(repository, quran))
                 ..bind(
                   prayer,
                   locale,
@@ -242,6 +242,7 @@ class _DuaAppState extends State<DuaApp> {
                   progress,
                   context.read<TasbihController>(),
                   context.read<NotificationService>(),
+                  quran: context.read<QuranService>(),
                 ),
         ),
       ],

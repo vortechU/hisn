@@ -4,6 +4,7 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Layout
 import android.view.View
@@ -11,6 +12,9 @@ import android.widget.RemoteViews
 
 /**
  * The tasbih, on the home screen: tap the widget to count.
+ *
+ * Drawn on the field with the Tasbih screen's own ring, so the widget and the
+ * screen it opens read as the same counter.
  *
  * This is the only widget that writes. The count it keeps is the app's own
  * count — same preference keys, same rollover rule — because a separate tally
@@ -82,11 +86,11 @@ class TasbihWidgetProvider : AppWidgetProvider() {
         manager: AppWidgetManager,
         widgetId: Int,
     ): RemoteViews {
-        val ms = WidgetTheme.of(context)
+        val inks = WidgetTheme.inks(context)
         val p = PrayerWidget.prefs(context)
         val views = RemoteViews(context.packageName, R.layout.tasbih_widget)
 
-        WidgetChrome.applySheet(views, ms)
+        WidgetChrome.applyGround(views, inks) { it.field }
         WidgetChrome.applyDirection(context, views, R.id.tasbih_root)
 
         val id = p.getString("tasbih_id", null)
@@ -107,25 +111,32 @@ class TasbihWidgetProvider : AppWidgetProvider() {
             views.setOnClickPendingIntent(R.id.tasbih_phrase_text, it)
         }
 
-        setPhrase(context, manager, widgetId, views, ms, arabic, translit)
+        setPhrase(context, manager, widgetId, views, inks, arabic, translit)
 
-        val width = WidgetChrome.widthPx(context, manager, widgetId, FALLBACK_WIDTH_DP)
-        val meter = (width * 0.62f).toInt().coerceIn(120, 260)
-        views.setImageViewBitmap(
-            R.id.tasbih_meter,
-            WidgetOrnament.beadMeter(
-                sizePx = meter,
-                fraction = if (target <= 0) 0f else count.toFloat() / target,
-                color = ms.gilt,
-                track = WidgetTheme.fade(ms.rule, 0.9f),
-                lobes = 11,
-            ),
+        // The ring fills the space under the phrase, drawn to its size so the
+        // beads stay crisp: the smaller of the widget's width and what is left
+        // of its height.
+        val widthDp = WidgetChrome.widthPx(context, manager, widgetId, FALLBACK_WIDTH_DP) /
+            context.resources.displayMetrics.density
+        val heightDp = WidgetChrome.heightDp(manager, widgetId, FALLBACK_HEIGHT_DP)
+        val ringDp = minOf(widthDp - 24f, heightDp - 58f).coerceIn(72f, 220f)
+        // Brass warms the ring only once the set is complete, as on the
+        // Tasbih screen.
+        val complete = target > 0 && count >= target
+        val ring = WidgetOrnament.ring(
+            sizePx = WidgetChrome.dp(context, ringDp),
+            fraction = if (target <= 0) 0f else count.toFloat() / target,
+            lobes = 11,
         )
+        WidgetChrome.mask(views, R.id.tasbih_meter, ring.track, inks) { it.fieldTrack }
+        WidgetChrome.mask(views, R.id.tasbih_meter_run, ring.run, inks) {
+            if (complete) it.lamp else WidgetTheme.over(it.onField, 0.9f, it.field)
+        }
 
         views.setTextViewText(R.id.tasbih_count, WidgetChrome.digits(context, count))
-        views.setTextColor(R.id.tasbih_count, ms.ink)
+        WidgetChrome.textColor(views, R.id.tasbih_count, inks) { if (complete) it.lamp else it.onField }
         views.setTextViewText(R.id.tasbih_target, tally(context, target, laps))
-        views.setTextColor(R.id.tasbih_target, ms.muted)
+        WidgetChrome.textColor(views, R.id.tasbih_target, inks) { it.fieldQuiet }
         return views
     }
 
@@ -138,8 +149,10 @@ class TasbihWidgetProvider : AppWidgetProvider() {
      * a string pushed from Flutter would be a set behind by the time it showed.
      */
     private fun tally(context: Context, target: Int, laps: Int): String {
-        val of = "⁄ ${WidgetChrome.digits(context, target)}"
-        return if (laps > 0) "$of   ×${WidgetChrome.digits(context, laps)}" else of
+        val of = "/ ${WidgetChrome.digits(context, target)}"
+        return WidgetChrome.tally(
+            if (laps > 0) "$of  ·  ×${WidgetChrome.digits(context, laps)}" else of,
+        )
     }
 
     private fun setPhrase(
@@ -147,7 +160,7 @@ class TasbihWidgetProvider : AppWidgetProvider() {
         manager: AppWidgetManager,
         widgetId: Int,
         views: RemoteViews,
-        ms: WidgetPalette,
+        inks: WidgetInks,
         arabic: String,
         translit: String,
     ) {
@@ -157,22 +170,22 @@ class TasbihWidgetProvider : AppWidgetProvider() {
             context = context,
             text = arabic,
             fontId = WidgetChrome.arabicFont(context),
-            textSizePx = context.resources.displayMetrics.scaledDensity * 15f,
-            color = ms.rubric,
+            textSizePx = context.resources.displayMetrics.scaledDensity * 17f,
+            color = Color.WHITE,
             maxWidthPx = width.coerceAtLeast(64),
             maxLines = 1,
             align = Layout.Alignment.ALIGN_CENTER,
         )
 
         if (drawn != null) {
-            views.setImageViewBitmap(R.id.tasbih_phrase, drawn)
+            WidgetChrome.mask(views, R.id.tasbih_phrase, drawn, inks) { it.onField }
             views.setViewVisibility(R.id.tasbih_phrase, View.VISIBLE)
             views.setViewVisibility(R.id.tasbih_phrase_text, View.GONE)
         } else {
             // No Arabic face available: the transliteration says the same thing
             // in a font that is certainly present.
             views.setTextViewText(R.id.tasbih_phrase_text, translit)
-            views.setTextColor(R.id.tasbih_phrase_text, ms.rubric)
+            WidgetChrome.textColor(views, R.id.tasbih_phrase_text, inks) { it.onField }
             views.setViewVisibility(R.id.tasbih_phrase_text, View.VISIBLE)
             views.setViewVisibility(R.id.tasbih_phrase, View.GONE)
         }
@@ -183,5 +196,6 @@ class TasbihWidgetProvider : AppWidgetProvider() {
         const val COUNT_KEY = "tasbih_count_"
         const val LAPS_KEY = "tasbih_laps_"
         const val FALLBACK_WIDTH_DP = 110
+        const val FALLBACK_HEIGHT_DP = 160
     }
 }

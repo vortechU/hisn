@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../data/dua_repository.dart';
 import '../screens/category_duas_screen.dart';
 import '../screens/home_screen.dart';
+import '../screens/mushaf_screen.dart';
 import '../screens/tasbih_screen.dart';
 import '../services/adhan_widget_bridge.dart';
 import '../services/tasbih_controller.dart';
@@ -90,6 +91,15 @@ class _HomeWidgetLinkState extends State<HomeWidgetLink>
           MaterialPageRoute(
             builder: (_) => CategoryDuasScreen(category: category),
           ),
+        );
+      case 'quran':
+        // The page the widget was showing, so a tap reopens exactly where the
+        // reader left off.
+        final page = int.tryParse(parts.length > 1 ? parts[1] : '') ?? 1;
+        navigator.popUntil((r) => r.isFirst);
+        HomeScreen.tab.value = HomeScreen.tabQuran;
+        navigator.push(
+          MaterialPageRoute(builder: (_) => MushafScreen(startPage: page)),
         );
       case 'home':
         navigator.popUntil((r) => r.isFirst);
