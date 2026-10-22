@@ -20,8 +20,9 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <application
-        android:label="Hisn"
+        android:label="${appLabel}"
         android:name="${applicationName}"
+        android:supportsRtl="true"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

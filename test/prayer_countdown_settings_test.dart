@@ -65,6 +65,7 @@ void main() {
           'enabled',
           'titlePrefix',
           'remainingLabel',
+          'sinceLabel',
           'channelName',
           'channelDescription',
         ]),

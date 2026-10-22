@@ -74,6 +74,7 @@ class PrayerCountdownSettings extends ChangeNotifier {
       'enabled': _enabled,
       'titlePrefix': _strings.next,
       'remainingLabel': _strings.remaining,
+      'sinceLabel': _strings.sinceAdhan,
       'channelName': _strings.prayerCountdownTitle,
       'channelDescription': _strings.prayerCountdownChannelDescription,
     };

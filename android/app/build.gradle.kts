@@ -22,6 +22,9 @@ val keystoreProperties = Properties().apply {
 }
 val releaseKeyAvailable = keystoreProperties.getProperty("storeFile") != null
 
+// Opt in for a release APK that installs alongside the Play app.
+val sideBySideTest = providers.gradleProperty("hisnSideBySide").orNull == "true"
+
 android {
     namespace = "com.vortech.dua_app"
     compileSdk = flutter.compileSdkVersion
@@ -39,6 +42,7 @@ android {
         // not the namespace: that is only the Kotlin/R package, and renaming
         // it would move every source file for no user-visible change.
         applicationId = "com.vortech.hisn"
+        manifestPlaceholders["appLabel"] = if (sideBySideTest) "Hisn Test" else "Hisn"
         // flutter_local_notifications + desugaring requires minSdk 21+.
         minSdk = maxOf(flutter.minSdkVersion, 21)
         targetSdk = flutter.targetSdkVersion
@@ -61,6 +65,10 @@ android {
 
     buildTypes {
         release {
+            if (sideBySideTest) {
+                applicationIdSuffix = ".test"
+                versionNameSuffix = "-test"
+            }
             signingConfig = if (releaseKeyAvailable) {
                 signingConfigs.getByName("release")
             } else {

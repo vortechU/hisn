@@ -509,7 +509,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get aboutLatinApparatus => 'نص الواجهة اللاتيني';
 	@override String get aboutMushafPages => 'صفحات المصحف · مجمع الملك فهد لطباعة المصحف الشريف';
 	@override String get prayerCountdownTitle => 'العد التنازلي للصلاة القادمة';
-	@override String get prayerCountdownSubtitle => 'اعرض عدًا تنازليًا صامتًا في إشعارات أندرويد.';
+	@override String get prayerCountdownSubtitle => 'أبقِ الصلاة التالية والوقت منذ الأذان والتاريخ الهجري في إشعاراتك.';
 	@override String get prayerCountdownUnavailable => 'متاح على أندرويد. يتحكم النظام في طريقة عرض العد التنازلي.';
 	@override String get prayerCountdownChannelDescription => 'عد تنازلي صامت للصلاة القادمة';
 	@override String get guideTitle => 'دليل سريع';
@@ -1007,7 +1007,7 @@ extension on TranslationsAr {
 			'aboutLatinApparatus' => 'نص الواجهة اللاتيني',
 			'aboutMushafPages' => 'صفحات المصحف · مجمع الملك فهد لطباعة المصحف الشريف',
 			'prayerCountdownTitle' => 'العد التنازلي للصلاة القادمة',
-			'prayerCountdownSubtitle' => 'اعرض عدًا تنازليًا صامتًا في إشعارات أندرويد.',
+			'prayerCountdownSubtitle' => 'أبقِ الصلاة التالية والوقت منذ الأذان والتاريخ الهجري في إشعاراتك.',
 			'prayerCountdownUnavailable' => 'متاح على أندرويد. يتحكم النظام في طريقة عرض العد التنازلي.',
 			'prayerCountdownChannelDescription' => 'عد تنازلي صامت للصلاة القادمة',
 			'guideTitle' => 'دليل سريع',

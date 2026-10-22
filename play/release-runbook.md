@@ -130,6 +130,26 @@ adb install -r build/app/outputs/flutter-apk/app-release.apk
 
 `adb install -r` preserves app data. **Never `flutter install`** — it wipes it.
 
+### Install a separate test app on a phone
+
+To keep the installed Play app and its data, opt in to a separate release APK.
+It is labelled **Hisn Test**, uses `com.vortech.hisn.test`, and has its own
+settings and storage. Dart AOT compilation, R8, resource shrinking, and release
+signing are the same as a normal release. The version name ends in `-test`.
+
+From PowerShell at the repository root:
+
+```powershell
+flutter build apk --release --target-platform android-arm64 --android-project-arg=hisnSideBySide=true
+if ($LASTEXITCODE -ne 0) { throw 'Test APK build failed' }
+Copy-Item build/app/outputs/flutter-apk/app-release.apk build/hisn-test-release.apk
+adb install -r build/hisn-test-release.apk
+```
+
+The example targets an ARM64 phone; adjust `--target-platform` for other devices.
+Verify the APK package is `com.vortech.hisn.test` before installing. Regular builds
+without this opt-in retain the production package and label.
+
 ---
 
 ## 5. Upload

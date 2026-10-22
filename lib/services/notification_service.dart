@@ -354,9 +354,12 @@ class NotificationService extends ChangeNotifier {
     await _apply(plan);
   }
 
-  /// Cancel everything and hand [plan] to the OS.
+  /// Cancel every scheduled reminder and hand [plan] to the OS.
   Future<void> _apply(ReminderPlan plan) async {
-    await _plugin.cancelAll();
+    // Only what is still to come. `cancelAll` also clears what is on screen,
+    // and with it the native countdown notification (PrayerCountdown), which
+    // shares the app's notifications — every launch would wipe it.
+    await _plugin.cancelAllPendingNotifications();
 
     var complete = true;
     for (final reminder in plan.reminders) {

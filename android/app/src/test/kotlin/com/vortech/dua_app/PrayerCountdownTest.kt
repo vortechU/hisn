@@ -6,6 +6,10 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
+import android.view.View
+import android.widget.Chronometer
+import android.widget.FrameLayout
+import android.widget.TextView
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
@@ -56,21 +60,39 @@ class PrayerCountdownTest {
 
     private fun enable() {
         PrayerCountdown.update(context, mapOf("enabled" to true,
-            "titlePrefix" to "Next", "remainingLabel" to "Remaining"))
+            "titlePrefix" to "Next", "remainingLabel" to "Remaining",
+            "sinceLabel" to "Since adhan"))
     }
 
     private fun posted(): Notification? = shadowOf(notifications).getNotification(98123)
 
+    /** The body as System UI would inflate it. */
+    private fun body(notification: Notification): View =
+        notification.contentView.apply(context, FrameLayout(context))
+
+    private fun clock(notification: Notification): Chronometer =
+        body(notification).findViewById(R.id.countdown_clock)
+
+    private fun label(notification: Notification): String =
+        body(notification).findViewById<TextView>(R.id.countdown_label).text.toString()
+
+    private fun timeOf(index: Int, now: Date): Long =
+        PrayerWidget.compute(context, now).times!![index].time
+
     @Test fun optInPostsOneSilentExpiringCountdownAndOneBoundaryAlarm() {
         enable()
-        val now = at(12)
+        val now = at(13)
         PrayerCountdown.refresh(context, now)
         val expected = PrayerWidget.compute(context, now).nextTime!!.time
         val notification = posted()!!
         assertEquals(expected, notification.`when`)
-        assertEquals(expected - now.time, notification.timeoutAfter)
-        assertTrue(notification.extras.getBoolean(Notification.EXTRA_SHOW_CHRONOMETER))
-        assertTrue(notification.extras.getBoolean(Notification.EXTRA_CHRONOMETER_COUNT_DOWN))
+        // Runs on past the adhan only for that prayer's 20-minute count-up.
+        assertEquals(expected + 20 * 60_000L - now.time, notification.timeoutAfter)
+        // The count sits in the body beside its label, not in the header.
+        assertFalse(notification.extras.getBoolean(Notification.EXTRA_SHOW_CHRONOMETER))
+        assertEquals("Remaining", label(notification))
+        assertEquals(View.VISIBLE, clock(notification).visibility)
+        assertTrue(clock(notification).isCountDown)
         assertTrue(notification.flags and Notification.FLAG_ONGOING_EVENT != 0)
         val channel = notifications.getNotificationChannel(notification.channelId)
         assertEquals(NotificationManager.IMPORTANCE_LOW, channel.importance)
@@ -190,16 +212,87 @@ class PrayerCountdownTest {
         assertEquals(0L, beforeFajr.lastTime!!.time % 1_000L)
     }
 
-    @Test fun aDeferredBoundaryRefreshReplacesExpiredPrayerWithAFutureOne() {
+    @Test fun aDeferredBoundaryRefreshTurnsTheCountdownIntoTheCountUp() {
         enable()
-        PrayerCountdown.refresh(context, at(12))
-        val expiredAt = posted()!!.`when`
-        val deliveredAt = Date(expiredAt + 15 * 60_000L)
+        PrayerCountdown.refresh(context, at(13))
+        val adhan = posted()!!.`when`
+        val deliveredAt = Date(adhan + 15 * 60_000L)
         PrayerCountdown.refresh(context, deliveredAt)
-        assertTrue(posted()!!.`when` > deliveredAt.time)
-        // Timeout equals the remaining duration exactly; no negative grace time.
-        assertEquals(posted()!!.`when` - deliveredAt.time, posted()!!.timeoutAfter)
+        assertEquals(adhan, posted()!!.`when`)
+        assertFalse(clock(posted()!!).isCountDown)
         assertEquals(1, shadowOf(alarms).scheduledAlarms.size)
+        // Delivered after the window too: straight to the next prayer.
+        val later = Date(adhan + 25 * 60_000L)
+        PrayerCountdown.refresh(context, later)
+        assertTrue(posted()!!.`when` > later.time)
+        assertTrue(clock(posted()!!).isCountDown)
+    }
+
+    @Test fun afterAnAdhanCountsUpThroughTheIqamahDelayThenDownToTheNextPrayer() {
+        PrayerWidget.prefs(context).edit().putString("since_minutes_asr", "15").commit()
+        enable()
+        val asr = timeOf(2, at(13))
+        val maghrib = timeOf(3, at(13))
+        val during = Date(asr + 5 * 60_000L)
+        PrayerCountdown.refresh(context, during)
+        val since = posted()!!
+        assertEquals("Asr", since.extras.getString(Notification.EXTRA_TITLE))
+        assertEquals("Since adhan", label(since))
+        assertEquals(asr, since.`when`)
+        assertEquals(View.VISIBLE, clock(since).visibility)
+        assertFalse(clock(since).isCountDown)
+        // A count-up must not outlive the next adhan.
+        assertEquals(maghrib - during.time, since.timeoutAfter)
+        assertEquals(asr + 15 * 60_000L, shadowOf(alarms).scheduledAlarms.single().triggerAtMs)
+
+        val after = Date(asr + 15 * 60_000L)
+        PrayerCountdown.refresh(context, after)
+        assertEquals("Next: Maghrib", posted()!!.extras.getString(Notification.EXTRA_TITLE))
+        assertEquals(maghrib, posted()!!.`when`)
+        assertTrue(clock(posted()!!).isCountDown)
+        assertEquals(maghrib, shadowOf(alarms).scheduledAlarms.single().triggerAtMs)
+    }
+
+    @Test fun aLongIqamahDelayStillTurnsAtTheNextAdhan() {
+        // Umm al-Qura calls Isha a fixed ninety minutes after Maghrib.
+        PrayerWidget.prefs(context).edit().putString("since_minutes_maghrib", "120").commit()
+        enable()
+        val maghrib = timeOf(3, at(13))
+        val isha = timeOf(4, at(13))
+        assertTrue(isha - maghrib < 120 * 60_000L)
+        PrayerCountdown.refresh(context, Date(maghrib + 60_000L))
+        assertEquals(isha, shadowOf(alarms).scheduledAlarms.single().triggerAtMs)
+    }
+
+    @Test fun readsRightToLeftWhenTheAppIsInArabic() {
+        PrayerWidget.prefs(context).edit().putString("lang", "ar")
+            .putString("am", "ص").putString("pm", "م").commit()
+        enable()
+        PrayerCountdown.refresh(context, at(13))
+        // Direction resolves only once the body is laid out in a parent.
+        val parent = FrameLayout(context)
+        val root = posted()!!.contentView.apply(context, parent)
+        parent.addView(root)
+        parent.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        assertEquals(View.LAYOUT_DIRECTION_RTL, root.layoutDirection)
+        assertTrue(posted()!!.extras.getCharSequence(Notification.EXTRA_TEXT)!!.endsWith(" م"))
+    }
+
+    @Test fun showsTheHijriDateAndTurnsAtMidnightForIt() {
+        PrayerWidget.prefs(context).edit()
+            .putString("hijri_months", (1..12).joinToString("|") { "Month$it" })
+            .putString("hijri_suffix", "AH").commit()
+        enable()
+        val late = at(23)
+        PrayerCountdown.refresh(context, late)
+        val hijri = body(posted()!!).findViewById<TextView>(R.id.countdown_hijri).text.toString()
+        assertTrue(hijri, Regex("""\d+ Month\d+ \d{4} AH""").matches(hijri))
+        val midnight = Calendar.getInstance().apply {
+            time = late
+            add(Calendar.DAY_OF_MONTH, 1)
+            set(Calendar.HOUR_OF_DAY, 0)
+        }.timeInMillis
+        assertEquals(midnight, shadowOf(alarms).scheduledAlarms.single().triggerAtMs)
     }
 
     @Test fun closedAppBootTimeAndLocaleBroadcastsRecoverWithoutFlutter() {
@@ -221,10 +314,11 @@ class PrayerCountdownTest {
         PrayerCountdown.refresh(context, instant)
         TimeZone.setDefault(TimeZone.getTimeZone("America/New_York"))
         PrayerCountdown.refresh(context, instant)
-        val expected = PrayerWidget.compute(context, instant).nextTime!!.time
-        assertEquals(expected, posted()!!.`when`)
-        assertEquals(expected, shadowOf(alarms).scheduledAlarms.single().triggerAtMs)
-        assertTrue(expected > instant.time)
+        val face = PrayerCountdown.faceAt(context,
+            PrayerWidget.compute(context, instant), instant.time)!!
+        assertEquals(face.at, posted()!!.`when`)
+        assertEquals(face.turnAt, shadowOf(alarms).scheduledAlarms.single().triggerAtMs)
+        assertTrue(face.turnAt > instant.time)
     }
 
     @Test fun missingAndInvalidLocationRemovePreviouslyPostedCountdown() {
@@ -249,14 +343,17 @@ class PrayerCountdownTest {
             PrayerWidget.prefs(context).edit().putString(key, "Localized prayer").commit()
         }
         PrayerCountdown.onPrayerConfigChanged(context)
-        assertEquals("Next: Localized prayer", posted()!!.extras.getString(Notification.EXTRA_TITLE))
+        // Next or since, depending on the hour the test runs at.
+        assertTrue(posted()!!.extras.getString(Notification.EXTRA_TITLE)!!.endsWith("Localized prayer"))
         assertEquals(1, shadowOf(alarms).scheduledAlarms.size)
     }
 
     @Test @Config(sdk = [24]) fun android7ShowsStaticPrayerTimeWithoutAnUnexpiringChronometer() {
         enable()
+        PrayerCountdown.refresh(context, at(13))
         val notification = posted()!!
-        assertFalse(notification.extras.getBoolean(Notification.EXTRA_SHOW_CHRONOMETER))
-        assertFalse(notification.extras.getBoolean(Notification.EXTRA_CHRONOMETER_COUNT_DOWN))
+        assertEquals(View.GONE, clock(notification).visibility)
+        assertTrue(notification.extras.getCharSequence(Notification.EXTRA_TEXT).toString()
+            .matches(Regex("""Remaining · \d{1,2}:\d{2}( [AP]M)?""")))
     }
 }

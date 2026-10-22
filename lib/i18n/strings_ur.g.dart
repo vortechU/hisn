@@ -509,7 +509,7 @@ class TranslationsUr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get aboutLatinApparatus => 'لاطینی انٹرفیس کا متن';
 	@override String get aboutMushafPages => 'مصحف کے صفحات · مجمع ملک فہد برائے طباعت قرآن کریم';
 	@override String get prayerCountdownTitle => 'اگلی نماز کی الٹی گنتی';
-	@override String get prayerCountdownSubtitle => 'اینڈرائیڈ کی اطلاعات میں نماز کی خاموش الٹی گنتی دکھائیں۔';
+	@override String get prayerCountdownSubtitle => 'اگلی نماز، اذان کے بعد کا وقت اور ہجری تاریخ اپنی اطلاعات میں رکھیں۔';
 	@override String get prayerCountdownUnavailable => 'اینڈرائیڈ پر دستیاب ہے۔ الٹی گنتی کی شکل نظام طے کرتا ہے۔';
 	@override String get prayerCountdownChannelDescription => 'اگلی نماز تک خاموش الٹی گنتی';
 	@override String get guideTitle => 'مختصر رہنما';
@@ -1007,7 +1007,7 @@ extension on TranslationsUr {
 			'aboutLatinApparatus' => 'لاطینی انٹرفیس کا متن',
 			'aboutMushafPages' => 'مصحف کے صفحات · مجمع ملک فہد برائے طباعت قرآن کریم',
 			'prayerCountdownTitle' => 'اگلی نماز کی الٹی گنتی',
-			'prayerCountdownSubtitle' => 'اینڈرائیڈ کی اطلاعات میں نماز کی خاموش الٹی گنتی دکھائیں۔',
+			'prayerCountdownSubtitle' => 'اگلی نماز، اذان کے بعد کا وقت اور ہجری تاریخ اپنی اطلاعات میں رکھیں۔',
 			'prayerCountdownUnavailable' => 'اینڈرائیڈ پر دستیاب ہے۔ الٹی گنتی کی شکل نظام طے کرتا ہے۔',
 			'prayerCountdownChannelDescription' => 'اگلی نماز تک خاموش الٹی گنتی',
 			'guideTitle' => 'مختصر رہنما',

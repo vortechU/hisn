@@ -509,7 +509,7 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get aboutLatinApparatus => 'Teks antarmuka Latin';
 	@override String get aboutMushafPages => 'Halaman mushaf · Kompleks Percetakan Al-Qur\'an Raja Fahd';
 	@override String get prayerCountdownTitle => 'Hitung mundur salat berikutnya';
-	@override String get prayerCountdownSubtitle => 'Tampilkan hitung mundur senyap di notifikasi Android.';
+	@override String get prayerCountdownSubtitle => 'Tampilkan salat berikutnya, waktu sejak azan, dan tanggal Hijriah di notifikasi.';
 	@override String get prayerCountdownUnavailable => 'Tersedia di Android. Sistem mengatur tampilan hitung mundur.';
 	@override String get prayerCountdownChannelDescription => 'Hitung mundur senyap menuju salat berikutnya';
 	@override String get guideTitle => 'Panduan singkat';
@@ -1007,7 +1007,7 @@ extension on TranslationsId {
 			'aboutLatinApparatus' => 'Teks antarmuka Latin',
 			'aboutMushafPages' => 'Halaman mushaf · Kompleks Percetakan Al-Qur\'an Raja Fahd',
 			'prayerCountdownTitle' => 'Hitung mundur salat berikutnya',
-			'prayerCountdownSubtitle' => 'Tampilkan hitung mundur senyap di notifikasi Android.',
+			'prayerCountdownSubtitle' => 'Tampilkan salat berikutnya, waktu sejak azan, dan tanggal Hijriah di notifikasi.',
 			'prayerCountdownUnavailable' => 'Tersedia di Android. Sistem mengatur tampilan hitung mundur.',
 			'prayerCountdownChannelDescription' => 'Hitung mundur senyap menuju salat berikutnya',
 			'guideTitle' => 'Panduan singkat',

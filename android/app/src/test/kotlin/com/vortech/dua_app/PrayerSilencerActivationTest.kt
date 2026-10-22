@@ -123,10 +123,12 @@ class PrayerSilencerActivationTest {
         assertNull(PrayerSilencer.status(context)["activeUntil"])
         assertTrue(endGuardIds().isEmpty())
         publications.clear()
-        SystemClock.setCurrentTimeMillis(deadline + 60_000L)
+        val lateStart = deadline + 60_000L
+        SystemClock.setCurrentTimeMillis(lateStart)
         PrayerSilenceReceiver().onReceive(context, Intent("late-start"))
         assertTrue(publications.none { it.state == Condition.STATE_TRUE })
-        assertTrue(shadowOf(alarms).scheduledAlarms.all { it.triggerAtMs > System.currentTimeMillis() })
+        // The test class's wall clock is not Robolectric's simulated clock.
+        assertTrue(shadowOf(alarms).scheduledAlarms.all { it.triggerAtMs > lateStart })
     }
 
     @Test fun disableRemovesOnlyHisnRuleAndPreservesManualAndForeignDnd() {

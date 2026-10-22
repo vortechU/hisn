@@ -1300,8 +1300,8 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// en: 'Next prayer countdown'
 	String get prayerCountdownTitle => 'Next prayer countdown';
 
-	/// en: 'Keep a silent countdown in your Android notifications.'
-	String get prayerCountdownSubtitle => 'Keep a silent countdown in your Android notifications.';
+	/// en: 'Keep the next prayer, the time since adhan and the Hijri date in your notifications.'
+	String get prayerCountdownSubtitle => 'Keep the next prayer, the time since adhan and the Hijri date in your notifications.';
 
 	/// en: 'Available on Android. The system controls how the countdown appears.'
 	String get prayerCountdownUnavailable => 'Available on Android. The system controls how the countdown appears.';
@@ -1873,7 +1873,7 @@ extension on Translations {
 			'aboutLatinApparatus' => 'Latin interface text',
 			'aboutMushafPages' => 'Mushaf pages · King Fahd Glorious Quran Printing Complex',
 			'prayerCountdownTitle' => 'Next prayer countdown',
-			'prayerCountdownSubtitle' => 'Keep a silent countdown in your Android notifications.',
+			'prayerCountdownSubtitle' => 'Keep the next prayer, the time since adhan and the Hijri date in your notifications.',
 			'prayerCountdownUnavailable' => 'Available on Android. The system controls how the countdown appears.',
 			'prayerCountdownChannelDescription' => 'Silent countdown to the next prayer',
 			'guideTitle' => 'Quick guide',
