@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show mergeSort;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -7,8 +8,8 @@ import '../theme/app_theme.dart';
 import '../widgets/arabic_text.dart';
 import '../widgets/ornament.dart';
 
-/// The full weekly prayer schedule: the five daily prayers for each of the next
-/// seven days, with today highlighted.
+/// The full weekly prayer schedule: the five daily prayers, with sunrise and any
+/// chosen night times, for each of the next seven days, with today highlighted.
 ///
 /// Pure presentation — the times come from the existing
 /// [PrayerService.prayersForDay] (the same computation used elsewhere); no new
@@ -33,7 +34,15 @@ class PrayerScheduleScreen extends StatelessWidget {
         itemBuilder: (context, dayIndex) {
           final day = startOfToday.add(Duration(days: dayIndex));
           final isToday = dayIndex == 0;
-          final prayers = service.prayersForDay(day);
+          // Prayers and the day's marks in one list by the hour; marks are
+          // set fainter, as times to know rather than prayers to keep.
+          final rows = <(String, String, DateTime, bool)>[
+            for (final p in service.prayersForDay(day))
+              (s.prayerName(p.prayer), p.prayer.arabicName, p.time, false),
+            for (final m in service.marksForDay(day))
+              (s.dayMarkName(m.mark), m.mark.arabicName, m.time, true),
+          ];
+          mergeSort(rows, compare: (a, b) => a.$3.compareTo(b.$3));
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,10 +67,10 @@ class PrayerScheduleScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    for (var i = 0; i < prayers.length; i++)
+                    for (var i = 0; i < rows.length; i++)
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 13, vertical: 10),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 13, vertical: rows[i].$4 ? 7 : 10),
                         decoration: BoxDecoration(
                           border: i == 0
                               ? null
@@ -75,10 +84,14 @@ class PrayerScheduleScreen extends StatelessWidget {
                             Expanded(
                               flex: 3,
                               child: Text(
-                                s.prayerName(prayers[i].prayer),
+                                rows[i].$1,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.titleSmall,
+                                style: rows[i].$4
+                                    ? theme.textTheme.bodyMedium?.copyWith(
+                                        color: theme
+                                            .colorScheme.onSurfaceVariant)
+                                    : theme.textTheme.titleSmall,
                               ),
                             ),
                             if (!s.ar) ...[
@@ -88,17 +101,18 @@ class PrayerScheduleScreen extends StatelessWidget {
                                 child: FittedBox(
                                   fit: BoxFit.scaleDown,
                                   alignment: AlignmentDirectional.centerEnd,
-                                  child: ArabicText(
-                                      prayers[i].prayer.arabicName,
-                                      fontSize: 18,
-                                      color: ms.rubric,
+                                  child: ArabicText(rows[i].$2,
+                                      fontSize: rows[i].$4 ? 15 : 18,
+                                      color: rows[i].$4
+                                          ? theme.colorScheme.onSurfaceVariant
+                                          : ms.rubric,
                                       height: 1.6),
                                 ),
                               ),
                             ],
                             const SizedBox(width: 12),
                             Numeral(
-                              _clock(prayers[i].time, s),
+                              _clock(rows[i].$3, s),
                               size: 14,
                               serif: false,
                               weight: FontWeight.w500,

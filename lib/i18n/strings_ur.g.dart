@@ -159,6 +159,7 @@ class TranslationsUr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get clear => 'صاف کریں';
 	@override String get searchPrompt => 'عنوان، مفہوم، تلفظ یا حوالے سے تلاش کریں۔';
 	@override String noResults({required Object query}) => '“${query}” کے لیے کوئی دعا نہیں ملی۔';
+	@override String quranNoResults({required Object query}) => '“${query}” کے لیے کوئی سورت یا آیت نہیں ملی۔';
 	@override String get resultsCountOne => '1 نتیجہ';
 	@override String resultsCountOther({required Object n}) => '${n} نتائج';
 	@override String get noSavedTitle => 'ابھی کوئی دعا محفوظ نہیں';
@@ -214,6 +215,11 @@ class TranslationsUr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String locFixedCity({required Object label}) => '${label} (مقررہ شہر)';
 	@override String get calcMethod => 'حساب کا طریقہ';
 	@override String get asrCalc => 'عصر کا حساب';
+	@override String get nightTimes => 'رات کے اوقات';
+	@override String get showMidnight => 'آدھی رات دکھائیں';
+	@override String get showMidnightSub => 'مغرب اور فجر کے درمیان کا نصف';
+	@override String get showLastThird => 'رات کا آخری تہائی دکھائیں';
+	@override String get showLastThirdSub => 'مغرب اور فجر کے درمیان آخری تہائی کا آغاز: تہجد کا وقت';
 	@override String get notifications => 'اطلاعات';
 	@override String get prayerReminders => 'نماز کی یاد دہانیاں';
 	@override String get prayerRemindersSub => 'ہر نماز کے وقت اطلاع پائیں';
@@ -224,6 +230,8 @@ class TranslationsUr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get adhanNeedsReminders => 'نماز کے وقت اذان کے لیے اوپر نماز کی یاد دہانیاں فعال کریں۔';
 	@override String get adhanExactAlarmsOff => 'نماز کے وقت اذان کے لیے Hisn کو الارم اور یاد دہانیوں کی اجازت دیں۔';
 	@override String get allowAlarms => 'اجازت دیں';
+	@override String get adhanFlipToSilence => 'الٹا کر کے خاموش کریں';
+	@override String get adhanFlipToSilenceSub => 'چلتی اذان روکنے کے لیے فون کو الٹا رکھ دیں۔ آواز کا کوئی بھی بٹن دبانے سے بھی اذان رک جاتی ہے۔';
 	@override String get adhanVolume => 'اذان کی آواز کا کنٹرول';
 	@override List<String> get streamLabels => [
 		'میڈیا',
@@ -272,6 +280,8 @@ class TranslationsUr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get asrHintHanafi => 'عصر اس وقت شروع ہوتی ہے جب کسی چیز کا سایہ اس کی لمبائی کا دوگنا ہو';
 	@override String get prayerFajr => 'فجر';
 	@override String get prayerSunrise => 'طلوع آفتاب';
+	@override String get markMidnight => 'آدھی رات';
+	@override String get markLastThird => 'آخری تہائی';
 	@override String get prayerDhuhr => 'ظہر';
 	@override String get prayerAsr => 'عصر';
 	@override String get prayerMaghrib => 'مغرب';
@@ -675,6 +685,7 @@ extension on TranslationsUr {
 			'clear' => 'صاف کریں',
 			'searchPrompt' => 'عنوان، مفہوم، تلفظ یا حوالے سے تلاش کریں۔',
 			'noResults' => ({required Object query}) => '“${query}” کے لیے کوئی دعا نہیں ملی۔',
+			'quranNoResults' => ({required Object query}) => '“${query}” کے لیے کوئی سورت یا آیت نہیں ملی۔',
 			'resultsCountOne' => '1 نتیجہ',
 			'resultsCountOther' => ({required Object n}) => '${n} نتائج',
 			'noSavedTitle' => 'ابھی کوئی دعا محفوظ نہیں',
@@ -728,6 +739,11 @@ extension on TranslationsUr {
 			'locFixedCity' => ({required Object label}) => '${label} (مقررہ شہر)',
 			'calcMethod' => 'حساب کا طریقہ',
 			'asrCalc' => 'عصر کا حساب',
+			'nightTimes' => 'رات کے اوقات',
+			'showMidnight' => 'آدھی رات دکھائیں',
+			'showMidnightSub' => 'مغرب اور فجر کے درمیان کا نصف',
+			'showLastThird' => 'رات کا آخری تہائی دکھائیں',
+			'showLastThirdSub' => 'مغرب اور فجر کے درمیان آخری تہائی کا آغاز: تہجد کا وقت',
 			'notifications' => 'اطلاعات',
 			'prayerReminders' => 'نماز کی یاد دہانیاں',
 			'prayerRemindersSub' => 'ہر نماز کے وقت اطلاع پائیں',
@@ -738,6 +754,8 @@ extension on TranslationsUr {
 			'adhanNeedsReminders' => 'نماز کے وقت اذان کے لیے اوپر نماز کی یاد دہانیاں فعال کریں۔',
 			'adhanExactAlarmsOff' => 'نماز کے وقت اذان کے لیے Hisn کو الارم اور یاد دہانیوں کی اجازت دیں۔',
 			'allowAlarms' => 'اجازت دیں',
+			'adhanFlipToSilence' => 'الٹا کر کے خاموش کریں',
+			'adhanFlipToSilenceSub' => 'چلتی اذان روکنے کے لیے فون کو الٹا رکھ دیں۔ آواز کا کوئی بھی بٹن دبانے سے بھی اذان رک جاتی ہے۔',
 			'adhanVolume' => 'اذان کی آواز کا کنٹرول',
 			'streamLabels.0' => 'میڈیا',
 			'streamLabels.1' => 'رنگر / اطلاعات',
@@ -780,6 +798,8 @@ extension on TranslationsUr {
 			'asrHintHanafi' => 'عصر اس وقت شروع ہوتی ہے جب کسی چیز کا سایہ اس کی لمبائی کا دوگنا ہو',
 			'prayerFajr' => 'فجر',
 			'prayerSunrise' => 'طلوع آفتاب',
+			'markMidnight' => 'آدھی رات',
+			'markLastThird' => 'آخری تہائی',
 			'prayerDhuhr' => 'ظہر',
 			'prayerAsr' => 'عصر',
 			'prayerMaghrib' => 'مغرب',

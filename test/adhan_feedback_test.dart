@@ -31,6 +31,20 @@ void main() {
     expect(dua.virtue, contains('when hearing'));
   });
 
+  test('testimony is placed after the shahadatayn, before Hayya', () {
+    final ids = repo.duasForCategory('mosque').map((d) => d.id).toList();
+    expect(
+      ids.indexOf('mosque_adhan_testimony'),
+      lessThan(ids.indexOf('mosque_adhan_response_hayya')),
+    );
+    final testimony = repo.duaById('mosque_adhan_testimony')!;
+    expect(testimony.instruction, contains('two testimonies'));
+    expect(
+      testimony.instructionFor('ar'),
+      'يُقال بعد انتهاء المؤذن من الشهادتين، قبل قوله: حي على الصلاة.',
+    );
+  });
+
   test('salawat follows the adhan response and precedes al-Wasilah', () {
     final mosque = repo.duasForCategory('mosque');
     final ids = mosque.map((d) => d.id).toList();

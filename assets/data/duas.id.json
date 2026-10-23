@@ -215,7 +215,8 @@
     "virtue": "Siapa mengucapkannya ketika singgah di suatu tempat, tidak ada sesuatu pun yang membahayakannya hingga ia berangkat dari tempat itu."
   },
   "travel_returning": {
-    "translation": "Kami kembali, bertobat, beribadah, dan kepada Tuhan kami, kami senantiasa memuji."
+    "translation": "Allah Mahabesar (tiga kali). Mahasuci Allah yang telah menundukkan kendaraan ini bagi kami, padahal kami sendiri tidak mampu menguasainya. Sesungguhnya kami pasti kembali kepada Tuhan kami. Ya Allah, kami memohon kepada-Mu dalam perjalanan ini kebajikan dan ketakwaan, serta amal yang Engkau ridai. Ya Allah, mudahkanlah perjalanan ini bagi kami dan dekatkanlah jaraknya bagi kami. Ya Allah, Engkaulah pendamping kami dalam perjalanan dan penjaga keluarga kami. Ya Allah, aku berlindung kepada-Mu dari kesulitan perjalanan, pemandangan yang menyedihkan, dan kepulangan yang membawa keburukan pada harta dan keluarga. Kami kembali, bertobat, beribadah, dan kepada Tuhan kami, kami senantiasa memuji.",
+    "instruction": "Saat pulang, bacalah doa yang sama seperti ketika berangkat, lalu tambahkan di akhirnya: Ayibuna, ta'ibuna, 'abiduna, li-Rabbina hamidun."
   },
   "mosque_after_adhan": {
     "translation": "Ya Allah, Tuhan pemilik seruan yang sempurna ini dan salat yang akan ditegakkan, berikanlah kepada Muhammad wasilah (kedudukan tinggi) dan keutamaan, dan bangkitkanlah ia ke maqam terpuji yang telah Engkau janjikan kepadanya.",
@@ -359,7 +360,8 @@
   },
   "mosque_adhan_testimony": {
     "translation": "Aku pun bersaksi bahwa tidak ada yang berhak disembah selain Allah semata, tidak ada sekutu bagi-Nya, dan bahwa Muhammad adalah hamba dan utusan-Nya. Aku rida kepada Allah sebagai Tuhanku, kepada Muhammad sebagai Rasul, dan kepada Islam sebagai agamaku.",
-    "virtue": "Dibaca ketika mendengar muazin; Nabi ﷺ menjanjikan ampunan dosa bagi orang yang mengucapkannya."
+    "virtue": "Dibaca ketika mendengar muazin; Nabi ﷺ menjanjikan ampunan dosa bagi orang yang mengucapkannya.",
+    "instruction": "Diucapkan setelah muazin selesai mengucapkan dua kalimat syahadat, sebelum ia menyerukan 'Hayya 'alash-shalah'."
   },
   "mosque_after_adhan_salawat": {
     "translation": "Ya Allah, limpahkanlah selawat kepada Muhammad dan keluarga Muhammad sebagaimana Engkau telah melimpahkan selawat kepada keluarga Ibrahim. Sesungguhnya Engkau Maha Terpuji lagi Mahamulia. Ya Allah, limpahkanlah keberkahan kepada Muhammad dan keluarga Muhammad sebagaimana Engkau telah melimpahkan keberkahan kepada keluarga Ibrahim. Sesungguhnya Engkau Maha Terpuji lagi Mahamulia.",

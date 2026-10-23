@@ -159,6 +159,7 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get clear => 'مسح';
 	@override String get searchPrompt => 'ابحث بالعنوان أو المعنى أو النطق أو المصدر.';
 	@override String noResults({required Object query}) => 'لا توجد أدعية لـ «${query}».';
+	@override String quranNoResults({required Object query}) => 'لا توجد سور أو آيات لـ «${query}».';
 	@override String get resultsCountOne => 'نتيجة واحدة';
 	@override String resultsCountOther({required Object n}) => '${n} نتيجة';
 	@override String get noSavedTitle => 'لا توجد أدعية محفوظة بعد';
@@ -214,6 +215,11 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String locFixedCity({required Object label}) => '${label} (مدينة ثابتة)';
 	@override String get calcMethod => 'طريقة الحساب';
 	@override String get asrCalc => 'حساب العصر';
+	@override String get nightTimes => 'أوقات الليل';
+	@override String get showMidnight => 'إظهار منتصف الليل';
+	@override String get showMidnightSub => 'منتصف ما بين المغرب والفجر';
+	@override String get showLastThird => 'إظهار الثلث الأخير من الليل';
+	@override String get showLastThirdSub => 'بداية الثلث الأخير مما بين المغرب والفجر: وقت قيام الليل';
 	@override String get notifications => 'الإشعارات';
 	@override String get prayerReminders => 'تذكيرات الصلاة';
 	@override String get prayerRemindersSub => 'تنبيه عند كل وقت صلاة';
@@ -224,6 +230,8 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get adhanNeedsReminders => 'فعّل تذكيرات الصلاة بالأعلى ليُشغَّل الأذان عند وقت الصلاة.';
 	@override String get adhanExactAlarmsOff => 'فعّل «المنبّهات والتذكيرات» لتطبيق حصن ليُشغَّل الأذان عند وقت الصلاة.';
 	@override String get allowAlarms => 'السماح';
+	@override String get adhanFlipToSilence => 'اقلب الهاتف للإسكات';
+	@override String get adhanFlipToSilenceSub => 'اقلب الهاتف على وجهه لإيقاف الأذان أثناء تشغيله. ويوقفه أيضًا الضغط على أي من زرَّي الصوت.';
 	@override String get adhanVolume => 'مستوى صوت الأذان';
 	@override List<String> get streamLabels => [
 		'الوسائط',
@@ -272,6 +280,8 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get asrHintHanafi => 'يبدأ العصر عندما يبلغ ظلّ الشيء مِثلَيْ طوله';
 	@override String get prayerFajr => 'الفَجْر';
 	@override String get prayerSunrise => 'الشُّرُوق';
+	@override String get markMidnight => 'منتصف الليل';
+	@override String get markLastThird => 'الثلث الأخير';
 	@override String get prayerDhuhr => 'الظُّهْر';
 	@override String get prayerAsr => 'العَصْر';
 	@override String get prayerMaghrib => 'المَغْرِب';
@@ -675,6 +685,7 @@ extension on TranslationsAr {
 			'clear' => 'مسح',
 			'searchPrompt' => 'ابحث بالعنوان أو المعنى أو النطق أو المصدر.',
 			'noResults' => ({required Object query}) => 'لا توجد أدعية لـ «${query}».',
+			'quranNoResults' => ({required Object query}) => 'لا توجد سور أو آيات لـ «${query}».',
 			'resultsCountOne' => 'نتيجة واحدة',
 			'resultsCountOther' => ({required Object n}) => '${n} نتيجة',
 			'noSavedTitle' => 'لا توجد أدعية محفوظة بعد',
@@ -728,6 +739,11 @@ extension on TranslationsAr {
 			'locFixedCity' => ({required Object label}) => '${label} (مدينة ثابتة)',
 			'calcMethod' => 'طريقة الحساب',
 			'asrCalc' => 'حساب العصر',
+			'nightTimes' => 'أوقات الليل',
+			'showMidnight' => 'إظهار منتصف الليل',
+			'showMidnightSub' => 'منتصف ما بين المغرب والفجر',
+			'showLastThird' => 'إظهار الثلث الأخير من الليل',
+			'showLastThirdSub' => 'بداية الثلث الأخير مما بين المغرب والفجر: وقت قيام الليل',
 			'notifications' => 'الإشعارات',
 			'prayerReminders' => 'تذكيرات الصلاة',
 			'prayerRemindersSub' => 'تنبيه عند كل وقت صلاة',
@@ -738,6 +754,8 @@ extension on TranslationsAr {
 			'adhanNeedsReminders' => 'فعّل تذكيرات الصلاة بالأعلى ليُشغَّل الأذان عند وقت الصلاة.',
 			'adhanExactAlarmsOff' => 'فعّل «المنبّهات والتذكيرات» لتطبيق حصن ليُشغَّل الأذان عند وقت الصلاة.',
 			'allowAlarms' => 'السماح',
+			'adhanFlipToSilence' => 'اقلب الهاتف للإسكات',
+			'adhanFlipToSilenceSub' => 'اقلب الهاتف على وجهه لإيقاف الأذان أثناء تشغيله. ويوقفه أيضًا الضغط على أي من زرَّي الصوت.',
 			'adhanVolume' => 'مستوى صوت الأذان',
 			'streamLabels.0' => 'الوسائط',
 			'streamLabels.1' => 'الرنين / الإشعارات',
@@ -780,6 +798,8 @@ extension on TranslationsAr {
 			'asrHintHanafi' => 'يبدأ العصر عندما يبلغ ظلّ الشيء مِثلَيْ طوله',
 			'prayerFajr' => 'الفَجْر',
 			'prayerSunrise' => 'الشُّرُوق',
+			'markMidnight' => 'منتصف الليل',
+			'markLastThird' => 'الثلث الأخير',
 			'prayerDhuhr' => 'الظُّهْر',
 			'prayerAsr' => 'العَصْر',
 			'prayerMaghrib' => 'المَغْرِب',

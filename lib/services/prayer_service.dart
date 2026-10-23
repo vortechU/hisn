@@ -15,6 +15,19 @@ class PrayerTiming {
   final DateTime time;
 }
 
+/// A moment in the day worth knowing that is not itself a prayer.
+///
+/// Sunrise ends Fajr's time; the middle of the night ends Isha's chosen time;
+/// the last third is the hour of the night prayer. Shown in the timetables and
+/// never scheduled — nothing here calls an adhan.
+enum DayMark { sunrise, midnight, lastThird }
+
+class DayMarkTiming {
+  const DayMarkTiming(this.mark, this.time);
+  final DayMark mark;
+  final DateTime time;
+}
+
 /// Computes prayer times for the user's location and exposes the current /
 /// next prayer. Location mode, calculation method, and madhab are configurable
 /// (see Settings) and persisted.
@@ -50,6 +63,8 @@ class PrayerService extends ChangeNotifier {
   static const _kGpsLng = 'prayer_gps_lng';
   static const _kGpsLabel = 'prayer_gps_label';
   static const _kLang = 'app_language'; // for localized place names
+  static const _kShowMidnight = 'prayer_show_midnight';
+  static const _kShowLastThird = 'prayer_show_last_third';
 
   // Makkah (the Ka'bah) — the GPS-mode fallback.
   static final Coordinates _makkah = Coordinates(21.4225, 39.8262);
@@ -105,6 +120,45 @@ class PrayerService extends ChangeNotifier {
       PrayerTiming(Prayer.maghrib, times.maghrib),
       PrayerTiming(Prayer.isha, times.isha),
     ];
+  }
+
+  /// Whether the timetables also show the middle and the last third of the
+  /// night. Sunrise is always shown.
+  bool get showMidnight => _prefs.getBool(_kShowMidnight) ?? false;
+  bool get showLastThird => _prefs.getBool(_kShowLastThird) ?? false;
+
+  Future<void> setShowMidnight(bool value) async {
+    await _prefs.setBool(_kShowMidnight, value);
+    notifyListeners();
+  }
+
+  Future<void> setShowLastThird(bool value) async {
+    await _prefs.setBool(_kShowLastThird, value);
+    notifyListeners();
+  }
+
+  /// Today's [DayMark]s, in order.
+  List<DayMarkTiming> get todaysMarks => marksForDay(DateTime.now());
+
+  /// Sunrise on [day], then — if chosen — the middle and last third of the
+  /// night that follows its Maghrib, measured from Maghrib to the next Fajr.
+  List<DayMarkTiming> marksForDay(DateTime day) {
+    final times = PrayerTimes(_coordinates, DateComponents.from(day), _params);
+    final marks = [DayMarkTiming(DayMark.sunrise, times.sunrise.toLocal())];
+    if (showMidnight || showLastThird) {
+      final night = SunnahTimes(times);
+      if (showMidnight) {
+        marks.add(
+          DayMarkTiming(DayMark.midnight, night.middleOfTheNight.toLocal()),
+        );
+      }
+      if (showLastThird) {
+        marks.add(
+          DayMarkTiming(DayMark.lastThird, night.lastThirdOfTheNight.toLocal()),
+        );
+      }
+    }
+    return marks;
   }
 
   /// Most recent prayer whose time has passed (the prayer we're "in").
@@ -386,6 +440,19 @@ extension PrayerLabels on Prayer {
         return 'العِشَاء';
       case Prayer.none:
         return '';
+    }
+  }
+}
+
+extension DayMarkLabels on DayMark {
+  String get arabicName {
+    switch (this) {
+      case DayMark.sunrise:
+        return Prayer.sunrise.arabicName;
+      case DayMark.midnight:
+        return 'مُنْتَصَفُ اللَّيْل';
+      case DayMark.lastThird:
+        return 'الثُّلُثُ الأَخِير';
     }
   }
 }

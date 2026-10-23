@@ -5,6 +5,7 @@ import '../data/dua_repository.dart';
 import '../l10n/app_strings.dart';
 import '../services/custom_dua_service.dart';
 import '../theme/app_theme.dart';
+import '../util/arabic.dart';
 import '../widgets/dua_card.dart';
 import '../widgets/ornament.dart';
 
@@ -44,6 +45,7 @@ class _SearchScreenState extends State<SearchScreen> {
         title: TextField(
           controller: _controller,
           autofocus: true,
+          textDirection: contentDirection(_query, Directionality.of(context)),
           textInputAction: TextInputAction.search,
           decoration: InputDecoration(
             hintText: s.searchHint,

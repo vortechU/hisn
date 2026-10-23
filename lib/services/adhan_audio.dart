@@ -72,6 +72,10 @@ class AdhanAudioService extends ChangeNotifier {
   static const _kEnabled = 'adhan_sound_enabled';
   static const _kStream = 'adhan_sound_stream';
 
+  /// Whether turning the phone face down stops a playing adhan. Read natively
+  /// by AdhanPlayerService; on unless turned off.
+  static const _kFlip = 'adhan_sound_flip';
+
   /// The chosen voice: a [bundledVoices] id or [customVoiceId]. Under the
   /// backed-up `adhan_sound_` prefix, and read natively by AdhanPlayerService.
   static const _kVoice = 'adhan_sound_voice';
@@ -199,6 +203,13 @@ class AdhanAudioService extends ChangeNotifier {
     _enabled = value;
     await _prefs.setBool(_kEnabled, value);
     if (!value) await stop();
+    notifyListeners();
+  }
+
+  bool get flipToSilence => _prefs.getBool(_kFlip) ?? true;
+
+  Future<void> setFlipToSilence(bool value) async {
+    await _prefs.setBool(_kFlip, value);
     notifyListeners();
   }
 

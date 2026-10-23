@@ -159,6 +159,7 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get clear => 'Hapus';
 	@override String get searchPrompt => 'Cari berdasarkan judul, makna, transliterasi, atau sumber.';
 	@override String noResults({required Object query}) => 'Tidak ada doa untuk "${query}".';
+	@override String quranNoResults({required Object query}) => 'Tidak ada surah atau ayat untuk "${query}".';
 	@override String get resultsCountOne => '1 hasil';
 	@override String resultsCountOther({required Object n}) => '${n} hasil';
 	@override String get noSavedTitle => 'Belum ada doa tersimpan';
@@ -214,6 +215,11 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String locFixedCity({required Object label}) => '${label} (kota tetap)';
 	@override String get calcMethod => 'Metode perhitungan';
 	@override String get asrCalc => 'Perhitungan Asar';
+	@override String get nightTimes => 'Waktu malam';
+	@override String get showMidnight => 'Tampilkan tengah malam';
+	@override String get showMidnightSub => 'Pertengahan antara Magrib dan Subuh';
+	@override String get showLastThird => 'Tampilkan sepertiga malam terakhir';
+	@override String get showLastThirdSub => 'Awal sepertiga terakhir antara Magrib dan Subuh: waktu salat malam';
 	@override String get notifications => 'Notifikasi';
 	@override String get prayerReminders => 'Pengingat salat';
 	@override String get prayerRemindersSub => 'Dapatkan notifikasi di tiap waktu salat';
@@ -224,6 +230,8 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get adhanNeedsReminders => 'Aktifkan Pengingat salat di atas agar azan berbunyi saat waktu salat.';
 	@override String get adhanExactAlarmsOff => 'Aktifkan "Alarm & pengingat" untuk Hisn agar azan dapat berbunyi saat waktu salat.';
 	@override String get allowAlarms => 'Izinkan';
+	@override String get adhanFlipToSilence => 'Balik untuk membisukan';
+	@override String get adhanFlipToSilenceSub => 'Telungkupkan ponsel untuk menghentikan azan yang sedang diputar. Tombol volume mana pun juga menghentikannya.';
 	@override String get adhanVolume => 'Volume azan';
 	@override List<String> get streamLabels => [
 		'Media',
@@ -272,6 +280,8 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get asrHintHanafi => 'Asar dimulai saat bayangan benda dua kali panjangnya';
 	@override String get prayerFajr => 'Subuh';
 	@override String get prayerSunrise => 'Syuruk';
+	@override String get markMidnight => 'Tengah malam';
+	@override String get markLastThird => 'Sepertiga akhir';
 	@override String get prayerDhuhr => 'Zuhur';
 	@override String get prayerAsr => 'Asar';
 	@override String get prayerMaghrib => 'Magrib';
@@ -675,6 +685,7 @@ extension on TranslationsId {
 			'clear' => 'Hapus',
 			'searchPrompt' => 'Cari berdasarkan judul, makna, transliterasi, atau sumber.',
 			'noResults' => ({required Object query}) => 'Tidak ada doa untuk "${query}".',
+			'quranNoResults' => ({required Object query}) => 'Tidak ada surah atau ayat untuk "${query}".',
 			'resultsCountOne' => '1 hasil',
 			'resultsCountOther' => ({required Object n}) => '${n} hasil',
 			'noSavedTitle' => 'Belum ada doa tersimpan',
@@ -728,6 +739,11 @@ extension on TranslationsId {
 			'locFixedCity' => ({required Object label}) => '${label} (kota tetap)',
 			'calcMethod' => 'Metode perhitungan',
 			'asrCalc' => 'Perhitungan Asar',
+			'nightTimes' => 'Waktu malam',
+			'showMidnight' => 'Tampilkan tengah malam',
+			'showMidnightSub' => 'Pertengahan antara Magrib dan Subuh',
+			'showLastThird' => 'Tampilkan sepertiga malam terakhir',
+			'showLastThirdSub' => 'Awal sepertiga terakhir antara Magrib dan Subuh: waktu salat malam',
 			'notifications' => 'Notifikasi',
 			'prayerReminders' => 'Pengingat salat',
 			'prayerRemindersSub' => 'Dapatkan notifikasi di tiap waktu salat',
@@ -738,6 +754,8 @@ extension on TranslationsId {
 			'adhanNeedsReminders' => 'Aktifkan Pengingat salat di atas agar azan berbunyi saat waktu salat.',
 			'adhanExactAlarmsOff' => 'Aktifkan "Alarm & pengingat" untuk Hisn agar azan dapat berbunyi saat waktu salat.',
 			'allowAlarms' => 'Izinkan',
+			'adhanFlipToSilence' => 'Balik untuk membisukan',
+			'adhanFlipToSilenceSub' => 'Telungkupkan ponsel untuk menghentikan azan yang sedang diputar. Tombol volume mana pun juga menghentikannya.',
 			'adhanVolume' => 'Volume azan',
 			'streamLabels.0' => 'Media',
 			'streamLabels.1' => 'Dering / notifikasi',
@@ -780,6 +798,8 @@ extension on TranslationsId {
 			'asrHintHanafi' => 'Asar dimulai saat bayangan benda dua kali panjangnya',
 			'prayerFajr' => 'Subuh',
 			'prayerSunrise' => 'Syuruk',
+			'markMidnight' => 'Tengah malam',
+			'markLastThird' => 'Sepertiga akhir',
 			'prayerDhuhr' => 'Zuhur',
 			'prayerAsr' => 'Asar',
 			'prayerMaghrib' => 'Magrib',

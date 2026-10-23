@@ -23,6 +23,7 @@ import java.io.File
  */
 class AdhanPlayerService : Service() {
     private var player: MediaPlayer? = null
+    private val gestures by lazy { AdhanSilenceGestures(this) { stopEverything() } }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -35,6 +36,12 @@ class AdhanPlayerService : Service() {
         val fajr = intent?.getBooleanExtra(EXTRA_FAJR, false) ?: false
         val usage = intent?.getStringExtra(EXTRA_USAGE) ?: "notification"
 
+        // Before the notification, which carries the gestures' media session.
+        try {
+            gestures.start(flip = FlutterPrefs.getBoolean(this, FLIP_PREF, true))
+        } catch (e: Exception) {
+            Log.e(TAG, "silence gestures unavailable", e)
+        }
         try {
             startInForeground()
         } catch (e: Exception) {
@@ -75,6 +82,7 @@ class AdhanPlayerService : Service() {
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setDeleteIntent(stopPi)
             .setStyle(androidx.media.app.NotificationCompat.MediaStyle()
+                .setMediaSession(gestures.sessionToken)
                 .setShowActionsInCompactView(0))
             .addAction(android.R.drawable.ic_menu_close_clear_cancel, stopLabel(), stopPi)
         if (openPi != null) builder.setContentIntent(openPi)
@@ -185,6 +193,7 @@ class AdhanPlayerService : Service() {
     }
 
     private fun stopEverything() {
+        gestures.stop()
         try {
             player?.stop()
         } catch (_: Exception) {
@@ -203,6 +212,7 @@ class AdhanPlayerService : Service() {
     }
 
     override fun onDestroy() {
+        gestures.stop()
         player?.release()
         player = null
         publishPlayback(false)
@@ -220,6 +230,8 @@ class AdhanPlayerService : Service() {
         const val PLAYBACK_CHANNEL = "hisn/adhan_playback"
         const val DEFAULT_VOICE = "default"
         const val CUSTOM_VOICE = "custom"
+        /** Mirrors `AdhanAudioService._kFlip`; on unless the user turned it off. */
+        const val FLIP_PREF = "adhan_sound_flip"
 
         @Volatile var isPlaying: Boolean = false
             private set

@@ -37,4 +37,25 @@ void main() {
     expect(dua.reference, 'Sahih Muslim 1342');
     expect(dua.repeat, 1);
   });
+
+  test('return supplication continues the journey supplication', () async {
+    final repo = DuaRepository();
+    await repo.load();
+    final setOff = repo.duaById('travel_setting_off')!;
+    final returning = repo.duaById('travel_returning')!;
+
+    // Muslim 1342: on returning he said the same words and added these.
+    expect(returning.arabic, startsWith(setOff.arabic));
+    expect(
+      returning.arabic.replaceAll(RegExp(r'[ً-ٰٟ]'), ''),
+      endsWith('آيبون، تائبون، عابدون، لربنا حامدون'),
+    );
+    expect(returning.reference, 'Sahih Muslim 1342');
+    expect(returning.referenceFor('ar'), 'صحيح مسلم ١٣٤٢');
+    for (final lang in ['ar', 'ur', 'id']) {
+      expect(returning.instructionFor(lang), isNot(returning.instruction));
+    }
+    expect(returning.translationFor('id'), startsWith(setOff.translationFor('id')));
+    expect(returning.translationFor('ur'), startsWith(setOff.translationFor('ur')));
+  });
 }

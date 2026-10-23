@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show mergeSort;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -76,6 +77,7 @@ class _PrayerHeaderState extends State<PrayerHeader> {
                 ),
                 PrayerTimetable(
                   prayers: service.todaysPrayers,
+                  marks: service.todaysMarks,
                   next: next,
                   now: _now,
                 ),
@@ -391,11 +393,16 @@ class PrayerTimetable extends StatelessWidget {
     required this.prayers,
     required this.next,
     required this.now,
+    this.marks = const [],
     this.onTap,
     this.inField = false,
   });
 
   final List<PrayerTiming> prayers;
+
+  /// Sunrise and the night's times, set in among the prayers by the hour but
+  /// in a quieter hand: they are times to know, not prayers to keep.
+  final List<DayMarkTiming> marks;
   final PrayerTiming? next;
   final DateTime now;
   final VoidCallback? onTap;
@@ -412,11 +419,14 @@ class PrayerTimetable extends StatelessWidget {
     // The prayer in force: the last one whose time has come.
     final current = prayers.lastIndexWhere((p) => !p.time.isAfter(now));
 
-    final rows = Column(
-      children: [
-        for (var i = 0; i < prayers.length; i++)
+    final entries = <(DateTime, Widget)>[
+      for (var i = 0; i < prayers.length; i++)
+        (
+          prayers[i].time,
           _TimetableRow(
-            timing: prayers[i],
+            name: s.prayerName(prayers[i].prayer),
+            arabicName: prayers[i].prayer.arabicName,
+            time: prayers[i].time,
             state: next != null &&
                     next!.prayer == prayers[i].prayer &&
                     next!.time == prayers[i].time
@@ -432,8 +442,27 @@ class PrayerTimetable extends StatelessWidget {
             ms: ms,
             s: s,
           ),
-      ],
-    );
+        ),
+      for (final m in marks)
+        (
+          m.time,
+          _TimetableRow(
+            name: s.dayMarkName(m.mark),
+            arabicName: m.mark.arabicName,
+            time: m.time,
+            state: m.time.isAfter(now) ? _RowState.later : _RowState.passed,
+            mark: true,
+            inField: inField,
+            onTap: onTap,
+            theme: theme,
+            ms: ms,
+            s: s,
+          ),
+        ),
+    ];
+    // Stable, so a mark at the same minute as a prayer stays after it.
+    mergeSort(entries, compare: (a, b) => a.$1.compareTo(b.$1));
+    final rows = Column(children: [for (final e in entries) e.$2]);
 
     if (inField) return rows;
     return Material(
@@ -449,8 +478,11 @@ enum _RowState { passed, now, next, later }
 
 class _TimetableRow extends StatelessWidget {
   const _TimetableRow({
-    required this.timing,
+    required this.name,
+    required this.arabicName,
+    required this.time,
     required this.state,
+    this.mark = false,
     required this.inField,
     required this.onTap,
     required this.theme,
@@ -458,8 +490,13 @@ class _TimetableRow extends StatelessWidget {
     required this.s,
   });
 
-  final PrayerTiming timing;
+  final String name;
+  final String arabicName;
+  final DateTime time;
   final _RowState state;
+
+  /// A [DayMark] rather than a prayer: set smaller and fainter.
+  final bool mark;
   final bool inField;
   final VoidCallback? onTap;
   final ThemeData theme;
@@ -473,7 +510,7 @@ class _TimetableRow extends StatelessWidget {
 
     // On the field the whole table is in the field's ink, and the next prayer
     // is lifted by a lighter band; on paper the next prayer takes the field.
-    final Color ink;
+    Color ink;
     final Color? band;
     if (inField) {
       ink = state == _RowState.passed
@@ -488,7 +525,9 @@ class _TimetableRow extends StatelessWidget {
               : theme.colorScheme.onSurface;
       band = isNext ? ms.field : null;
     }
+    if (mark) ink = ink.withValues(alpha: ink.a * 0.78);
     final weight = strong ? FontWeight.w600 : FontWeight.w400;
+    final text = mark ? theme.textTheme.bodyMedium : theme.textTheme.titleSmall;
 
     return Material(
       color: band ?? Colors.transparent,
@@ -497,7 +536,7 @@ class _TimetableRow extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(Ms.rPanel - 6),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          padding: EdgeInsets.symmetric(horizontal: 14, vertical: mark ? 7 : 12),
           child: Row(
             children: [
               // The prayer in force carries a small mark, so "now" reads apart
@@ -520,23 +559,28 @@ class _TimetableRow extends StatelessWidget {
               ),
               Expanded(
                 child: Text(
-                  s.prayerName(timing.prayer),
+                  name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.titleSmall?.copyWith(
+                  style: text?.copyWith(
                     color: ink,
-                    fontWeight: strong ? FontWeight.w600 : FontWeight.w500,
+                    fontWeight: strong
+                        ? FontWeight.w600
+                        : mark
+                            ? FontWeight.w400
+                            : FontWeight.w500,
                   ),
                 ),
               ),
               if (!s.ar)
                 SizedBox(
                   width: 72,
-                  child: Align(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
                     alignment: AlignmentDirectional.centerEnd,
                     child: ArabicText(
-                      timing.prayer.arabicName,
-                      fontSize: 18,
+                      arabicName,
+                      fontSize: mark ? 15 : 18,
                       color: ink,
                       height: 1.5,
                     ),
@@ -547,10 +591,10 @@ class _TimetableRow extends StatelessWidget {
               SizedBox(
                 width: 96,
                 child: Text(
-                  _PrayerHeaderState._clock(timing.time, s),
+                  _PrayerHeaderState._clock(time, s),
                   textAlign: TextAlign.end,
                   maxLines: 1,
-                  style: theme.textTheme.titleSmall?.copyWith(
+                  style: text?.copyWith(
                     color: ink,
                     fontWeight: weight,
                   ),

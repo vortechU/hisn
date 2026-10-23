@@ -384,6 +384,9 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// en: 'No duas found for “$query”.'
 	String noResults({required Object query}) => 'No duas found for “${query}”.';
 
+	/// en: 'No surahs or verses found for “$query”.'
+	String quranNoResults({required Object query}) => 'No surahs or verses found for “${query}”.';
+
 	/// en: '1 result'
 	String get resultsCountOne => '1 result';
 
@@ -538,6 +541,21 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// en: 'Asr calculation'
 	String get asrCalc => 'Asr calculation';
 
+	/// en: 'Night times'
+	String get nightTimes => 'Night times';
+
+	/// en: 'Show midnight'
+	String get showMidnight => 'Show midnight';
+
+	/// en: 'Halfway between Maghrib and Fajr'
+	String get showMidnightSub => 'Halfway between Maghrib and Fajr';
+
+	/// en: 'Show last third of the night'
+	String get showLastThird => 'Show last third of the night';
+
+	/// en: 'When the final third between Maghrib and Fajr begins: the time for the night prayer'
+	String get showLastThirdSub => 'When the final third between Maghrib and Fajr begins: the time for the night prayer';
+
 	/// en: 'Notifications'
 	String get notifications => 'Notifications';
 
@@ -567,6 +585,12 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
 	/// en: 'Allow'
 	String get allowAlarms => 'Allow';
+
+	/// en: 'Flip to silence'
+	String get adhanFlipToSilence => 'Flip to silence';
+
+	/// en: 'Turn the phone face down to stop a playing adhan. Either volume button stops it too.'
+	String get adhanFlipToSilenceSub => 'Turn the phone face down to stop a playing adhan. Either volume button stops it too.';
 
 	/// en: 'Adhan volume'
 	String get adhanVolume => 'Adhan volume';
@@ -681,6 +705,12 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
 	/// en: 'Sunrise'
 	String get prayerSunrise => 'Sunrise';
+
+	/// en: 'Midnight'
+	String get markMidnight => 'Midnight';
+
+	/// en: 'Last third'
+	String get markLastThird => 'Last third';
 
 	/// en: 'Dhuhr'
 	String get prayerDhuhr => 'Dhuhr';
@@ -1541,6 +1571,7 @@ extension on Translations {
 			'clear' => 'Clear',
 			'searchPrompt' => 'Search by title, meaning, transliteration, or source.',
 			'noResults' => ({required Object query}) => 'No duas found for “${query}”.',
+			'quranNoResults' => ({required Object query}) => 'No surahs or verses found for “${query}”.',
 			'resultsCountOne' => '1 result',
 			'resultsCountOther' => ({required Object n}) => '${n} results',
 			'noSavedTitle' => 'No saved duas yet',
@@ -1594,6 +1625,11 @@ extension on Translations {
 			'locFixedCity' => ({required Object label}) => '${label} (fixed city)',
 			'calcMethod' => 'Calculation method',
 			'asrCalc' => 'Asr calculation',
+			'nightTimes' => 'Night times',
+			'showMidnight' => 'Show midnight',
+			'showMidnightSub' => 'Halfway between Maghrib and Fajr',
+			'showLastThird' => 'Show last third of the night',
+			'showLastThirdSub' => 'When the final third between Maghrib and Fajr begins: the time for the night prayer',
 			'notifications' => 'Notifications',
 			'prayerReminders' => 'Prayer reminders',
 			'prayerRemindersSub' => 'Get notified at each prayer time',
@@ -1604,6 +1640,8 @@ extension on Translations {
 			'adhanNeedsReminders' => 'Turn on Prayer reminders above for the adhan to play at prayer time.',
 			'adhanExactAlarmsOff' => 'Turn on "Alarms & reminders" for Hisn so the adhan can play at prayer time.',
 			'allowAlarms' => 'Allow',
+			'adhanFlipToSilence' => 'Flip to silence',
+			'adhanFlipToSilenceSub' => 'Turn the phone face down to stop a playing adhan. Either volume button stops it too.',
 			'adhanVolume' => 'Adhan volume',
 			'streamLabels.0' => 'Media',
 			'streamLabels.1' => 'Ringer / notifications',
@@ -1646,6 +1684,8 @@ extension on Translations {
 			'asrHintHanafi' => 'Asr begins when an object\'s shadow is twice its length',
 			'prayerFajr' => 'Fajr',
 			'prayerSunrise' => 'Sunrise',
+			'markMidnight' => 'Midnight',
+			'markLastThird' => 'Last third',
 			'prayerDhuhr' => 'Dhuhr',
 			'prayerAsr' => 'Asr',
 			'prayerMaghrib' => 'Maghrib',

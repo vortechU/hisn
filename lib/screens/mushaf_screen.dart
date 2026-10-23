@@ -11,6 +11,7 @@ import '../l10n/app_strings.dart';
 import '../models/quran.dart';
 import '../services/quran_service.dart';
 import '../theme/app_theme.dart';
+import '../theme/motion.dart';
 import '../util/arabic.dart';
 import '../widgets/arabic_text.dart';
 import '../widgets/ornament.dart';
@@ -191,7 +192,7 @@ class MushafScreen extends StatefulWidget {
 }
 
 class _MushafScreenState extends State<MushafScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late final PageController _controller;
   // Drives the AppBar (title + bookmark) only. Updating it on swipe rebuilds
   // those two widgets — not the PageView — so the heavy page bodies are never
@@ -221,7 +222,21 @@ class _MushafScreenState extends State<MushafScreen>
   /// the glyph block listens to it — the PageView never rebuilds for a
   /// selection.
   late final ValueNotifier<String?> _selected =
-      ValueNotifier<String?>(widget.highlightVerse);
+      ValueNotifier<String?>(widget.highlightVerse)..addListener(_endArrival);
+
+  /// A few slow pulses through [MushafScreen.highlightVerse] on arrival, so
+  /// the eye finds the verse at once on a page of fifteen dense lines. The
+  /// light stays on after it, as it always has; this only draws attention.
+  late final AnimationController _arrival = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 2400),
+  );
+
+  /// The verse lit on arrival is no longer the one lit: stop pulsing.
+  void _endArrival() {
+    if (_arrival.value > 0) _arrival.value = 1;
+    _arrival.stop();
+  }
 
   /// Whether the system bars are currently hidden.
   bool _immersive = false;
@@ -252,6 +267,9 @@ class _MushafScreenState extends State<MushafScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<QuranService>().setLastPage(start);
       _prefetchNeighbors(start);
+      if (widget.highlightVerse != null && !Motion.reduced(context)) {
+        _arrival.forward();
+      }
     });
   }
 
@@ -268,6 +286,7 @@ class _MushafScreenState extends State<MushafScreen>
     WakelockPlus.disable();
     if (_immersive) _showSystemBars();
     _zoom.dispose();
+    _arrival.dispose();
     _controller.dispose();
     _currentPage.dispose();
     _selected.dispose();
@@ -492,6 +511,7 @@ class _MushafScreenState extends State<MushafScreen>
                       zoom: _zoom,
                       safeInsets: _safeInsets,
                       selected: _selected,
+                      arrival: _arrival,
                       onAyah: _openAyah,
                       onDismiss: () => _selected.value = null,
                     ),
@@ -724,6 +744,7 @@ class _MushafPageView extends StatefulWidget {
     required this.pageNumber,
     required this.zoom,
     required this.selected,
+    this.arrival = kAlwaysDismissedAnimation,
     required this.onAyah,
     required this.onDismiss,
     this.safeInsets = EdgeInsets.zero,
@@ -736,6 +757,9 @@ class _MushafPageView extends StatefulWidget {
 
   /// The `surah:ayah` lit on the page, or null.
   final ValueListenable<String?> selected;
+
+  /// The arrival pulse — see [_MushafScreenState._arrival].
+  final Animation<double> arrival;
 
   /// An āyah was chosen — its rosette tapped, or one of its words held.
   final ValueChanged<String> onAyah;
@@ -828,6 +852,7 @@ class _MushafPageViewState extends State<_MushafPageView> {
               // and the citations they answer to are built in the same frame.
               keys: repo.ayahKeysOnPage(widget.pageNumber),
               selected: widget.selected,
+              arrival: widget.arrival,
               onAyah: widget.onAyah,
               onDismiss: widget.onDismiss,
             ),
@@ -1270,6 +1295,7 @@ class _PageBody extends StatelessWidget {
     required this.inks,
     required this.keys,
     required this.selected,
+    this.glow = 0,
     required this.bookmarked,
     required this.onAyah,
     required this.onDismiss,
@@ -1284,6 +1310,9 @@ class _PageBody extends StatelessWidget {
 
   /// The verse lit on this page, as an index into [keys], or -1.
   final int selected;
+
+  /// How far the lit verse's wash is deepened by the arrival pulse, 0 to 1.
+  final double glow;
 
   /// Which of [keys] the reader has kept, as indices.
   final Set<int> bookmarked;
@@ -1300,7 +1329,7 @@ class _PageBody extends StatelessWidget {
   }
 
   List<InlineSpan> _spans(List<MushafWord> words, List<int> verses, double size) {
-    final wash = inks.gold.withValues(alpha: 0.16);
+    final wash = inks.gold.withValues(alpha: 0.16 + 0.34 * glow);
     return [
       // Reversed → correct right-to-left word order.
       for (var i = words.length - 1; i >= 0; i--)
@@ -1590,6 +1619,7 @@ class _PageText extends StatelessWidget {
     required this.inks,
     required this.keys,
     required this.selected,
+    required this.arrival,
     required this.onAyah,
     required this.onDismiss,
   });
@@ -1598,6 +1628,7 @@ class _PageText extends StatelessWidget {
   final _MushafInk inks;
   final List<String> keys;
   final ValueListenable<String?> selected;
+  final Animation<double> arrival;
   final ValueChanged<String> onAyah;
   final VoidCallback onDismiss;
 
@@ -1616,15 +1647,27 @@ class _PageText extends StatelessWidget {
 
     return ValueListenableBuilder<String?>(
       valueListenable: selected,
-      builder: (context, key, _) => _PageBody(
-        page: page,
-        inks: inks,
-        keys: keys,
-        selected: key == null ? -1 : keys.indexOf(key),
-        bookmarked: bookmarked,
-        onAyah: onAyah,
-        onDismiss: onDismiss,
-      ),
+      builder: (context, key, _) {
+        final index = key == null ? -1 : keys.indexOf(key);
+        Widget body(double glow) => _PageBody(
+              page: page,
+              inks: inks,
+              keys: keys,
+              selected: index,
+              glow: glow,
+              bookmarked: bookmarked,
+              onAyah: onAyah,
+              onDismiss: onDismiss,
+            );
+        // Only the page holding the lit verse follows the pulse.
+        if (index < 0) return body(0);
+        return AnimatedBuilder(
+          animation: arrival,
+          // Three swells, from nothing and back to nothing.
+          builder: (context, _) =>
+              body(math.pow(math.sin(math.pi * 3 * arrival.value), 2).toDouble()),
+        );
+      },
     );
   }
 }

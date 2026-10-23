@@ -148,14 +148,15 @@ class TasbihScreen extends StatelessWidget {
                     Ms.margin,
                     28,
                   ),
-                  // At least as tall as the screen and pushed to its foot, so
-                  // the counter sits in the thumb's reach, not under the bar.
+                  // At least as tall as the screen and centred in it, so the
+                  // counter sits where the eye rests rather than sunk to the
+                  // foot with empty space above it.
                   child: ConstrainedBox(
                     constraints: BoxConstraints(
                       minHeight: viewport.maxHeight - 48,
                     ),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Column(
                           children: [

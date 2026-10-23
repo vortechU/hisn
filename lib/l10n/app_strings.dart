@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../i18n/strings.g.dart';
 import '../models/sunnah_day.dart';
 import '../services/backup_service.dart';
+import '../services/prayer_service.dart' show DayMark;
 import '../services/share_io.dart';
 import 'locale_controller.dart';
 
@@ -198,6 +199,7 @@ class AppStrings {
   String get clear => _t.clear;
   String get searchPrompt => _t.searchPrompt;
   String noResults(String query) => _t.noResults(query: query);
+  String quranNoResults(String query) => _t.quranNoResults(query: query);
   String resultsCount(int n) =>
       n == 1 ? _t.resultsCountOne : _t.resultsCountOther(n: n);
 
@@ -279,6 +281,8 @@ class AppStrings {
   String get adhanNeedsReminders => _t.adhanNeedsReminders;
   String get adhanExactAlarmsOff => _t.adhanExactAlarmsOff;
   String get allowAlarms => _t.allowAlarms;
+  String get adhanFlipToSilence => _t.adhanFlipToSilence;
+  String get adhanFlipToSilenceSub => _t.adhanFlipToSilenceSub;
   String get adhanVolume => _t.adhanVolume;
   String streamLabel(int index) => _t.streamLabels[index];
   String streamHint(int index) => _t.streamHints[index];
@@ -368,6 +372,24 @@ class AppStrings {
         return _t.prayerNone;
     }
   }
+
+  String dayMarkName(DayMark mark) {
+    switch (mark) {
+      case DayMark.sunrise:
+        return _t.prayerSunrise;
+      case DayMark.midnight:
+        return _t.markMidnight;
+      case DayMark.lastThird:
+        return _t.markLastThird;
+    }
+  }
+
+  // ---- night times ----
+  String get nightTimes => _t.nightTimes;
+  String get showMidnight => _t.showMidnight;
+  String get showMidnightSub => _t.showMidnightSub;
+  String get showLastThird => _t.showLastThird;
+  String get showLastThirdSub => _t.showLastThirdSub;
 
   // ---- notifications ----
   String notifTitle(Prayer prayer) => _t.notifTitle(name: prayerName(prayer));

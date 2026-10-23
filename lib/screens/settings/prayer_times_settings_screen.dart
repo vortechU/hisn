@@ -53,6 +53,22 @@ class PrayerTimesSettingsScreen extends StatelessWidget {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => _pickMadhab(context, service, s),
           ),
+          const Divider(height: 24),
+          SettingsSectionHeader(s.nightTimes),
+          SwitchListTile(
+            secondary: const Icon(Icons.bedtime_outlined),
+            title: Text(s.showMidnight),
+            subtitle: Text(s.showMidnightSub),
+            value: service.showMidnight,
+            onChanged: service.setShowMidnight,
+          ),
+          SwitchListTile(
+            secondary: const Icon(Icons.nights_stay_outlined),
+            title: Text(s.showLastThird),
+            subtitle: Text(s.showLastThirdSub),
+            value: service.showLastThird,
+            onChanged: service.setShowLastThird,
+          ),
         ],
       ),
     );

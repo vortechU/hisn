@@ -45,4 +45,10 @@ object FlutterPrefs {
     } catch (_: ClassCastException) {
         fallback
     }
+
+    fun getBoolean(context: Context, key: String, fallback: Boolean): Boolean = try {
+        of(context).getBoolean(PREFIX + key, fallback)
+    } catch (_: ClassCastException) {
+        fallback
+    }
 }

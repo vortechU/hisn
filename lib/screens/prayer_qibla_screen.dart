@@ -93,6 +93,7 @@ class PrayerQiblaScreen extends StatelessWidget {
                   ),
                   PrayerTimetable(
                     prayers: today,
+                    marks: service.todaysMarks,
                     next: next,
                     now: now,
                     onTap: openSchedule,

@@ -202,6 +202,8 @@ INSTRUCTIONS = {'salah_tasbih_tahlil_final': 'بعد قول سبحان الله 
                               '٢٠٩٧).'}
 VIRTUES['mosque_after_wudu'] = 'من أسبغ الوضوء ثم قالها فُتحت له أبواب الجنة الثمانية، يدخل من أيها شاء.'
 INSTRUCTIONS['waking_alhamdulillah_ahyana'] = 'عند الاستيقاظ، امسح أثر النوم عن وجهك بيدك، كما فعل النبي صلى الله عليه وسلم (صحيح البخاري ١٨٣). هذا عمل وليس دعاءً يُتلى.'
+INSTRUCTIONS['travel_returning'] = 'عند الرجوع من السفر يُقال دعاء السفر نفسه، ويُزاد في آخره: آيبون تائبون عابدون لربنا حامدون.'
+INSTRUCTIONS['mosque_adhan_testimony'] = 'يُقال بعد انتهاء المؤذن من الشهادتين، قبل قوله: حي على الصلاة.'
 with_instruction = {d["id"] for d in json.load(open(SRC, encoding="utf-8")) if d.get("instruction")}
 if with_instruction != set(INSTRUCTIONS):
     raise SystemExit("instruction mismatch")

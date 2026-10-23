@@ -136,6 +136,8 @@ class _QuranScreenState extends State<QuranScreen> {
               child: TextField(
                 controller: _searchController,
                 onChanged: _search,
+                textDirection:
+                    contentDirection(_query, Directionality.of(context)),
                 keyboardAppearance: Theme.of(context).brightness,
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(
@@ -244,7 +246,7 @@ class _QuranScreenState extends State<QuranScreen> {
           else if (_verseResults.isEmpty)
             Padding(
               padding: const EdgeInsets.all(Ms.margin),
-              child: Text(s.noResults(_query)),
+              child: Text(s.quranNoResults(_query)),
             )
           else ...[
             if (_moreVerses)
@@ -261,7 +263,7 @@ class _QuranScreenState extends State<QuranScreen> {
         ] else if (surahs.isEmpty)
           Padding(
             padding: const EdgeInsets.all(Ms.margin),
-            child: Text(s.noResults(_query)),
+            child: Text(s.quranNoResults(_query)),
           ),
       ],
     );

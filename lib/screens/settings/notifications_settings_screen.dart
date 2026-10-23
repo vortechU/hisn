@@ -256,6 +256,15 @@ class NotificationsSettingsScreen extends StatelessWidget {
                 ),
               ),
             ),
+            SwitchListTile(
+              secondary: const Icon(Icons.screen_rotation_alt_outlined),
+              title: Text(s.adhanFlipToSilence),
+              subtitle: Text(s.adhanFlipToSilenceSub),
+              isThreeLine: true,
+              value: adhan.flipToSilence,
+              onChanged: (value) =>
+                  context.read<AdhanAudioService>().setFlipToSilence(value),
+            ),
           ],
         ],
       ),
