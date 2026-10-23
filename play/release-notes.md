@@ -9,6 +9,37 @@ listing-language fields on the release screen.
 
 ---
 
+## 1.16.0 (versionCode 30) — open testing
+
+### English
+
+```
+• Redesigned home-screen widgets with improved light and dark themes.
+• New Continue reading widget opens the Quran at your last page.
+• Prayer widgets show the day's prayers, Hijri date, and countdown.
+• The ongoing prayer notification shows time since adhan during the iqamah window, then counts down to the next prayer.
+```
+
+### العربية
+
+```
+• تصميم جديد لأدوات الشاشة الرئيسية مع تحسين الوضعين الفاتح والداكن.
+• أداة «متابعة القراءة» الجديدة تفتح المصحف عند آخر صفحة قرأتها.
+• أدوات الصلاة تعرض صلوات اليوم والتاريخ الهجري والعد التنازلي.
+• يعرض إشعار الصلاة المستمر الوقت المنقضي منذ الأذان خلال مهلة الإقامة، ثم يعدّ تنازليًا للصلاة التالية.
+```
+
+### Bahasa Indonesia
+
+```
+• Desain baru widget layar utama dengan tema terang dan gelap yang lebih baik.
+• Widget Lanjut membaca membuka Al-Quran di halaman terakhir Anda.
+• Widget salat menampilkan jadwal hari ini, tanggal Hijriah, dan hitung mundur.
+• Notifikasi salat menampilkan waktu sejak azan selama jeda ikamah, lalu menghitung mundur ke salat berikutnya.
+```
+
+---
+
 ## 1.15.1 (versionCode 26) — first release
 
 ### English

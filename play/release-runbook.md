@@ -154,6 +154,15 @@ without this opt-in retain the production package and label.
 
 ## 5. Upload
 
+For the 1.16.0 (30) open-testing release, use **Test and release → Testing →
+Open testing → Create new release**, then upload the signed bundle and use
+**Start rollout to open testing** after reviewing the release. The upload
+package is in `build/play-upload/1.16.0-30/`, with release notes, mapping,
+symbols, and verification results. Official track and release guidance:
+https://support.google.com/googleplay/android-developer/answer/9859348
+
+For a closed-testing release:
+
 1. Play Console → **Testing → Closed testing → Create new release**.
 2. Upload the `.aab`, the mapping file, and the symbols.
 3. Release name: the version code and name, e.g. `26 (1.15.1)`.
