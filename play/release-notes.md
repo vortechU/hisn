@@ -9,6 +9,42 @@ listing-language fields on the release screen.
 
 ---
 
+## 1.16.1 (versionCode 31) — production
+
+Covers everything since the last production release, including 1.16.0.
+
+### English
+
+```
+• Redesigned home-screen widgets, plus a new Continue reading widget for the Quran
+• The prayer notification shows the time since adhan, then counts down to the next prayer
+• Silence the adhan with a volume button or by turning the phone face down
+• Sunrise in the prayer timetable; midnight and the last third of the night in Settings
+• Better search, and the full dua for returning from a journey
+```
+
+### العربية
+
+```
+• تصميم جديد لأدوات الشاشة الرئيسية، وأداة «متابعة القراءة» للمصحف
+• يعرض إشعار الصلاة الوقت المنقضي منذ الأذان، ثم يعدّ تنازليًا للصلاة التالية
+• أوقف الأذان بزر الصوت أو بقلب الهاتف على وجهه
+• الشروق في جدول المواقيت، ومنتصف الليل والثلث الأخير من الليل في الإعدادات
+• بحث أفضل، ودعاء الرجوع من السفر كاملًا
+```
+
+### Bahasa Indonesia
+
+```
+• Desain baru widget layar utama, plus widget Lanjut membaca untuk Al-Quran
+• Notifikasi salat menampilkan waktu sejak azan, lalu menghitung mundur ke salat berikutnya
+• Hentikan azan dengan tombol volume atau dengan menelungkupkan ponsel
+• Syuruk di jadwal salat; tengah malam dan sepertiga malam terakhir di Pengaturan
+• Pencarian lebih baik, dan doa pulang dari perjalanan yang lengkap
+```
+
+---
+
 ## 1.16.0 (versionCode 30) — open testing
 
 ### English
