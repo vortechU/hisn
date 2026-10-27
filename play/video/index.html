@@ -1,0 +1,1216 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Hisn launch film</title>
+<style>
+  html, body { margin: 0; background: #000; }
+  canvas { display: block; }
+</style>
+<script src="assets.js"></script>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+'use strict';
+const W = 1080, H = 1920, CX = W / 2;
+const DURATION = 32;
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d');
+
+// ---- palette (DESIGN.md, Qibla & Brass) -----------------------------------
+const C = {
+  nightBase: '#0B0F11', hall: '#0D262F', stoneN: '#15313A', field: '#0F3D4C', fieldN: '#1B4B59',
+  linen: '#F4F1E8', accN: '#86C5CC', brass: '#93681D', brassN: '#D4A85A', lampField: '#EADBBD',
+  plaster: '#EBECE7', stone: '#F8F8F5', ink: '#161A1C', muted: '#5E6161', mutedN: '#A1A8A4',
+  lampPanel: '#F0ECE3', lampText: '#6E511D', well: '#DFE3E2', tint: '#E1E5E4', onRubric: '#F7F5EF',
+  paper: '#F7F1E3',
+};
+const rgba = (hex, a) => {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`;
+};
+const mix = (h1, h2, t) => {
+  const a = parseInt(h1.slice(1), 16), b = parseInt(h2.slice(1), 16);
+  const ch = (s) => Math.round(lerp((a >> s) & 255, (b >> s) & 255, t));
+  return `rgb(${ch(16)},${ch(8)},${ch(0)})`;
+};
+
+// ---- timing ----------------------------------------------------------------
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const p = (t, a, b) => clamp((t - a) / (b - a));
+const eOut3 = (x) => 1 - Math.pow(1 - x, 3);
+const eIn3 = (x) => x * x * x;
+const eIO3 = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+const eOut5 = (x) => 1 - Math.pow(1 - x, 5);
+const eIO5 = (x) => (x < 0.5 ? 16 * x ** 5 : 1 - Math.pow(-2 * x + 2, 5) / 2);
+const eOutExpo = (x) => (x >= 1 ? 1 : 1 - Math.pow(2, -10 * x));
+const eInExpo = (x) => (x <= 0 ? 0 : Math.pow(2, 10 * x - 10));
+const eOutBack = (x, s = 1.6) => (x <= 0 ? 0 : 1 + (s + 1) * Math.pow(x - 1, 3) + s * Math.pow(x - 1, 2));
+// Damped spring from 0 to 1 over normalized time x (in seconds-ish units).
+const spring = (x, damp = 7, freq = 1.6) => (x <= 0 ? 0 : 1 - Math.exp(-damp * x) * Math.cos(freq * 2 * Math.PI * x));
+
+function rng(seed) {
+  return () => {
+    seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+// ---- type ------------------------------------------------------------------
+const F = (w, s, fam = 'Readex') => `${w} ${s}px "${fam}"`;
+function text(str, x, y, font, color, align = 'left', alpha = 1, dir = 'ltr') {
+  ctx.save();
+  ctx.font = font; ctx.fillStyle = color; ctx.textAlign = align; ctx.direction = dir;
+  ctx.textBaseline = 'alphabetic'; ctx.globalAlpha *= alpha;
+  ctx.fillText(str, x, y);
+  ctx.restore();
+}
+function measure(str, font, dir = 'ltr') {
+  ctx.save(); ctx.font = font; ctx.direction = dir;
+  const w = ctx.measureText(str).width; ctx.restore(); return w;
+}
+function wrap(str, font, maxW) {
+  const words = str.split(' '); const lines = []; let cur = '';
+  for (const w of words) {
+    const t = cur ? cur + ' ' + w : w;
+    if (measure(t, font) > maxW && cur) { lines.push(cur); cur = w; } else cur = t;
+  }
+  if (cur) lines.push(cur);
+  return lines;
+}
+
+// Headline whose words rise out of a mask line by line, centred.
+function headline(lines, cy, size, u, opts = {}) {
+  const { color = C.linen, accent = C.lampField, accentLine = lines.length - 1, gap = 1.12,
+    start = 0, stagger = 0.07, out = null, weight = 600 } = opts;
+  const lh = size * gap;
+  let k = 0;
+  lines.forEach((line, li) => {
+    const font = F(weight, size);
+    const words = line.split(' ');
+    const space = measure(' ', font);
+    const ws = words.map((w) => measure(w, font));
+    const total = ws.reduce((a, b) => a + b, 0) + space * (words.length - 1);
+    let x = CX - total / 2;
+    const base = cy + li * lh;
+    ctx.save();
+    ctx.beginPath(); ctx.rect(0, base - size * 1.05, W, size * 1.4); ctx.clip();
+    words.forEach((w, wi) => {
+      const e = eOut5(p(u, start + k * stagger, start + k * stagger + 0.7));
+      let dy = (1 - e) * size * 1.1;
+      let a = e;
+      if (out) { const o = eIn3(p(u, out + k * 0.03, out + k * 0.03 + 0.35)); dy -= o * size * 1.1; }
+      text(w, x, base + dy, font, li === accentLine && opts.accent !== false ? accent : color, 'left', a);
+      x += ws[wi] + space; k++;
+    });
+    ctx.restore();
+  });
+}
+
+// ---- shapes ----------------------------------------------------------------
+// The mihrab outline from lib/widgets/ornament.dart (MihrabBorder).
+function mihrabPath(l, t, w, h, rise, rad) {
+  const r = l + w, b = t + h, mid = l + w / 2;
+  const path = new Path2D();
+  path.moveTo(l, b - rad);
+  path.lineTo(l, t + rise);
+  path.bezierCurveTo(l, t + rise * 0.3, mid - w * 0.14, t + rise * 0.26, mid, t);
+  path.bezierCurveTo(mid + w * 0.14, t + rise * 0.26, r, t + rise * 0.3, r, t + rise);
+  path.lineTo(r, b - rad);
+  path.arcTo(r, b, r - rad, b, rad);
+  path.lineTo(l + rad, b);
+  path.arcTo(l, b, l, b - rad, rad);
+  path.closePath();
+  return path;
+}
+// Each half of the arch as an SVG path from the apex down to the foot centre,
+// so the outline can draw itself outward from the point.
+const svgNS = 'http://www.w3.org/2000/svg';
+function archHalves(l, t, w, h, rise, rad) {
+  const r = l + w, b = t + h, mid = l + w / 2;
+  const left = `M${mid},${t} C${mid - w * 0.14},${t + rise * 0.26} ${l},${t + rise * 0.3} ${l},${t + rise} L${l},${b - rad} A${rad},${rad} 0 0 0 ${l + rad},${b} L${mid},${b}`;
+  const right = `M${mid},${t} C${mid + w * 0.14},${t + rise * 0.26} ${r},${t + rise * 0.3} ${r},${t + rise} L${r},${b - rad} A${rad},${rad} 0 0 1 ${r - rad},${b} L${mid},${b}`;
+  return [left, right].map((d) => {
+    const el = document.createElementNS(svgNS, 'path'); el.setAttribute('d', d);
+    return { path: new Path2D(d), len: el.getTotalLength(), el };
+  });
+}
+function rrect(x, y, w, h, r) {
+  const pth = new Path2D(); pth.roundRect(x, y, w, h, r); return pth;
+}
+
+// Khatam lattice (octagon + eight-point star + square), as _KhatamPainter.
+function khatamPath(width, height, side) {
+  const path = new Path2D();
+  const r = side / (2 * Math.sin(Math.PI / 8));
+  const pitch = side * (1 + Math.SQRT2);
+  const sq = side / Math.SQRT2;
+  for (let cy = -pitch; cy <= height + pitch; cy += pitch) {
+    for (let cx = -pitch; cx <= width + pitch; cx += pitch) {
+      const v = [];
+      for (let i = 0; i < 8; i++) { const a = Math.PI / 8 + i * Math.PI / 4; v.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]); }
+      path.moveTo(...v[0]); for (let i = 1; i < 8; i++) path.lineTo(...v[i]); path.closePath();
+      for (let i = 0; i < 8; i++) { path.moveTo(...v[i]); path.lineTo(...v[(i + 3) % 8]); }
+      const qx = cx + pitch / 2, qy = cy + pitch / 2;
+      for (let i = 0; i <= 4; i++) { const a = Math.PI / 4 + i * Math.PI / 2; const fn = i ? 'lineTo' : 'moveTo'; path[fn](qx + sq * Math.cos(a), qy + sq * Math.sin(a)); }
+    }
+  }
+  return { path, pitch };
+}
+function makeLattice(color, alpha, side, lw = 1.4) {
+  const k = khatamPath(W + 400, H + 400, side);
+  const c = document.createElement('canvas'); c.width = W + 400; c.height = H + 400;
+  const g = c.getContext('2d');
+  g.strokeStyle = rgba(color, alpha); g.lineWidth = lw; g.stroke(k.path);
+  return { canvas: c, pitch: k.pitch };
+}
+
+// Rub el hizb style star: two squares, a ring, and the khatam chords.
+function starSegments(r) {
+  const segs = [];
+  for (let s = 0; s < 2; s++) {
+    const off = s * Math.PI / 4;
+    for (let i = 0; i < 4; i++) {
+      const a1 = off + i * Math.PI / 2, a2 = off + (i + 1) * Math.PI / 2;
+      segs.push([[r * Math.cos(a1), r * Math.sin(a1)], [r * Math.cos(a2), r * Math.sin(a2)]]);
+    }
+  }
+  const ri = r * 0.62;
+  const v = [];
+  for (let i = 0; i < 8; i++) { const a = Math.PI / 8 + i * Math.PI / 4; v.push([ri * Math.cos(a), ri * Math.sin(a)]); }
+  for (let i = 0; i < 8; i++) segs.push([v[i], v[(i + 3) % 8]]);
+  return segs;
+}
+const STAR = starSegments(1);
+function drawStar(x, y, r, prog, rot, color, lw, glow = 0) {
+  ctx.save();
+  ctx.translate(x, y); ctx.rotate(rot);
+  ctx.strokeStyle = color; ctx.lineWidth = lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  if (glow) { ctx.shadowColor = color; ctx.shadowBlur = glow; }
+  const n = STAR.length;
+  STAR.forEach(([a, b], i) => {
+    const q = clamp(prog * (n * 0.45 + 1) - i * 0.45);
+    if (q <= 0) return;
+    const e = eOut3(q);
+    ctx.beginPath(); ctx.moveTo(a[0] * r, a[1] * r);
+    ctx.lineTo(lerp(a[0], b[0], e) * r, lerp(a[1], b[1], e) * r); ctx.stroke();
+  });
+  const qc = clamp(prog * 1.3 - 0.3);
+  if (qc > 0) { ctx.beginPath(); ctx.arc(0, 0, r * 0.86, -Math.PI / 2, -Math.PI / 2 + eOut3(qc) * Math.PI * 2); ctx.stroke(); }
+  ctx.restore();
+}
+
+// ---- sprites ---------------------------------------------------------------
+function glowSprite(color, size) {
+  const c = document.createElement('canvas'); c.width = c.height = size;
+  const g = c.getContext('2d');
+  const gr = g.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+  gr.addColorStop(0, rgba(color, 1)); gr.addColorStop(0.25, rgba(color, 0.45)); gr.addColorStop(1, rgba(color, 0));
+  g.fillStyle = gr; g.fillRect(0, 0, size, size);
+  return c;
+}
+let GLOW_BRASS, GLOW_LINEN, NOISE = [], LOGO, LAT_DARK, LAT_FIELD, LAT_LIGHT, LAT_BRASS;
+
+function buildLogo(img) {
+  // The icon is a white mark on #072C3E; lift the mark out as alpha.
+  const c = document.createElement('canvas'); c.width = img.width; c.height = img.height;
+  const g = c.getContext('2d'); g.drawImage(img, 0, 0);
+  const d = g.getImageData(0, 0, c.width, c.height);
+  let x0 = c.width, y0 = c.height, x1 = 0, y1 = 0;
+  for (let i = 0; i < d.data.length; i += 4) {
+    const a = clamp((d.data[i] - 7) / (255 - 7));
+    d.data[i] = d.data[i + 1] = d.data[i + 2] = 255; d.data[i + 3] = Math.round(a * 255);
+    if (a > 0.1) { const px = (i / 4) % c.width, py = Math.floor(i / 4 / c.width); x0 = Math.min(x0, px); x1 = Math.max(x1, px); y0 = Math.min(y0, py); y1 = Math.max(y1, py); }
+  }
+  g.putImageData(d, 0, 0);
+  const pad = 8, out = document.createElement('canvas');
+  out.width = x1 - x0 + pad * 2; out.height = y1 - y0 + pad * 2;
+  out.getContext('2d').drawImage(c, x0 - pad, y0 - pad, out.width, out.height, 0, 0, out.width, out.height);
+  return out;
+}
+function tint(src, color) {
+  const c = document.createElement('canvas'); c.width = src.width; c.height = src.height;
+  const g = c.getContext('2d'); g.drawImage(src, 0, 0);
+  g.globalCompositeOperation = 'source-in'; g.fillStyle = color; g.fillRect(0, 0, c.width, c.height);
+  return c;
+}
+
+// Logo revealed right-to-left (the way the word is written) with a soft edge.
+const LOGO_LAYER = document.createElement('canvas');
+function drawLogo(src, cx, cy, width, reveal, alpha = 1, scale = 1) {
+  const h = width * src.height / src.width;
+  LOGO_LAYER.width = Math.ceil(width) + 4; LOGO_LAYER.height = Math.ceil(h) + 4;
+  const g = LOGO_LAYER.getContext('2d');
+  g.drawImage(src, 2, 2, width, h);
+  if (reveal < 1) {
+    g.globalCompositeOperation = 'destination-in';
+    const soft = width * 0.28;
+    const edge = lerp(width + soft, -soft, reveal);
+    const gr = g.createLinearGradient(edge - soft, 0, edge + soft, 0);
+    gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,1)');
+    g.fillStyle = gr; g.fillRect(0, 0, LOGO_LAYER.width, LOGO_LAYER.height);
+  }
+  ctx.save(); ctx.globalAlpha *= alpha;
+  ctx.translate(cx, cy); ctx.scale(scale, scale);
+  ctx.drawImage(LOGO_LAYER, -LOGO_LAYER.width / 2, -LOGO_LAYER.height / 2);
+  ctx.restore();
+}
+
+// ---- shared layers ---------------------------------------------------------
+function background(color, glowColor = null, glowA = 0.35, gy = 900) {
+  ctx.fillStyle = color; ctx.fillRect(0, 0, W, H);
+  if (glowColor) {
+    const g = ctx.createRadialGradient(CX, gy, 0, CX, gy, 1100);
+    g.addColorStop(0, rgba(glowColor, glowA)); g.addColorStop(1, rgba(glowColor, 0));
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  }
+}
+function lattice(lat, t, alpha = 1, fadeTop = 0, fadeBottom = H, drift = 14) {
+  const off = (t * drift) % lat.pitch;
+  ctx.save(); ctx.globalAlpha *= alpha;
+  ctx.drawImage(lat.canvas, -200 + off * 0.4, -200 - off);
+  ctx.restore();
+}
+function vignette(a = 0.55) {
+  const g = ctx.createRadialGradient(CX, H * 0.48, H * 0.25, CX, H * 0.5, H * 0.78);
+  g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, `rgba(0,0,0,${a})`);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+}
+const MOTES = (() => {
+  const r = rng(7); const a = [];
+  for (let i = 0; i < 60; i++) a.push({ x: r() * W, y: r() * H, s: 6 + r() * 22, v: 12 + r() * 40, ph: r() * 6.28, sw: 10 + r() * 30 });
+  return a;
+})();
+function motes(t, alpha, sprite) {
+  if (alpha <= 0) return;
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  for (const m of MOTES) {
+    const y = ((m.y - t * m.v) % H + H) % H;
+    const x = m.x + Math.sin(t * 0.6 + m.ph) * m.sw;
+    const tw = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(t * 1.7 + m.ph * 3));
+    ctx.globalAlpha = alpha * tw * 0.55;
+    ctx.drawImage(sprite, x - m.s, y - m.s, m.s * 2, m.s * 2);
+  }
+  ctx.restore();
+}
+function grain(t) {
+  const n = NOISE[Math.floor(t * 60) % NOISE.length];
+  ctx.save(); ctx.globalAlpha = 0.045; ctx.globalCompositeOperation = 'overlay';
+  const ox = (Math.floor(t * 60) * 97) % 256, oy = (Math.floor(t * 60) * 53) % 256;
+  for (let y = -oy; y < H; y += 256) for (let x = -ox; x < W; x += 256) ctx.drawImage(n, x, y);
+  ctx.restore();
+}
+
+// ---- icons (simple strokes) -----------------------------------------------
+function iconSun(x, y, s, color) {
+  ctx.save(); ctx.translate(x, y); ctx.strokeStyle = color; ctx.lineWidth = s * 0.11; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.arc(0, 0, s * 0.24, 0, 7); ctx.stroke();
+  for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4; ctx.beginPath(); ctx.moveTo(Math.cos(a) * s * 0.38, Math.sin(a) * s * 0.38); ctx.lineTo(Math.cos(a) * s * 0.5, Math.sin(a) * s * 0.5); ctx.stroke(); }
+  ctx.restore();
+}
+function iconBook(x, y, s, color) {
+  ctx.save(); ctx.translate(x, y); ctx.strokeStyle = color; ctx.lineWidth = s * 0.1; ctx.lineJoin = 'round';
+  ctx.beginPath(); ctx.moveTo(0, -s * 0.3); ctx.quadraticCurveTo(-s * 0.25, -s * 0.42, -s * 0.5, -s * 0.34); ctx.lineTo(-s * 0.5, s * 0.36); ctx.quadraticCurveTo(-s * 0.25, s * 0.28, 0, s * 0.4);
+  ctx.quadraticCurveTo(s * 0.25, s * 0.28, s * 0.5, s * 0.36); ctx.lineTo(s * 0.5, -s * 0.34); ctx.quadraticCurveTo(s * 0.25, -s * 0.42, 0, -s * 0.3); ctx.lineTo(0, s * 0.4); ctx.stroke();
+  ctx.restore();
+}
+function iconCheck(x, y, s, color, prog = 1) {
+  ctx.save(); ctx.translate(x, y); ctx.strokeStyle = color; ctx.lineWidth = s * 0.14; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  const pts = [[-0.32, 0.02], [-0.08, 0.26], [0.36, -0.24]];
+  ctx.beginPath(); ctx.moveTo(pts[0][0] * s, pts[0][1] * s);
+  const e = clamp(prog);
+  if (e < 0.4) { const q = e / 0.4; ctx.lineTo(lerp(pts[0][0], pts[1][0], q) * s, lerp(pts[0][1], pts[1][1], q) * s); }
+  else { ctx.lineTo(pts[1][0] * s, pts[1][1] * s); const q = (e - 0.4) / 0.6; ctx.lineTo(lerp(pts[1][0], pts[2][0], q) * s, lerp(pts[1][1], pts[2][1], q) * s); }
+  ctx.stroke(); ctx.restore();
+}
+function iconBell(x, y, s, color, wob = 0) {
+  ctx.save(); ctx.translate(x, y - s * 0.3); ctx.rotate(wob); ctx.translate(0, s * 0.3);
+  ctx.strokeStyle = color; ctx.lineWidth = s * 0.1; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(-s * 0.36, s * 0.22); ctx.lineTo(-s * 0.3, -s * 0.05);
+  ctx.bezierCurveTo(-s * 0.3, -s * 0.42, s * 0.3, -s * 0.42, s * 0.3, -s * 0.05); ctx.lineTo(s * 0.36, s * 0.22); ctx.closePath(); ctx.stroke();
+  ctx.beginPath(); ctx.arc(0, s * 0.33, s * 0.08, 0, 7); ctx.fillStyle = color; ctx.fill();
+  ctx.restore();
+}
+function kaaba(x, y, s, glow = 0) {
+  ctx.save(); ctx.translate(x, y);
+  if (glow > 0) { ctx.globalAlpha = glow; ctx.drawImage(GLOW_BRASS, -s * 2, -s * 2, s * 4, s * 4); ctx.globalAlpha = 1; }
+  ctx.fillStyle = '#0E0F10'; ctx.strokeStyle = rgba(C.linen, 0.85); ctx.lineWidth = 2;
+  const r = rrect(-s / 2, -s / 2, s, s, s * 0.08); ctx.fill(r); ctx.stroke(r);
+  ctx.fillStyle = C.brassN; ctx.fillRect(-s / 2 + 1, -s * 0.22, s - 2, s * 0.12);
+  ctx.fillRect(s * 0.1, -s * 0.05, s * 0.16, s * 0.38);
+  ctx.restore();
+}
+
+// ---- scene 1: intro ---------------------------------------------------------
+const ARCH1 = { l: 160, t: 360, w: 760, h: 1120, rise: 230, rad: 60 };
+const ARCH1_HALVES = archHalves(ARCH1.l, ARCH1.t, ARCH1.w, ARCH1.h, ARCH1.rise, ARCH1.rad);
+const ARCH1_PATH = mihrabPath(ARCH1.l, ARCH1.t, ARCH1.w, ARCH1.h, ARCH1.rise, ARCH1.rad);
+
+function archScaled(s, ox = CX, oy = 920) {
+  const m = new DOMMatrix().translate(ox, oy).scale(s).translate(-ox, -oy);
+  const pth = new Path2D(); pth.addPath(ARCH1_PATH, m); return pth;
+}
+
+// Offscreen layers for the lattice lighting up inside the arch.
+const IL1 = document.createElement('canvas'); IL1.width = W; IL1.height = H;
+const IL2 = document.createElement('canvas'); IL2.width = W; IL2.height = H;
+function maskedLattice(layer, lat, drift, grad) {
+  const g = layer.getContext('2d');
+  g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, W, H);
+  g.drawImage(lat.canvas, -200 + drift, -200);
+  g.globalCompositeOperation = 'destination-in'; g.fillStyle = grad; g.fillRect(0, 0, W, H);
+  return layer;
+}
+
+function sceneIntro(t) {
+  background(C.nightBase, C.fieldN, 0.5 * eOut3(p(t, 0.3, 2.6)), 1000);
+  lattice(LAT_DARK, t, 0.35 * eOut3(p(t, 1.6, 3.2)));
+  vignette(0.6);
+  const exit = eIO3(p(t, 4.0, 4.8));
+  const A = ARCH1, ax = CX, ay = A.t;
+
+  // 1. a lamp kindles at the apex of the mihrab
+  const kindle = eOut3(p(t, 0.15, 0.75));
+  if (kindle > 0) {
+    const flick = 1 + 0.05 * Math.sin(t * 23) * Math.sin(t * 7.3);
+    const k = kindle * (1 - 0.7 * eIO3(p(t, 1.0, 2.4))) * (1 - exit);
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = k; const s1 = 300 * kindle * flick;
+    ctx.drawImage(GLOW_BRASS, ax - s1, ay - s1, s1 * 2, s1 * 2);
+    const s2 = 54 * flick; ctx.drawImage(GLOW_LINEN, ax - s2, ay - s2, s2 * 2, s2 * 2);
+    ctx.restore();
+  }
+
+  // 2. the light runs down from the point and traces the arch
+  const ap = eIO3(p(t, 0.6, 2.05));
+  if (ap > 0) {
+    ctx.save();
+    ctx.strokeStyle = rgba(C.linen, 0.5 * (1 - p(t, 4.0, 4.3))); ctx.lineWidth = 2.5;
+    for (const hv of ARCH1_HALVES) { ctx.setLineDash([hv.len * ap, hv.len]); ctx.stroke(hv.path); }
+    ctx.setLineDash([]);
+    const beadA = 1 - p(ap, 0.92, 1);
+    if (beadA > 0) {
+      ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = beadA;
+      for (const hv of ARCH1_HALVES) {
+        const pt = hv.el.getPointAtLength(hv.len * ap);
+        ctx.drawImage(GLOW_BRASS, pt.x - 80, pt.y - 80, 160, 160);
+        ctx.drawImage(GLOW_LINEN, pt.x - 20, pt.y - 20, 40, 40);
+      }
+    }
+    // the two lights meet at the foot
+    const meet = p(t, 1.95, 2.6);
+    if (meet > 0 && meet < 1) {
+      ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = Math.sin(meet * Math.PI) * 0.8;
+      const s3 = 160 + meet * 120; ctx.drawImage(GLOW_BRASS, CX - s3, A.t + A.h - s3, s3 * 2, s3 * 2);
+    }
+    ctx.restore();
+  }
+
+  // 3. the carved screen lights from the apex downward, like dawn through a lattice
+  const wave = p(t, 0.95, 3.0);
+  if (wave > 0 && exit < 1) {
+    const rad = Math.max(2, eOut3(wave) * 1350);
+    const drift = (t * 6) % LAT_FIELD.pitch;
+    ctx.save(); ctx.clip(ARCH1_PATH);
+    const g1 = ctx.createRadialGradient(ax, ay, 0, ax, ay, rad);
+    g1.addColorStop(0, 'rgba(0,0,0,1)'); g1.addColorStop(0.8, 'rgba(0,0,0,1)'); g1.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.globalAlpha = 0.9 * (1 - exit);
+    ctx.drawImage(maskedLattice(IL1, LAT_FIELD, drift, g1), 0, 0);
+    const fade = ctx.createLinearGradient(0, A.t, 0, A.t + 760);
+    fade.addColorStop(0, 'rgba(11,15,17,0)'); fade.addColorStop(1, 'rgba(11,15,17,1)');
+    ctx.globalAlpha = eOut3(p(t, 1.3, 2.3)); ctx.fillStyle = fade; ctx.fillRect(0, A.t, W, H);
+    ctx.globalAlpha = 1;
+    // the bright front of the light
+    if (wave < 1) {
+      const g2 = ctx.createRadialGradient(ax, ay, 0, ax, ay, rad + 10);
+      const k = (rad + 10);
+      g2.addColorStop(clamp((rad - 190) / k), 'rgba(0,0,0,0)');
+      g2.addColorStop(clamp((rad - 30) / k), 'rgba(0,0,0,1)');
+      g2.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = Math.pow(1 - wave, 0.7) * (1 - exit);
+      ctx.drawImage(maskedLattice(IL2, LAT_BRASS, drift, g2), 0, 0);
+    }
+    // dawn gathering on the floor of the niche
+    const floor = eOut3(p(t, 1.6, 3.4)) * (1 - exit);
+    if (floor > 0) {
+      ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.35 * floor;
+      ctx.drawImage(GLOW_BRASS, CX - 640, A.t + A.h - 420, 1280, 840);
+    }
+    ctx.restore();
+  }
+
+  // the field floods the arch, then the arch opens past the frame
+  const fill = eOut3(p(t, 3.9, 4.25));
+  if (fill > 0) {
+    const s = 1 + eIO5(p(t, 4.05, 4.85)) * 2.6;
+    ctx.save(); ctx.fillStyle = rgba(C.field, fill); ctx.fill(archScaled(s)); ctx.restore();
+  }
+
+  // the mark, written right to left
+  const rev = eOut3(p(t, 1.8, 2.95));
+  if (rev > 0) {
+    const sc = lerp(1.08, 1, eOut3(p(t, 1.8, 3.2))) * (1 + exit * 0.35);
+    const a = 1 - eIn3(p(t, 3.95, 4.45));
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.5 * rev * a * (1 - p(t, 2.4, 3.6) * 0.6);
+    ctx.drawImage(GLOW_LINEN, CX - 380, 800 - 300, 760, 600); ctx.restore();
+    drawLogo(LOGO, CX, 800 - (1 - rev) * 20 - exit * 60, 560, rev, a, sc);
+  }
+
+  const out = 4.0;
+  headline(['Hisn'], 1205, 116, t, { start: 2.45, stagger: 0, accent: false, out });
+  const tg = eOut3(p(t, 2.95, 3.6)) * (1 - eIn3(p(t, out, out + 0.3)));
+  text('Adhkar  ·  Quran  ·  Prayer', CX, 1290 + (1 - tg) * 18, F(400, 40), rgba(C.linen, 0.72), 'center', tg);
+}
+
+// ---- scene 2: adhkar ----------------------------------------------------------
+const DUA = { x: 70, y: 610, w: 940 };
+let DUA_LAYOUT = null;
+function layoutDua() {
+  const A = window.ASSETS.dua;
+  const font = F(400, 62, 'Amiri');
+  const words = A.arabic.split(' ');
+  const maxW = DUA.w - 100;
+  const space = measure(' ', font, 'rtl');
+  const lines = [[]]; let lw = 0;
+  for (const w of words) {
+    const ww = measure(w, font, 'rtl');
+    if (lw + ww > maxW && lines[lines.length - 1].length) { lines.push([]); lw = 0; }
+    lines[lines.length - 1].push({ w, ww }); lw += ww + space;
+  }
+  const tr = wrap(A.translation, F(400, 32), maxW);
+  DUA_LAYOUT = { font, lines, space, tr };
+}
+
+function sceneAdhkar(u, T) {
+  const A = window.ASSETS.dua;
+  if (!DUA_LAYOUT) layoutDua();
+  background(C.field, C.fieldN, 0.9, 700);
+  ctx.save();
+  const lg = ctx.createLinearGradient(0, 0, 0, 900);
+  lattice(LAT_FIELD, T, 0.9);
+  lg.addColorStop(0, rgba(C.field, 0)); lg.addColorStop(1, rgba(C.field, 1));
+  ctx.fillStyle = lg; ctx.fillRect(0, 0, W, H);
+  ctx.restore();
+  motes(T, 0.5 * p(u, 0.2, 1), GLOW_LINEN);
+
+  // chip
+  const chipA = eOut3(p(u, 0.35, 0.9));
+  ctx.save(); ctx.globalAlpha = chipA; ctx.translate(0, (1 - chipA) * 20);
+  const chipW = 360;
+  ctx.fillStyle = rgba(C.linen, 0.12); ctx.fill(rrect(CX - chipW / 2, 196, chipW, 64, 32));
+  iconSun(CX - chipW / 2 + 48, 228, 34, C.lampField);
+  text('Morning adhkar', CX + 26, 240, F(500, 30), C.linen, 'center');
+  ctx.restore();
+
+  headline(['The adhkar of your day,', 'each with its source.'], 365, 64, u, { start: 0.5 });
+
+  // card
+  const ce = spring(p(u, 0.85, 3) * 2.2, 5.5, 1.2);
+  const cy = DUA.y + (1 - ce) * 420;
+  const taps = [3.55, 4.0, 4.45];
+  let count = 0, bounce = 0;
+  taps.forEach((tp) => {
+    if (u >= tp) count++;
+    const d = u - tp;
+    if (d >= 0 && d < 0.5) bounce = Math.max(bounce, Math.sin(clamp(d / 0.22) * Math.PI) * (1 - d / 0.5));
+  });
+  const done = eOut3(p(u, 4.5, 5.0));
+  const L = DUA_LAYOUT;
+  const arabicTop = 150, lh = 118;
+  const trTop = arabicTop + L.lines.length * lh + 26;
+  const refTop = trTop + L.tr.length * 48 + 40;
+  const cardH = refTop + 92;
+
+  ctx.save();
+  ctx.globalAlpha = clamp(ce * 1.6);
+  ctx.translate(CX, cy + cardH / 2); ctx.scale(1 - bounce * 0.018, 1 - bounce * 0.018); ctx.translate(-CX, -(cy + cardH / 2));
+  const card = rrect(DUA.x, cy, DUA.w, cardH, 44);
+  ctx.fillStyle = mix(C.stone, C.lampPanel, done); ctx.fill(card);
+  ctx.save(); ctx.clip(card);
+  // brass sheen on completion
+  const sh = p(u, 4.5, 5.3);
+  if (sh > 0 && sh < 1) {
+    const sx = lerp(-400, W + 400, eIO3(sh));
+    const g = ctx.createLinearGradient(sx - 260, cy, sx + 260, cy + 300);
+    g.addColorStop(0, rgba(C.brassN, 0)); g.addColorStop(0.5, rgba(C.brassN, 0.32)); g.addColorStop(1, rgba(C.brassN, 0));
+    ctx.fillStyle = g; ctx.fillRect(DUA.x, cy, DUA.w, cardH);
+  }
+  ctx.restore();
+
+  // header row: label left, counter cartouche right
+  const lab = eOut3(p(u, 1.2, 1.7));
+  text('Morning  ·  12 of ' + window.ASSETS.morningCount, DUA.x + 56, cy + 86, F(500, 28), C.muted, 'left', lab);
+  // cartouche
+  const pillW = 150, pillH = 60, px = DUA.x + DUA.w - 56 - pillW, py = cy + 44;
+  const pop = taps.reduce((m, tp) => { const d = u - tp; return d >= 0 && d < 0.35 ? Math.max(m, Math.sin(d / 0.35 * Math.PI)) : m; }, 0);
+  ctx.save(); ctx.globalAlpha *= lab;
+  ctx.translate(px + pillW / 2, py + pillH / 2); ctx.scale(1 + pop * 0.12, 1 + pop * 0.12); ctx.translate(-(px + pillW / 2), -(py + pillH / 2));
+  ctx.fillStyle = mix(C.well, C.brass, done); ctx.fill(rrect(px, py, pillW, pillH, 30));
+  const pillInk = done > 0.5 ? C.stone : C.field;
+  if (done > 0) iconCheck(px + 38, py + pillH / 2, 34, C.stone, eOut3(p(u, 4.55, 4.95)));
+  // rolling count
+  ctx.save(); ctx.beginPath(); ctx.rect(px, py, pillW, pillH); ctx.clip();
+  const lastTap = taps.filter((tp) => u >= tp).pop();
+  const roll = lastTap ? eOut3(p(u, lastTap, lastTap + 0.25)) : 1;
+  const tx = px + pillW / 2 + (done > 0 ? 18 * done : 0);
+  if (count > 0 && roll < 1) text(`${count - 1} / 3`, tx, py + 41 - roll * 50, F(600, 28), pillInk, 'center');
+  text(`${count} / 3`, tx, py + 41 + (1 - roll) * 50, F(600, 28), pillInk, 'center');
+  ctx.restore(); ctx.restore();
+
+  // Arabic, word by word, right to left
+  let k = 0;
+  L.lines.forEach((line, li) => {
+    let xr = DUA.x + DUA.w - 56;
+    const by = cy + arabicTop + li * lh + 40;
+    line.forEach(({ w, ww }) => {
+      const e = eOut3(p(u, 1.35 + k * 0.075, 1.35 + k * 0.075 + 0.55));
+      if (e > 0) {
+        ctx.save(); ctx.globalAlpha *= e;
+        ctx.filter = e < 0.98 ? `blur(${(1 - e) * 8}px)` : 'none';
+        text(w, xr, by + (1 - e) * 26, L.font, C.ink, 'right', 1, 'rtl');
+        ctx.restore();
+      }
+      xr -= ww + L.space; k++;
+    });
+  });
+  // meaning
+  const trA = eOut3(p(u, 2.35, 2.9));
+  L.tr.forEach((ln, i) => text(ln, DUA.x + 56, cy + trTop + 40 + i * 48 + (1 - trA) * 16, F(400, 31), C.muted, 'left', trA));
+  // rule + reference with a highlight sweep
+  const rA = eOut3(p(u, 2.75, 3.2));
+  ctx.fillStyle = rgba(C.ink, 0.08 * rA); ctx.fillRect(DUA.x + 56, cy + refTop - 6, (DUA.w - 112) * rA, 2);
+  const refFont = F(500, 30);
+  const refW = measure(A.reference, refFont);
+  const hl = eIO3(p(u, 3.0, 3.5));
+  ctx.fillStyle = rgba(C.field, 0.1); ctx.fill(rrect(DUA.x + 44, cy + refTop + 16, (refW + 80) * hl, 58, 29));
+  iconBook(DUA.x + 82, cy + refTop + 45, 30, mix(C.field, C.lampText, done));
+  text(A.reference, DUA.x + 110, cy + refTop + 56, refFont, mix(C.field, C.lampText, done), 'left', rA);
+  ctx.restore();
+
+  // touch indicator + ripple
+  taps.forEach((tp) => {
+    const d = u - tp + 0.18;
+    if (d < 0 || d > 0.8) return;
+    const tx2 = 660, ty2 = cy + cardH * 0.52;
+    const press = d < 0.18 ? eOut3(d / 0.18) : 1 - eOut3((d - 0.18) / 0.3);
+    ctx.save();
+    ctx.fillStyle = rgba(C.field, 0.16 * clamp(press)); ctx.beginPath(); ctx.arc(tx2, ty2, 46, 0, 7); ctx.fill();
+    if (d > 0.18) {
+      const r = eOut3(clamp((d - 0.18) / 0.6));
+      ctx.strokeStyle = rgba(C.field, 0.35 * (1 - r)); ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(tx2, ty2, 46 + r * 160, 0, 7); ctx.stroke();
+    }
+    ctx.restore();
+  });
+
+  // sparkles from the cartouche on completion
+  const sp = p(u, 4.5, 5.4);
+  if (sp > 0 && sp < 1) {
+    const r = rng(11);
+    const ox = DUA.x + DUA.w - 56 - 75, oy = cy + 74;
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 14; i++) {
+      const a = r() * Math.PI * 2, dist = (80 + r() * 160) * eOut3(sp), s = 10 + r() * 18;
+      ctx.globalAlpha = (1 - sp) * 0.9;
+      drawStar(ox + Math.cos(a) * dist, oy + Math.sin(a) * dist, s, 1, a, C.brassN, 2);
+    }
+    ctx.restore();
+  }
+
+  // progress beneath
+  const pa = eOut3(p(u, 1.6, 2.2));
+  const by = cy + cardH + 110;
+  const n0 = 11, n1 = 12, tot = window.ASSETS.morningCount;
+  const prog = lerp(n0 / tot, n1 / tot, eIO3(p(u, 4.5, 5.0)));
+  text("Today's morning set", DUA.x + 6, by, F(500, 30), rgba(C.linen, 0.88), 'left', pa);
+  text(`${u >= 4.5 ? n1 : n0} of ${tot}`, DUA.x + DUA.w - 6, by, F(600, 30), done > 0.5 ? C.lampField : C.linen, 'right', pa);
+  ctx.fillStyle = rgba(C.linen, 0.16 * pa); ctx.fill(rrect(DUA.x + 6, by + 30, DUA.w - 12, 10, 5));
+  ctx.fillStyle = rgba(C.linen, pa); ctx.fill(rrect(DUA.x + 6, by + 30, (DUA.w - 12) * prog * eOut3(p(u, 1.6, 2.6)), 10, 5));
+}
+
+// ---- scene 3: prayer times ----------------------------------------------------
+const PRAYERS = [
+  ['Fajr', '5:03 AM'], ['Sunrise', '6:19 AM'], ['Dhuhr', '12:04 PM'], ['Asr', '3:24 PM'], ['Maghrib', '5:49 PM'], ['Isha', '7:19 PM'],
+];
+function hms(s) {
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60;
+  return `${h}:${String(m).padStart(2, '0')}:${String(x).padStart(2, '0')}`;
+}
+function odometer(prev, cur, roll, x, y, font, color, size) {
+  // centred string; digits that changed slide up
+  ctx.save(); ctx.font = font;
+  const widths = [...cur].map((ch) => (/\d/.test(ch) ? ctx.measureText('0').width : ctx.measureText(ch).width));
+  const total = widths.reduce((a, b) => a + b, 0);
+  let cx = x - total / 2;
+  ctx.beginPath(); ctx.rect(x - total, y - size * 1.0, total * 2, size * 1.25); ctx.clip();
+  [...cur].forEach((ch, i) => {
+    const pc = prev[i];
+    const mid = cx + widths[i] / 2;
+    if (pc !== undefined && pc !== ch && roll < 1) {
+      const e = eOut3(roll);
+      text(pc, mid, y - e * size * 0.95, font, color, 'center', 1 - e);
+      text(ch, mid, y + (1 - e) * size * 0.95, font, color, 'center', e);
+    } else text(ch, mid, y, font, color, 'center');
+    cx += widths[i];
+  });
+  ctx.restore();
+}
+
+function scenePrayer(u, T) {
+  background(C.hall, C.fieldN, 0.6, 760);
+  lattice(LAT_DARK, T, 0.35);
+  vignette(0.45);
+  motes(T, 0.6, GLOW_BRASS);
+
+  headline(['Never miss a prayer,', 'wherever you are.'], 300, 64, u, { start: 0.35 });
+
+  // mihrab field
+  const fx = 70, fy = 470, fw = 940, fh = 640;
+  const fe = eOut5(p(u, 0.25, 1.1));
+  ctx.save(); ctx.globalAlpha = fe; ctx.translate(0, (1 - fe) * 60);
+  const field = mihrabPath(fx, fy, fw, fh, 120, 44);
+  ctx.fillStyle = C.fieldN; ctx.fill(field);
+  ctx.save(); ctx.clip(field);
+  ctx.globalAlpha = 0.6; ctx.drawImage(LAT_FIELD.canvas, -200, -200 + 30);
+  const fg = ctx.createLinearGradient(0, fy, 0, fy + 420);
+  fg.addColorStop(0, rgba(C.fieldN, 0.1)); fg.addColorStop(1, rgba(C.fieldN, 1));
+  ctx.globalAlpha = 1; ctx.fillStyle = fg; ctx.fillRect(fx, fy, fw, fh);
+  ctx.restore();
+
+  // the day's arc, sunrise to maghrib, with the sun travelling to now
+  const ax = CX, ay = fy + 330, ar = 360;
+  const arcP = eIO3(p(u, 0.6, 1.6));
+  ctx.save();
+  ctx.setLineDash([3, 14]); ctx.lineCap = 'round'; ctx.lineWidth = 4; ctx.strokeStyle = rgba(C.linen, 0.35);
+  ctx.beginPath(); ctx.ellipse(ax, ay, ar, 200, 0, Math.PI, Math.PI + Math.PI * arcP); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = rgba(C.linen, 0.2); ctx.fillRect(ax - ar - 30, ay, (ar + 30) * 2 * arcP, 2);
+  // markers
+  [['Dhuhr', 0.5], ['Asr', 0.789]].forEach(([nm, f], i) => {
+    const a = Math.PI + Math.PI * f, mx = ax + Math.cos(a) * ar, my = ay + Math.sin(a) * 200;
+    const ma = eOut3(p(u, 1.2 + i * 0.15, 1.6 + i * 0.15));
+    ctx.fillStyle = rgba(C.linen, 0.8 * ma); ctx.beginPath(); ctx.arc(mx, my, 7, 0, 7); ctx.fill();
+    text(nm, mx, my - 24, F(500, 24), rgba(C.linen, 0.75), 'center', ma);
+  });
+  const sunF = 0.666 * eIO3(p(u, 0.9, 2.2)) + 0.004 * p(u, 2.2, 5);
+  const sa = Math.PI + Math.PI * sunF, sx = ax + Math.cos(sa) * ar, sy = ay + Math.sin(sa) * 200;
+  ctx.lineWidth = 4; ctx.strokeStyle = rgba(C.lampField, 0.9);
+  ctx.beginPath(); ctx.ellipse(ax, ay, ar, 200, 0, Math.PI, sa); ctx.stroke();
+  ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = p(u, 0.9, 1.3);
+  ctx.drawImage(GLOW_BRASS, sx - 90, sy - 90, 180, 180);
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.fillStyle = C.lampField; ctx.beginPath(); ctx.arc(sx, sy, 14, 0, 7); ctx.fill();
+  ctx.restore();
+
+  // countdown
+  const la = eOut3(p(u, 0.9, 1.4));
+  text('Asr in', CX, fy + 420, F(500, 34), rgba(C.linen, 0.88), 'center', la);
+  const startS = 5076;
+  const k = Math.max(0, (u - 1.0) * 3 + Math.pow(Math.max(0, u - 1.0), 2) * 2.4);
+  const nowS = startS - Math.floor(k);
+  const roll = k - Math.floor(k);
+  ctx.save(); ctx.globalAlpha *= la;
+  odometer(hms(nowS + 1), hms(nowS), u > 1.0 ? Math.min(1, roll * 2.2) : 1, CX, fy + 548, F(500, 150), C.linen, 150);
+  ctx.restore();
+  text('Adhan at 3:24 PM', CX, fy + 610, F(400, 30), rgba(C.linen, 0.8), 'center', eOut3(p(u, 1.2, 1.7)));
+  ctx.restore();
+
+  // timetable
+  const gx = 70, gy = 1170, rowH = 92;
+  const ge = eOut3(p(u, 0.7, 1.2));
+  ctx.save(); ctx.globalAlpha = ge;
+  ctx.fillStyle = C.stoneN; ctx.fill(rrect(gx, gy, 940, rowH * 6 + 28, 44));
+  ctx.restore();
+  PRAYERS.forEach(([nm, tm], i) => {
+    const e = eOut5(p(u, 0.85 + i * 0.07, 1.55 + i * 0.07));
+    const y = gy + 14 + i * rowH;
+    const next = i === 3, passed = i < 3;
+    ctx.save(); ctx.globalAlpha = e; ctx.translate((1 - e) * 140, 0);
+    if (next) {
+      const hb = eOut3(p(u, 1.6, 2.0));
+      ctx.fillStyle = rgba(C.fieldN, 1); ctx.globalAlpha = e * hb; ctx.fill(rrect(gx + 14, y, 912, rowH, 32)); ctx.globalAlpha = e;
+    } else if (i > 0) {
+      ctx.fillStyle = rgba(C.linen, 0.07); ctx.fillRect(gx + 40, y, 860, 1.5);
+    }
+    const col = passed ? C.mutedN : C.linen;
+    text(nm, gx + 48, y + 59, F(next ? 600 : 500, 34), col, 'left');
+    text(tm, gx + 940 - 48, y + 59, F(next ? 600 : 400, 34), col, 'right');
+    if (!passed && i !== 1) {
+      const wob = next ? Math.sin(p(u, 2.3, 3.3) * Math.PI * 7) * 0.45 * (1 - p(u, 2.3, 3.3)) : 0;
+      iconBell(gx + 940 - 48 - measure(tm, F(next ? 600 : 400, 34)) - 42, y + 46, 34, next ? C.lampField : rgba(C.linen, 0.55), wob);
+    }
+    ctx.restore();
+  });
+  const na = eOut3(p(u, 2.4, 2.9));
+  text('Adhan and reminders for every prayer', CX, gy + rowH * 6 + 110, F(400, 30), rgba(C.linen, 0.72), 'center', na);
+}
+
+// ---- scene 4: qibla ------------------------------------------------------------
+const QIBLA = 118;
+function sceneQibla(u, T) {
+  background(C.hall, C.fieldN, 0.7, 1080);
+  lattice(LAT_DARK, T, 0.3);
+  vignette(0.5);
+  motes(T, 0.5, GLOW_LINEN);
+  headline(['Find the Qibla,', 'true to the Ka‘bah.'], 300, 64, u, { start: 0.3 });
+
+  const cx = CX, cy = 1050, R = 360;
+  const s = eOut5(p(u, 0.0, 0.9));
+  // phone heading: swings in, overshoots, settles on the qibla
+  const sw = p(u, 0.4, 3.4);
+  const heading = QIBLA + 150 * Math.exp(-4.2 * sw) * Math.cos(sw * 2 * Math.PI * 1.25) + Math.sin(T * 7) * 0.4 * (1 - p(u, 2.6, 3.0));
+  const aligned = clamp(1 - Math.abs(heading - QIBLA) / 6) * p(u, 1.8, 2.4);
+  const lock = eOut3(p(u, 2.55, 3.0));
+
+  ctx.save(); ctx.globalAlpha = s; ctx.translate(cx, cy); ctx.scale(lerp(0.86, 1, s), lerp(0.86, 1, s));
+  // pulses when locked
+  if (lock > 0) {
+    for (let i = 0; i < 3; i++) {
+      const q = ((u - 2.55) * 0.8 + i / 3) % 1;
+      if (u < 2.55) continue;
+      ctx.strokeStyle = rgba(C.brassN, 0.35 * (1 - q) * lock); ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(0, 0, R * (0.5 + q * 0.75), 0, 7); ctx.stroke();
+    }
+  }
+  ctx.fillStyle = rgba(C.stoneN, 0.92); ctx.beginPath(); ctx.arc(0, 0, R + 70, 0, 7); ctx.fill();
+  ctx.strokeStyle = rgba(C.linen, 0.12); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(0, 0, R + 70, 0, 7); ctx.stroke();
+
+  ctx.save(); ctx.rotate(-heading * Math.PI / 180);
+  for (let d = 0; d < 360; d += 3) {
+    const major = d % 30 === 0;
+    const a = (d - 90) * Math.PI / 180;
+    const r1 = R + 40, r0 = major ? R + 8 : R + 24;
+    const tp = clamp(p(u, 0.1 + d / 360 * 0.6, 0.3 + d / 360 * 0.6));
+    ctx.strokeStyle = rgba(C.linen, (major ? 0.8 : 0.32) * tp); ctx.lineWidth = major ? 4 : 2;
+    ctx.beginPath(); ctx.moveTo(Math.cos(a) * r0, Math.sin(a) * r0); ctx.lineTo(Math.cos(a) * r1, Math.sin(a) * r1); ctx.stroke();
+  }
+  const card = [['N', 0], ['E', 90], ['S', 180], ['W', 270]];
+  card.forEach(([l, d]) => {
+    const a = (d - 90) * Math.PI / 180;
+    ctx.save(); ctx.translate(Math.cos(a) * (R - 46), Math.sin(a) * (R - 46)); ctx.rotate(heading * Math.PI / 180);
+    text(l, 0, 16, F(600, 44), l === 'N' ? C.accN : C.linen, 'center', eOut3(p(u, 0.5, 1.0)));
+    ctx.restore();
+  });
+  for (let d = 30; d < 360; d += 30) {
+    if (d % 90 === 0) continue;
+    const a = (d - 90) * Math.PI / 180;
+    ctx.save(); ctx.translate(Math.cos(a) * (R - 44), Math.sin(a) * (R - 44)); ctx.rotate(heading * Math.PI / 180);
+    text(String(d), 0, 9, F(400, 24), rgba(C.linen, 0.5), 'center', eOut3(p(u, 0.6, 1.1)));
+    ctx.restore();
+  }
+  // qibla line + ka'bah on the dial
+  const qa = (QIBLA - 90) * Math.PI / 180;
+  ctx.strokeStyle = rgba(C.brassN, 0.5 + 0.5 * aligned); ctx.lineWidth = 3; ctx.setLineDash([2, 12]); ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(Math.cos(qa) * 60, Math.sin(qa) * 60); ctx.lineTo(Math.cos(qa) * (R - 90), Math.sin(qa) * (R - 90)); ctx.stroke(); ctx.setLineDash([]);
+  ctx.save(); ctx.translate(Math.cos(qa) * (R + 128), Math.sin(qa) * (R + 128)); ctx.rotate(heading * Math.PI / 180);
+  kaaba(0, 0, 60, aligned * 0.9);
+  ctx.restore();
+  ctx.restore();
+
+  // the phone's pointer, fixed upright
+  const pc = mix(C.linen, C.brassN, aligned);
+  ctx.fillStyle = pc;
+  ctx.beginPath(); ctx.moveTo(0, -R + 70); ctx.lineTo(26, 0); ctx.lineTo(0, 26); ctx.lineTo(-26, 0); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = rgba(C.nightBase, 0.35); ctx.beginPath(); ctx.moveTo(0, -R + 70); ctx.lineTo(26, 0); ctx.lineTo(0, 26); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = C.hall; ctx.beginPath(); ctx.arc(0, 0, 10, 0, 7); ctx.fill();
+  // top index mark
+  ctx.fillStyle = pc; ctx.beginPath(); ctx.moveTo(0, -R - 46); ctx.lineTo(-16, -R - 74); ctx.lineTo(16, -R - 74); ctx.closePath(); ctx.fill();
+  ctx.restore();
+
+  // readout
+  const hd = Math.round(((heading % 360) + 360) % 360);
+  const ra = eOut3(p(u, 0.8, 1.3));
+  text(`${hd}°`, CX, cy + R + 190, F(500, 64), mix(C.linen, C.brassN, lock), 'center', ra);
+  const msg = lock > 0 ? 'Facing the Qibla' : 'Turn slowly';
+  text(msg, CX, cy + R + 245, F(500, 32), lock > 0 ? C.lampField : rgba(C.linen, 0.75), 'center', ra);
+  text('True north, checked for tilt and nearby metal', CX, cy + R + 330, F(400, 28), rgba(C.linen, 0.6), 'center', eOut3(p(u, 2.8, 3.3)));
+}
+
+// ---- scene 5: mushaf -----------------------------------------------------------
+let MUSHAF_FIT = null;
+function sceneMushaf(u, T) {
+  background(C.hall, C.fieldN, 0.55, 900);
+  lattice(LAT_DARK, T, 0.3);
+  vignette(0.5);
+  headline(['The Madani Mushaf,', 'with its meanings.'], 250, 62, u, { start: 0.45 });
+
+  const px = 120, py = 420, pw = 840, ph = 1180;
+  const e = eOut5(p(u, 0.0, 1.0));
+  ctx.save();
+  ctx.translate(0, (1 - e) * 40);
+  // book thickness
+  for (let i = 3; i >= 1; i--) { ctx.fillStyle = mix('#D9CFB8', C.hall, i * 0.18); ctx.fill(rrect(px + i * 7, py + i * 5, pw, ph, 26)); }
+  const page = rrect(px, py, pw, ph, 26);
+  ctx.fillStyle = C.paper; ctx.fill(page);
+  ctx.save(); ctx.clip(page);
+  const pg = ctx.createLinearGradient(px, 0, px + pw, 0);
+  pg.addColorStop(0, 'rgba(120,90,40,0.10)'); pg.addColorStop(0.08, 'rgba(120,90,40,0)'); pg.addColorStop(1, 'rgba(120,90,40,0.03)');
+  ctx.fillStyle = pg; ctx.fillRect(px, py, pw, ph);
+  ctx.restore();
+  // frame
+  ctx.strokeStyle = rgba(C.field, 0.55); ctx.lineWidth = 3; ctx.stroke(rrect(px + 34, py + 34, pw - 68, ph - 68, 14));
+  ctx.strokeStyle = rgba(C.brass, 0.5); ctx.lineWidth = 1.5; ctx.stroke(rrect(px + 46, py + 46, pw - 92, ph - 92, 10));
+  // page lines in the King Fahd page font
+  const lines = window.ASSETS.page1.lines;
+  if (!MUSHAF_FIT) {
+    let m = 0;
+    lines.forEach((ln) => { if (ln.words[0].t !== 'surah_header') m = Math.max(m, measure(ln.words.map((w) => String.fromCodePoint(w.c)).join(' '), '400 100px "QCF1"', 'rtl')); });
+    const hw = measure(String.fromCodePoint(lines[0].words[0].c), '400 100px "QBSML"', 'rtl');
+    MUSHAF_FIT = { body: Math.min(76, 100 * 600 / m), head: 100 * 420 / hw };
+  }
+  const top = py + 130;
+  // surah header cartouche
+  const ha = eOut3(p(u, 0.5, 0.95));
+  ctx.save(); ctx.globalAlpha = ha;
+  ctx.fillStyle = rgba(C.field, 0.08); ctx.fill(rrect(px + 90, top, pw - 180, 120, 60));
+  ctx.strokeStyle = rgba(C.brass, 0.55); ctx.lineWidth = 2; ctx.stroke(rrect(px + 90, top, pw - 180, 120, 60));
+  ctx.restore();
+  lines.forEach((ln, li) => {
+    const header = ln.words[0].t === 'surah_header';
+    const font = header ? `400 ${MUSHAF_FIT.head}px "QBSML"` : `400 ${MUSHAF_FIT.body}px "QCF1"`;
+    const str = ln.words.map((w) => String.fromCodePoint(w.c)).join(header ? '' : ' ');
+    const y = header ? top + 60 + MUSHAF_FIT.head * 0.18 : top + 230 + (li - 1) * MUSHAF_FIT.body * 1.62;
+    const a = eOut3(p(u, 0.55 + li * 0.08, 1.0 + li * 0.08));
+    // verse 2 (line 3) glows as it is read
+    if (li === 2) {
+      const hl = eIO3(p(u, 1.5, 2.0));
+      const bh = MUSHAF_FIT.body * 1.45;
+      ctx.fillStyle = rgba(C.field, 0.12 * hl); ctx.fill(rrect(px + 100, y - bh * 0.68, (pw - 200), bh, 24));
+    }
+    text(str, CX, y, font, header ? C.field : '#1C1A16', 'center', a, 'rtl');
+  });
+  ctx.restore();
+
+  // meaning sheet
+  const V = window.ASSETS.verse;
+  const se = eOut5(p(u, 1.9, 2.7));
+  const sy = lerp(H + 40, 1060, se);
+  ctx.save();
+  const sheet = rrect(40, sy, 1000, 760, 52);
+  ctx.fillStyle = C.stoneN; ctx.fill(sheet);
+  ctx.strokeStyle = rgba(C.linen, 0.08); ctx.lineWidth = 2; ctx.stroke(sheet);
+  ctx.fillStyle = rgba(C.linen, 0.25); ctx.fill(rrect(CX - 40, sy + 20, 80, 8, 4));
+  // cartouche
+  ctx.fillStyle = rgba(C.accN, 0.18); ctx.fill(rrect(100, sy + 66, 132, 54, 27));
+  text('1:2', 166, sy + 103, F(600, 28), C.accN, 'center');
+  text('Al-Fatiha', 254, sy + 103, F(500, 28), C.mutedN, 'left');
+  text(V.arabic, 980 - 40, sy + 210, F(400, 62, 'Amiri'), C.linen, 'right', 1, 'rtl');
+  const mf = F(400, 33);
+  const ml = wrap(V.meaning, mf, 860);
+  ml.forEach((l, i) => text(l, 100, sy + 300 + i * 50, mf, rgba(C.linen, 0.9), 'left', eOut3(p(u, 2.4, 2.9))));
+  text('The Noble Qur’an · Hilali & Khan', 100, sy + 300 + ml.length * 50 + 30, F(500, 26), C.mutedN, 'left', eOut3(p(u, 2.6, 3.1)));
+  // languages
+  const langs = ['English', 'العربية', 'Indonesia', 'اردو'];
+  let lx = 100; const ly = sy + 300 + ml.length * 50 + 80;
+  langs.forEach((l, i) => {
+    const f = /[a-z]/i.test(l) ? F(500, 28) : F(500, 30);
+    const w = measure(l, f, /[a-z]/i.test(l) ? 'ltr' : 'rtl') + 52;
+    const a = eOutBack(p(u, 2.8 + i * 0.1, 3.25 + i * 0.1));
+    ctx.save(); ctx.globalAlpha = clamp(a); ctx.translate(lx + w / 2, ly + 30); ctx.scale(a, a);
+    ctx.fillStyle = i === 0 ? rgba(C.accN, 0.22) : rgba(C.linen, 0.08); ctx.fill(rrect(-w / 2, -30, w, 60, 30));
+    text(l, 0, 10, f, i === 0 ? C.accN : rgba(C.linen, 0.85), 'center', 1, /[a-z]/i.test(l) ? 'ltr' : 'rtl');
+    ctx.restore();
+    lx += w + 16;
+  });
+  ctx.restore();
+}
+
+// ---- scene 6: tasbih ------------------------------------------------------------
+function sceneTasbih(u, T) {
+  background(C.field, C.fieldN, 1, 1100);
+  ctx.save();
+  lattice(LAT_FIELD, T, 0.9);
+  const lg = ctx.createLinearGradient(0, 0, 0, 1000);
+  lg.addColorStop(0, rgba(C.field, 0)); lg.addColorStop(1, rgba(C.field, 1));
+  ctx.fillStyle = lg; ctx.fillRect(0, 0, W, H);
+  ctx.restore();
+  motes(T, 0.5, GLOW_LINEN);
+  headline(['A tasbih', 'that counts with you.'], 290, 64, u, { start: 0.3 });
+
+  const S = window.ASSETS.tasbih;
+  const ta = eOut3(p(u, 0.5, 1.0));
+  text(S.arabic, CX, 610 + (1 - ta) * 20, F(400, 92, 'Amiri'), C.linen, 'center', ta, 'rtl');
+  text(`${S.transliteration}  ·  ${S.translation}`, CX, 690, F(400, 30), rgba(C.linen, 0.8), 'center', eOut3(p(u, 0.65, 1.15)));
+
+  const cx = CX, cy = 1170, R = 300;
+  const kk = S.target * eIO3(p(u, 0.9, 3.0));
+  const n = Math.floor(kk + 1e-6);
+  const full = u >= 3.0;
+  const lamp = eOut3(p(u, 3.0, 3.4));
+  const pulse = full ? 0 : Math.pow(1 - (kk - n), 3) * (n > 0 ? 1 : 0);
+  const se = eOut5(p(u, 0.4, 1.2));
+  ctx.save(); ctx.globalAlpha = se; ctx.translate(cx, cy); ctx.scale(lerp(0.8, 1, se), lerp(0.8, 1, se));
+  // glow when full
+  if (lamp > 0) {
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = lamp * (0.7 - 0.4 * p(u, 3.2, 4.2));
+    ctx.drawImage(GLOW_BRASS, -R * 1.8, -R * 1.8, R * 3.6, R * 3.6); ctx.restore();
+  }
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = rgba(C.linen, 0.16); ctx.lineWidth = 20; ctx.beginPath(); ctx.arc(0, 0, R, 0, 7); ctx.stroke();
+  ctx.strokeStyle = mix(C.linen, C.lampField, lamp); ctx.lineWidth = 20;
+  ctx.beginPath(); ctx.arc(0, 0, R, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (kk / S.target)); ctx.stroke();
+  // 33 beads
+  for (let i = 0; i < S.target; i++) {
+    const a = -Math.PI / 2 + (i + 0.5) / S.target * Math.PI * 2;
+    const on = i < n;
+    const r = on ? 9 : 6;
+    ctx.fillStyle = on ? mix(C.linen, C.lampField, lamp) : rgba(C.linen, 0.22);
+    ctx.beginPath(); ctx.arc(Math.cos(a) * (R + 62), Math.sin(a) * (R + 62), r, 0, 7); ctx.fill();
+  }
+  // breath ring per count
+  if (!full && n > 0) {
+    const q = kk - n;
+    ctx.strokeStyle = rgba(C.linen, 0.25 * (1 - q)); ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(0, 0, R - 40 - q * 50, 0, 7); ctx.stroke();
+  }
+  const ns = 1 + pulse * 0.07 + lamp * 0.05 * Math.sin(p(u, 3.0, 3.35) * Math.PI);
+  ctx.save(); ctx.scale(ns, ns);
+  text(String(n), 0, 70, F(500, 220), mix(C.linen, C.lampField, lamp), 'center');
+  ctx.restore();
+  text(full ? 'Set complete' : `of ${S.target}`, 0, 150, F(500, 34), full ? C.lampField : rgba(C.linen, 0.8), 'center', full ? lamp : 1);
+  ctx.restore();
+
+  // burst of stars at completion
+  const bp = p(u, 3.0, 4.0);
+  if (bp > 0 && bp < 1) {
+    const r = rng(23);
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 18; i++) {
+      const a = (i / 18) * Math.PI * 2 + r() * 0.3;
+      const d = R + 40 + eOut3(bp) * (180 + r() * 220);
+      ctx.globalAlpha = (1 - bp);
+      drawStar(cx + Math.cos(a) * d, cy + Math.sin(a) * d, 14 + r() * 20, 1, a + bp * 2, C.brassN, 2.4);
+    }
+    ctx.restore();
+  }
+  text('Tap anywhere to count', CX, 1660, F(400, 30), rgba(C.linen, 0.65), 'center', eOut3(p(u, 1.0, 1.5)) * (1 - p(u, 3.0, 3.3)));
+}
+
+// ---- scene 7: promises (daylight) -------------------------------------------------
+function scenePromise(u, T, noBg = false) {
+  if (!noBg) {
+    background(C.plaster);
+    lattice(LAT_LIGHT, T, 1);
+    const g = ctx.createRadialGradient(CX, 900, 100, CX, 900, 1200);
+    g.addColorStop(0, rgba(C.plaster, 0.85)); g.addColorStop(1, rgba(C.plaster, 0.2));
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  }
+
+  const items = [
+    ['Fully offline.', C.ink], ['No account.', C.ink], ['No ads.', C.ink], ['Nothing leaves', C.field], ['your phone.', C.field],
+  ];
+  const x = 96, y0 = 560, lh = 142;
+  items.forEach(([s, col], i) => {
+    const st = 0.25 + i * 0.32 - (i === 4 ? 0.2 : 0);
+    const e = eOut5(p(u, st, st + 0.6));
+    const y = y0 + i * lh;
+    ctx.save(); ctx.beginPath(); ctx.rect(0, y - 130, W, 165); ctx.clip();
+    text(s, x, y + (1 - e) * 150, F(600, 118), col, 'left', 1);
+    ctx.restore();
+    // a short brass-free rule that draws under each
+  });
+  // check marks beside the first three
+  [0, 1, 2].forEach((i) => {
+    const st = 0.55 + i * 0.32;
+    const e = p(u, st, st + 0.35);
+    if (e <= 0) return;
+    const w = measure(items[i][0], F(600, 118));
+    const cx = x + w + 70, cy = y0 + i * lh - 40;
+    ctx.fillStyle = rgba(C.field, 0.1 * eOut3(e)); ctx.beginPath(); ctx.arc(cx, cy, 38 * eOutBack(e), 0, 7); ctx.fill();
+    iconCheck(cx, cy, 44, C.field, eOut3(e));
+  });
+
+  const la = eOut3(p(u, 1.7, 2.2));
+  text('In English, Arabic, Indonesian and Urdu', CX, 1380, F(400, 32), C.muted, 'center', la);
+  const langs = ['English', 'العربية', 'Bahasa Indonesia', 'اردو', 'English', 'العربية', 'Bahasa Indonesia', 'اردو'];
+  let lx = 60 - p(u, 1.5, 4) * 260 + 40 * (1 - la);
+  langs.forEach((l, i) => {
+    const rtl = !/[a-z]/i.test(l);
+    const f = F(500, rtl ? 36 : 32);
+    const w = measure(l, f, rtl ? 'ltr' : 'ltr') + 64;
+    const a = eOut3(p(u, 1.8 + i * 0.06, 2.3 + i * 0.06));
+    ctx.save(); ctx.globalAlpha = a;
+    ctx.fillStyle = i % 4 === 0 ? C.tint : C.stone; ctx.fill(rrect(lx, 1430, w, 76, 38));
+    text(l, lx + w / 2, 1480, f, C.field, 'center', 1, rtl ? 'rtl' : 'ltr');
+    ctx.restore();
+    lx += w + 18;
+  });
+}
+
+// ---- scene 8: outro -------------------------------------------------------------
+function sceneOutro(u, T) {
+  background(C.plaster);
+  lattice(LAT_LIGHT, T, 1);
+  const g = ctx.createRadialGradient(CX, 800, 100, CX, 800, 1200);
+  g.addColorStop(0, rgba(C.plaster, 0.9)); g.addColorStop(1, rgba(C.plaster, 0.25));
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+
+  const aw = 620, ah = 780, al = CX - aw / 2;
+  const rise = spring(Math.max(0, u) * 0.95, 4.6, 0.75);
+  const at = lerp(H + 100, 330, rise);
+  const arch = mihrabPath(al, at, aw, ah, 190, 44);
+  ctx.fillStyle = C.field; ctx.fill(arch);
+  ctx.save(); ctx.clip(arch);
+  ctx.globalAlpha = 0.9; ctx.drawImage(LAT_FIELD.canvas, -200 + (T * 6) % LAT_FIELD.pitch, -200 + at % LAT_FIELD.pitch);
+  const fg = ctx.createLinearGradient(0, at, 0, at + 520);
+  fg.addColorStop(0, rgba(C.field, 0)); fg.addColorStop(1, rgba(C.field, 1));
+  ctx.globalAlpha = 1; ctx.fillStyle = fg; ctx.fillRect(al, at, aw, ah);
+  // light sheen across the mark
+  ctx.restore();
+
+  const rev = eOut3(p(u, 0.55, 1.5));
+  drawLogo(LOGO, CX, at + 470, 440, rev, 1, lerp(1.06, 1, eOut3(p(u, 0.55, 1.8))));
+  const shp = p(u, 2.3, 3.2);
+  if (shp > 0 && shp < 1) {
+    ctx.save(); ctx.clip(arch);
+    const sx = lerp(al - 300, al + aw + 300, eIO3(shp));
+    const sg = ctx.createLinearGradient(sx - 140, at, sx + 140, at + 200);
+    sg.addColorStop(0, 'rgba(255,255,255,0)'); sg.addColorStop(0.5, 'rgba(255,255,255,0.12)'); sg.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = sg; ctx.fillRect(al, at, aw, ah); ctx.restore();
+  }
+
+  headline(['Hisn'], 1268, 120, u, { start: 0.9, color: C.ink, accent: false });
+  const ta = eOut3(p(u, 1.25, 1.8));
+  text('Adhkar, Quran & Prayer', CX, 1350 + (1 - ta) * 16, F(400, 42), C.muted, 'center', ta);
+
+  const b = eOutBack(p(u, 1.6, 2.15), 1.4);
+  ctx.save(); ctx.globalAlpha = clamp(b); ctx.translate(CX, 1500); ctx.scale(b, b);
+  const bw = 560, bh = 112;
+  ctx.fillStyle = C.field; ctx.fill(rrect(-bw / 2, -bh / 2, bw, bh, 56));
+  text('Free on Google Play', 0, 14, F(600, 38), C.onRubric, 'center');
+  ctx.restore();
+  text('No ads  ·  No account  ·  Offline', CX, 1640, F(400, 30), C.muted, 'center', eOut3(p(u, 2.1, 2.6)));
+}
+
+// ---- timeline -----------------------------------------------------------------
+function withClip(path, fn) { ctx.save(); ctx.clip(path); fn(); ctx.restore(); }
+
+function render(t) {
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.filter = 'none';
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+
+  // 0 – 4.85 intro; adhkar grows inside the arch from 4.05
+  if (t < 4.85) sceneIntro(t);
+  if (t >= 4.05 && t < 10.0) {
+    const s = 1 + eIO5(p(t, 4.05, 4.85)) * 2.6;
+    const push = eIO5(p(t, 9.3, 10.0));
+    ctx.save();
+    if (t < 4.85) ctx.clip(archScaled(s));
+    ctx.translate(0, -push * H * 0.55);
+    sceneAdhkar(t - 4.05, t);
+    if (push > 0) { ctx.fillStyle = `rgba(0,0,0,${push * 0.6})`; ctx.fillRect(0, 0, W, H * 2); }
+    ctx.restore();
+  }
+  // prayer slides up as a sheet
+  if (t >= 9.3 && t < 14.6) {
+    const push = eIO5(p(t, 9.3, 10.0));
+    const off = (1 - push) * H;
+    ctx.save();
+    ctx.translate(0, off);
+    if (push < 1) ctx.clip(rrect(0, 0, W, H + 80, 72 * (1 - push)));
+    scenePrayer(t - 9.3, t);
+    ctx.restore();
+  }
+  // qibla opens as an iris from the compass centre
+  if (t >= 14.0 && t < 18.3) {
+    const ir = eIO3(p(t, 14.0, 14.65));
+    ctx.save();
+    if (ir < 1) {
+      const c = new Path2D(); c.arc(CX, 1050, 10 + ir * 1300, 0, 7); ctx.clip(c);
+    }
+    sceneQibla(t - 14.0, t);
+    ctx.restore();
+    if (ir > 0 && ir < 1) {
+      ctx.strokeStyle = rgba(C.brassN, 0.8 * (1 - ir)); ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.arc(CX, 1050, 10 + ir * 1300, 0, 7); ctx.stroke();
+    }
+  }
+  // mushaf turns in like a page from the left
+  if (t >= 17.7 && t < 22.0) {
+    const w = eIO5(p(t, 17.7, 18.35));
+    ctx.save();
+    if (w < 1) { ctx.beginPath(); ctx.rect(0, 0, W * w, H); ctx.clip(); }
+    ctx.translate(-(1 - w) * 160, 0);
+    sceneMushaf(t - 17.7, t);
+    ctx.restore();
+    if (w > 0 && w < 1) {
+      const g = ctx.createLinearGradient(W * w - 80, 0, W * w + 20, 0);
+      g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.8, 'rgba(0,0,0,0.45)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g; ctx.fillRect(W * w - 80, 0, 100, H);
+    }
+  }
+  // tasbih: zoom through the page
+  if (t >= 21.5 && t < 25.3) {
+    const z = eIO3(p(t, 21.5, 22.1));
+    ctx.save();
+    ctx.globalAlpha = z;
+    ctx.translate(CX, 1000); ctx.scale(lerp(1.15, 1, z), lerp(1.15, 1, z)); ctx.translate(-CX, -1000);
+    sceneTasbih(t - 21.5, t);
+    ctx.restore();
+  }
+  // the outro's arch rises under the lifting promise lines
+  if (t >= 27.45) sceneOutro(t - 27.85, t);
+  // daylight floods out of the completed ring
+  if (t >= 24.7 && t < 28.0) {
+    const ir = eIO5(p(t, 24.7, 25.4));
+    ctx.save();
+    if (ir < 1) { const c = new Path2D(); c.arc(CX, 1170, 300 + ir * 1500, 0, 7); ctx.clip(c); }
+    const out = eIn3(p(t, 27.45, 28.0));
+    ctx.translate(0, -out * 260);
+    ctx.globalAlpha = 1 - out;
+    scenePromise(t - 24.7, t, t >= 27.45);
+    ctx.restore();
+  }
+  // global fade in at the very start
+  if (t < 0.4) { ctx.fillStyle = `rgba(0,0,0,${1 - eOut3(t / 0.4)})`; ctx.fillRect(0, 0, W, H); }
+  grain(t);
+}
+
+// ---- boot -----------------------------------------------------------------------
+window.ready = (async () => {
+  const A = window.ASSETS;
+  await Promise.all(Object.entries(A.fonts).map(async ([k, url]) => {
+    const [fam, w] = k.split('|');
+    const f = new FontFace(fam, `url(${url})`, { weight: w });
+    await f.load(); document.fonts.add(f);
+  }));
+  await document.fonts.ready;
+  const img = new Image(); img.src = A.logo; await img.decode();
+  LOGO = buildLogo(img);
+  GLOW_BRASS = glowSprite(C.brassN, 256);
+  GLOW_LINEN = glowSprite(C.linen, 256);
+  LAT_DARK = makeLattice(C.accN, 0.05, 44);
+  LAT_FIELD = makeLattice(C.linen, 0.09, 44);
+  LAT_LIGHT = makeLattice(C.field, 0.05, 44);
+  LAT_BRASS = makeLattice(C.brassN, 0.75, 44, 1.8);
+  const r = rng(3);
+  for (let k = 0; k < 6; k++) {
+    const c = document.createElement('canvas'); c.width = c.height = 256;
+    const g = c.getContext('2d'); const d = g.createImageData(256, 256);
+    for (let i = 0; i < d.data.length; i += 4) { const v = r() * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; }
+    g.putImageData(d, 0, 0); NOISE.push(c);
+  }
+  render(0);
+  return true;
+})();
+window.render = render;
+window.DURATION = DURATION;
+
+// Live preview: ?t=12.3 shows a still, otherwise it plays.
+const q = new URLSearchParams(location.search);
+if (!navigator.webdriver) {
+  window.ready.then(() => {
+    if (q.has('t')) { render(parseFloat(q.get('t'))); return; }
+    const t0 = performance.now();
+    const loop = () => { render(((performance.now() - t0) / 1000) % DURATION); requestAnimationFrame(loop); };
+    loop();
+  });
+}
+</script>
+</body>
+</html>

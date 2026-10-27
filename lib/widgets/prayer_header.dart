@@ -239,15 +239,7 @@ class _PrayerHeaderState extends State<PrayerHeader> {
 
   static String _countdown(Duration d, AppStrings s) {
     if (d.isNegative || d.inMinutes < 1) return s.countdownNow;
-    final h = d.inHours;
-    final m = d.inMinutes % 60;
-    if (s.ar) {
-      return h > 0 ? '$h س $m د' : '$m د';
-    }
-    if (s.lang.name == 'ur') {
-      return h > 0 ? '$h گھنٹے $m منٹ' : '$m منٹ';
-    }
-    return h > 0 ? '${h}h ${m}m' : '${m}m';
+    return s.shortDuration(d);
   }
 }
 

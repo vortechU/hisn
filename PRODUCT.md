@@ -16,7 +16,7 @@ Muslims who keep the daily remembrances. The confirmed main uses, in order:
 2. **Checking prayer times.** Quick glances at the current prayer, the next one, and the countdown.
 3. **Reading Quran** in the Madani mushaf, in longer sittings.
 
-Tasbih counting is a secondary use. Interface languages: English, Arabic, Indonesian, Urdu (Arabic and Urdu are right-to-left).
+Tasbih counting is a secondary use. Interface languages: English, Arabic, Indonesian, Urdu, Albanian (Arabic and Urdu are right-to-left).
 
 ## Product Purpose
 
@@ -35,7 +35,7 @@ Every text travels with its reference: source on every dua card, on share cards 
 
 ## Capabilities and Constraints
 
-- Content is data (JSON in `assets/data/`); the UI must handle long Arabic, long translations, and four languages including two RTL.
+- Content is data (JSON in `assets/data/`); the UI must handle long Arabic, long translations, and five languages including two RTL.
 - Arabic faces: Amiri (default), Scheherazade New, Noto Naskh Arabic, chosen in Display settings. The mushaf uses KFGQPC QCF v4 page fonts and stays a facsimile.
 - User settings that change layout: text size, show/hide transliteration and meaning, light/dark following the system, a palette choice in Appearance.
 - Quran meanings (Tanzil) are licensed non-commercial; that binds the whole app.

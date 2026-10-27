@@ -20,6 +20,15 @@ import java.util.concurrent.RejectedExecutionException
  * mid-set. Nothing else about this activity changes.
  */
 class MainActivity : AudioServiceActivity() {
+    override fun onStart() {
+        ReminderRenewal.enterForeground()
+        super.onStart()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        ReminderRenewal.leaveForeground()
+    }
     private var adhanVolumeKey: Int? = null
 
     /** Activity-only handling: physical volume buttons silence a playing adhan
@@ -91,7 +100,9 @@ class MainActivity : AudioServiceActivity() {
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+        ReminderRenewal.enterForeground()
         super.configureFlutterEngine(flutterEngine)
+        ReminderRenewal.attach(applicationContext, flutterEngine.dartExecutor.binaryMessenger)
         pendingRoute = intent?.getStringExtra(WidgetChrome.EXTRA_ROUTE)
 
         // The live compass: heading, tilt, and how believable the reading is.

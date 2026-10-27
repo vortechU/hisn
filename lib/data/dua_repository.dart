@@ -1,11 +1,14 @@
 import 'dart:convert';
 
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/foundation.dart' show debugPrint;
+import 'package:flutter/services.dart' show AssetBundle, rootBundle;
 
+import '../l10n/app_language.dart';
 import '../models/dhikr.dart';
 import '../models/dua.dart';
 import '../models/dua_category.dart';
 import '../util/arabic.dart';
+import 'content_overlay.dart';
 
 /// Loads dua content from the bundled JSON assets and exposes simple queries.
 ///
@@ -13,6 +16,9 @@ import '../util/arabic.dart';
 /// this at a database / remote source later) is all that's needed to grow the
 /// content without touching the UI.
 class DuaRepository {
+  DuaRepository({AssetBundle? bundle}) : _bundle = bundle ?? rootBundle;
+
+  final AssetBundle _bundle;
   List<DuaCategory> _categories = const [];
   List<Dua> _duas = const [];
   List<Dhikr> _dhikr = const [];
@@ -36,16 +42,28 @@ class DuaRepository {
     if (_loaded) return;
 
     final results = await Future.wait([
-      rootBundle.loadString('assets/data/categories.json'),
-      rootBundle.loadString('assets/data/duas.json'),
-      rootBundle.loadString('assets/data/tasbih.json'),
+      _bundle.loadString('assets/data/categories.json'),
+      _bundle.loadString('assets/data/duas.json'),
+      _bundle.loadString('assets/data/tasbih.json'),
+    ]);
+
+    final localized = await Future.wait([
+      _loadOverlays('duas', _overlayFields.toSet()),
+      _loadOverlays('categories', {'title', 'subtitle'}),
+      _loadOverlays('tasbih', {'translation'}),
     ]);
 
     _categories = (jsonDecode(results[0]) as List)
-        .map((e) => DuaCategory.fromJson(e as Map<String, dynamic>))
+        .map((e) {
+          final category = DuaCategory.fromJson(e as Map<String, dynamic>);
+          return category.withLocalized(
+            titles: _field(localized[1], category.id, 'title'),
+            subtitles: _field(localized[1], category.id, 'subtitle'),
+          );
+        })
         .toList(growable: false);
 
-    final overlays = await _loadTranslationOverlays();
+    final overlays = localized[0];
     _duas = (jsonDecode(results[1]) as List)
         .map(
           (e) =>
@@ -54,7 +72,12 @@ class DuaRepository {
         .toList(growable: false);
 
     _dhikr = (jsonDecode(results[2]) as List)
-        .map((e) => Dhikr.fromJson(e as Map<String, dynamic>))
+        .map((e) {
+          final dhikr = Dhikr.fromJson(e as Map<String, dynamic>);
+          return dhikr.withTranslations(
+            _field(localized[2], dhikr.id, 'translation'),
+          );
+        })
         .toList(growable: false);
 
     _index();
@@ -74,15 +97,6 @@ class DuaRepository {
     };
   }
 
-  /// Languages that ship an overlay file (`assets/data/duas.<lang>.json`).
-  ///
-  /// The Arabic dua text is never translated — only the `translation`
-  /// (meaning), `virtue`, `instruction` and `reference` fields are overlaid, and a file may
-  /// carry any subset of them. The Arabic overlay deliberately omits
-  /// `translation`: the dua is already in Arabic, so the card drops that line
-  /// rather than rendering the Arabic back into Arabic.
-  static const _overlayLangs = ['id', 'ar', 'ur'];
-
   /// The overlaid fields, in the order they are read out of each entry.
   static const _overlayFields = [
     'title',
@@ -92,25 +106,37 @@ class DuaRepository {
     'reference',
   ];
 
-  /// Loads each available overlay into `{ langCode: { duaId: {field: text} } }`.
-  /// A missing or empty overlay file is skipped silently, so shipping before the
-  /// content is filled in is safe (duas just keep their English meaning).
-  Future<Map<String, Map<String, Map<String, dynamic>>>>
-  _loadTranslationOverlays() async {
-    final result = <String, Map<String, Map<String, dynamic>>>{};
-    for (final lang in _overlayLangs) {
+  /// Loads only datasets declared in the language registry. Invalid assets
+  /// fall back as a whole and leave a diagnostic; validation fails on them.
+  Future<Map<String, Map<String, Map<String, String>>>> _loadOverlays(
+    String dataset,
+    Set<String> fields,
+  ) async {
+    final result = <String, Map<String, Map<String, String>>>{};
+    for (final language in AppLang.values) {
+      if (!language.overlays.containsKey(dataset)) continue;
+      final asset = language.overlayAsset(dataset);
       try {
-        final raw = await rootBundle.loadString('assets/data/duas.$lang.json');
-        final decoded = jsonDecode(raw) as Map<String, dynamic>;
-        result[lang] = decoded.map(
-          (id, value) => MapEntry(id, (value as Map).cast<String, dynamic>()),
+        result[language.code] = decodeContentOverlay(
+          await _bundle.loadString(asset),
+          allowedFields: fields,
         );
-      } catch (_) {
-        // No overlay (or malformed) — fall back to the base English meaning.
+      } catch (error) {
+        debugPrint('Could not load content overlay $asset: $error');
       }
     }
     return result;
   }
+
+  static Map<String, String> _field(
+    Map<String, Map<String, Map<String, String>>> overlays,
+    String id,
+    String field,
+  ) => {
+    for (final language in overlays.entries)
+      if (language.value[id]?[field] case final String value)
+        language.key: value,
+  };
 
   /// Attaches any non-empty localized field to [dua].
   ///
@@ -118,14 +144,14 @@ class DuaRepository {
   /// English original, so an overlay can be filled in a field at a time.
   Dua _applyOverlays(
     Dua dua,
-    Map<String, Map<String, Map<String, dynamic>>> overlays,
+    Map<String, Map<String, Map<String, String>>> overlays,
   ) {
     final byField = {for (final f in _overlayFields) f: <String, String>{}};
     overlays.forEach((lang, byId) {
       final entry = byId[dua.id];
       if (entry == null) return;
       for (final field in _overlayFields) {
-        final value = entry[field] as String?;
+        final value = entry[field];
         if (value != null && value.trim().isNotEmpty) {
           byField[field]![lang] = value;
         }

@@ -1,0 +1,67 @@
+{
+  "en": {
+    "rtl": false,
+    "isArabic": false,
+    "arabicScript": false,
+    "arabicDigits": false,
+    "fontFamily": null,
+    "strings": {
+      "stopAdhan": "Stop adhan",
+      "adhanPlaying": "Playing adhan…",
+      "durationMinutes": "${minutes}m",
+      "durationHoursMinutes": "${hours}h ${minutes}m"
+    }
+  },
+  "ar": {
+    "rtl": true,
+    "isArabic": true,
+    "arabicScript": true,
+    "arabicDigits": true,
+    "fontFamily": null,
+    "strings": {
+      "stopAdhan": "إيقاف الأذان",
+      "adhanPlaying": "جارٍ تشغيل الأذان…",
+      "durationMinutes": "$minutes د",
+      "durationHoursMinutes": "$hours س $minutes د"
+    }
+  },
+  "id": {
+    "rtl": false,
+    "isArabic": false,
+    "arabicScript": false,
+    "arabicDigits": false,
+    "fontFamily": null,
+    "strings": {
+      "stopAdhan": "Hentikan azan",
+      "adhanPlaying": "Memutar azan…",
+      "durationMinutes": "${minutes}m",
+      "durationHoursMinutes": "${hours}h ${minutes}m"
+    }
+  },
+  "ur": {
+    "rtl": true,
+    "isArabic": false,
+    "arabicScript": true,
+    "arabicDigits": false,
+    "fontFamily": "sans-serif",
+    "strings": {
+      "stopAdhan": "اذان بند کریں",
+      "adhanPlaying": "اذان چل رہی ہے…",
+      "durationMinutes": "$minutes منٹ",
+      "durationHoursMinutes": "$hours گھنٹے $minutes منٹ"
+    }
+  },
+  "sq": {
+    "rtl": false,
+    "isArabic": false,
+    "arabicScript": false,
+    "arabicDigits": false,
+    "fontFamily": null,
+    "strings": {
+      "stopAdhan": "Ndal ezanin",
+      "adhanPlaying": "Po luhet ezani…",
+      "durationMinutes": "$minutes min",
+      "durationHoursMinutes": "$hours orë $minutes min"
+    }
+  }
+}

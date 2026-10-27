@@ -111,12 +111,18 @@ class PrayerScheduleScreen extends StatelessWidget {
                               ),
                             ],
                             const SizedBox(width: 12),
-                            Numeral(
-                              _clock(rows[i].$3, s),
-                              size: 14,
-                              serif: false,
-                              weight: FontWeight.w500,
-                              color: theme.colorScheme.onSurfaceVariant,
+                            Flexible(
+                              flex: 3,
+                              child: Align(
+                                alignment: AlignmentDirectional.centerEnd,
+                                child: Numeral(
+                                  _clock(rows[i].$3, s),
+                                  size: 14,
+                                  serif: false,
+                                  weight: FontWeight.w500,
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
                             ),
                           ],
                         ),

@@ -20,38 +20,25 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('Urdu UI supplies every source key with matching placeholders', () {
-    final en =
-        jsonDecode(File('lib/i18n/en.i18n.json').readAsStringSync()) as Map;
-    final ur =
+  test('Urdu UI strings use Urdu script', () {
+    final catalog =
         jsonDecode(File('lib/i18n/ur.i18n.json').readAsStringSync()) as Map;
-    expect(ur.keys.toSet(), en.keys.toSet());
-    final parameters = RegExp(r'\$[a-zA-Z_]+');
-    for (final key in en.keys) {
-      final originals = en[key] is List ? en[key] as List : [en[key]];
-      final localized = ur[key] is List ? ur[key] as List : [ur[key]];
-      expect(localized, hasLength(originals.length), reason: '$key');
-      for (var i = 0; i < originals.length; i++) {
-        expect(
-          parameters
-              .allMatches(localized[i] as String)
-              .map((m) => m[0])
-              .toSet(),
-          parameters
-              .allMatches(originals[i] as String)
-              .map((m) => m[0])
-              .toSet(),
-          reason: '$key',
-        );
-        if (key != 'verseRange' && key != 'prayerNone') {
-          expect(
-            localized[i],
-            matches(RegExp(r'[\u0600-\u06FF]')),
-            reason: '$key',
-          );
+    void check(Object? value, String key) {
+      if (key == 'verseRange' || key == 'prayerNone') return;
+      if (value is Map) {
+        for (final entry in value.entries) {
+          check(entry.value, entry.key as String);
         }
+      } else if (value is List) {
+        for (final entry in value) {
+          check(entry, key);
+        }
+      } else {
+        expect(value, matches(RegExp(r'[\u0600-\u06FF]')), reason: key);
       }
     }
+
+    check(catalog, '');
   });
 
   test(

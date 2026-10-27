@@ -54,3 +54,7 @@ tool/.cache/
 
 # Local design-preview process state.
 /.impeccable/questions/
+
+# Launch video renders
+play/video/*.mp4
+play/video/poster.png

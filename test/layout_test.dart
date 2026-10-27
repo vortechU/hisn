@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dua_app/data/dua_repository.dart';
 import 'package:dua_app/data/quran_repository.dart';
 import 'package:dua_app/l10n/locale_controller.dart';
+import 'package:dua_app/l10n/app_strings.dart';
 import 'package:dua_app/screens/adhkar_player_screen.dart';
 import 'package:dua_app/screens/adhkar_screen.dart';
 import 'package:dua_app/screens/category_duas_screen.dart';
@@ -78,11 +79,14 @@ final _sampleBackup = Backup(
 /// A passage with every optional line filled, so the card is exercised at its
 /// tallest rather than in its simplest form.
 const _samplePassage = Shareable(
-  arabic: 'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ',
+  arabic:
+      'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ',
   reference: 'Al-Bukhari 6306',
   title: 'Sayyid al-Istighfar',
-  transliteration: 'Allahumma anta rabbi la ilaha illa anta, khalaqtani wa ana abduka',
-  translation: 'O Allah, You are my Lord. There is no god but You. You created me and I am Your servant.',
+  transliteration:
+      'Allahumma anta rabbi la ilaha illa anta, khalaqtani wa ana abduka',
+  translation:
+      'O Allah, You are my Lord. There is no god but You. You created me and I am Your servant.',
   repeat: 3,
 );
 
@@ -114,16 +118,21 @@ void main() {
       longestVerse[lang] = (await quran.verse(2, 282, lang: lang.name))!;
     }
     audioLibrary = AdhkarAudioLibrary.forTest({
-      for (final id in ['morning', 'evening']
-          .expand((c) => repo.duasForCategory(c))
-          .map((d) => d.id))
+      for (final id in [
+        'morning',
+        'evening',
+      ].expand((c) => repo.duasForCategory(c)).map((d) => d.id))
         id: 'assets/audio/adhkar/$id.m4a',
     });
   });
 
-  Widget host(Widget child, {required Brightness brightness,
-      required AppPalette palette, required double textScale,
-      required AppLang lang}) {
+  Widget host(
+    Widget child, {
+    required Brightness brightness,
+    required AppPalette palette,
+    required double textScale,
+    required AppLang lang,
+  }) {
     return MultiProvider(
       providers: [
         Provider<DuaRepository>.value(value: repo),
@@ -140,7 +149,9 @@ void main() {
         ChangeNotifierProvider<AdhkarAudioHandler>.value(value: audio),
         ChangeNotifierProvider(create: (_) => ListenSettings(prefs)),
         ChangeNotifierProvider(create: (_) => QuranService(prefs)),
-        ChangeNotifierProvider(create: (_) => LocaleController(prefs)..setLang(lang)),
+        ChangeNotifierProvider(
+          create: (_) => LocaleController(prefs)..setLang(lang),
+        ),
         ChangeNotifierProvider(create: (_) => CustomDuaService(prefs)),
         ChangeNotifierProvider(create: (_) => FavoritesService(prefs)),
         ChangeNotifierProvider(create: (_) => DisplaySettings(prefs)),
@@ -156,16 +167,23 @@ void main() {
         ),
         ChangeNotifierProvider(create: (_) => PrayerService(prefs)),
         ChangeNotifierProvider(create: (_) => SunnahCalendarService(prefs)),
-        ChangeNotifierProvider(
-            create: (_) => NotificationService(prefs, repo)),
+        ChangeNotifierProvider(create: (_) => NotificationService(prefs, repo)),
       ],
       child: MaterialApp(
         // Match how app.dart builds the theme: an Arabic interface gets the
         // opened-up leading and zeroed tracking, which changes line metrics
         // and so is its own layout risk.
         theme: brightness == Brightness.light
-            ? AppTheme.light(palette, arabicUi: lang == AppLang.ar)
-            : AppTheme.dark(palette, arabicUi: lang == AppLang.ar),
+            ? AppTheme.light(
+                palette,
+                arabicUi: lang.usesArabicScript,
+                uiFamily: lang.uiFontFamily,
+              )
+            : AppTheme.dark(
+                palette,
+                arabicUi: lang.usesArabicScript,
+                uiFamily: lang.uiFontFamily,
+              ),
         locale: Locale(lang.name),
         supportedLocales: LocaleController.supported,
         localizationsDelegates: const [
@@ -195,13 +213,15 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
 
-    await tester.pumpWidget(host(
-      child,
-      brightness: brightness,
-      palette: palette ?? AppPalettes.emerald,
-      textScale: textScale,
-      lang: lang,
-    ));
+    await tester.pumpWidget(
+      host(
+        child,
+        brightness: brightness,
+        palette: palette ?? AppPalettes.emerald,
+        textScale: textScale,
+        lang: lang,
+      ),
+    );
     // Several pumps rather than pumpAndSettle: some screens carry a ticking
     // clock that would never settle, but rows backed by an asset load need
     // more than a single frame to appear.
@@ -257,10 +277,13 @@ void main() {
     }
 
     testWidgets('landscape, Arabic', (tester) async {
-      await renders(tester, const MushafScreen(startPage: 2),
-          size: const Size(812, 375), lang: AppLang.ar);
+      await renders(
+        tester,
+        const MushafScreen(startPage: 2),
+        size: const Size(812, 375),
+        lang: AppLang.ar,
+      );
     });
-
   });
 
   // Pinching outwards is the reader's zoom. What makes it read as one is the
@@ -337,6 +360,81 @@ void main() {
       await tester.pumpAndSettle();
     }
 
+    testWidgets('the gesture hint is shown once across reading sessions', (
+      tester,
+    ) async {
+      await prefs.remove('quran_zoom_hint_seen');
+      final s = AppStrings(AppLang.en);
+      await renders(tester, const MushafScreen(startPage: 1));
+      await tester.pumpAndSettle();
+      expect(find.text(s.quranZoomHint), findsOneWidget);
+
+        await tester.tap(find.descendant(
+          of: find.byType(SnackBar),
+          matching: find.byType(IconButton),
+        ));
+      await tester.pumpAndSettle();
+      expect(find.text(s.quranZoomHint), findsNothing);
+      expect(prefs.getBool('quran_zoom_hint_seen'), isTrue);
+
+      await tester.pumpWidget(const SizedBox.shrink());
+      await renders(tester, const MushafScreen(startPage: 1));
+      expect(find.text(s.quranZoomHint), findsNothing);
+    });
+
+    testWidgets(
+      'the visible zoom button enlarges the page and Back restores it',
+      (tester) async {
+        await prefs.remove('quran_zoom_hint_seen');
+        final s = AppStrings(AppLang.en);
+        await renders(tester, const MushafScreen(startPage: 1));
+        await tester.pumpAndSettle();
+        final framed = glyphSize(tester);
+
+        await tester.tap(find.byTooltip(s.quranZoomIn));
+        await tester.pumpAndSettle();
+        expect(find.byType(AppBar), findsNothing);
+        expect(find.text(s.quranZoomHint), findsNothing);
+        expect(glyphSize(tester), greaterThan(framed * 1.1));
+
+        await tester.binding.handlePopRoute();
+        await tester.pumpAndSettle();
+        expect(find.byType(AppBar), findsOneWidget);
+        expect(glyphSize(tester), framed);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets('the expired gesture hint does not interfere with zoom',
+        (tester) async {
+      await prefs.remove('quran_zoom_hint_seen');
+      final s = AppStrings(AppLang.en);
+      await renders(tester, const MushafScreen(startPage: 1));
+      await tester.pumpAndSettle();
+      expect(find.text(s.quranZoomHint), findsOneWidget);
+      await tester.pump(const Duration(seconds: 9));
+      await tester.pumpAndSettle();
+      expect(find.text(s.quranZoomHint), findsNothing);
+
+      await tester.tap(find.byTooltip(s.quranZoomIn));
+      await tester.pumpAndSettle();
+      expect(find.byType(AppBar), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('pinching dismisses the gesture hint', (tester) async {
+      await prefs.remove('quran_zoom_hint_seen');
+      final s = AppStrings(AppLang.en);
+      await renders(tester, const MushafScreen(startPage: 1));
+      await tester.pumpAndSettle();
+      expect(find.text(s.quranZoomHint), findsOneWidget);
+
+      await pinch(tester, 0.5);
+      expect(find.text(s.quranZoomHint), findsNothing);
+      expect(prefs.getBool('quran_zoom_hint_seen'), isTrue);
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets('pinching out enlarges the text', (tester) async {
       await renders(tester, const MushafScreen(startPage: 1));
       final framed = glyphSize(tester);
@@ -346,8 +444,11 @@ void main() {
 
       expect(tester.takeException(), isNull);
       expect(find.byType(AppBar), findsNothing);
-      expect(glyphSize(tester), greaterThan(framed * 1.1),
-          reason: 'the zoomed page should give the glyphs the frame\'s space');
+      expect(
+        glyphSize(tester),
+        greaterThan(framed * 1.1),
+        reason: 'the zoomed page should give the glyphs the frame\'s space',
+      );
     });
 
     // The zoom follows the fingers rather than flipping when they pass a
@@ -358,14 +459,25 @@ void main() {
       final framed = blockRect(tester);
       var midway = Rect.zero;
 
-      await pinch(tester, 0.5, holdAt: 0.5, whileHeld: () async {
-        midway = blockRect(tester);
-      });
+      await pinch(
+        tester,
+        0.5,
+        holdAt: 0.5,
+        whileHeld: () async {
+          midway = blockRect(tester);
+        },
+      );
 
-      expect(midway.width, greaterThan(framed.width),
-          reason: 'the page should already have grown with the fingers');
-      expect(midway.width, lessThan(blockRect(tester).width),
-          reason: 'and not have arrived before the pinch finished');
+      expect(
+        midway.width,
+        greaterThan(framed.width),
+        reason: 'the page should already have grown with the fingers',
+      );
+      expect(
+        midway.width,
+        lessThan(blockRect(tester).width),
+        reason: 'and not have arrived before the pinch finished',
+      );
     });
 
     // The reason the gesture is smooth: the text is fitted to a size once and
@@ -377,24 +489,37 @@ void main() {
 
       var sizeDuring = 0.0;
       var rectDuring = Rect.zero;
-      await pinch(tester, 0.5, holdAt: 0.5, whileHeld: () async {
-        sizeDuring = glyphSize(tester);
-        rectDuring = blockRect(tester);
-      });
+      await pinch(
+        tester,
+        0.5,
+        holdAt: 0.5,
+        whileHeld: () async {
+          sizeDuring = glyphSize(tester);
+          rectDuring = blockRect(tester);
+        },
+      );
 
-      expect(sizeDuring, glyphSize(tester),
-          reason: 'the block should already be fitted at the size it settles '
-              'on, so the pinch never re-fits it');
-      expect(rectDuring.width, lessThan(blockRect(tester).width),
-          reason: 'and it should genuinely have been mid-gesture');
+      expect(
+        sizeDuring,
+        glyphSize(tester),
+        reason:
+            'the block should already be fitted at the size it settles '
+            'on, so the pinch never re-fits it',
+      );
+      expect(
+        rectDuring.width,
+        lessThan(blockRect(tester).width),
+        reason: 'and it should genuinely have been mid-gesture',
+      );
     });
 
     // Coming back out has to undo all of it — including the system bars. It
     // did not: the page un-zoomed while the status bar stayed hidden, leaving
     // the phone eating the first swipe home. Both halves are checked, since
     // the layout returning says nothing about the bars.
-    testWidgets('pinching back in restores the page and the bars',
-        (tester) async {
+    testWidgets('pinching back in restores the page and the bars', (
+      tester,
+    ) async {
       final chrome = <String, Object?>{};
       final calls = <String>[];
       tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
@@ -407,22 +532,31 @@ void main() {
           return null;
         },
       );
-      addTearDown(() => tester.binding.defaultBinaryMessenger
-          .setMockMethodCallHandler(SystemChannels.platform, null));
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          SystemChannels.platform,
+          null,
+        ),
+      );
 
       await renders(tester, const MushafScreen(startPage: 1));
       final framed = glyphSize(tester);
 
       await pinch(tester, 0.5);
-      expect(chrome['SystemChrome.setEnabledSystemUIMode'],
-          'SystemUiMode.immersiveSticky');
+      expect(
+        chrome['SystemChrome.setEnabledSystemUIMode'],
+        'SystemUiMode.immersiveSticky',
+      );
 
       await pinch(tester, -0.4);
 
       expect(tester.takeException(), isNull);
       expect(find.byType(AppBar), findsOneWidget);
-      expect(glyphSize(tester), framed,
-          reason: 'the framed page should come back exactly as it was');
+      expect(
+        glyphSize(tester),
+        framed,
+        reason: 'the framed page should come back exactly as it was',
+      );
       // Asking for the bars by name is the part that actually lifts the hide;
       // a mode change on its own leaves the status bar gone.
       expect(calls.last, 'SystemChrome.setEnabledSystemUIMode');
@@ -430,16 +564,16 @@ void main() {
       expect(
         calls.lastIndexOf('SystemChrome.setEnabledSystemUIOverlays'),
         greaterThan(calls.indexOf('SystemChrome.setEnabledSystemUIMode')),
-        reason: 'the overlays must be restored after the immersive mode was set',
+        reason:
+            'the overlays must be restored after the immersive mode was set',
       );
-      expect(chrome['SystemChrome.setEnabledSystemUIMode'],
-          'SystemUiMode.edgeToEdge');
+      expect(
+        chrome['SystemChrome.setEnabledSystemUIMode'],
+        'SystemUiMode.edgeToEdge',
+      );
       expect(
         chrome['SystemChrome.setEnabledSystemUIOverlays'],
-        containsAll(<String>[
-          'SystemUiOverlay.top',
-          'SystemUiOverlay.bottom',
-        ]),
+        containsAll(<String>['SystemUiOverlay.top', 'SystemUiOverlay.bottom']),
       );
     });
   });
@@ -462,25 +596,27 @@ void main() {
     var count = 0;
     await tester.binding.setSurfaceSize(const Size(320, 640));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    await tester.pumpWidget(host(
-      StatefulBuilder(
-        builder: (context, setState) => Scaffold(
-          body: SingleChildScrollView(
-            child: DuaCard(
-              dua: dua,
-              count: count,
-              onCount: () => setState(() => count++),
+    await tester.pumpWidget(
+      host(
+        StatefulBuilder(
+          builder: (context, setState) => Scaffold(
+            body: SingleChildScrollView(
+              child: DuaCard(
+                dua: dua,
+                count: count,
+                onCount: () => setState(() => count++),
+              ),
             ),
           ),
         ),
+        brightness: Brightness.light,
+        palette: AppPalettes.emerald,
+        // A large scale leaves the least slack of all, so a two-pixel loss shows
+        // up here first.
+        textScale: 1.3,
+        lang: AppLang.en,
       ),
-      brightness: Brightness.light,
-      palette: AppPalettes.emerald,
-      // A large scale leaves the least slack of all, so a two-pixel loss shows
-      // up here first.
-      textScale: 1.3,
-      lang: AppLang.en,
-    ));
+    );
     await tester.pump();
 
     // The card is full-width either way; what the rule steals is the block
@@ -499,10 +635,16 @@ void main() {
     }
     expect(count, dua.repeat, reason: 'the taps should have completed the dua');
 
-    expect(tester.getSize(body), before,
-        reason: 'the text block should be the same width once it is gilded');
-    expect(tester.getSize(find.byType(DuaCard)), cardBefore,
-        reason: 'and the card should not have grown a line');
+    expect(
+      tester.getSize(body),
+      before,
+      reason: 'the text block should be the same width once it is gilded',
+    );
+    expect(
+      tester.getSize(find.byType(DuaCard)),
+      cardBefore,
+      reason: 'and the card should not have grown a line',
+    );
   });
 
   // The verse rows the reader lists a page's verses in. Rendered directly
@@ -537,8 +679,12 @@ void main() {
       });
 
       testWidgets('${entry.key} — narrow phone, dark', (tester) async {
-        await renders(tester, entry.value(),
-            size: const Size(320, 640), brightness: Brightness.dark);
+        await renders(
+          tester,
+          entry.value(),
+          size: const Size(320, 640),
+          brightness: Brightness.dark,
+        );
       });
 
       testWidgets('${entry.key} — large text', (tester) async {
@@ -546,22 +692,31 @@ void main() {
       });
 
       testWidgets('${entry.key} — narrow phone, large text', (tester) async {
-        await renders(tester, entry.value(),
-            size: const Size(320, 640), textScale: 1.3);
+        await renders(
+          tester,
+          entry.value(),
+          size: const Size(320, 640),
+          textScale: 1.3,
+        );
       });
 
-      // Arabic is a first-class UI language here, and RTL is where the
-      // Latin/Arabic pairs in these rows are most likely to break.
-      testWidgets('${entry.key} — Arabic, narrow, large text', (tester) async {
-        await renders(tester, entry.value(),
+      // Every registered language gets the constrained layout case, including
+      // future languages without another hand-maintained test list.
+      for (final language in AppLang.values.where(
+        (lang) => lang != AppLang.en,
+      )) {
+        testWidgets('${entry.key} — ${language.code}, narrow, large text', (
+          tester,
+        ) async {
+          await renders(
+            tester,
+            entry.value(),
             size: const Size(320, 640),
             textScale: 1.3,
-            lang: AppLang.ar);
-      });
-
-      testWidgets('${entry.key} — Indonesian', (tester) async {
-        await renders(tester, entry.value(), lang: AppLang.id);
-      });
+            lang: language,
+          );
+        });
+      }
     }
 
     testWidgets('category session — every category', (tester) async {
@@ -581,16 +736,23 @@ void main() {
 
     testWidgets('category session — Arabic', (tester) async {
       for (final category in repo.categories) {
-        await renders(tester, CategoryDuasScreen(category: category),
-            lang: AppLang.ar);
+        await renders(
+          tester,
+          CategoryDuasScreen(category: category),
+          lang: AppLang.ar,
+        );
       }
     });
 
     testWidgets('adhkar home — every palette, both modes', (tester) async {
       for (final palette in AppPalettes.all) {
         for (final brightness in Brightness.values) {
-          await renders(tester, const AdhkarScreen(),
-              palette: palette, brightness: brightness);
+          await renders(
+            tester,
+            const AdhkarScreen(),
+            palette: palette,
+            brightness: brightness,
+          );
         }
       }
     });

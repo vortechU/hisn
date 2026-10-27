@@ -330,8 +330,6 @@ class _Colophon extends StatelessWidget {
             Expanded(
               child: Text(
                 reference,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.bodySmall,
               ),
             ),

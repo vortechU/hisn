@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A small carved lintel: a khatam between two diamonds, centered above the timetable. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="80dp"
+    android:height="7dp"
+    android:viewportWidth="80"
+    android:viewportHeight="7">
+    <path
+        android:pathData="M4,3.5H14 M26,3.5H33 M47,3.5H54 M66,3.5H76"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="0.65"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M20,1.5L22.5,3.5L20,5.5L17.5,3.5Z M60,1.5L62.5,3.5L60,5.5L57.5,3.5Z"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="0.65"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M40,0.5L40.879,1.379H42.121V2.621L43,3.5L42.121,4.379V5.621H40.879L40,6.5L39.121,5.621H37.879V4.379L37,3.5L37.879,2.621V1.379H39.121Z"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="0.65"
+        android:strokeLineJoin="round" />
+</vector>

@@ -18,8 +18,10 @@
   "muhassanComplete": "Terbentengi penuh — masha Allah",
   "muhassanMorning": "Pagi",
   "muhassanEvening": "Petang",
-  "streakDaysOne": "1 hari beruntun",
-  "streakDaysOther": "$n hari beruntun",
+  "streakDays(param=n)": {
+    "one": "1 hari beruntun",
+    "other": "$n hari beruntun"
+  },
   "streakStart": "Mulai rentetan Anda",
   "streakBest": "Terbaik: $n",
   "streakTitle": "Rentetan Anda",
@@ -27,8 +29,10 @@
   "statCurrent": "Saat ini",
   "statBest": "Terbaik",
   "statTotal": "Total hari",
-  "daysValueOne": "1 hari",
-  "daysValueOther": "$n hari",
+  "daysValue(param=n)": {
+    "one": "1 hari",
+    "other": "$n hari"
+  },
   "streakOnFire": "Luar biasa — pertahankan!",
   "streakTodayPending": "Selesaikan zikir hari ini untuk menambah rentetan",
   "streakBroken": "Selesaikan zikir pagi & petang untuk memulai lagi",
@@ -60,8 +64,10 @@
   "surahWord": "Surah",
   "revelationMeccan": "Makkiyah",
   "revelationMedinan": "Madaniyah",
-  "versesCountOne": "1 ayat",
-  "versesCountOther": "$n ayat",
+  "versesCount(param=n)": {
+    "one": "1 ayat",
+    "other": "$n ayat"
+  },
   "juzLabel": "Juz $n",
   "quranBookmarks": "Penanda",
   "noBookmarks": "Belum ada penanda",
@@ -105,10 +111,14 @@
   "noCustomTitle": "Belum ada doa",
   "noCustomBody": "Ketuk + untuk menambah doa Anda dan menyimpannya di sini.",
   "recommendedNow": "Disarankan sekarang",
-  "readNowOne": "Baca sekarang · 1 doa",
-  "readNowOther": "Baca sekarang · $count doa",
-  "duaCountOne": "1 doa",
-  "duaCountOther": "$count doa",
+  "readNow(param=count)": {
+    "one": "Baca sekarang · 1 doa",
+    "other": "Baca sekarang · $count doa"
+  },
+  "duaCount(param=count)": {
+    "one": "1 doa",
+    "other": "$count doa"
+  },
   "now": "Sekarang",
   "next": "Berikutnya",
   "remaining": "tersisa",
@@ -120,14 +130,18 @@
   "searchPrompt": "Cari berdasarkan judul, makna, transliterasi, atau sumber.",
   "noResults": "Tidak ada doa untuk \"$query\".",
   "quranNoResults": "Tidak ada surah atau ayat untuk \"$query\".",
-  "resultsCountOne": "1 hasil",
-  "resultsCountOther": "$n hasil",
+  "resultsCount(param=n)": {
+    "one": "1 hasil",
+    "other": "$n hasil"
+  },
   "noSavedTitle": "Belum ada doa tersimpan",
   "noSavedBody": "Ketuk penanda pada doa mana pun untuk menyimpannya di sini.",
   "resetCount": "Atur ulang hitungan",
   "tapToCount": "Ketuk di mana saja untuk menghitung",
-  "setsCompletedOne": "1 putaran selesai",
-  "setsCompletedOther": "$n putaran selesai",
+  "setsCompleted(param=n)": {
+    "one": "1 putaran selesai",
+    "other": "$n putaran selesai"
+  },
   "ofTarget": "dari $n",
   "resetProgress": "Atur ulang progres",
   "setComplete": "Selesai — taqabbalallah",
@@ -138,8 +152,10 @@
   "listenHint": "Sedang diputar — ponsel boleh dikunci",
   "listenIdleTitle": "Tidak ada yang diputar",
   "listenIdleBody": "Putar rangkaiannya dan doa akan dibacakan, menghitung sendiri sambil berjalan.",
-  "listenMissingOne": "1 doa belum ada rekamannya",
-  "listenMissingOther": "$n doa belum ada rekamannya",
+  "listenMissing(param=n)": {
+    "one": "1 doa belum ada rekamannya",
+    "other": "$n doa belum ada rekamannya"
+  },
   "listenPrevious": "Zikir sebelumnya",
   "listenNext": "Zikir berikutnya",
   "listenPause": "Jeda",
@@ -395,8 +411,10 @@
   "restoreScopeProgressSub": "Pertahankan lokasi, pengingat, dan bahasa ponsel ini",
   "restoreWarning": "Ini akan mengganti apa yang ada di perangkat ini sekarang.",
   "restoreAction": "Pulihkan",
-  "restoreDoneOne": "1 item dipulihkan",
-  "restoreDoneOther": "$n item dipulihkan",
+  "restoreDone(param=n)": {
+    "one": "1 item dipulihkan",
+    "other": "$n item dipulihkan"
+  },
   "backupSaved": "Cadangan siap disimpan",
   "backupFailed": "Tidak dapat membuat cadangan",
   "restoreErrMalformed": "Berkas itu tidak dapat dibaca.",
@@ -404,6 +422,9 @@
   "restoreErrTooNew": "Cadangan itu dibuat oleh versi Hisn yang lebih baru. Perbarui aplikasi terlebih dahulu.",
   "restoreErrEmpty": "Tidak ada yang bisa dipulihkan dari cadangan itu.",
   "restoreFailed": "Tidak dapat memulihkan. Tidak ada yang diubah.",
+  "quranZoomIn": "Perbesar",
+  "quranZoomHint": "Rentangkan dua jari untuk memperbesar; rapatkan kembali untuk kembali.",
+  "quranReaderOptions": "Opsi membaca",
   "versesOnThisPage": "Ayat di halaman ini",
   "savedVerses": "Ayat tersimpan",
   "savedPages": "Halaman tersimpan",
@@ -469,9 +490,13 @@
   "shareImageFailedNotReady": "Kartu belum siap diambil — teksnya dibagikan sebagai gantinya.",
   "shareImageFailedUnsupported": "Perangkat ini tidak dapat membuat gambar — teksnya dibagikan sebagai gantinya.",
   "nextPhraseOnTap": "Zikir selesai. Ketuk untuk menghitung zikir berikutnya.",
+  "aboutContributors": "Orang di balik Hisn",
+  "aboutDeveloperCredit": "Pengembang · Merancang dan mengembangkan aplikasi.",
+  "aboutContentReviewerCredit": "Kontributor · Membantu meninjau konten aplikasi untuk menemukan salah ketik dan kekeliruan informasi.",
+  "aboutProfileLinkCopied": "Tautan profil GitHub disalin. Buka di peramban Anda.",
   "aboutTypefaces": "Jenis huruf",
   "aboutVerseMeanings": "Makna ayat",
-  "aboutUrduDuaCredit": "Makna doa Urdu: draf proyek Hisn; menunggu tinjauan ahli.",
+  "aboutDuaDraftCredit": "Sebagian makna doa merupakan draf proyek Hisn; menunggu tinjauan bahasa dan agama yang kompeten.",
   "aboutTranslationSource": "Sumber terjemahan · Tanzil",
   "aboutLinkCopied": "Tautan sumber disalin. Buka di peramban Anda.",
   "aboutArabicText": "Teks Arab",
@@ -516,5 +541,21 @@
   "prayerSilenceUnavailable": "Senyap saat salat hanya tersedia di Android.",
   "prayerSilenceError": "Senyap saat salat tidak dapat dijadwalkan. Periksa akses dan coba lagi.",
   "prayerSilenceStopNow": "Akhiri waktu senyap ini",
-  "prayerSilenceExpiryNote": "Hanya mode Hisn yang berakhir otomatis; mode Jangan Ganggu Anda tidak diubah. Android dapat menunda pemeriksaan akhir cadangan jika akses alarm tepat dicabut atau aplikasi dibatasi."
+  "prayerSilenceExpiryNote": "Hanya mode Hisn yang berakhir otomatis; mode Jangan Ganggu Anda tidak diubah. Android dapat menunda pemeriksaan akhir cadangan jika akses alarm tepat dicabut atau aplikasi dibatasi.",
+  "qiblaStyle": "Desain kompas",
+  "qiblaTone": "Warna kompas",
+  "qiblaVibrationOn": "Getaran aktif",
+  "qiblaVibrationOff": "Getaran nonaktif",
+  "qiblaStyles": [
+    "Klasik",
+    "Minimal",
+    "Mawar kompas"
+  ],
+  "qiblaTones": [
+    "Warna tema",
+    "Emas",
+    "Tinta"
+  ],
+  "durationMinutes": "${minutes}m",
+  "durationHoursMinutes": "${hours}h ${minutes}m"
 }

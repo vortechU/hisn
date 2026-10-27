@@ -14,6 +14,8 @@ the content is authentic but intentionally small, and it's built to grow.
   reminder fires a few minutes after adhan (matching a mosque's fixed gap) instead
   of at adhan time — the adhan audio itself always plays right on time. Re-scheduled
   (a rolling few-day window) on every launch and whenever the prayer settings change.
+  Android also renews that window with a persisted twelve-hour background job,
+  using the saved location without requesting GPS or opening the app.
 - **Settings** — change the location (device GPS or a built-in city), the calculation
   method, the Asr/madhab rule, and notification preferences from inside the app; all
   choices persist.
@@ -66,10 +68,11 @@ the content is authentic but intentionally small, and it's built to grow.
   to, the other records where reading stopped.
 - **Verse meanings** — each verse carries its meaning in the interface language:
   *The Noble Qur'an* (Hilali & Khan) in English, the Kementerian Agama rendering in
-  Indonesian, Muhammad Junagarhi's rendering in Urdu, and in Arabic
+  Indonesian, Muhammad Junagarhi's rendering in Urdu, Hasan Efendi Nahi's rendering
+  in Albanian, and in Arabic
   *at-Tafsīr al-Muyassar* (التفسير الميسر) from the King Fahd
   Complex — a tafsir rather than a translation, because rendering Arabic into Arabic
-  would say nothing but explaining it does. All four from the
+  would say nothing but explaining it does. All five from the
   [Tanzil Project](https://tanzil.net/trans/). The tafsir is set in Arabic type and
   right-to-left, smaller than the verse it explains, so the āyah stays the larger of
   the two. The mushaf page itself stays a facsimile; the meanings live in the verse
@@ -125,7 +128,12 @@ reads everything through `DuaRepository`.
 - **Notifications**: `flutter_local_notifications` + `timezone` schedule reminders
   (`lib/services/notification_service.dart`). Because local notifications need concrete
   times, the service keeps a rolling ~3-day window and re-schedules on launch / when
-  prayer settings change — no background work needed. Android requires core-library
+  prayer settings change. A persisted Android JobScheduler job replenishes it every
+  twelve hours while the app is closed, with an additional renewal after reboot or
+  an app update. The worker reuses the same Dart planner, saved location and
+  preferences; it starts no audio preview and requests no location permission.
+  Android may defer background work, so the three-day window provides a buffer.
+  Android requires core-library
   desugaring (set in `android/app/build.gradle.kts`) plus the POST_NOTIFICATIONS /
   exact-alarm permissions and FLN receivers in the manifest. Reminders are **off by
   default** (opt-in). Actual delivery can only be tested on a real device/emulator.

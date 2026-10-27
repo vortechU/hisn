@@ -151,7 +151,7 @@ class CategoryCard extends StatelessWidget {
   }
 
   Widget _title(ThemeData theme, AppStrings s) {
-    if (s.rtl) {
+    if (s.lang.usesArabicScript) {
       return ArabicText(
         category.titleForLang(s.lang.name),
         fontSize: 18,

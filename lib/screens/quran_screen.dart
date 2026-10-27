@@ -286,7 +286,7 @@ class _VerseSearchTile extends StatelessWidget {
         vertical: 8,
       ),
       title: Text(
-        '${verse.surah.nameFor(s.rtl)} · ${verse.reference}',
+        '${verse.surah.nameFor(s.lang.usesArabicScript)} · ${verse.reference}',
         style: theme.textTheme.titleSmall,
       ),
       subtitle: Padding(
@@ -336,7 +336,7 @@ class _ContinueBanner extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${s.surahWord} ${surah.nameFor(s.rtl)}',
+                    '${s.surahWord} ${surah.nameFor(s.lang.usesArabicScript)}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.titleLarge
@@ -353,7 +353,7 @@ class _ContinueBanner extends StatelessWidget {
             ),
             // In Arabic the line above already names the surah in Arabic;
             // repeating it here would set the same word twice.
-            if (!s.ar) ...[
+            if (!s.lang.usesArabicScript) ...[
               const SizedBox(width: 12),
               // Capped, so the name in the reader's script keeps the room.
               ConstrainedBox(
@@ -416,7 +416,7 @@ class _SurahTile extends StatelessWidget {
                     // The name leads the entry in whichever script the reader
                     // is in: Arabic takes the title slot outright rather than
                     // sitting behind a transliteration they don't read.
-                    if (s.rtl)
+                    if (s.lang.usesArabicScript)
                       ArabicText(
                         surah.name,
                         fontSize: 20,
@@ -438,7 +438,7 @@ class _SurahTile extends StatelessWidget {
                   ],
                 ),
               ),
-              if (!s.ar) ...[
+              if (!s.lang.usesArabicScript) ...[
                 const SizedBox(width: 10),
                 ArabicText(
                   surah.name,

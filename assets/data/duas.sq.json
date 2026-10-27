@@ -1,0 +1,609 @@
+{
+  "_meta": {
+    "status": "DRAFT — original project Albanian hadith renderings require qualified Albanian and religious review before release",
+    "scope": "Albanian titles, meanings, references, virtues and practical instructions; original Arabic recitations are unchanged.",
+    "authorship": "Hadith prose is original project translation of the existing bundled Arabic/English content, not a published Albanian translator transcription.",
+    "baseContentSha256": "cf5427dc6b3dfc5dc6440ea7770f5f887afab67434d0f669cb1ccf53919f41a7",
+    "quran": {
+      "translator": "Hasan Efendi Nahi",
+      "edition": "sq.nahi",
+      "source": "https://tanzil.net/trans/sq.nahi",
+      "terms": "https://tanzil.net/trans/",
+      "method": "Verbatim complete verses/surahs and exact suffix excerpts from bundled sq/surah_N.json. Mixed Quran/hadith texts preserve those exact Quran excerpts."
+    },
+    "referencePolicy": "Reference identifiers and reported grading notes follow the bundled base content; this work does not independently authenticate narrations."
+  },
+  "morning_ayat_kursi": {
+    "title": "Ajeti i Kursiut",
+    "translation": "Perëndia është – s’ka tjetër zot përveç Tij, (i cili) jeton përgjithmonë dhe zotëron (mbi të gjitha krijesat)! Atë nuk e kaplon as kotja as gjumi! Të Atij janë të gjitha ato që gjenden në qiej dhe në Tokë. Kush mund të angazhohet për ndokend pa lejën e Tij? Ai di çdo gjë që ka ndodhë përpara dhe çdo gjë që do të ndodhë në të ardhmen. Por, njerëzit, nuk dinë asgjë nga dijenia e Tij, përveç asaj që Ai ka dashur t’ua tregojë. Froni (Madhëria) e Tij përfshin qiejt dhe Tokën dhe Atij nuk i vie rëndë t’i ruajë ato. Ai është shumë i Lartë, i Madhëruar!",
+    "reference": "Kurani 2:255 · Përkthimi i pjesës kuranore: Hasan Efendi Nahi",
+    "virtue": "Kush e lexon në mëngjes mbrohet nga xhinët deri në mbrëmje."
+  },
+  "morning_ikhlas": {
+    "title": "Surja El-Ihlas",
+    "translation": "Me emër të Allahut, Mëshirues dhe Përdëllimtar i Madh.\n\nThuaj: “Perëndia është Një!\nPerëndisë i drejtohen për çdo gjë!\n(Ai) nuk ka lindur prej ndokujt, as nuk ka lindur kë,\ndhe askush nuk i gjason Atij!”",
+    "reference": "Suneni i Ebu Davudit 5082, Tirmidhiu 3575 · Përkthimi i pjesës kuranore: Hasan Efendi Nahi",
+    "virtue": "Kush i lexon tri herë në mëngjes dhe në mbrëmje, ato do t’i mjaftojnë kundër çdo gjëje."
+  },
+  "morning_falaq": {
+    "title": "Surja El-Felek",
+    "translation": "Me emër të Allahut, Mëshirues dhe Përdëllimtar i Madh.\n\nThuaj: “I lutem dhe mbështetem te Zoti i agimit\nqë të më mbrojë nga sherri i të gjitha krijesave,\ndhe prej sherrit të natës kur kaplon terri,\ndhe prej sherrit të falltorëve që fryejnë në nyje (bëjnë magji),\ndhe nga sherri i ziliqarit kur e shfaq zilinë!”",
+    "reference": "Suneni i Ebu Davudit 5082, Tirmidhiu 3575 · Përkthimi i pjesës kuranore: Hasan Efendi Nahi",
+    "virtue": "Kush i lexon tri herë në mëngjes dhe në mbrëmje, ato do t’i mjaftojnë kundër çdo gjëje."
+  },
+  "morning_nas": {
+    "title": "Surja En-Nas",
+    "translation": "Me emër të Allahut, Mëshirues dhe Përdëllimtar i Madh.\n\nThuaj: “I lutem dhe i mbështetem Zotit të njerëzve,\nSundimtarit të njerëzve,\nPerëndisë së njerëzve,\nnga sherri i djallit, bezdisës,\ni cili fshehurazi hedh dyshime në shpirtërat e njerëzve –\nprej xhindëve dhe prej njerëzve!”",
+    "reference": "Suneni i Ebu Davudit 5082, Tirmidhiu 3575 · Përkthimi i pjesës kuranore: Hasan Efendi Nahi",
+    "virtue": "Kush i lexon tri herë në mëngjes dhe në mbrëmje, ato do t’i mjaftojnë kundër çdo gjëje."
+  },
+  "morning_radeetu": {
+    "title": "Jam i kënaqur me Allahun si Zot",
+    "translation": "Jam i kënaqur me Allahun si Zotin tim, me Islamin si fenë time dhe me Muhamedin ﷺ si Profetin tim.",
+    "reference": "Suneni i Ebu Davudit 5072, Tirmidhiu 3389",
+    "virtue": "Allahu e ka marrë përsipër ta kënaqë atë që e thotë tri herë në mëngjes dhe në mbrëmje."
+  },
+  "morning_bismillah_la_yadurr": {
+    "title": "Me emrin e Allahut, me të cilin asgjë nuk dëmton",
+    "translation": "Me emrin e Allahut, me emrin e të Cilit asgjë në tokë e as në qiell nuk mund të bëjë dëm. Ai dëgjon dhe di gjithçka.",
+    "reference": "Suneni i Ebu Davudit 5088, Tirmidhiu 3388",
+    "virtue": "Atë që e thotë tri herë nuk do ta godasë papritur ndonjë fatkeqësi."
+  },
+  "morning_subhanallah_adada": {
+    "title": "Lavdërimi i Allahut sa numri i krijesave të Tij",
+    "translation": "I Lartësuar është Allahu dhe Atij i takon lavdërimi, sa numri i krijesave të Tij, aq sa është kënaqësia e Tij, sa pesha e Fronit të Tij dhe sa boja e fjalëve të Tij.",
+    "reference": "Sahihu i Muslimit 2726",
+    "virtue": "Këto fjalë peshojnë më shumë se gjithë dhikri i thënë që nga mëngjesi."
+  },
+  "morning_ushhiduka": {
+    "title": "Marrja e Allahut për dëshmitar (katër herë)",
+    "translation": "O Allah, e arrita këtë mëngjes duke të marrë Ty për dëshmitar, si dhe bartësit e Fronit Tënd, engjëjt e Tu dhe të gjitha krijesat e Tua, se Ti je Allahu. Nuk ka të adhuruar me të drejtë përveç Teje, të Vetëm e pa ortak, dhe se Muhamedi është robi dhe i Dërguari Yt.",
+    "reference": "Suneni i Ebu Davudit 5069",
+    "virtue": "Kush e thotë katër herë në mëngjes ose në mbrëmje, Allahu e liron nga Zjarri."
+  },
+  "morning_asbahna": {
+    "title": "E arritëm mëngjesin",
+    "translation": "E arritëm mëngjesin dhe i gjithë sundimi i përket Allahut. Të gjitha lavdërimet i takojnë Allahut. Nuk ka të adhuruar me të drejtë përveç Allahut, të Vetëm e pa ortak. Atij i përket sundimi dhe lavdërimi, dhe Ai është i Plotfuqishëm për çdo gjë.",
+    "reference": "Sahihu i Muslimit 2723"
+  },
+  "morning_bika_asbahna": {
+    "title": "Me Ty e arrijmë mëngjesin",
+    "translation": "O Allah, me Ty e arrijmë mëngjesin dhe me Ty e arrijmë mbrëmjen. Me Ty jetojmë dhe me Ty vdesim, dhe tek Ti është ringjallja.",
+    "reference": "Suneni i Tirmidhiut 3391"
+  },
+  "morning_fitrah": {
+    "title": "Në natyrshmërinë e Islamit",
+    "translation": "E arritëm këtë mëngjes në natyrshmërinë e Islamit, në fjalën e përkushtimit të sinqertë (dëshminë e besimit), në fenë e Profetit tonë Muhamed ﷺ dhe në besimin e atit tonë Ibrahim, i cili ishte i drejtë, musliman dhe nuk ishte prej atyre që i bëjnë ortak Allahut.",
+    "reference": "Musnedi i Ahmedit 15367"
+  },
+  "morning_ya_hayyu": {
+    "title": "O i Përjetshëm, o Mbajtës i gjithçkaje",
+    "translation": "O i Përjetshëm, o Mbajtës i gjithçkaje, me mëshirën Tënde kërkoj ndihmë. M’i rregullo të gjitha çështjet dhe mos më lër t’i mbështetem vetes as sa hap e mbyll sytë.",
+    "reference": "Nesaiu, 'Amal al-Yawm wa al-Laylah 575 (vlerësuar hasen)"
+  },
+  "morning_hasbiyallah": {
+    "title": "Allahu më mjafton",
+    "translation": "“Më mjafton mua Perëndia, s’ka zot tjetër përveç Tij. Unë mbështetem tek Ai, dhe Ai është Zot i gjithësisë madhështore (Arshit të Madh)!”",
+    "reference": "Suneni i Ebu Davudit 5081 · Përkthimi i pjesës kuranore: Hasan Efendi Nahi",
+    "virtue": "Kush e thotë shtatë herë në mëngjes dhe në mbrëmje, Allahu i mjafton për të gjitha shqetësimet e tij."
+  },
+  "morning_ma_asbaha_nimah": {
+    "title": "Mirënjohja për mirësitë e Allahut",
+    "translation": "O Allah, çdo mirësi që më ka ardhur mua ose ndonjë krijese Tënde këtë mëngjes, vjen vetëm prej Teje, pa asnjë ortak. Prandaj Ty të takon i gjithë lavdërimi dhe i gjithë falënderimi.",
+    "reference": "Suneni i Ebu Davudit 5073",
+    "virtue": "Kush e thotë, e ka përmbushur falënderimin që i takon asaj dite."
+  },
+  "morning_salah_nabi": {
+    "title": "Salavate mbi Profetin ﷺ (dhjetë herë)",
+    "translation": "O Allah, dërgo bekimet dhe paqen Tënde mbi Profetin tonë Muhamed.",
+    "reference": "Taberaniu, al-Mu'jam al-Awsat (vlerësuar hasen)",
+    "virtue": "Kush dërgon salavate mbi Profetin ﷺ dhjetë herë në mëngjes dhe dhjetë në mbrëmje, do të fitojë ndërmjetësimin e tij Ditën e Ringjalljes."
+  },
+  "morning_sayyidul_istighfar": {
+    "title": "Lutja më e lartë për kërkimin e faljes",
+    "translation": "O Allah, Ti je Zoti im. Nuk ka të adhuruar me të drejtë përveç Teje. Ti më krijove dhe unë jam robi Yt. I përmbahem besëlidhjes dhe premtimit që të kam dhënë sa të mundem. Kërkoj mbrojtjen Tënde nga e keqja që kam bërë. I pranoj mirësitë e Tua ndaj meje dhe e pranoj gjynahun tim. Prandaj më fal, sepse askush përveç Teje nuk i fal gjynahet.",
+    "reference": "Sahihu i Buhariut 6306",
+    "virtue": "Kush e thotë ditën me bindje dhe vdes atë ditë, do të jetë prej banorëve të Xhenetit."
+  },
+  "morning_afiyah": {
+    "title": "Kërkimi i mirëqenies",
+    "translation": "O Allah, më jep shëndet në trupin tim. O Allah, më jep shëndet në dëgjimin tim. O Allah, më jep shëndet në shikimin tim. Nuk ka të adhuruar me të drejtë përveç Teje. O Allah, kërkoj mbrojtjen Tënde nga mosbesimi dhe varfëria, dhe kërkoj mbrojtjen Tënde nga dënimi i varrit. Nuk ka të adhuruar me të drejtë përveç Teje.",
+    "reference": "Suneni i Ebu Davudit 5090"
+  },
+  "morning_afwa_afiyah": {
+    "title": "Kërkimi i faljes dhe i sigurisë nga Allahu",
+    "translation": "O Allah, të kërkoj falje dhe mirëqenie në këtë jetë dhe në tjetrën. O Allah, të kërkoj falje dhe mirëqenie në fenë time, në çështjet e mia të kësaj bote, në familjen dhe pasurinë time. O Allah, m’i mbulo të metat dhe m’i qetëso frikërat. O Allah, më ruaj përpara dhe prapa, djathtas dhe majtas, dhe nga lart. Me madhështinë Tënde kërkoj mbrojtje që të mos më përpijë toka papritur nga poshtë.",
+    "reference": "Suneni i Ebu Davudit 5074, Ibn Maxhe 3871"
+  },
+  "morning_alimal_ghayb": {
+    "title": "Njohësi i së fshehtës",
+    "translation": "O Allah, Njohës i së fshehtës dhe i së dukshmes, Krijues i qiejve dhe i tokës, Zot dhe Sundues i çdo gjëje! Dëshmoj se nuk ka të adhuruar me të drejtë përveç Teje. Kërkoj mbrojtjen Tënde nga e keqja e vetes sime, nga e keqja e shejtanit dhe nxitja e tij për të të bërë ortak, dhe që të mos i shkaktoj të keqe vetes apo ndonjë muslimani.",
+    "reference": "Suneni i Ebu Davudit 5067, Tirmidhiu 3392"
+  },
+  "morning_tahlil_100": {
+    "title": "Pohimi i njëshmërisë së Allahut (100 herë)",
+    "translation": "Nuk ka të adhuruar me të drejtë përveç Allahut, të Vetëm e pa ortak. Atij i përket sundimi dhe lavdërimi, dhe Ai është i Plotfuqishëm për çdo gjë.",
+    "reference": "Sahihu i Buhariut 3293, Muslimi 2691",
+    "virtue": "Kush e thotë njëqind herë në ditë, merr shpërblimin e lirimit të dhjetë robërve, i shkruhen njëqind vepra të mira, i fshihen njëqind gjynahe dhe mbrohet nga shejtani atë ditë."
+  },
+  "morning_subhanallah_bihamdihi": {
+    "title": "Lavdërimi i Allahut (100 herë)",
+    "translation": "I Lartësuar është Allahu dhe Atij i takon i gjithë lavdërimi.",
+    "reference": "Sahihu i Muslimit 2692",
+    "virtue": "Kush e thotë 100 herë në ditë, i falen gjynahet edhe nëse janë sa shkuma e detit."
+  },
+  "evening_ayat_kursi": {
+    "title": "Ajeti i Kursiut",
+    "translation": "Perëndia është – s’ka tjetër zot përveç Tij, (i cili) jeton përgjithmonë dhe zotëron (mbi të gjitha krijesat)! Atë nuk e kaplon as kotja as gjumi! Të Atij janë të gjitha ato që gjenden në qiej dhe në Tokë. Kush mund të angazhohet për ndokend pa lejën e Tij? Ai di çdo gjë që ka ndodhë përpara dhe çdo gjë që do të ndodhë në të ardhmen. Por, njerëzit, nuk dinë asgjë nga dijenia e Tij, përveç asaj që Ai ka dashur t’ua tregojë. Froni (Madhëria) e Tij përfshin qiejt dhe Tokën dhe Atij nuk i vie rëndë t’i ruajë ato. Ai është shumë i Lartë, i Madhëruar!",
+    "reference": "Kurani 2:255 · Përkthimi i pjesës kuranore: Hasan Efendi Nahi",
+    "virtue": "Kush e lexon në mbrëmje mbrohet nga xhinët deri në mëngjes."
+  },
+  "evening_ikhlas": {
+    "title": "Surja El-Ihlas",
+    "translation": "Me emër të Allahut, Mëshirues dhe Përdëllimtar i Madh.\n\nThuaj: “Perëndia është Një!\nPerëndisë i drejtohen për çdo gjë!\n(Ai) nuk ka lindur prej ndokujt, as nuk ka lindur kë,\ndhe askush nuk i gjason Atij!”",
+    "reference": "Suneni i Ebu Davudit 5082, Tirmidhiu 3575 · Përkthimi i pjesës kuranore: Hasan Efendi Nahi",
+    "virtue": "Kush i lexon tri herë në mëngjes dhe në mbrëmje, ato do t’i mjaftojnë kundër çdo gjëje."
+  },
+  "evening_falaq": {
+    "title": "Surja El-Felek",
+    "translation": "Me emër të Allahut, Mëshirues dhe Përdëllimtar i Madh.\n\nThuaj: “I lutem dhe mbështetem te Zoti i agimit\nqë të më mbrojë nga sherri i të gjitha krijesave,\ndhe prej sherrit të natës kur kaplon terri,\ndhe prej sherrit të falltorëve që fryejnë në nyje (bëjnë magji),\ndhe nga sherri i ziliqarit kur e shfaq zilinë!”",
+    "reference": "Suneni i Ebu Davudit 5082, Tirmidhiu 3575 · Përkthimi i pjesës kuranore: Hasan Efendi Nahi",
+    "virtue": "Kush i lexon tri herë në mëngjes dhe në mbrëmje, ato do t’i mjaftojnë kundër çdo gjëje."
+  },
+  "evening_nas": {
+    "title": "Surja En-Nas",
+    "translation": "Me emër të Allahut, Mëshirues dhe Përdëllimtar i Madh.\n\nThuaj: “I lutem dhe i mbështetem Zotit të njerëzve,\nSundimtarit të njerëzve,\nPerëndisë së njerëzve,\nnga sherri i djallit, bezdisës,\ni cili fshehurazi hedh dyshime në shpirtërat e njerëzve –\nprej xhindëve dhe prej njerëzve!”",
+    "reference": "Suneni i Ebu Davudit 5082, Tirmidhiu 3575 · Përkthimi i pjesës kuranore: Hasan Efendi Nahi",
+    "virtue": "Kush i lexon tri herë në mëngjes dhe në mbrëmje, ato do t’i mjaftojnë kundër çdo gjëje."
+  },
+  "evening_audhu_kalimat": {
+    "title": "Mbrojtja me fjalët e përsosura të Allahut",
+    "translation": "Kërkoj mbrojtje me fjalët e përsosura të Allahut nga e keqja e gjithçkaje që Ai ka krijuar.",
+    "reference": "Sahihu i Muslimit 2709",
+    "virtue": "Atij që e thotë tri herë në mbrëmje nuk do t’i ndodhë asnjë dëm atë natë."
+  },
+  "evening_radeetu": {
+    "title": "Jam i kënaqur me Allahun si Zot",
+    "translation": "Jam i kënaqur me Allahun si Zotin tim, me Islamin si fenë time dhe me Muhamedin ﷺ si Profetin tim.",
+    "reference": "Suneni i Ebu Davudit 5072, Tirmidhiu 3389",
+    "virtue": "Allahu e ka marrë përsipër ta kënaqë atë që e thotë tri herë në mëngjes dhe në mbrëmje."
+  },
+  "evening_bismillah_la_yadurr": {
+    "title": "Me emrin e Allahut, me të cilin asgjë nuk dëmton",
+    "translation": "Me emrin e Allahut, me emrin e të Cilit asgjë në tokë e as në qiell nuk mund të bëjë dëm. Ai dëgjon dhe di gjithçka.",
+    "reference": "Suneni i Ebu Davudit 5088, Tirmidhiu 3388",
+    "virtue": "Atë që e thotë tri herë nuk do ta godasë papritur ndonjë fatkeqësi."
+  },
+  "evening_amsayna": {
+    "title": "E arritëm mbrëmjen",
+    "translation": "E arritëm mbrëmjen dhe i gjithë sundimi i përket Allahut. Të gjitha lavdërimet i takojnë Allahut. Nuk ka të adhuruar me të drejtë përveç Allahut, të Vetëm e pa ortak. Atij i përket sundimi dhe lavdërimi, dhe Ai është i Plotfuqishëm për çdo gjë.",
+    "reference": "Sahihu i Muslimit 2723"
+  },
+  "evening_ushhiduka": {
+    "title": "Marrja e Allahut për dëshmitar (katër herë)",
+    "translation": "O Allah, e arrita këtë mbrëmje duke të marrë Ty për dëshmitar, si dhe bartësit e Fronit Tënd, engjëjt e Tu dhe të gjitha krijesat e Tua, se Ti je Allahu. Nuk ka të adhuruar me të drejtë përveç Teje, të Vetëm e pa ortak, dhe se Muhamedi është robi dhe i Dërguari Yt.",
+    "reference": "Suneni i Ebu Davudit 5069",
+    "virtue": "Kush e thotë katër herë në mëngjes ose në mbrëmje, Allahu e liron nga Zjarri."
+  },
+  "evening_bika_amsayna": {
+    "title": "Me Ty e arrijmë mbrëmjen",
+    "translation": "O Allah, me Ty e arrijmë mbrëmjen dhe me Ty e arrijmë mëngjesin. Me Ty jetojmë dhe me Ty vdesim, dhe tek Ti është kthimi përfundimtar.",
+    "reference": "Suneni i Tirmidhiut 3391"
+  },
+  "evening_fitrah": {
+    "title": "Në natyrshmërinë e Islamit",
+    "translation": "E arritëm këtë mbrëmje në natyrshmërinë e Islamit, në fjalën e përkushtimit të sinqertë (dëshminë e besimit), në fenë e Profetit tonë Muhamed ﷺ dhe në besimin e atit tonë Ibrahim, i cili ishte i drejtë, musliman dhe nuk ishte prej atyre që i bëjnë ortak Allahut.",
+    "reference": "Musnedi i Ahmedit 15367"
+  },
+  "evening_ya_hayyu": {
+    "title": "O i Përjetshëm, o Mbajtës i gjithçkaje",
+    "translation": "O i Përjetshëm, o Mbajtës i gjithçkaje, me mëshirën Tënde kërkoj ndihmë. M’i rregullo të gjitha çështjet dhe mos më lër t’i mbështetem vetes as sa hap e mbyll sytë.",
+    "reference": "Nesaiu, 'Amal al-Yawm wa al-Laylah 575 (vlerësuar hasen)"
+  },
+  "evening_hasbiyallah": {
+    "title": "Allahu më mjafton",
+    "translation": "“Më mjafton mua Perëndia, s’ka zot tjetër përveç Tij. Unë mbështetem tek Ai, dhe Ai është Zot i gjithësisë madhështore (Arshit të Madh)!”",
+    "reference": "Suneni i Ebu Davudit 5081 · Përkthimi i pjesës kuranore: Hasan Efendi Nahi",
+    "virtue": "Kush e thotë shtatë herë në mëngjes dhe në mbrëmje, Allahu i mjafton për të gjitha shqetësimet e tij."
+  },
+  "evening_ma_amsa_nimah": {
+    "title": "Mirënjohja për mirësitë e Allahut",
+    "translation": "O Allah, çdo mirësi që më ka ardhur mua ose ndonjë krijese Tënde këtë mbrëmje, vjen vetëm prej Teje, pa asnjë ortak. Prandaj Ty të takon i gjithë lavdërimi dhe i gjithë falënderimi.",
+    "reference": "Suneni i Ebu Davudit 5073"
+  },
+  "evening_salah_nabi": {
+    "title": "Salavate mbi Profetin ﷺ (dhjetë herë)",
+    "translation": "O Allah, dërgo bekimet dhe paqen Tënde mbi Profetin tonë Muhamed.",
+    "reference": "Taberaniu, al-Mu'jam al-Awsat (vlerësuar hasen)",
+    "virtue": "Kush dërgon salavate mbi Profetin ﷺ dhjetë herë në mëngjes dhe dhjetë në mbrëmje, do të fitojë ndërmjetësimin e tij Ditën e Ringjalljes."
+  },
+  "evening_sayyidul_istighfar": {
+    "title": "Lutja më e lartë për kërkimin e faljes",
+    "translation": "O Allah, Ti je Zoti im. Nuk ka të adhuruar me të drejtë përveç Teje. Ti më krijove dhe unë jam robi Yt. I përmbahem besëlidhjes dhe premtimit që të kam dhënë sa të mundem. Kërkoj mbrojtjen Tënde nga e keqja që kam bërë. I pranoj mirësitë e Tua ndaj meje dhe e pranoj gjynahun tim. Prandaj më fal, sepse askush përveç Teje nuk i fal gjynahet.",
+    "reference": "Sahihu i Buhariut 6306",
+    "virtue": "Kush e thotë natën me bindje dhe vdes atë natë, do të jetë prej banorëve të Xhenetit."
+  },
+  "evening_afiyah": {
+    "title": "Kërkimi i mirëqenies",
+    "translation": "O Allah, më jep shëndet në trupin tim. O Allah, më jep shëndet në dëgjimin tim. O Allah, më jep shëndet në shikimin tim. Nuk ka të adhuruar me të drejtë përveç Teje. O Allah, kërkoj mbrojtjen Tënde nga mosbesimi dhe varfëria, dhe kërkoj mbrojtjen Tënde nga dënimi i varrit. Nuk ka të adhuruar me të drejtë përveç Teje.",
+    "reference": "Suneni i Ebu Davudit 5090"
+  },
+  "evening_afwa_afiyah": {
+    "title": "Kërkimi i faljes dhe i sigurisë nga Allahu",
+    "translation": "O Allah, të kërkoj falje dhe mirëqenie në këtë jetë dhe në tjetrën. O Allah, të kërkoj falje dhe mirëqenie në fenë time, në çështjet e mia të kësaj bote, në familjen dhe pasurinë time. O Allah, m’i mbulo të metat dhe m’i qetëso frikërat. O Allah, më ruaj përpara dhe prapa, djathtas dhe majtas, dhe nga lart. Me madhështinë Tënde kërkoj mbrojtje që të mos më përpijë toka papritur nga poshtë.",
+    "reference": "Suneni i Ebu Davudit 5074, Ibn Maxhe 3871"
+  },
+  "evening_alimal_ghayb": {
+    "title": "Njohësi i së fshehtës",
+    "translation": "O Allah, Njohës i së fshehtës dhe i së dukshmes, Krijues i qiejve dhe i tokës, Zot dhe Sundues i çdo gjëje! Dëshmoj se nuk ka të adhuruar me të drejtë përveç Teje. Kërkoj mbrojtjen Tënde nga e keqja e vetes sime, nga e keqja e shejtanit dhe nxitja e tij për të të bërë ortak, dhe që të mos i shkaktoj të keqe vetes apo ndonjë muslimani.",
+    "reference": "Suneni i Ebu Davudit 5067, Tirmidhiu 3392"
+  },
+  "evening_subhanallah_bihamdihi": {
+    "title": "Lavdërimi i Allahut (100 herë)",
+    "translation": "I Lartësuar është Allahu dhe Atij i takon i gjithë lavdërimi.",
+    "reference": "Sahihu i Muslimit 2692",
+    "virtue": "Kush e thotë 100 herë, i falen gjynahet edhe nëse janë sa shkuma e detit."
+  },
+  "salah_istighfar_salam": {
+    "title": "Kërkimi i faljes dhe i paqes",
+    "translation": "I kërkoj falje Allahut (tri herë). O Allah, Ti je Paqja dhe prej Teje vjen paqja. I bekuar je Ti, o Zotërues i madhështisë dhe i nderimit.",
+    "reference": "Sahihu i Muslimit 591"
+  },
+  "salah_tahlil": {
+    "title": "Pohimi i njëshmërisë së Allahut",
+    "translation": "Nuk ka të adhuruar me të drejtë përveç Allahut, të Vetëm e pa ortak. Atij i përket sundimi dhe lavdërimi, dhe Ai është i Plotfuqishëm për çdo gjë. O Allah, askush nuk mund ta ndalë atë që Ti jep dhe askush nuk mund ta japë atë që Ti ndal. As pasuria dhe as pozita nuk i bëjnë dobi askujt kundrejt Teje, sepse prej Teje vjen çdo pasuri dhe pozitë.",
+    "reference": "Sahihu i Buhariut 844, Muslimi 593"
+  },
+  "salah_la_ilaha_wahdahu": {
+    "title": "Përkushtimi i sinqertë pas sabahut dhe akshamit",
+    "translation": "Nuk ka të adhuruar me të drejtë përveç Allahut, të Vetëm e pa ortak. Atij i përket sundimi dhe lavdërimi. Ai jep jetë dhe shkakton vdekjen, dhe Ai është i Plotfuqishëm për çdo gjë. Nuk ka forcë e as fuqi përveçse me Allahun. Nuk ka të adhuruar me të drejtë përveç Allahut dhe vetëm Atë e adhurojmë. Atij i përket mirësia, dhuntia dhe lavdërimi më i mirë. Nuk ka të adhuruar me të drejtë përveç Allahut. Vetëm Atij ia kushtojmë adhurimin me sinqeritet, edhe nëse mosbesimtarët e urrejnë këtë.",
+    "reference": "Sahihu i Muslimit 594"
+  },
+  "salah_subhanallah": {
+    "title": "I Lartësuar është Allahu",
+    "translation": "I Lartësuar është Allahu.",
+    "reference": "Sahihu i Muslimit 597"
+  },
+  "salah_alhamdulillah": {
+    "title": "Të gjitha lavdërimet i takojnë Allahut",
+    "translation": "Të gjitha lavdërimet i takojnë Allahut.",
+    "reference": "Sahihu i Muslimit 597"
+  },
+  "salah_allahu_akbar": {
+    "title": "Allahu është më i Madhi",
+    "translation": "Allahu është më i Madhi.",
+    "reference": "Sahihu i Muslimit 597",
+    "virtue": "Plotësimi i njëqind përsëritjeve me tehlilin shlyen gjynahet, edhe nëse janë sa shkuma e detit."
+  },
+  "salah_tasbih_tahlil_final": {
+    "title": "Plotësimi i njëqind përsëritjeve pas namazit",
+    "translation": "Nuk ka të adhuruar me të drejtë përveç Allahut, të Vetëm e pa ortak. Atij i përket sundimi dhe lavdërimi, dhe Ai është i Plotfuqishëm për çdo gjë.",
+    "reference": "Sahihu i Muslimit 597a",
+    "instruction": "Pas 33 herë Subhanallah, 33 herë Elhamdulilah dhe 33 herë Allahu ekber, thuaje këtë një herë për të plotësuar njëqind përsëritje."
+  },
+  "salah_ayat_kursi": {
+    "title": "Ajeti i Kursiut",
+    "translation": "Perëndia është – s’ka tjetër zot përveç Tij, (i cili) jeton përgjithmonë dhe zotëron (mbi të gjitha krijesat)! Atë nuk e kaplon as kotja as gjumi! Të Atij janë të gjitha ato që gjenden në qiej dhe në Tokë. Kush mund të angazhohet për ndokend pa lejën e Tij? Ai di çdo gjë që ka ndodhë përpara dhe çdo gjë që do të ndodhë në të ardhmen. Por, njerëzit, nuk dinë asgjë nga dijenia e Tij, përveç asaj që Ai ka dashur t’ua tregojë. Froni (Madhëria) e Tij përfshin qiejt dhe Tokën dhe Atij nuk i vie rëndë t’i ruajë ato. Ai është shumë i Lartë, i Madhëruar!",
+    "reference": "Kurani 2:255; Nesaiu (lexohet pas çdo namazi) · Përkthimi i pjesës kuranore: Hasan Efendi Nahi",
+    "virtue": "Atë që e lexon pas çdo namazi të detyrueshëm, vetëm vdekja e ndan nga hyrja në Xhenet."
+  },
+  "salah_ilman_nafian": {
+    "title": "Dija e dobishme pas sabahut",
+    "translation": "O Allah, të kërkoj dije të dobishme, furnizim të mirë dhe vepra të pranuara.",
+    "reference": "Suneni i Ibn Maxhes 925",
+    "virtue": "Profeti ﷺ e thoshte pas selamit të namazit të sabahut."
+  },
+  "salah_ikhlas": {
+    "title": "Surja El-Ihlas",
+    "translation": "Me emër të Allahut, Mëshirues dhe Përdëllimtar i Madh.\n\nThuaj: “Perëndia është Një!\nPerëndisë i drejtohen për çdo gjë!\n(Ai) nuk ka lindur prej ndokujt, as nuk ka lindur kë,\ndhe askush nuk i gjason Atij!”",
+    "reference": "Suneni i Ebu Davudit 1523, Nesaiu (vlerësuar hasen) · Përkthimi i pjesës kuranore: Hasan Efendi Nahi"
+  },
+  "salah_falaq": {
+    "title": "Surja El-Felek",
+    "translation": "Me emër të Allahut, Mëshirues dhe Përdëllimtar i Madh.\n\nThuaj: “I lutem dhe mbështetem te Zoti i agimit\nqë të më mbrojë nga sherri i të gjitha krijesave,\ndhe prej sherrit të natës kur kaplon terri,\ndhe prej sherrit të falltorëve që fryejnë në nyje (bëjnë magji),\ndhe nga sherri i ziliqarit kur e shfaq zilinë!”",
+    "reference": "Suneni i Ebu Davudit 1523, Nesaiu (vlerësuar hasen) · Përkthimi i pjesës kuranore: Hasan Efendi Nahi"
+  },
+  "salah_nas": {
+    "title": "Surja En-Nas",
+    "translation": "Me emër të Allahut, Mëshirues dhe Përdëllimtar i Madh.\n\nThuaj: “I lutem dhe i mbështetem Zotit të njerëzve,\nSundimtarit të njerëzve,\nPerëndisë së njerëzve,\nnga sherri i djallit, bezdisës,\ni cili fshehurazi hedh dyshime në shpirtërat e njerëzve –\nprej xhindëve dhe prej njerëzve!”",
+    "reference": "Suneni i Ebu Davudit 1523, Nesaiu (vlerësuar hasen) · Përkthimi i pjesës kuranore: Hasan Efendi Nahi"
+  },
+  "sleep_ayat_kursi": {
+    "title": "Ajeti i Kursiut para gjumit",
+    "translation": "Perëndia është – s’ka tjetër zot përveç Tij, (i cili) jeton përgjithmonë dhe zotëron (mbi të gjitha krijesat)! Atë nuk e kaplon as kotja as gjumi! Të Atij janë të gjitha ato që gjenden në qiej dhe në Tokë. Kush mund të angazhohet për ndokend pa lejën e Tij? Ai di çdo gjë që ka ndodhë përpara dhe çdo gjë që do të ndodhë në të ardhmen. Por, njerëzit, nuk dinë asgjë nga dijenia e Tij, përveç asaj që Ai ka dashur t’ua tregojë. Froni (Madhëria) e Tij përfshin qiejt dhe Tokën dhe Atij nuk i vie rëndë t’i ruajë ato. Ai është shumë i Lartë, i Madhëruar!",
+    "reference": "Sahihu i Buhariut 2311 · Përkthimi i pjesës kuranore: Hasan Efendi Nahi",
+    "virtue": "Kush e lexon kur shkon në shtrat, ka një ruajtës nga Allahu dhe asnjë shejtan nuk i afrohet deri në mëngjes."
+  },
+  "sleep_bismika": {
+    "title": "Me emrin Tënd vdes dhe jetoj",
+    "translation": "Me emrin Tënd, o Allah, vdes dhe jetoj.",
+    "reference": "Sahihu i Buhariut 6324"
+  },
+  "sleep_qini": {
+    "title": "Më mbro nga dënimi Yt",
+    "translation": "O Allah, më mbro nga dënimi Yt ditën kur do t’i ringjallësh robërit e Tu.",
+    "reference": "Suneni i Ebu Davudit 5045"
+  },
+  "sleep_tasbih_fatima": {
+    "title": "Tesbihu para gjumit (tesbihu i Fatimes)",
+    "translation": "I Lartësuar është Allahu (33 herë). Të gjitha lavdërimet i takojnë Allahut (33 herë). Allahu është më i Madhi (34 herë).",
+    "reference": "Sahihu i Buhariut 3705, Muslimi 2727",
+    "virtue": "Profeti ﷺ ia mësoi këtë Fatimes në vend të një shërbëtori; për të ishte më mirë se një shërbëtor."
+  },
+  "sleep_ikhlas": {
+    "title": "Surja El-Ihlas",
+    "translation": "Me emër të Allahut, Mëshirues dhe Përdëllimtar i Madh.\n\nThuaj: “Perëndia është Një!\nPerëndisë i drejtohen për çdo gjë!\n(Ai) nuk ka lindur prej ndokujt, as nuk ka lindur kë,\ndhe askush nuk i gjason Atij!”",
+    "reference": "Sahihu i Buhariut 5017 · Përkthimi i pjesës kuranore: Hasan Efendi Nahi",
+    "virtue": "Profeti ﷺ e bënte këtë çdo natë para gjumit.",
+    "instruction": "Para gjumit, bashkoji duart, fryj lehtë në pëllëmbë dhe lexo suret El-Ihlas, El-Felek dhe En-Nas. Fërko me duar sa më shumë nga trupi, duke filluar nga koka, fytyra dhe pjesa e përparme e trupit. Përsërite të gjithë rendin e fryrjes, leximit dhe fërkimit tri herë."
+  },
+  "sleep_falaq": {
+    "title": "Surja El-Felek",
+    "translation": "Me emër të Allahut, Mëshirues dhe Përdëllimtar i Madh.\n\nThuaj: “I lutem dhe mbështetem te Zoti i agimit\nqë të më mbrojë nga sherri i të gjitha krijesave,\ndhe prej sherrit të natës kur kaplon terri,\ndhe prej sherrit të falltorëve që fryejnë në nyje (bëjnë magji),\ndhe nga sherri i ziliqarit kur e shfaq zilinë!”",
+    "reference": "Sahihu i Buhariut 5017 · Përkthimi i pjesës kuranore: Hasan Efendi Nahi",
+    "virtue": "Profeti ﷺ e bënte këtë çdo natë para gjumit.",
+    "instruction": "Para gjumit, bashkoji duart, fryj lehtë në pëllëmbë dhe lexo suret El-Ihlas, El-Felek dhe En-Nas. Fërko me duar sa më shumë nga trupi, duke filluar nga koka, fytyra dhe pjesa e përparme e trupit. Përsërite të gjithë rendin e fryrjes, leximit dhe fërkimit tri herë."
+  },
+  "sleep_nas": {
+    "title": "Surja En-Nas",
+    "translation": "Me emër të Allahut, Mëshirues dhe Përdëllimtar i Madh.\n\nThuaj: “I lutem dhe i mbështetem Zotit të njerëzve,\nSundimtarit të njerëzve,\nPerëndisë së njerëzve,\nnga sherri i djallit, bezdisës,\ni cili fshehurazi hedh dyshime në shpirtërat e njerëzve –\nprej xhindëve dhe prej njerëzve!”",
+    "reference": "Sahihu i Buhariut 5017 · Përkthimi i pjesës kuranore: Hasan Efendi Nahi",
+    "virtue": "Profeti ﷺ e bënte këtë çdo natë para gjumit.",
+    "instruction": "Para gjumit, bashkoji duart, fryj lehtë në pëllëmbë dhe lexo suret El-Ihlas, El-Felek dhe En-Nas. Fërko me duar sa më shumë nga trupi, duke filluar nga koka, fytyra dhe pjesa e përparme e trupit. Përsërite të gjithë rendin e fryrjes, leximit dhe fërkimit tri herë."
+  },
+  "sleep_night_fear": {
+    "title": "Kur trembesh ose frikësohesh natën",
+    "translation": "Kërkoj mbrojtje me fjalët e përsosura të Allahut nga zemërimi dhe dënimi i Tij, nga e keqja e robërve të Tij, nga ngacmimet e shejtanëve dhe nga prania e tyre.",
+    "reference": "Suneni i Ebu Davudit 3893, Tirmidhiu 3528 (vlerësuar hasen)",
+    "virtue": "Lexohet për një fëmijë ose për veten kur trembesh ose frikësohesh natën."
+  },
+  "sleep_aslamtu": {
+    "title": "Ty të dorëzohem",
+    "translation": "O Allah, Ty të dorëzohem, Ty t’i besoj çështjet e mia, drejt Teje e kthej fytyrën dhe tek Ti mbështetem, duke shpresuar tek Ti dhe duke të pasur frikë. Nuk ka strehë e as shpëtim prej Teje përveçse tek Ti. Besoj në Librin që Ti ke shpallur dhe në Profetin që Ti ke dërguar.",
+    "reference": "Sahihu i Buhariut 247",
+    "virtue": "Kush e thotë dhe vdes atë natë, vdes në natyrshmërinë e pastër të besimit (fitre)."
+  },
+  "waking_alhamdulillah_ahyana": {
+    "title": "Lavdërimi i Allahut që na dha jetë",
+    "translation": "Të gjitha lavdërimet i takojnë Allahut që na dha jetë pasi na e kishte marrë, dhe tek Ai është ringjallja.",
+    "reference": "Sahihu i Buhariut 6312; Sahihu i Buhariut 183",
+    "instruction": "Kur zgjohesh, largoji me dorë gjurmët e gjumit nga fytyra, siç bënte Profeti (Sahihu i Buhariut 183). Ky është veprim, jo fjalë për t’u lexuar."
+  },
+  "waking_afani": {
+    "title": "Lavdërimi i Allahut që ma ktheu shpirtin",
+    "translation": "Të gjitha lavdërimet i takojnë Allahut që ma ktheu shëndetin, ma ktheu shpirtin dhe më lejoi ta përmend Atë.",
+    "reference": "Suneni i Tirmidhiut 3401"
+  },
+  "waking_imran_190_200": {
+    "title": "Ajetet e fundit të sures Ali Imran (3:190–200)",
+    "translation": "(190) Me të vërtetë, në krijimin e qiejve dhe të Tokës dhe në ndërrimin e natës e të ditës (dukjen dhe zgjatjen e tyre), ka argumente për mendarët,\n\n(191) për ata që e përmendin Perëndinë duke qëndruar në këmbë, dhe ndenjur, shtrirë; dhe që mendojnë në krijimin e qiejve dhe të Tokës. (Dhe thonë): “O Zoti ynë! Nuk i ke krijuar kot këto”, - falenderojmë Ty – dhe ruana nga ndëshkimi i zjarrit.\n\n(192) O Zoti ynë! Cilindo që Ti e hedhë në zjarr, Ti e ke poshtëruar atë. E, për mohuesit nuk ka kurrfarë ndihmëtari.\n\n(193) O Zoti ynë! Na dëgjuam grishtarin që na grishte në besim: “Besoni Zotin tuaj!” E, besuam. O Zoti ynë! Falna mëkatet tona dhe shkarkona nga gabimet, e pas vdekjes na radhit me të mirët.\n\n(194) o Zoti ynë! Epna shpërblimin që na ke premtuar me anën e pejgamberëve Tu dhe mos na poshtëro në Ditën e Kijametit! Se, Ti, me të vërtetë, nuk shmangesh nga premtimi i dhënë.\n\n(195) Dhe Zoti iu përgjegj lutjes së tyre: “Unë, nuk ia humbi mundin asnjë punëtori nga ju, qoftë mashkull apo femër, - ju jeni të gjithë (të barabartë në shpërblim). Atyre që emigruan, dhe u dëbuan nga vatrat e tyre, dhe u munduan në rrugën Time, dhe luftuan e u vranë, Unë me siguri, do t’ua mbuloj veprat e këqija (me falje) dhe do t’i shpie në kopshtije, nëpër të cilat rrjedhin lumenj, - shpërblim nga Perëndia. E, shpërblimi më i mirë është te Perëndia.\n\n(196) Le të mos mashtrojë ty qarkullimi i mohuesve qytet në qytet.\n\n(197) Kjo kënaqësi është ë shkurtër; pastaj, strehimi i tyre është skëterra. E sa shtrat i keq është ai vend!\n\n(198) Por, për ata që i druajnë Perëndisë, për ata ka kopshtije, nëpër të cilat rrjedhin lumenj, në të cilat (kopshtije) do të banojnë përherë, - duke qenë këto dhurata të përgatitura prej Perëndisë, e për besimtarët e vërtetë më e mira dhuratë është ajo që është prej Perëndisë.\n\n(199) Në mesin e ithtarëve të Librit, me siguri ka të atillë që besojnë Perëndinë dhe ate që u është shpallur juve dhe ate që u është shpallur atyre, janë të përulur Perëndisë, nuk i këmbejnë versetet e Perëndisë me ndonjë vlerë të pakët; ata kanë shpërblimin e tyre te Zoti i tyre. Se, Perëndia, me të vërtetë, është llogaritar i shpejtë!\n\n(200) O besimtarë! – bëhuni të durueshëm dhe të qëndrueshëm (në durim), bëhuni të vendosur (në kufi të armikut), dhe kinie frikë Perëndinë, për ta arritur shpëtimin e dëshiruar.",
+    "reference": "Kurani 3:190–200; Sahihu i Buhariut 183, 4569; Sahihu i Muslimit 763b · Përkthimi i pjesës kuranore: Hasan Efendi Nahi",
+    "instruction": "Kur zgjohesh gjatë natës, lexo këto ajete përmbyllëse të sures Ali Imran (3:190–200)."
+  },
+  "daily_before_eating": {
+    "title": "Para ushqimit",
+    "translation": "Me emrin e Allahut. Nëse harron në fillim, thuaj: Bismilahi evvelehu ve ahirahu — Me emrin e Allahut në fillim dhe në fund të tij.",
+    "reference": "Suneni i Ebu Davudit 3767"
+  },
+  "daily_after_eating": {
+    "title": "Pas ushqimit",
+    "translation": "Të gjitha lavdërimet i takojnë Allahut që më ushqeu me këtë dhe ma dhuroi, pa ndonjë fuqi apo mundësi nga ana ime.",
+    "reference": "Suneni i Ebu Davudit 4023, Tirmidhiu 3458",
+    "virtue": "Kush e thotë pas ushqimit, i falen gjynahet e kaluara."
+  },
+  "daily_leaving_home": {
+    "title": "Dalja nga shtëpia",
+    "translation": "Me emrin e Allahut. Tek Allahu mbështetem. Nuk ka forcë e as fuqi përveçse me Allahun.",
+    "reference": "Suneni i Ebu Davudit 5095, Tirmidhiu 3426",
+    "virtue": "Atij i thuhet: Je i udhëzuar, i mbrojtur dhe i ruajtur; shejtani largohet prej tij."
+  },
+  "daily_leaving_home_protection": {
+    "title": "Mbrojtja kur del nga shtëpia",
+    "translation": "O Allah, kërkoj mbrojtjen Tënde që të mos devijoj e as të më devijojnë, të mos rrëshqas e as të më bëjnë të rrëshqas, të mos i bëj padrejtësi dikujt e as të më bëhet padrejtësi, dhe të mos sillem me padituri e as të sillen ndaj meje me padituri.",
+    "reference": "Suneni i Ebu Davudit 5094"
+  },
+  "daily_entering_bathroom": {
+    "title": "Hyrja në nevojtore",
+    "translation": "O Allah, kërkoj mbrojtjen Tënde nga shejtanët meshkuj dhe femra.",
+    "reference": "Sahihu i Buhariut 142, Muslimi 375"
+  },
+  "daily_leaving_bathroom": {
+    "title": "Dalja nga nevojtorja",
+    "translation": "Të kërkoj falje.",
+    "reference": "Suneni i Ebu Davudit 30, Tirmidhiu 7"
+  },
+  "daily_entering_home": {
+    "title": "Hyrja në shtëpi",
+    "translation": "O Allah, të kërkoj të mirën e hyrjes dhe të mirën e daljes. Me emrin e Allahut hyjmë dhe me emrin e Allahut dalim. Tek Allahu, Zoti ynë, mbështetemi.",
+    "reference": "Suneni i Ebu Davudit 5096; Sahihu i Muslimit 2018; Kurani 24:61",
+    "instruction": "Përmende Allahun kur hyn dhe përshëndeti familjarët me selam. Këto praktika vërtetohen më vete në Muslim 2018 dhe Kuran 24:61. Vlerësimi i kësaj lutjeje të transmetuar është i diskutueshëm: Ibn Bazi e vlerësoi hasen, ndërsa Albani të dobët."
+  },
+  "daily_wearing_clothes": {
+    "title": "Veshja e një rrobe",
+    "translation": "Lavdërimi i takon Allahut që më veshi me këtë rrobë dhe ma dhuroi, pa ndonjë fuqi apo mundësi nga ana ime.",
+    "reference": "Suneni i Ebu Davudit 4023 (vlerësuar hasen); Sahihu i Muslimit 2097",
+    "virtue": "Kush e thotë kur vesh një rrobë, i falen gjynahet e kaluara.",
+    "instruction": "Kjo lutje thuhet kur vesh një rrobë, qoftë të re apo të përdorur. Kur vesh këpucët, fillo me këmbën e djathtë; kur i heq, fillo me të majtën. Udhëzimi për këpucët është veprim, jo fjalë për t’u lexuar."
+  },
+  "daily_wearing_new_clothes": {
+    "title": "Veshja e rrobave të reja",
+    "translation": "O Allah, Ty të takon lavdërimi. Ti më veshe me këtë. Të kërkoj të mirën e saj dhe të mirën për të cilën është bërë. Kërkoj mbrojtjen Tënde nga e keqja e saj dhe nga e keqja për të cilën është bërë.",
+    "reference": "Suneni i Ebu Davudit 4020, Tirmidhiu 1767 (vlerësuar hasen)",
+    "instruction": "Kur vesh këpucët, fillo me këmbën e djathtë; kur i heq, fillo me të majtën (Sahihu i Muslimit 2097)."
+  },
+  "daily_marketplace": {
+    "title": "Hyrja në treg",
+    "translation": "Nuk ka të adhuruar me të drejtë përveç Allahut, të Vetëm e pa ortak. Atij i përket sundimi dhe lavdërimi. Ai jep jetë dhe shkakton vdekjen. Ai është i Përjetshmi që nuk vdes. Në dorën e Tij është çdo e mirë, dhe Ai është i Plotfuqishëm për çdo gjë.",
+    "reference": "Suneni i Tirmidhiut 3428 (vlerësuar hasen)",
+    "virtue": "Kush e thotë në treg, Allahu i shkruan një milion vepra të mira, i fshin një milion vepra të këqija dhe i ndërton një shtëpi në Xhenet."
+  },
+  "daily_anger": {
+    "title": "Kur zemërohesh",
+    "translation": "Kërkoj mbrojtje tek Allahu nga shejtani i mallkuar.",
+    "reference": "Sahihu i Buhariut 6115, Muslimi 2610",
+    "virtue": "Profeti ﷺ ka thënë se zemërimi vjen nga shejtani. Ai që zemërohet të ulet nëse është në këmbë, ose të shtrihet nëse është ulur."
+  },
+  "daily_jazakallah_khayr": {
+    "title": "Falënderimi i atij që të ka bërë mirë",
+    "translation": "Allahu të shpërbleftë me të mira.",
+    "reference": "Suneni i Tirmidhiut 2035 (vlerësuar hasen)",
+    "virtue": "Atij që i thuhet kjo, i është bërë falënderimi më i plotë."
+  },
+  "daily_seeing_afflicted": {
+    "title": "Kur sheh dikë të sprovuar",
+    "translation": "Të gjitha lavdërimet i takojnë Allahut që më ka ruajtur nga ajo me të cilën të ka sprovuar ty dhe më ka dhënë epërsi të madhe ndaj shumë prej krijesave të Tij.",
+    "reference": "Suneni i Tirmidhiut 3431 (vlerësuar hasen)",
+    "virtue": "Thuhet me zë të ulët, pa e dëgjuar personi i sprovuar. Kush e thotë nuk do të goditet nga ajo sprovë."
+  },
+  "forgiveness_astaghfirullah_azim": {
+    "title": "Kërkimi i faljes që shlyen gjynahet",
+    "translation": "I kërkoj falje Allahut të Madhërishëm, përveç të Cilit nuk ka të adhuruar me të drejtë, të Përjetshmit, Mbajtësit të gjithçkaje, dhe pendohem tek Ai.",
+    "reference": "Suneni i Ebu Davudit 1517, Tirmidhiu 3577",
+    "virtue": "Kush e thotë, falet edhe nëse ka ikur nga fusha e betejës."
+  },
+  "forgiveness_rabbi_ghfirli": {
+    "title": "O Zoti im, më fal",
+    "translation": "O Zoti im, më fal dhe ma prano pendimin. Ti je Ai që e pranon shumë pendimin, Mëshirëploti.",
+    "reference": "Suneni i Ebu Davudit 1516, Tirmidhiu 3434"
+  },
+  "forgiveness_yunus": {
+    "title": "Lutja e Junusit",
+    "translation": "S’ka zot tjetër përveç Teje! Ti je i lavdëruar! Me të vërtetë, unë kam gabuar (ndaj vetes)!",
+    "reference": "Kurani 21:87; Tirmidhiu 3505 · Përkthimi i pjesës kuranore: Hasan Efendi Nahi",
+    "virtue": "Nuk ka musliman që lutet me këtë për diçka dhe Allahu të mos i përgjigjet."
+  },
+  "forgiveness_rabbana_zalamna": {
+    "title": "Lutja e Ademit",
+    "translation": "“O Zoti ynë! Na vetes i kemi bërë dëm; e nëse Ti nuk na falë dhe nuk na mëshiron, na do të jemi nga ata që janë të humbur”.",
+    "reference": "Kurani 7:23 · Përkthimi i pjesës kuranore: Hasan Efendi Nahi",
+    "virtue": "Lutja e Ademit dhe Havasë pas gabimit të tyre."
+  },
+  "forgiveness_rabbana_la_tuakhidhna": {
+    "title": "Falja për harresën dhe gabimin",
+    "translation": "Zoti ynë, mos na ndëshko për atë që harrojmë ose veprojmë pa qëllim ashtu si i pate ndëshkuar ata para nesh! Zoti ynë! Mos na ngarko me atë që nuk mund ta bartim! Shlyena mëkatet tona, falna ato dhe mëshirona! Ti je Zoti ynë! Andaj, ndihmona kundër atyre që nuk besojnë.",
+    "reference": "Kurani 2:286 · Përkthimi i pjesës kuranore: Hasan Efendi Nahi"
+  },
+  "forgiveness_rabbanaghfirlana": {
+    "title": "O Zoti ynë, ne kemi besuar",
+    "translation": "“Zoti ynë! Me të vërtetë na kemi besuar, andaj na fal mëkatet tona dhe na ruaj nga dënimi i zjarrit!”",
+    "reference": "Kurani 3:16 · Përkthimi i pjesës kuranore: Hasan Efendi Nahi"
+  },
+  "distress_hamm_hazan": {
+    "title": "Mbrojtja nga brenga dhe pikëllimi",
+    "translation": "O Allah, kërkoj mbrojtjen Tënde nga brenga dhe pikëllimi, nga paaftësia dhe përtacia, nga koprracia dhe frika, nga rëndesa e borxhit dhe nga nënshtrimi prej njerëzve.",
+    "reference": "Sahihu i Buhariut 6369"
+  },
+  "distress_karb": {
+    "title": "Lutja në vështirësi",
+    "translation": "Nuk ka të adhuruar me të drejtë përveç Allahut, të Madhërishmit, të Butit. Nuk ka të adhuruar me të drejtë përveç Allahut, Zotit të Fronit të Madh. Nuk ka të adhuruar me të drejtë përveç Allahut, Zotit të qiejve, Zotit të tokës dhe Zotit të Fronit Fisnik.",
+    "reference": "Sahihu i Buhariut 6346, Muslimi 2730"
+  },
+  "distress_rahmataka_arju": {
+    "title": "Te mëshira Jote e vendos shpresën",
+    "translation": "O Allah, te mëshira Jote e vendos shpresën. Mos më lër t’i mbështetem vetes as sa hap e mbyll sytë. M’i rregullo të gjitha çështjet. Nuk ka të adhuruar me të drejtë përveç Teje.",
+    "reference": "Suneni i Ebu Davudit 5090"
+  },
+  "distress_hasbunallah": {
+    "title": "Allahu na mjafton",
+    "translation": "“Neve na mjafton Perëndia, dhe Ai është mbrojtës i mrekullueshëm!”",
+    "reference": "Kurani 3:173; Sahihu i Buhariut 4563 · Përkthimi i pjesës kuranore: Hasan Efendi Nahi",
+    "virtue": "Fjalët e Ibrahimit kur u hodh në zjarr, si dhe të Profetit ﷺ dhe të besimtarëve."
+  },
+  "distress_musibah": {
+    "title": "Në fatkeqësi ose humbje",
+    "translation": "“Të Zotit jemi dhe vetëm tek Ai do të kthehemi!” O Allah, më shpërble për fatkeqësinë time dhe ma zëvendëso atë me diçka më të mirë.",
+    "reference": "Sahihu i Muslimit 918 · Përkthimi i pjesës kuranore: Hasan Efendi Nahi",
+    "virtue": "Kush e thotë kur e godet një fatkeqësi, Allahu e shpërblen për të dhe ia zëvendëson humbjen me diçka më të mirë."
+  },
+  "distress_debt": {
+    "title": "Për lehtësim nga borxhi",
+    "translation": "O Allah, më mjafto me atë që ke lejuar, që të mos kem nevojë për atë që ke ndaluar. Me mirësinë Tënde më bëj të pavarur nga çdokush përveç Teje.",
+    "reference": "Suneni i Tirmidhiut 3563 (vlerësuar hasen)"
+  },
+  "distress_against_oppressor": {
+    "title": "Përballë një shtypësi ose armiku të frikshëm",
+    "translation": "O Allah, Ty të vëmë përballë tyre dhe kërkojmë mbrojtjen Tënde nga të këqijat e tyre.",
+    "reference": "Suneni i Ebu Davudit 1537",
+    "virtue": "Profeti ﷺ e thoshte përballë një armiku nga i cili kishte frikë."
+  },
+  "travel_setting_off": {
+    "title": "Nisja për udhëtim",
+    "translation": "Allahu është më i Madhi (tri herë). “Qoftë lavdëruar Ai që i nënshtroi këto për ne, se, na këto, vetë nuk do të mund t’i arrinim – dhe ne, me siguri, do të kthehemi te Zoti ynë!” O Allah, në këtë udhëtim të kërkojmë mirësi, devotshmëri dhe vepra që të kënaqin Ty. O Allah, na e lehtëso këtë udhëtim dhe na e shkurto largësinë e tij. O Allah, Ti je shoqëruesi ynë në udhëtim dhe kujdestari i familjes sonë. O Allah, kërkoj mbrojtjen Tënde nga vështirësitë e udhëtimit, nga pamjet pikëlluese dhe nga kthimi i keq në pasuri dhe në familje.",
+    "reference": "Sahihu i Muslimit 1342 · Përkthimi i pjesës kuranore: Hasan Efendi Nahi"
+  },
+  "travel_stopping": {
+    "title": "Ndalimi në një vend",
+    "translation": "Kërkoj mbrojtje me fjalët e përsosura të Allahut nga e keqja e gjithçkaje që Ai ka krijuar.",
+    "reference": "Sahihu i Muslimit 2708",
+    "virtue": "Kush e thotë kur ndalon në një vend, asgjë nuk e dëmton deri sa të largohet prej tij."
+  },
+  "travel_returning": {
+    "title": "Kthimi nga udhëtimi",
+    "translation": "Allahu është më i Madhi (tri herë). “Qoftë lavdëruar Ai që i nënshtroi këto për ne, se, na këto, vetë nuk do të mund t’i arrinim – dhe ne, me siguri, do të kthehemi te Zoti ynë!” O Allah, në këtë udhëtim të kërkojmë mirësi, devotshmëri dhe vepra që të kënaqin Ty. O Allah, na e lehtëso këtë udhëtim dhe na e shkurto largësinë e tij. O Allah, Ti je shoqëruesi ynë në udhëtim dhe kujdestari i familjes sonë. O Allah, kërkoj mbrojtjen Tënde nga vështirësitë e udhëtimit, nga pamjet pikëlluese dhe nga kthimi i keq në pasuri dhe në familje. Kthehemi të penduar, duke adhuruar dhe duke lavdëruar Zotin tonë.",
+    "reference": "Sahihu i Muslimit 1342 · Përkthimi i pjesës kuranore: Hasan Efendi Nahi",
+    "instruction": "Në kthim, thuaj të njëjtën lutje si në nisje dhe shto në fund: Ajibune, taibune, abidune, li-Rabbina hamidun."
+  },
+  "travel_entering_town": {
+    "title": "Hyrja në një qytet ose fshat",
+    "translation": "O Allah, të kërkoj të mirën e tij, të mirën e banorëve të tij dhe të mirën që ndodhet në të. Kërkoj mbrojtjen Tënde nga e keqja e tij, e keqja e banorëve të tij dhe e keqja që ndodhet në të.",
+    "reference": "Ibn Hibban (vlerësuar sahih nga al-Albani)"
+  },
+  "travel_ascending_descending": {
+    "title": "Ngjitja dhe zbritja gjatë udhëtimit",
+    "translation": "Sahabët thoshin tekbirin (Allahu ekber) kur rruga ngjitej dhe tesbihun (Subhanallah) kur rruga zbriste.",
+    "reference": "Sahihu i Buhariut 2993"
+  },
+  "travel_astawdiuka": {
+    "title": "Përcjellja e udhëtarit",
+    "translation": "Allahut ia besoj fenë tënde, amanetin tënd dhe veprat e fundit të jetës sate.",
+    "reference": "Suneni i Ebu Davudit 2600; Jami at-Tirmidhiu 3443",
+    "virtue": "Profeti ﷺ ia thoshte atij që nisej për udhëtim."
+  },
+  "mosque_adhan_testimony": {
+    "title": "Dëshmia gjatë dëgjimit të ezanit",
+    "translation": "Edhe unë dëshmoj se nuk ka të adhuruar me të drejtë përveç Allahut, të Vetëm e pa ortak, dhe se Muhamedi është robi dhe i Dërguari i Tij. Jam i kënaqur me Allahun si Zotin tim, me Muhamedin si të Dërguar dhe me Islamin si fenë time.",
+    "reference": "Sahihu i Muslimit 386",
+    "virtue": "Thuhet kur dëgjohet muezini. Profeti ﷺ i ka premtuar faljen e gjynaheve atij që e thotë.",
+    "instruction": "Thuhet pasi muezini përfundon dy dëshmitë e besimit, para se të thotë «Hajje ales-salah»."
+  },
+  "mosque_adhan_response_hayya": {
+    "title": "Përgjigjja ndaj thirrjes për namaz",
+    "translation": "Nuk ka forcë e as fuqi përveçse me Allahun.",
+    "reference": "Sahihu i Muslimit 385",
+    "virtue": "Thuhet në vend të përsëritjes së muezinit te «Hajje ales-salah» dhe «Hajje alel-felah». Pjesa tjetër e ezanit përsëritet fjalë për fjalë."
+  },
+  "mosque_after_adhan_salawat": {
+    "title": "Salavatet mbi Profetin pas ezanit",
+    "translation": "O Allah, bekoje Muhamedin dhe familjen e Muhamedit, ashtu siç e bekove familjen e Ibrahimit. Ti je i Lavdëruar, i Madhërishëm. O Allah, jepi begati Muhamedit dhe familjes së Muhamedit, ashtu siç i dhe begati familjes së Ibrahimit. Ti je i Lavdëruar, i Madhërishëm.",
+    "reference": "Sahihu i Muslimit 384, 406",
+    "virtue": "Pasi t’i përgjigjesh muezinit, dërgo salavate mbi Profetin ﷺ para se t’i kërkosh Allahut Vesilen për të. Për një salavat Allahu jep dhjetë bekime. Kjo është një formë e vërtetuar; hadithi i ezanit nuk e kërkon posaçërisht këtë formulë."
+  },
+  "mosque_after_adhan": {
+    "title": "Pas ezanit",
+    "translation": "O Allah, Zot i kësaj thirrjeje të plotë dhe i namazit që do të falet, jepi Muhamedit Vesilen dhe pozitën e lartë, dhe ngrije në vendin e lavdëruar që ia ke premtuar.",
+    "reference": "Sahihu i Buhariut 614",
+    "virtue": "Kush e thotë pas ezanit, do ta meritojë ndërmjetësimin tim Ditën e Ringjalljes."
+  },
+  "mosque_entering": {
+    "title": "Hyrja në xhami",
+    "translation": "O Allah, m’i hap dyert e mëshirës Tënde.",
+    "reference": "Sahihu i Muslimit 713"
+  },
+  "mosque_leaving": {
+    "title": "Dalja nga xhamia",
+    "translation": "O Allah, të kërkoj nga mirësia Jote.",
+    "reference": "Sahihu i Muslimit 713"
+  },
+  "mosque_after_wudu": {
+    "title": "Pas abdesit",
+    "translation": "Dëshmoj se vetëm Allahu meriton të adhurohet, pa asnjë ortak, dhe se Muhamedi është robi dhe i Dërguari i Tij.",
+    "reference": "Sahihu i Muslimit 234a, 234b",
+    "virtue": "Atij që e kryen mirë abdesin dhe e thotë këtë, i hapen të tetë dyert e Xhenetit dhe mund të hyjë nga cilado prej tyre."
+  },
+  "mosque_going": {
+    "title": "Rrugës për në xhami",
+    "translation": "O Allah, vendos dritë në zemrën time, dritë në gjuhën time, dritë në dëgjimin tim, dritë në shikimin tim, dritë sipër meje, dritë poshtë meje, dritë djathtas meje, dritë majtas meje, dritë përpara meje, dritë prapa meje dhe më jep dritë.",
+    "reference": "Sahihu i Buhariut 6316, Muslimi 763",
+    "virtue": "Pjesë e lutjes së Profetit ﷺ kur dilte për në xhami natën."
+  }
+}

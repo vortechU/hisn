@@ -150,9 +150,6 @@ class AppTheme {
   /// interface face rather than a missing family.
   static const String serif = sans;
 
-  /// The interface face for an Urdu interface.
-  static const String urduUiFont = 'Noto Naskh Arabic';
-
   /// [palette] in light mode.
   ///
   /// [arabicFamily] is the bundled Arabic face to fall back to; [arabicUi] is

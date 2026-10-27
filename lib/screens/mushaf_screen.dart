@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart' show ValueListenable;
@@ -106,8 +107,7 @@ MushafPageLayout mushafPageLayoutFor(
   MushafPage page,
   double availW,
   double availH,
-) =>
-    _layoutFor(page, availW, availH);
+) => _layoutFor(page, availW, availH);
 
 _PageMetrics _metricsFor(MushafPage page) =>
     _metricsCache[page.page] ??= _measure(page);
@@ -121,17 +121,19 @@ _PageMetrics _measure(MushafPage page) {
   for (final line in page.lines) {
     if (_isSpecialLine(line)) continue;
     final tp = TextPainter(
-      text: TextSpan(children: [
-        for (final w in line.reversed)
-          TextSpan(
-            text: w.glyph,
-            style: TextStyle(
-              fontFamily: w.font ?? page.font,
-              fontSize: _refFontSize,
-              height: 1.0,
+      text: TextSpan(
+        children: [
+          for (final w in line.reversed)
+            TextSpan(
+              text: w.glyph,
+              style: TextStyle(
+                fontFamily: w.font ?? page.font,
+                fontSize: _refFontSize,
+                height: 1.0,
+              ),
             ),
-          ),
-      ]),
+        ],
+      ),
       textDirection: TextDirection.ltr,
       maxLines: 1,
     )..layout();
@@ -174,11 +176,7 @@ MushafPageLayout _layoutFor(MushafPage page, double availW, double availH) {
 /// The Madani Mushaf reader: a swipeable, page-by-page view rendered with the
 /// King Fahd Complex (QCF v4) page fonts — looks like the printed mushaf.
 class MushafScreen extends StatefulWidget {
-  const MushafScreen({
-    super.key,
-    required this.startPage,
-    this.highlightVerse,
-  });
+  const MushafScreen({super.key, required this.startPage, this.highlightVerse});
 
   final int startPage;
 
@@ -215,14 +213,18 @@ class _MushafScreenState extends State<MushafScreen>
   /// part-way through carries on from there rather than from zero.
   double _zoomAtPinchStart = 0;
 
+  Timer? _zoomHintTimer;
+  ScaffoldFeatureController<SnackBar, SnackBarClosedReason>? _zoomHint;
+
   /// The `surah:ayah` currently lit on the page, or null.
   ///
   /// Held here rather than inside the page so that arriving on a saved verse
   /// and tapping one are the same state, and so a page turn puts it out. Only
   /// the glyph block listens to it — the PageView never rebuilds for a
   /// selection.
-  late final ValueNotifier<String?> _selected =
-      ValueNotifier<String?>(widget.highlightVerse)..addListener(_endArrival);
+  late final ValueNotifier<String?> _selected = ValueNotifier<String?>(
+    widget.highlightVerse,
+  )..addListener(_endArrival);
 
   /// A few slow pulses through [MushafScreen.highlightVerse] on arrival, so
   /// the eye finds the verse at once on a page of fifteen dense lines. The
@@ -270,6 +272,12 @@ class _MushafScreenState extends State<MushafScreen>
       if (widget.highlightVerse != null && !Motion.reduced(context)) {
         _arrival.forward();
       }
+      if (!context.read<QuranService>().hasSeenZoomHint) {
+        _zoomHintTimer = Timer(
+          const Duration(milliseconds: 600),
+          _showZoomHint,
+        );
+      }
     });
   }
 
@@ -283,6 +291,8 @@ class _MushafScreenState extends State<MushafScreen>
 
   @override
   void dispose() {
+    _zoomHintTimer?.cancel();
+    _zoomHint?.close();
     WakelockPlus.disable();
     if (_immersive) _showSystemBars();
     _zoom.dispose();
@@ -317,8 +327,10 @@ class _MushafScreenState extends State<MushafScreen>
   /// is what lifts it; `edgeToEdge` then returns the app to drawing behind
   /// them, where it was before the reader was opened.
   void _showSystemBars() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-        overlays: SystemUiOverlay.values);
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: SystemUiOverlay.values,
+    );
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   }
 
@@ -331,6 +343,46 @@ class _MushafScreenState extends State<MushafScreen>
         ? (ratio - 1) / (_PinchDetector.outFactor - 1)
         : -(1 - ratio) / (1 - _PinchDetector.inFactor);
     _zoom.value = (_zoomAtPinchStart + travel).clamp(0.0, 1.0);
+    if ((_zoom.value - _zoomAtPinchStart).abs() > 0.05) _dismissZoomHint();
+  }
+
+  void _showZoomHint() {
+    if (!mounted ||
+        _zoom.value != 0 ||
+        ModalRoute.of(context)?.isCurrent != true) {
+      return;
+    }
+    final quran = context.read<QuranService>();
+    if (quran.hasSeenZoomHint) return;
+    quran.markZoomHintSeen();
+    final s = AppStrings.read(context);
+    final hint = ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(s.quranZoomHint),
+        duration: const Duration(seconds: 8),
+        showCloseIcon: true,
+      ),
+    );
+    _zoomHint = hint;
+    unawaited(hint.closed.then((_) {
+      if (identical(_zoomHint, hint)) _zoomHint = null;
+    }));
+  }
+
+  void _dismissZoomHint() {
+    _zoomHintTimer?.cancel();
+    _zoomHint?.close();
+    _zoomHint = null;
+    context.read<QuranService>().markZoomHintSeen();
+  }
+
+  void _zoomIn() {
+    _dismissZoomHint();
+    _zoom.animateTo(
+      1,
+      duration: Motion.of(context, const Duration(milliseconds: 240)),
+      curve: Curves.easeOutCubic,
+    );
   }
 
   /// Runs the zoom to the nearer end when the fingers leave, at a speed set by
@@ -341,7 +393,9 @@ class _MushafScreenState extends State<MushafScreen>
     if (remaining == 0) return;
     _zoom.animateTo(
       target,
-      duration: Duration(milliseconds: (240 * remaining).round().clamp(90, 240)),
+      duration: Duration(
+        milliseconds: (240 * remaining).round().clamp(90, 240),
+      ),
       curve: Curves.easeOutCubic,
     );
   }
@@ -437,19 +491,16 @@ class _MushafScreenState extends State<MushafScreen>
       elevation: 0,
       title: ValueListenableBuilder<int>(
         valueListenable: _currentPage,
-        builder: (context, page, _) => Text('${s.surahWord} '
-            '${repo.surahForPage(page).nameFor(s.rtl)}'),
+        builder: (context, page, _) => Text(
+          '${s.surahWord} '
+          '${repo.surahForPage(page).nameFor(s.lang.usesArabicScript)}',
+        ),
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.format_list_bulleted),
-          tooltip: s.versesOnThisPage,
-          onPressed: _openPageVerses,
-        ),
-        IconButton(
-          icon: const Icon(Icons.my_location),
-          tooltip: s.goToAyah,
-          onPressed: _openGoToAyah,
+          icon: const Icon(Icons.zoom_in),
+          tooltip: s.quranZoomIn,
+          onPressed: _zoomIn,
         ),
         // Rebuilds on page change (current page) and on bookmark toggles
         // only — never drags the PageView into a rebuild.
@@ -460,13 +511,36 @@ class _MushafScreenState extends State<MushafScreen>
               final bookmarked = quran.isBookmarked(page);
               return IconButton(
                 icon: Icon(
-                    bookmarked ? Icons.bookmark : Icons.bookmark_border,
-                    color: bookmarked ? inks.gold : inks.ink),
+                  bookmarked ? Icons.bookmark : Icons.bookmark_border,
+                  color: bookmarked ? inks.gold : inks.ink,
+                ),
                 tooltip: bookmarked ? s.removeBookmark : s.bookmark,
                 onPressed: () => quran.toggleBookmark(page),
               );
             },
           ),
+        ),
+        PopupMenuButton<VoidCallback>(
+          tooltip: s.quranReaderOptions,
+          onSelected: (action) => action(),
+          itemBuilder: (_) => [
+            PopupMenuItem(
+              value: _openPageVerses,
+              child: ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.format_list_bulleted),
+                title: Text(s.versesOnThisPage),
+              ),
+            ),
+            PopupMenuItem(
+              value: _openGoToAyah,
+              child: ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.my_location),
+                title: Text(s.goToAyah),
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -539,7 +613,9 @@ class _MushafScreenState extends State<MushafScreen>
                     opacity: 1 - t,
                     child: Transform.translate(
                       offset: Offset(
-                          0, -(_safeInsets.top + kToolbarHeight) * t),
+                        0,
+                        -(_safeInsets.top + kToolbarHeight) * t,
+                      ),
                       child: child,
                     ),
                   ),
@@ -561,9 +637,11 @@ class _MushafScreenState extends State<MushafScreen>
         canPop: _zoom.value == 0,
         onPopInvokedWithResult: (didPop, _) {
           if (!didPop) {
-            _zoom.animateTo(0,
-                duration: const Duration(milliseconds: 240),
-                curve: Curves.easeOutCubic);
+            _zoom.animateTo(
+              0,
+              duration: const Duration(milliseconds: 240),
+              curve: Curves.easeOutCubic,
+            );
           }
         },
         child: child!,
@@ -697,43 +775,44 @@ class _PageGeometry {
   double get bar => kToolbarHeight;
 
   Size get framedInner => Size(
-        math.max(1, page.width - _framedPadding.horizontal - 2 * _frameInsetX),
-        math.max(
-            1,
-            page.height -
-                bar -
-                _framedPadding.vertical -
-                _headHeight -
-                _headGap -
-                _folioHeight -
-                2 * _frameInsetY),
-      );
+    math.max(1, page.width - _framedPadding.horizontal - 2 * _frameInsetX),
+    math.max(
+      1,
+      page.height -
+          bar -
+          _framedPadding.vertical -
+          _headHeight -
+          _headGap -
+          _folioHeight -
+          2 * _frameInsetY,
+    ),
+  );
 
   /// Everything the block can have once the furniture is out of the way.
   Size get _free => Size(
-        page.width - _zoomedPadding.horizontal,
-        page.height - _zoomedPadding.vertical,
-      );
+    page.width - _zoomedPadding.horizontal,
+    page.height - _zoomedPadding.vertical,
+  );
 
   /// How much bigger the block gets, as one factor for both axes.
   double get scale => math.min(
-        _free.width / framedInner.width,
-        _free.height / framedInner.height,
-      );
+    _free.width / framedInner.width,
+    _free.height / framedInner.height,
+  );
 
   Size get zoomedInner => framedInner * scale;
 
   /// The block's centre when framed — inside the frame, under the bar and the
   /// running head, above the folio.
   Offset get framedCentre => Offset(
-        _framedPadding.left + _frameInsetX + framedInner.width / 2,
-        bar +
-            _framedPadding.top +
-            _headHeight +
-            _headGap +
-            _frameInsetY +
-            framedInner.height / 2,
-      );
+    _framedPadding.left + _frameInsetX + framedInner.width / 2,
+    bar +
+        _framedPadding.top +
+        _headHeight +
+        _headGap +
+        _frameInsetY +
+        framedInner.height / 2,
+  );
 
   /// And when zoomed: the middle of the page.
   Offset get zoomedCentre => page.center(Offset.zero);
@@ -826,8 +905,12 @@ class _MushafPageViewState extends State<_MushafPageView> {
     );
   }
 
-  Widget _buildPage(BuildContext context, QuranRepository repo,
-      MushafPage page, _MushafInk inks) {
+  Widget _buildPage(
+    BuildContext context,
+    QuranRepository repo,
+    MushafPage page,
+    _MushafInk inks,
+  ) {
     final surahName = page.surahs.isNotEmpty
         ? page.surahs.last.name
         : repo.surahForPage(widget.pageNumber).name;
@@ -904,8 +987,12 @@ class _MushafPageViewState extends State<_MushafPageView> {
   /// The running head, the double gold frame, and the folio — everything but
   /// the text. Laid out where it sits on the framed page and left there: it is
   /// gone long before the block has grown enough for its position to matter.
-  Widget _furniture(_PageGeometry g, MushafPage page, String surahName,
-      _MushafInk inks) {
+  Widget _furniture(
+    _PageGeometry g,
+    MushafPage page,
+    String surahName,
+    _MushafInk inks,
+  ) {
     return Padding(
       padding: EdgeInsets.only(top: g.bar),
       child: Padding(
@@ -923,7 +1010,10 @@ class _MushafPageViewState extends State<_MushafPageView> {
                 child: SizedBox(
                   width: g.page.width - _framedPadding.horizontal,
                   child: _RunningHead(
-                      surahName: surahName, juz: page.juz, inks: inks),
+                    surahName: surahName,
+                    juz: page.juz,
+                    inks: inks,
+                  ),
                 ),
               ),
             ),
@@ -934,15 +1024,17 @@ class _MushafPageViewState extends State<_MushafPageView> {
                 padding: const EdgeInsets.all(Ms.gutter + 2),
                 decoration: BoxDecoration(
                   border: Border.all(
-                      color: inks.gold.withValues(alpha: 0.75),
-                      width: Ms.stroke),
+                    color: inks.gold.withValues(alpha: 0.75),
+                    width: Ms.stroke,
+                  ),
                   borderRadius: BorderRadius.circular(Ms.rPanel),
                 ),
                 child: Container(
                   decoration: BoxDecoration(
                     border: Border.all(
-                        color: inks.gold.withValues(alpha: 0.4),
-                        width: Ms.hair),
+                      color: inks.gold.withValues(alpha: 0.4),
+                      width: Ms.hair,
+                    ),
                     borderRadius: BorderRadius.circular(Ms.rSmall),
                   ),
                 ),
@@ -1005,8 +1097,10 @@ class _PageVersesSheet extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(Ms.margin, 0, Ms.margin, 6),
               child: Align(
                 alignment: AlignmentDirectional.centerStart,
-                child: Text(s.versesOnThisPage,
-                    style: theme.textTheme.titleMedium),
+                child: Text(
+                  s.versesOnThisPage,
+                  style: theme.textTheme.titleMedium,
+                ),
               ),
             ),
             const RuleDivider(indent: Ms.margin),
@@ -1018,8 +1112,8 @@ class _PageVersesSheet extends StatelessWidget {
                     return Padding(
                       padding: const EdgeInsets.all(28),
                       child: Center(
-                          child:
-                              CircularProgressIndicator(color: ms.gilt)),
+                        child: CircularProgressIndicator(color: ms.gilt),
+                      ),
                     );
                   }
                   final verses = snap.data!;
@@ -1037,7 +1131,8 @@ class _PageVersesSheet extends StatelessWidget {
                       verse: verses[i],
                       // Several surahs can share a page, so each verse still
                       // names its own.
-                      showSurahName: verses.length > 1 &&
+                      showSurahName:
+                          verses.length > 1 &&
                           verses.first.surah.number != verses.last.surah.number,
                     ),
                   );
@@ -1132,7 +1227,11 @@ class _GoToAyahSheetState extends State<_GoToAyahSheet> {
 
     return Padding(
       padding: EdgeInsets.fromLTRB(
-          Ms.margin, 0, Ms.margin, 20 + MediaQuery.of(context).viewInsets.bottom),
+        Ms.margin,
+        0,
+        Ms.margin,
+        20 + MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1163,15 +1262,21 @@ class _GoToAyahSheetState extends State<_GoToAyahSheet> {
                       child: Row(
                         children: [
                           Expanded(
-                            child: Text('${su.number} · ${su.nameFor(s.rtl)}',
-                                overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.bodyLarge),
+                            child: Text(
+                              '${su.number} · ${su.nameFor(s.lang.usesArabicScript)}',
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodyLarge,
+                            ),
                           ),
                           // Already named in Arabic on the left in an Arabic
                           // interface — don't set it twice.
                           if (!s.ar)
-                            ArabicText(su.name,
-                                fontSize: 17, color: ms.rubric, height: 1.5),
+                            ArabicText(
+                              su.name,
+                              fontSize: 17,
+                              color: ms.rubric,
+                              height: 1.5,
+                            ),
                         ],
                       ),
                     ),
@@ -1209,7 +1314,9 @@ class _GoToAyahSheetState extends State<_GoToAyahSheet> {
                       width: 16,
                       height: 16,
                       child: CircularProgressIndicator(
-                          strokeWidth: 2, color: theme.colorScheme.onPrimary),
+                        strokeWidth: 2,
+                        color: theme.colorScheme.onPrimary,
+                      ),
                     )
                   : const Icon(Icons.arrow_forward, size: 18),
               label: Text(s.goAction),
@@ -1238,10 +1345,8 @@ class _FieldLabel extends StatelessWidget {
   final String text;
 
   @override
-  Widget build(BuildContext context) => Text(
-        text.toUpperCase(),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+  Widget build(BuildContext context) =>
+      Text(text.toUpperCase(), style: Theme.of(context).textTheme.labelSmall);
 }
 
 class _RunningHead extends StatelessWidget {
@@ -1264,10 +1369,9 @@ class _RunningHead extends StatelessWidget {
       children: [
         Text(
           s.juzLabel(juz).toUpperCase(),
-          style: Theme.of(context)
-              .textTheme
-              .labelSmall
-              ?.copyWith(color: inks.green),
+          style: Theme.of(
+            context,
+          ).textTheme.labelSmall?.copyWith(color: inks.green),
         ),
         ArabicText(surahName, fontSize: 18, color: inks.green, height: 1.5),
       ],
@@ -1328,7 +1432,11 @@ class _PageBody extends StatelessWidget {
     return inks.ink;
   }
 
-  List<InlineSpan> _spans(List<MushafWord> words, List<int> verses, double size) {
+  List<InlineSpan> _spans(
+    List<MushafWord> words,
+    List<int> verses,
+    double size,
+  ) {
     final wash = inks.gold.withValues(alpha: 0.16 + 0.34 * glow);
     return [
       // Reversed → correct right-to-left word order.
@@ -1351,8 +1459,13 @@ class _PageBody extends StatelessWidget {
   /// A tap has to land on the rosette (with a finger's worth of room around
   /// it); a hold counts anywhere on the verse, which is the way in for a reader
   /// who would rather not aim.
-  void _onTouch(Offset local, int lineIndex, MushafPageLayout layout,
-      double slot, {required bool rosetteOnly}) {
+  void _onTouch(
+    Offset local,
+    int lineIndex,
+    MushafPageLayout layout,
+    double slot, {
+    required bool rosetteOnly,
+  }) {
     final words = page.lines[lineIndex];
     final verses = _verseMapFor(page)[lineIndex];
     final word = rosetteOnly
@@ -1404,8 +1517,8 @@ class _PageBody extends StatelessWidget {
                                 ? EdgeInsets.symmetric(vertical: slot * 0.1)
                                 : EdgeInsets.zero,
                             padding: const EdgeInsets.symmetric(horizontal: 6),
-                            decoration: page.lines[li]
-                                    .any((word) => word.isHeader)
+                            decoration:
+                                page.lines[li].any((word) => word.isHeader)
                                 ? BoxDecoration(
                                     color: inks.green.withValues(alpha: 0.04),
                                     border: Border.all(
@@ -1422,8 +1535,12 @@ class _PageBody extends StatelessWidget {
                               fit: BoxFit.scaleDown,
                               child: Text.rich(
                                 TextSpan(
-                                    children: _spans(page.lines[li], verses[li],
-                                        layout.fontSize)),
+                                  children: _spans(
+                                    page.lines[li],
+                                    verses[li],
+                                    layout.fontSize,
+                                  ),
+                                ),
                                 // QCF glyphs form a fitted printed page. Keep
                                 // painting at the same scale as measurement
                                 // and verse hit testing; pinch zoom sizes it.
@@ -1435,16 +1552,28 @@ class _PageBody extends StatelessWidget {
                         : GestureDetector(
                             behavior: HitTestBehavior.opaque,
                             onTapUp: (d) => _onTouch(
-                                d.localPosition, li, layout, slot,
-                                rosetteOnly: true),
+                              d.localPosition,
+                              li,
+                              layout,
+                              slot,
+                              rosetteOnly: true,
+                            ),
                             onLongPressStart: (d) => _onTouch(
-                                d.localPosition, li, layout, slot,
-                                rosetteOnly: false),
+                              d.localPosition,
+                              li,
+                              layout,
+                              slot,
+                              rosetteOnly: false,
+                            ),
                             child: Center(
                               child: Text.rich(
                                 TextSpan(
-                                    children: _spans(page.lines[li], verses[li],
-                                        layout.fontSize)),
+                                  children: _spans(
+                                    page.lines[li],
+                                    verses[li],
+                                    layout.fontSize,
+                                  ),
+                                ),
                                 textScaler: TextScaler.noScaling,
                                 textDirection: TextDirection.ltr,
                                 textAlign: TextAlign.center,
@@ -1479,17 +1608,20 @@ Widget mushafPageBody({
   VoidCallback? onDismiss,
   Set<int> bookmarked = const {},
   int selected = -1,
-}) =>
-    _PageBody(
-      page: page,
-      inks: const _MushafInk(
-          Color(0xFFFFFFFF), Color(0xFF000000), Color(0xFFC9A227), Color(0xFF1F6F54)),
-      keys: keys,
-      selected: selected,
-      bookmarked: bookmarked,
-      onAyah: onAyah,
-      onDismiss: onDismiss ?? () {},
-    );
+}) => _PageBody(
+  page: page,
+  inks: const _MushafInk(
+    Color(0xFFFFFFFF),
+    Color(0xFF000000),
+    Color(0xFFC9A227),
+    Color(0xFF1F6F54),
+  ),
+  keys: keys,
+  selected: selected,
+  bookmarked: bookmarked,
+  onAyah: onAyah,
+  onDismiss: onDismiss ?? () {},
+);
 
 /// Which verse each word on a page belongs to, exposed for tests.
 @visibleForTesting
@@ -1527,26 +1659,31 @@ const double _rosetteTouch = 44;
 /// can be read back as a word. Colours don't affect metrics, so they are left
 /// off here.
 TextPainter _linePainter(
-        List<MushafWord> words, MushafPage page, double fontSize) =>
-    TextPainter(
-      text: TextSpan(children: [
-        for (final w in words.reversed)
-          TextSpan(
-            text: w.glyph,
-            style: TextStyle(
-              fontFamily: w.font ?? page.font,
-              fontSize: fontSize,
-              height: 1.0,
-            ),
+  List<MushafWord> words,
+  MushafPage page,
+  double fontSize,
+) => TextPainter(
+  text: TextSpan(
+    children: [
+      for (final w in words.reversed)
+        TextSpan(
+          text: w.glyph,
+          style: TextStyle(
+            fontFamily: w.font ?? page.font,
+            fontSize: fontSize,
+            height: 1.0,
           ),
-      ]),
-      textDirection: TextDirection.ltr,
-      maxLines: 1,
-    )..layout();
+        ),
+    ],
+  ),
+  textDirection: TextDirection.ltr,
+  maxLines: 1,
+)..layout();
 
 /// Where the line's text sits inside its slot. The paragraph does not wrap, so
 /// it is its own intrinsic width, centred in the block and in the slot.
-Offset _textOrigin(TextPainter painter, double lineWidth, double slot) => Offset(
+Offset _textOrigin(TextPainter painter, double lineWidth, double slot) =>
+    Offset(
       math.max(0, (lineWidth - painter.width) / 2),
       math.max(0, (slot - painter.height) / 2),
     );
@@ -1554,14 +1691,19 @@ Offset _textOrigin(TextPainter painter, double lineWidth, double slot) => Offset
 /// The box each word is drawn in, in reading order (index 0 is the rightmost
 /// word), relative to the line's slot.
 List<Rect> _wordBoxes(
-    List<MushafWord> words, MushafPage page, double fontSize, double lineWidth,
-    double slot) {
+  List<MushafWord> words,
+  MushafPage page,
+  double fontSize,
+  double lineWidth,
+  double slot,
+) {
   final painter = _linePainter(words, page, fontSize);
   final origin = _textOrigin(painter, lineWidth, slot);
   final boxes = List<Rect>.filled(words.length, Rect.zero);
   for (var display = 0; display < words.length; display++) {
     final found = painter.getBoxesForSelection(
-        TextSelection(baseOffset: display, extentOffset: display + 1));
+      TextSelection(baseOffset: display, extentOffset: display + 1),
+    );
     if (found.isEmpty) continue;
     // Spans are drawn reversed, so the display position counts back from the
     // last word.
@@ -1573,8 +1715,14 @@ List<Rect> _wordBoxes(
 
 /// The word a point falls on, in reading order, or null if it fell past the
 /// ends of the line.
-int? _wordAt(Offset local, List<MushafWord> words, MushafPage page,
-    double fontSize, double lineWidth, double slot) {
+int? _wordAt(
+  Offset local,
+  List<MushafWord> words,
+  MushafPage page,
+  double fontSize,
+  double lineWidth,
+  double slot,
+) {
   final boxes = _wordBoxes(words, page, fontSize, lineWidth, slot);
   for (var i = 0; i < boxes.length; i++) {
     if (local.dx >= boxes[i].left && local.dx < boxes[i].right) return i;
@@ -1585,8 +1733,14 @@ int? _wordAt(Offset local, List<MushafWord> words, MushafPage page,
 /// The rosette a point is on or near, or null. Each one is given at least
 /// [_rosetteTouch] to be hit by, and the nearest wins where two of them reach
 /// the same place.
-int? _rosetteAt(Offset local, List<MushafWord> words, MushafPage page,
-    double fontSize, double lineWidth, double slot) {
+int? _rosetteAt(
+  Offset local,
+  List<MushafWord> words,
+  MushafPage page,
+  double fontSize,
+  double lineWidth,
+  double slot,
+) {
   final boxes = _wordBoxes(words, page, fontSize, lineWidth, slot);
   int? best;
   var bestDistance = double.infinity;
@@ -1638,7 +1792,8 @@ class _PageText extends StatelessWidget {
     // before it, so every bookmark anywhere in the mushaf would rebuild every
     // page that is built. This changes only when this page's own marks do.
     final marks = context.select<QuranService, String>(
-        (q) => keys.where(q.isVerseBookmarked).join(','));
+      (q) => keys.where(q.isVerseBookmarked).join(','),
+    );
     final marked = marks.isEmpty ? const <String>[] : marks.split(',');
     final bookmarked = {
       for (var i = 0; i < keys.length; i++)
@@ -1650,22 +1805,23 @@ class _PageText extends StatelessWidget {
       builder: (context, key, _) {
         final index = key == null ? -1 : keys.indexOf(key);
         Widget body(double glow) => _PageBody(
-              page: page,
-              inks: inks,
-              keys: keys,
-              selected: index,
-              glow: glow,
-              bookmarked: bookmarked,
-              onAyah: onAyah,
-              onDismiss: onDismiss,
-            );
+          page: page,
+          inks: inks,
+          keys: keys,
+          selected: index,
+          glow: glow,
+          bookmarked: bookmarked,
+          onAyah: onAyah,
+          onDismiss: onDismiss,
+        );
         // Only the page holding the lit verse follows the pulse.
         if (index < 0) return body(0);
         return AnimatedBuilder(
           animation: arrival,
           // Three swells, from nothing and back to nothing.
-          builder: (context, _) =>
-              body(math.pow(math.sin(math.pi * 3 * arrival.value), 2).toDouble()),
+          builder: (context, _) => body(
+            math.pow(math.sin(math.pi * 3 * arrival.value), 2).toDouble(),
+          ),
         );
       },
     );

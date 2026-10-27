@@ -25,6 +25,7 @@ import 'adhan_scheduler.dart';
 import 'dua_progress_service.dart';
 import 'prayer_service.dart';
 import 'sunnah_calendar_service.dart';
+import 'reminder_renewal.dart';
 
 /// Schedules local notifications at prayer times.
 ///
@@ -32,13 +33,17 @@ import 'sunnah_calendar_service.dart';
 /// rolling window: every time the app launches or the prayer settings change we
 /// work out the next few days' reminders and, if that is not what the OS
 /// already holds, cancel everything and schedule them afresh. That stays
-/// accurate as long as the app is opened occasionally, with no background work
-/// required.
+/// accurate while Android's periodic renewal job replenishes the window even
+/// when the app is closed.
 ///
 /// All native calls are guarded for web (where the plugin is a no-op), so the
 /// settings UI still works in a browser preview.
 class NotificationService extends ChangeNotifier {
-  NotificationService(this._prefs, this._repository) {
+  NotificationService(
+    this._prefs,
+    this._repository, {
+    this.background = false,
+  }) {
     _masterEnabled = _prefs.getBool(_kMaster) ?? false;
     for (final prayer in notifiablePrayers) {
       _enabled[prayer] = _prefs.getBool(_keyFor(prayer)) ?? true;
@@ -49,6 +54,9 @@ class NotificationService extends ChangeNotifier {
 
   final SharedPreferences _prefs;
   final DuaRepository _repository;
+  final bool background;
+  bool _disposed = false;
+  bool? _renewalEnabled;
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
 
@@ -178,29 +186,25 @@ class NotificationService extends ChangeNotifier {
   /// Hijri offset) changes — keeps the scheduled window in sync (so e.g.
   /// finishing the morning adhkar cancels the rest of today's reminders, and
   /// nudging the Hijri date moves the fasting reminders with it), debounced
-  /// against bursts.
-  void bind(PrayerService prayer, AdhanAudioService adhan,
-      DuaProgressService progress, SunnahCalendarService calendar) {
+  /// against bursts. Language changes also rebind through LocaleController.
+  void bind(
+    PrayerService prayer,
+    AdhanAudioService adhan,
+    DuaProgressService progress,
+    SunnahCalendarService calendar, {
+    bool schedule = true,
+  }) {
     _prayer = prayer;
     _adhan = adhan;
     _progress = progress;
     _calendar = calendar;
     _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 400), reschedule);
-  }
-
-  AppLang get _lang {
-    switch (_prefs.getString(_kLanguage)) {
-      case 'ar':
-        return AppLang.ar;
-      case 'id':
-        return AppLang.id;
-      case 'ur':
-        return AppLang.ur;
-      default:
-        return AppLang.en;
+    if (schedule) {
+      _debounce = Timer(const Duration(milliseconds: 400), reschedule);
     }
   }
+
+  AppLang get _lang => AppLang.fromCode(_prefs.getString(_kLanguage));
 
   /// The notification details. Always a plain (no-custom-sound) channel so it
   /// displays reliably; when the adhan is on we use the silent channel so the
@@ -220,8 +224,10 @@ class NotificationService extends ChangeNotifier {
   /// Whether the OS will honour exact alarms (Android 12+ gates this behind a
   /// special permission). When false we fall back to inexact scheduling.
   Future<bool> _canScheduleExact() async {
-    final android = _plugin.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
+    final android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
     if (android == null) return true;
     return (await android.canScheduleExactNotifications()) ?? false;
   }
@@ -245,7 +251,8 @@ class NotificationService extends ChangeNotifier {
     try {
       await _plugin
           .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.requestExactAlarmsPermission();
     } catch (_) {}
     await checkExactAlarms();
@@ -253,6 +260,7 @@ class NotificationService extends ChangeNotifier {
 
   @override
   void dispose() {
+    _disposed = true;
     _debounce?.cancel();
     super.dispose();
   }
@@ -327,22 +335,32 @@ class NotificationService extends ChangeNotifier {
     return run;
   }
 
-  Future<void> _queue = Future<void>.value();
+  // Shared across provider generations: a restore must not let an old service
+  // cancel alarms that its replacement just scheduled.
+  static Future<void> _queue = Future<void>.value();
 
   /// The plan last handed to the OS in full, or null if none has been since
   /// launch.
   ReminderPlan? _applied;
 
   Future<void> _reschedule() async {
-    if (kIsWeb) return;
+    if (kIsWeb || _disposed) return;
     if (_prayer == null) return;
+    final renewalEnabled = _anythingOn;
+    if (_renewalEnabled != renewalEnabled) {
+      await ReminderRenewal.configure(renewalEnabled);
+      if (_disposed) return;
+      _renewalEnabled = renewalEnabled;
+    }
     if (!hasReminderWork) return;
 
     await _ensureInitialized();
+    if (_disposed) return;
     final now = DateTime.now();
     // Use exact alarms when allowed; otherwise fall back so scheduling never
     // throws and notifications still arrive (just less precisely).
     final exact = _anythingOn && await _canScheduleExact();
+    if (_disposed) return;
     final plan = planAt(now, exact: exact);
 
     // Nearly every call asks for what the OS already holds: [bind] fires on
@@ -360,9 +378,11 @@ class NotificationService extends ChangeNotifier {
     // and with it the native countdown notification (PrayerCountdown), which
     // shares the app's notifications — every launch would wipe it.
     await _plugin.cancelAllPendingNotifications();
+    if (_disposed) return;
 
     var complete = true;
     for (final reminder in plan.reminders) {
+      if (_disposed) return;
       try {
         await _plugin.zonedSchedule(
           reminder.id,
@@ -385,6 +405,7 @@ class NotificationService extends ChangeNotifier {
 
     // The adhan audio plays via a native foreground service (decoupled from
     // the notification, which some OEMs drop when it carries a custom sound).
+    if (_disposed) return;
     if (plan.adhanOn) {
       await AdhanScheduler.schedule([
         for (final reminder in plan.reminders)
@@ -395,8 +416,13 @@ class NotificationService extends ChangeNotifier {
     }
 
     await _prefs.setBool(
-        _kOutstanding, plan.reminders.isNotEmpty || plan.adhanOn);
+      _kOutstanding,
+      plan.reminders.isNotEmpty || plan.adhanOn,
+    );
     _applied = complete ? plan : null;
+    if (background && !complete) {
+      throw StateError('Some reminders could not be scheduled');
+    }
   }
 
   /// Everything the OS should be holding at [now], worked out without
@@ -427,27 +453,29 @@ class NotificationService extends ChangeNotifier {
               : timing.time.add(Duration(minutes: offset));
           if (!fireTime.isAfter(now)) continue;
           final id = day * 10 + notifiablePrayers.indexOf(timing.prayer);
-          reminders.add(PlannedReminder(
-            id: id,
-            at: fireTime,
-            title: s.notifTitle(timing.prayer),
-            body: offset == 0
-                ? s.notifBody(timing.prayer, place)
-                : s.notifIqamahBody(timing.prayer, place),
-            channel: adhanOn ? _channelIdSilent : _channelId,
-            // Not once it has sounded. With an iqāmah delay the reminder is
-            // still to come after the adhan has played, and an alarm set for a
-            // moment already past goes off the instant it is set — the adhan a
-            // second time, late.
-            adhan: adhanOn && timing.time.isAfter(now)
-                ? AdhanAlarm(
-                    id: id,
-                    time: timing.time,
-                    fajr: timing.prayer == Prayer.fajr,
-                    usage: AdhanScheduler.usageFor(stream),
-                  )
-                : null,
-          ));
+          reminders.add(
+            PlannedReminder(
+              id: id,
+              at: fireTime,
+              title: s.notifTitle(timing.prayer),
+              body: offset == 0
+                  ? s.notifBody(timing.prayer, place)
+                  : s.notifIqamahBody(timing.prayer, place),
+              channel: adhanOn ? _channelIdSilent : _channelId,
+              // Not once it has sounded. With an iqāmah delay the reminder is
+              // still to come after the adhan has played, and an alarm set for a
+              // moment already past goes off the instant it is set — the adhan a
+              // second time, late.
+              adhan: adhanOn && timing.time.isAfter(now)
+                  ? AdhanAlarm(
+                      id: id,
+                      time: timing.time,
+                      fajr: timing.prayer == Prayer.fajr,
+                      usage: AdhanScheduler.usageFor(stream),
+                    )
+                  : null,
+            ),
+          );
         }
       }
     }
@@ -469,20 +497,20 @@ class NotificationService extends ChangeNotifier {
   }
 
   NotificationDetails _detailsFor(String channel) => NotificationDetails(
-        android: switch (channel) {
-          _channelIdSilent => _androidDetails(true),
-          _channelId => _androidDetails(false),
-          _ => const AndroidNotificationDetails(
-              _adhkarChannelId,
-              _adhkarChannelName,
-              channelDescription: _adhkarChannelDescription,
-              importance: Importance.high,
-              priority: Priority.high,
-            ),
-        },
-        iOS: const DarwinNotificationDetails(),
-        macOS: const DarwinNotificationDetails(),
-      );
+    android: switch (channel) {
+      _channelIdSilent => _androidDetails(true),
+      _channelId => _androidDetails(false),
+      _ => const AndroidNotificationDetails(
+        _adhkarChannelId,
+        _adhkarChannelName,
+        channelDescription: _adhkarChannelDescription,
+        importance: Importance.high,
+        priority: Priority.high,
+      ),
+    },
+    iOS: const DarwinNotificationDetails(),
+    macOS: const DarwinNotificationDetails(),
+  );
 
   /// Remind the evening before a day worth fasting, or an occasion worth
   /// knowing about.
@@ -518,11 +546,23 @@ class NotificationService extends ChangeNotifier {
           ? tomorrow.primaryFast
           : null;
       if (fast != null) {
-        plan.add(_remembrance(_fastingIdBase + day, maghrib, s.notifFastTitle,
-            s.notifFastBody(fast)));
+        plan.add(
+          _remembrance(
+            _fastingIdBase + day,
+            maghrib,
+            s.notifFastTitle,
+            s.notifFastBody(fast),
+          ),
+        );
       } else if (tomorrow.events.isNotEmpty) {
-        plan.add(_remembrance(_fastingIdBase + day, maghrib,
-            s.eventName(tomorrow.events.first), s.notifOccasionBody));
+        plan.add(
+          _remembrance(
+            _fastingIdBase + day,
+            maghrib,
+            s.eventName(tomorrow.events.first),
+            s.notifOccasionBody,
+          ),
+        );
       }
     }
   }
@@ -565,33 +605,63 @@ class NotificationService extends ChangeNotifier {
 
       // Morning adhkar — repeating Fajr → Dhuhr (skipped today once done).
       if (fajr != null && dhuhr != null && !(day == 0 && morningDone)) {
-        _planPings(plan, _morningPingBase + day * 10, fajr, dhuhr, now,
-            s.adhkarMorningTitle, s.adhkarMorningBody, 'adhkar:morning');
+        _planPings(
+          plan,
+          _morningPingBase + day * 10,
+          fajr,
+          dhuhr,
+          now,
+          s.adhkarMorningTitle,
+          s.adhkarMorningBody,
+          'adhkar:morning',
+        );
       }
       // Evening adhkar — repeating Asr → Isha (skipped today once done).
       if (asr != null && isha != null && !(day == 0 && eveningDone)) {
-        _planPings(plan, _eveningPingBase + day * 10, asr, isha, now,
-            s.adhkarEveningTitle, s.adhkarEveningBody, 'adhkar:evening');
+        _planPings(
+          plan,
+          _eveningPingBase + day * 10,
+          asr,
+          isha,
+          now,
+          s.adhkarEveningTitle,
+          s.adhkarEveningBody,
+          'adhkar:evening',
+        );
       }
       // Surah Al-Kahf — Friday midday.
       if (isFriday && dhuhr != null && dhuhr.isAfter(now)) {
         plan.add(
-            _remembrance(_kahfIdBase + day, dhuhr, s.kahfTitle, s.kahfBody));
+          _remembrance(_kahfIdBase + day, dhuhr, s.kahfTitle, s.kahfBody),
+        );
       }
       // Salawāt — Friday afternoon (emphasized), or a daily nudge otherwise.
       if (isFriday) {
         if (asr != null && asr.isAfter(now)) {
-          plan.add(_remembrance(_salawatFridayIdBase + day, asr,
-              s.salawatFridayTitle, s.salawatFridayBody));
+          plan.add(
+            _remembrance(
+              _salawatFridayIdBase + day,
+              asr,
+              s.salawatFridayTitle,
+              s.salawatFridayBody,
+            ),
+          );
         }
       } else if (dhuhr != null && dhuhr.isAfter(now)) {
-        plan.add(_remembrance(
-            _salawatDailyIdBase + day, dhuhr, s.salawatTitle, s.salawatBody));
+        plan.add(
+          _remembrance(
+            _salawatDailyIdBase + day,
+            dhuhr,
+            s.salawatTitle,
+            s.salawatBody,
+          ),
+        );
       }
       // Surah Al-Mulk — nightly before sleep.
       if (isha != null && isha.isAfter(now)) {
         plan.add(
-            _remembrance(_mulkIdBase + day, isha, s.mulkTitle, s.mulkBody));
+          _remembrance(_mulkIdBase + day, isha, s.mulkTitle, s.mulkBody),
+        );
       }
     }
   }
@@ -647,15 +717,14 @@ class NotificationService extends ChangeNotifier {
     String title,
     String body, [
     String? payload,
-  ]) =>
-      PlannedReminder(
-        id: id,
-        at: at,
-        title: title,
-        body: body,
-        channel: _adhkarChannelId,
-        payload: payload,
-      );
+  ]) => PlannedReminder(
+    id: id,
+    at: at,
+    title: title,
+    body: body,
+    channel: _adhkarChannelId,
+    payload: payload,
+  );
 
   /// Handle a notification tap: an `adhkar:<categoryId>` payload opens that
   /// category's read-and-count screen via the app-wide navigator key.
@@ -665,9 +734,9 @@ class NotificationService extends ChangeNotifier {
     if (category == null) return;
     final nav = appNavigatorKey.currentState;
     if (nav == null) return;
-    nav.push(MaterialPageRoute(
-      builder: (_) => CategoryDuasScreen(category: category),
-    ));
+    nav.push(
+      MaterialPageRoute(builder: (_) => CategoryDuasScreen(category: category)),
+    );
   }
 
   /// Fire test notifications: one **immediately** (directly tests that the app
@@ -679,8 +748,10 @@ class NotificationService extends ChangeNotifier {
     if (kIsWeb) return false;
     await _ensureInitialized();
 
-    final android = _plugin.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
+    final android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
     // Prompt if needed; the result is unreliable on some OEMs so we ignore it.
     try {
       await android?.requestNotificationsPermission();
@@ -767,34 +838,43 @@ class NotificationService extends ChangeNotifier {
           _handleNotificationTap(response.payload),
     );
 
-    final android = _plugin.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
+    final android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
     if (android != null) {
       // Default (system tone) channel — used when the adhan is off.
-      await android.createNotificationChannel(const AndroidNotificationChannel(
-        _channelId,
-        _channelName,
-        description: _channelDescription,
-        importance: Importance.max,
-      ));
+      await android.createNotificationChannel(
+        const AndroidNotificationChannel(
+          _channelId,
+          _channelName,
+          description: _channelDescription,
+          importance: Importance.max,
+        ),
+      );
       // Silent channel — used when the adhan is on (native player is the sound).
-      await android.createNotificationChannel(const AndroidNotificationChannel(
-        _channelIdSilent,
-        _channelNameSilent,
-        description: _channelDescription,
-        importance: Importance.max,
-        playSound: false,
-      ));
+      await android.createNotificationChannel(
+        const AndroidNotificationChannel(
+          _channelIdSilent,
+          _channelNameSilent,
+          description: _channelDescription,
+          importance: Importance.max,
+          playSound: false,
+        ),
+      );
       // Adhkar (morning/evening) reminder channel.
-      await android.createNotificationChannel(const AndroidNotificationChannel(
-        _adhkarChannelId,
-        _adhkarChannelName,
-        description: _adhkarChannelDescription,
-        importance: Importance.high,
-      ));
+      await android.createNotificationChannel(
+        const AndroidNotificationChannel(
+          _adhkarChannelId,
+          _adhkarChannelName,
+          description: _adhkarChannelDescription,
+          importance: Importance.high,
+        ),
+      );
     }
 
     _initialized = true;
+    if (background || _disposed) return;
 
     // If the app was launched by tapping a reminder, honour its payload once the
     // first frame (and thus the navigator) is ready.
@@ -802,7 +882,8 @@ class NotificationService extends ChangeNotifier {
     final launchPayload = launch?.notificationResponse?.payload;
     if ((launch?.didNotificationLaunchApp ?? false) && launchPayload != null) {
       WidgetsBinding.instance.addPostFrameCallback(
-          (_) => _handleNotificationTap(launchPayload));
+        (_) => _handleNotificationTap(launchPayload),
+      );
     }
   }
 
@@ -820,8 +901,10 @@ class NotificationService extends ChangeNotifier {
     await _ensureInitialized();
     var granted = true;
 
-    final android = _plugin.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
+    final android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
     if (android != null) {
       // Prompt (no-op if already decided). The *return value* of this request
       // is unreliable on some OEMs (e.g. MIUI returns false/null even when
@@ -838,14 +921,13 @@ class NotificationService extends ChangeNotifier {
       granted = await android.areNotificationsEnabled() ?? true;
     }
 
-    final ios = _plugin.resolvePlatformSpecificImplementation<
-        IOSFlutterLocalNotificationsPlugin>();
+    final ios = _plugin
+        .resolvePlatformSpecificImplementation<
+          IOSFlutterLocalNotificationsPlugin
+        >();
     if (ios != null) {
-      granted = await ios.requestPermissions(
-            alert: true,
-            badge: true,
-            sound: true,
-          ) ??
+      granted =
+          await ios.requestPermissions(alert: true, badge: true, sound: true) ??
           false;
     }
 
@@ -911,8 +993,7 @@ class PlannedReminder {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, at, title, body, channel, payload, adhan);
+  int get hashCode => Object.hash(id, at, title, body, channel, payload, adhan);
 }
 
 /// Everything the OS should be holding: the reminders, whether the native
@@ -934,13 +1015,13 @@ class ReminderPlan {
   /// history, not something left to schedule — so a plan made an hour ago,
   /// less what fired in that hour, is the plan to compare a new one against.
   ReminderPlan after(DateTime now) => ReminderPlan(
-        reminders: [
-          for (final reminder in reminders)
-            if (reminder.at.isAfter(now)) reminder.after(now),
-        ],
-        adhanOn: adhanOn,
-        exact: exact,
-      );
+    reminders: [
+      for (final reminder in reminders)
+        if (reminder.at.isAfter(now)) reminder.after(now),
+    ],
+    adhanOn: adhanOn,
+    exact: exact,
+  );
 
   @override
   bool operator ==(Object other) =>

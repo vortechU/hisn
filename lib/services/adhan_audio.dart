@@ -41,8 +41,11 @@ class AdhanVoice {
 /// service is the single source of truth for whether the adhan is enabled and
 /// which volume stream it uses, plus a foreground preview/stop control.
 class AdhanAudioService extends ChangeNotifier {
-  AdhanAudioService(this._prefs, {Future<Directory> Function()? storageDir})
-    : _storageDir = storageDir ?? getApplicationSupportDirectory {
+  AdhanAudioService(
+    this._prefs, {
+    Future<Directory> Function()? storageDir,
+    bool previewEnabled = true,
+  }) : _storageDir = storageDir ?? getApplicationSupportDirectory {
     _enabled = _prefs.getBool(_kEnabled) ?? false;
     final streamName = _prefs.getString(_kStream);
     _stream = AdhanVolumeStream.values.firstWhere(
@@ -50,7 +53,7 @@ class AdhanAudioService extends ChangeNotifier {
       orElse: () => AdhanVolumeStream.ring,
     );
 
-    if (!kIsWeb) {
+    if (!kIsWeb && previewEnabled) {
       _player = AudioPlayer()..setReleaseMode(ReleaseMode.stop);
       _stateSub = _player!.onPlayerStateChanged.listen((state) {
         final playing = state == PlayerState.playing;

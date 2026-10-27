@@ -7,6 +7,11 @@ import 'data/quran_repository.dart';
 import 'services/adhkar_audio_handler.dart';
 import 'services/adhkar_audio_library.dart';
 import 'services/backup_service.dart';
+import 'services/reminder_renewal_runner.dart';
+
+/// Android's persisted renewal job can replenish reminders without opening UI.
+@pragma('vm:entry-point')
+Future<void> renewReminders() => runReminderRenewal();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,15 +38,17 @@ Future<void> main() async {
   // Skipped entirely when nothing is recorded: no recitation, no session.
   final audio = audioLibrary.hasAnyAudio ? await initAdhkarAudio() : null;
 
-  runApp(DuaApp(
-    repository: repository,
-    quran: quran,
-    prefs: prefs,
-    // The two travel together on purpose. Every listening affordance is gated
-    // on the library having something in it, and each one then reaches for the
-    // handler — so a library that survived a failed session init would offer a
-    // button with nothing behind it.
-    audioLibrary: audio == null ? AdhkarAudioLibrary.empty() : audioLibrary,
-    audio: audio,
-  ));
+  runApp(
+    DuaApp(
+      repository: repository,
+      quran: quran,
+      prefs: prefs,
+      // The two travel together on purpose. Every listening affordance is gated
+      // on the library having something in it, and each one then reaches for the
+      // handler — so a library that survived a failed session init would offer a
+      // button with nothing behind it.
+      audioLibrary: audio == null ? AdhkarAudioLibrary.empty() : audioLibrary,
+      audio: audio,
+    ),
+  );
 }

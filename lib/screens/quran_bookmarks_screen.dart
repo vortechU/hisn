@@ -27,23 +27,26 @@ class QuranBookmarksScreen extends StatelessWidget {
     final quran = context.watch<QuranService>();
     final pages = quran.bookmarkedPages;
     final verses = quran.bookmarkedVerses;
+    final verseRows = verses.isEmpty ? 0 : verses.length + 1;
+    final pageRows = pages.isEmpty ? 0 : pages.length + 1;
 
     return Scaffold(
       appBar: AppBar(title: Text(s.quranBookmarks)),
       body: pages.isEmpty && verses.isEmpty
           ? EmptyPage(icon: Icons.bookmarks_outlined, body: s.noBookmarks)
-          : ListView(
+          : ListView.builder(
               padding: const EdgeInsets.only(bottom: 24),
-              children: [
-                if (verses.isNotEmpty) ...[
-                  SectionMark(label: s.savedVerses),
-                  for (final key in verses) _SavedVerse(verseKey: key),
-                ],
-                if (pages.isNotEmpty) ...[
-                  SectionMark(label: s.savedPages),
-                  for (final page in pages) _SavedPage(page: page),
-                ],
-              ],
+              itemCount: verseRows + pageRows,
+              itemBuilder: (context, index) {
+                if (index < verseRows) {
+                  if (index == 0) return SectionMark(label: s.savedVerses);
+                  final key = verses[index - 1];
+                  return _SavedVerse(key: ValueKey(key), verseKey: key);
+                }
+                final pageIndex = index - verseRows;
+                if (pageIndex == 0) return SectionMark(label: s.savedPages);
+                return _SavedPage(page: pages[pageIndex - 1]);
+              },
             ),
     );
   }
@@ -53,24 +56,51 @@ class QuranBookmarksScreen extends StatelessWidget {
 ///
 /// The verse text lives in the surah files, which are loaded on demand, so each
 /// row resolves itself rather than the screen loading every surah up front.
-class _SavedVerse extends StatelessWidget {
-  const _SavedVerse({required this.verseKey});
+class _SavedVerse extends StatefulWidget {
+  const _SavedVerse({super.key, required this.verseKey});
 
   final String verseKey;
 
   @override
-  Widget build(BuildContext context) {
+  State<_SavedVerse> createState() => _SavedVerseState();
+}
+
+class _SavedVerseState extends State<_SavedVerse> {
+  QuranRepository? _repo;
+  String? _lang;
+  Future<PageVerse?>? _verse;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     final repo = context.read<QuranRepository>();
-    final parsed = PageVerse.parseKey(verseKey);
+    final lang = AppStrings.of(context).lang.name;
+    if (!identical(repo, _repo) || lang != _lang) _verse = null;
+    _repo = repo;
+    _lang = lang;
+  }
+
+  @override
+  void didUpdateWidget(_SavedVerse oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.verseKey != widget.verseKey) _verse = null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final repo = _repo!;
+    final parsed = PageVerse.parseKey(widget.verseKey);
     if (parsed == null) return const SizedBox.shrink();
 
     return FutureBuilder<PageVerse?>(
-      future: repo.verse(parsed.$1, parsed.$2,
-          lang: AppStrings.of(context).lang.name),
+      future: _verse ??= repo.verse(parsed.$1, parsed.$2, lang: _lang),
       builder: (context, snap) {
         final verse = snap.data;
-        // Reserve nothing while loading: the rows resolve within a frame or two
-        // and a placeholder would flicker more than it reassures.
+        // Zero-height pending rows make the viewport start every saved verse's
+        // load in one frame. Reserve space so only nearby rows are requested.
+        if (verse == null && snap.connectionState == ConnectionState.waiting) {
+          return const SizedBox(height: 180);
+        }
         if (verse == null) return const SizedBox.shrink();
         return Column(
           children: [
@@ -83,13 +113,19 @@ class _SavedVerse extends StatelessWidget {
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) => MushafScreen(
-                    startPage: repo.pageOfAyah(verse.surah.number, verse.ayah.number),
+                    startPage: repo.pageOfAyah(
+                      verse.surah.number,
+                      verse.ayah.number,
+                    ),
                     highlightVerse: verse.key,
                   ),
                 ),
               ),
             ),
-            RuleDivider(indent: Ms.margin, color: ManuscriptTheme.of(context).rule),
+            RuleDivider(
+              indent: Ms.margin,
+              color: ManuscriptTheme.of(context).rule,
+            ),
           ],
         );
       },
@@ -119,8 +155,12 @@ class _SavedPage extends StatelessWidget {
               MaterialPageRoute(builder: (_) => MushafScreen(startPage: page)),
             ),
             child: Padding(
-              padding:
-                  const EdgeInsets.fromLTRB(Ms.margin, 9, Ms.margin - 6, 9),
+              padding: const EdgeInsets.fromLTRB(
+                Ms.margin,
+                9,
+                Ms.margin - 6,
+                9,
+              ),
               child: Row(
                 children: [
                   // The page number in the mushaf's own Arabic-Indic digits,
@@ -128,24 +168,36 @@ class _SavedPage extends StatelessWidget {
                   StarMedallion(
                     size: 38,
                     color: ms.rubric,
-                    child: ArabicText(toArabicDigits(page),
-                        fontSize: 13, color: ms.rubric, height: 1.2),
+                    child: ArabicText(
+                      toArabicDigits(page),
+                      fontSize: 13,
+                      color: ms.rubric,
+                      height: 1.2,
+                    ),
                   ),
                   const SizedBox(width: 14),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('${s.surahWord} ${surah.nameFor(s.rtl)}',
-                            style: theme.textTheme.titleSmall),
-                        Text(s.juzLabel(surah.juz),
-                            style: theme.textTheme.bodySmall),
+                        Text(
+                          '${s.surahWord} ${surah.nameFor(s.lang.usesArabicScript)}',
+                          style: theme.textTheme.titleSmall,
+                        ),
+                        Text(
+                          s.juzLabel(surah.juz),
+                          style: theme.textTheme.bodySmall,
+                        ),
                       ],
                     ),
                   ),
                   if (!s.ar)
-                    ArabicText(surah.name,
-                        fontSize: 20, color: ms.rubric, height: 1.5),
+                    ArabicText(
+                      surah.name,
+                      fontSize: 20,
+                      color: ms.rubric,
+                      height: 1.5,
+                    ),
                   IconButton(
                     icon: const Icon(Icons.bookmark_remove_outlined, size: 20),
                     color: theme.colorScheme.error,

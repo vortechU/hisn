@@ -14,8 +14,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// The verse meanings — translations for English and Indonesian, the Muyassar
-/// tafsir for Arabic — and the join that attaches them to the mushaf.
+/// The bundled verse meanings and the join that attaches them to the mushaf.
+/// New editions are exercised automatically from the manifest.
 ///
 /// The join is the risky part. An edition that is off by one verse would put
 /// every meaning on its neighbour, and nothing on screen would look wrong —
@@ -26,18 +26,22 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late QuranRepository repo;
+  late List<String> meaningLanguages;
 
   setUpAll(() async {
     repo = QuranRepository();
     await repo.loadIndex();
+    meaningLanguages = (await repo.loadEditions()).map((edition) => edition.lang).toList();
   });
 
   group('bundled editions', () {
-    test('every interface language names its edition and translator', () async {
+    test('every bundled edition names its language and translator', () async {
       final editions = await repo.loadEditions();
 
       expect(editions, isNotEmpty);
-      expect(editions.map((e) => e.lang).toSet(), {'en', 'id', 'ar', 'ur'});
+      expect(editions.map((e) => e.lang).toSet(), hasLength(editions.length));
+      expect(AppLang.values.map((language) => language.code).toSet(),
+          containsAll(editions.map((edition) => edition.lang)));
       for (final e in editions) {
         expect(e.name, isNotEmpty, reason: e.lang);
         expect(e.translator, isNotEmpty, reason: e.lang);
@@ -59,7 +63,7 @@ void main() {
       expect(arabic.kind, QuranEditionKind.tafsir);
       expect(isArabicScript(arabic.credit), isTrue);
 
-      for (final lang in const ['en', 'id', 'ur']) {
+      for (final lang in meaningLanguages.where((code) => code != 'ar')) {
         expect((await repo.editionFor(lang))!.kind,
             QuranEditionKind.translation, reason: lang);
       }
@@ -77,7 +81,7 @@ void main() {
       // The guard against a truncated or reordered regeneration. Checked for
       // all 114 surahs in every language, because a gap anywhere shifts every
       // verse after it.
-      for (final lang in const ['en', 'id', 'ar', 'ur']) {
+      for (final lang in meaningLanguages) {
         for (final surah in repo.surahs) {
           final translation = await repo.loadTranslation(surah.number, lang);
           expect(translation, isNotNull,
@@ -94,7 +98,7 @@ void main() {
       // Control characters are how the upstream damage showed up; if a future
       // regeneration reintroduces any, it surfaces here rather than on screen.
       final control = RegExp(r'[\x00-\x08\x0b-\x1f\x7f-\x9f]');
-      for (final lang in const ['en', 'id', 'ar', 'ur']) {
+      for (final lang in meaningLanguages) {
         for (final surah in repo.surahs) {
           final t = (await repo.loadTranslation(surah.number, lang))!;
           for (var i = 0; i < t.ayahs.length; i++) {
@@ -359,7 +363,7 @@ void main() {
     test('a credit is never sent without the meaning it belongs to', () async {
       // The pairing that must not come apart: a translator named under no
       // translation is worse than no credit at all.
-      for (final lang in const ['en', 'id', 'ar']) {
+      for (final lang in meaningLanguages) {
         final verse = (await repo.verse(18, 10, lang: lang))!;
         final shareable = Shareable.verse(verse, lang);
         if (shareable.translationCredit != null) {

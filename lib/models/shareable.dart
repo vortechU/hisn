@@ -1,3 +1,4 @@
+import '../l10n/app_language.dart';
 import '../models/dua.dart';
 import '../models/quran.dart';
 
@@ -59,17 +60,18 @@ class Shareable {
   /// neither says anything to a reader who has the Arabic itself right above
   /// them, and the app ships no Arabic translation to put there instead.
   factory Shareable.dua(Dua dua, String langCode) {
-    final arabicUi = langCode == _arabicCode;
+    final language = AppLang.fromCode(langCode);
+    final arabicUi = language == AppLang.ar;
     return Shareable(
       arabic: dua.arabic,
       reference: dua.referenceFor(langCode),
       title: dua.titleForLang(langCode),
-      titleArabic: langCode == 'ur'
+      titleArabic: language.usesArabicScript && !arabicUi
           ? dua.titleForLang(langCode)
           : dua.titleArabic,
       transliteration: arabicUi ? null : _orNull(dua.transliteration),
       translation: arabicUi ? null : _orNull(dua.translationFor(langCode)),
-      translationIsRtl: langCode == 'ur',
+      translationIsRtl: language.rtl,
       repeat: dua.repeat,
     );
   }
@@ -83,8 +85,8 @@ class Shareable {
   /// Muyassar tafsir, which says something the verse above it does not, unlike
   /// a translation of Arabic into Arabic.
   factory Shareable.verse(PageVerse verse, String langCode) {
-    final arabicUi = langCode == _arabicCode;
-    final name = verse.surah.nameFor(arabicUi || langCode == 'ur');
+    final language = AppLang.fromCode(langCode);
+    final name = verse.surah.nameFor(language.usesArabicScript);
     final translation = _orNull(verse.translation);
     return Shareable(
       arabic: verse.ayah.text,
@@ -96,12 +98,9 @@ class Shareable {
           ? null
           : _orNull(verse.translationCredit),
       translationIsArabic: translation != null && verse.translationIsArabic,
-      translationIsRtl: translation != null && (arabicUi || langCode == 'ur'),
+      translationIsRtl: translation != null && language.rtl,
     );
   }
-
-  /// The language code the Arabic interface runs under (see `AppLang.ar`).
-  static const String _arabicCode = 'ar';
 
   static String? _orNull(String? value) =>
       (value == null || value.trim().isEmpty) ? null : value;

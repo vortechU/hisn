@@ -18,8 +18,10 @@
   "muhassanComplete": "مکمل — ما شاء اللہ",
   "muhassanMorning": "صبح",
   "muhassanEvening": "شام",
-  "streakDaysOne": "مسلسل 1 دن",
-  "streakDaysOther": "مسلسل $n دن",
+  "streakDays(param=n)": {
+    "one": "مسلسل 1 دن",
+    "other": "مسلسل $n دن"
+  },
   "streakStart": "اپنا تسلسل شروع کریں",
   "streakBest": "بہترین: $n",
   "streakTitle": "آپ کا تسلسل",
@@ -27,8 +29,10 @@
   "statCurrent": "موجودہ",
   "statBest": "بہترین",
   "statTotal": "کل دن",
-  "daysValueOne": "1 دن",
-  "daysValueOther": "$n دن",
+  "daysValue(param=n)": {
+    "one": "1 دن",
+    "other": "$n دن"
+  },
   "streakOnFire": "آپ کا تسلسل بہت اچھا ہے — جاری رکھیں!",
   "streakTodayPending": "تسلسل بڑھانے کے لیے آج کے اذکار مکمل کریں",
   "streakBroken": "دوبارہ شروع کرنے کے لیے صبح اور شام کے اذکار مکمل کریں",
@@ -60,8 +64,10 @@
   "surahWord": "سورت",
   "revelationMeccan": "مکی",
   "revelationMedinan": "مدنی",
-  "versesCountOne": "1 آیت",
-  "versesCountOther": "$n آیات",
+  "versesCount(param=n)": {
+    "one": "1 آیت",
+    "other": "$n آیات"
+  },
   "juzLabel": "پارہ $n",
   "quranBookmarks": "بک مارکس",
   "noBookmarks": "ابھی کوئی بک مارک نہیں",
@@ -105,10 +111,14 @@
   "noCustomTitle": "ابھی کوئی دعا نہیں",
   "noCustomBody": "اپنی دعا شامل کرنے کے لیے + دبائیں۔",
   "recommendedNow": "اس وقت کے لیے",
-  "readNowOne": "ابھی پڑھیں · 1 دعا",
-  "readNowOther": "ابھی پڑھیں · $count دعائیں",
-  "duaCountOne": "1 دعا",
-  "duaCountOther": "$count دعائیں",
+  "readNow(param=count)": {
+    "one": "ابھی پڑھیں · 1 دعا",
+    "other": "ابھی پڑھیں · $count دعائیں"
+  },
+  "duaCount(param=count)": {
+    "one": "1 دعا",
+    "other": "$count دعائیں"
+  },
   "now": "ابھی",
   "next": "اگلی",
   "remaining": "باقی",
@@ -120,14 +130,18 @@
   "searchPrompt": "عنوان، مفہوم، تلفظ یا حوالے سے تلاش کریں۔",
   "noResults": "“$query” کے لیے کوئی دعا نہیں ملی۔",
   "quranNoResults": "“$query” کے لیے کوئی سورت یا آیت نہیں ملی۔",
-  "resultsCountOne": "1 نتیجہ",
-  "resultsCountOther": "$n نتائج",
+  "resultsCount(param=n)": {
+    "one": "1 نتیجہ",
+    "other": "$n نتائج"
+  },
   "noSavedTitle": "ابھی کوئی دعا محفوظ نہیں",
   "noSavedBody": "فوری رسائی کے لیے کسی دعا کا بک مارک دبائیں۔",
   "resetCount": "گنتی صفر کریں",
   "tapToCount": "گنتی کے لیے کہیں بھی دبائیں",
-  "setsCompletedOne": "1 دور مکمل",
-  "setsCompletedOther": "$n دور مکمل",
+  "setsCompleted(param=n)": {
+    "one": "1 دور مکمل",
+    "other": "$n دور مکمل"
+  },
   "ofTarget": "کل $n میں سے",
   "resetProgress": "پیش رفت از سر نو شروع کریں",
   "setComplete": "دور مکمل — تقبّل اللہ",
@@ -138,8 +152,10 @@
   "listenHint": "تلاوت جاری ہے — آپ فون لاک کر سکتے ہیں",
   "listenIdleTitle": "کچھ نہیں چل رہا",
   "listenIdleBody": "اذکار چلائیں؛ ہر تکرار کی گنتی خود بخود ہو گی۔",
-  "listenMissingOne": "1 دعا کی ریکارڈنگ ابھی موجود نہیں",
-  "listenMissingOther": "$n دعاؤں کی ریکارڈنگ ابھی موجود نہیں",
+  "listenMissing(param=n)": {
+    "one": "1 دعا کی ریکارڈنگ ابھی موجود نہیں",
+    "other": "$n دعاؤں کی ریکارڈنگ ابھی موجود نہیں"
+  },
   "listenPrevious": "پچھلا ذکر",
   "listenNext": "اگلا ذکر",
   "listenPause": "وقفہ کریں",
@@ -395,8 +411,10 @@
   "restoreScopeProgressSub": "اس فون کا مقام، یاد دہانیاں اور زبان برقرار رکھیں",
   "restoreWarning": "اس آلے کی موجودہ معلومات بدل جائیں گی۔",
   "restoreAction": "بحال کریں",
-  "restoreDoneOne": "1 اندراج بحال ہوا",
-  "restoreDoneOther": "$n اندراجات بحال ہوئے",
+  "restoreDone(param=n)": {
+    "one": "1 اندراج بحال ہوا",
+    "other": "$n اندراجات بحال ہوئے"
+  },
   "backupSaved": "بیک اپ محفوظ کرنے کے لیے تیار ہے",
   "backupFailed": "بیک اپ نہیں بنایا جا سکا",
   "restoreErrMalformed": "یہ فائل پڑھی نہیں جا سکی۔",
@@ -404,6 +422,9 @@
   "restoreErrTooNew": "یہ بیک اپ Hisn کے نئے نسخے سے بنایا گیا تھا۔ پہلے ایپ تازہ کریں۔",
   "restoreErrEmpty": "اس بیک اپ میں بحالی کے لیے کچھ نہیں ہے۔",
   "restoreFailed": "بحالی نہیں ہو سکی۔ کوئی تبدیلی نہیں ہوئی۔",
+  "quranZoomIn": "بڑا کریں",
+  "quranZoomHint": "بڑا کرنے کے لیے دو انگلیاں پھیلائیں؛ واپس آنے کے لیے انہیں قریب لائیں۔",
+  "quranReaderOptions": "تلاوت کے اختیارات",
   "versesOnThisPage": "اس صفحے کی آیات",
   "savedVerses": "محفوظ آیات",
   "savedPages": "محفوظ صفحات",
@@ -469,9 +490,13 @@
   "shareImageFailedNotReady": "تصویر تیار نہیں تھی؛ متن شیئر کیا جا رہا ہے۔",
   "shareImageFailedUnsupported": "یہ آلہ تصویر نہیں بنا سکا؛ متن شیئر کیا جا رہا ہے۔",
   "nextPhraseOnTap": "ذکر مکمل ہوا۔ اگلا ذکر گننے کے لیے دبائیں۔",
+  "aboutContributors": "حصن کے پیچھے لوگ",
+  "aboutDeveloperCredit": "ڈویلپر · ایپ کو ڈیزائن کیا اور تیار کیا۔",
+  "aboutContentReviewerCredit": "معاون · ایپ کے مواد میں املا کی غلطیوں اور غلط معلومات کی نشاندہی کے لیے جائزے میں مدد کی۔",
+  "aboutProfileLinkCopied": "GitHub پروفائل کا ربط نقل ہو گیا۔ اسے اپنے براؤزر میں کھولیں۔",
   "aboutTypefaces": "خطوط",
   "aboutVerseMeanings": "آیات کے معانی",
-  "aboutUrduDuaCredit": "دعاؤں کے اردو معانی: Hisn منصوبے کا مسودہ؛ اہلِ علم کی نظرثانی باقی ہے۔",
+  "aboutDuaDraftCredit": "دعاؤں کے بعض معانی Hisn منصوبے کے مسودے ہیں؛ مستند لسانی اور دینی نظرثانی باقی ہے۔",
   "aboutTranslationSource": "ترجمے کے مآخذ · تنزیل",
   "aboutLinkCopied": "ماخذ کا ربط نقل ہو گیا۔ اسے اپنے براؤزر میں کھولیں۔",
   "aboutArabicText": "عربی متن",
@@ -516,5 +541,21 @@
   "prayerSilenceUnavailable": "نماز کے وقت خاموشی صرف Android پر دستیاب ہے۔",
   "prayerSilenceError": "نماز کی خاموشی مقرر نہیں ہو سکی۔ رسائی دیکھ کر دوبارہ کوشش کریں۔",
   "prayerSilenceStopNow": "یہ خاموش وقفہ ختم کریں",
-  "prayerSilenceExpiryNote": "صرف Hisn کا موڈ خودکار ختم ہوتا ہے؛ آپ کا اپنا ڈو ناٹ ڈسٹرب تبدیل نہیں ہوتا۔ درست الارم کی رسائی واپس لینے یا ایپ محدود ہونے پر Android اختتام کی متبادل جانچ میں تاخیر کر سکتا ہے۔"
+  "prayerSilenceExpiryNote": "صرف Hisn کا موڈ خودکار ختم ہوتا ہے؛ آپ کا اپنا ڈو ناٹ ڈسٹرب تبدیل نہیں ہوتا۔ درست الارم کی رسائی واپس لینے یا ایپ محدود ہونے پر Android اختتام کی متبادل جانچ میں تاخیر کر سکتا ہے۔",
+  "qiblaStyle": "قطب نما کا انداز",
+  "qiblaTone": "قطب نما کا رنگ",
+  "qiblaVibrationOn": "ارتعاش فعال",
+  "qiblaVibrationOff": "ارتعاش بند",
+  "qiblaStyles": [
+    "کلاسیکی",
+    "سادہ",
+    "قطب نما پھول"
+  ],
+  "qiblaTones": [
+    "تھیم کا رنگ",
+    "سنہری",
+    "سیاہی"
+  ],
+  "durationMinutes": "$minutes منٹ",
+  "durationHoursMinutes": "$hours گھنٹے $minutes منٹ"
 }

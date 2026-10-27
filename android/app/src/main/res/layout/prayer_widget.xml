@@ -2,7 +2,9 @@
 <!--
     The day's five prayers as a timeline, on the field.
 
-    The head is the app's mihrab in small: the countdown to the next prayer and
+    A single launcher row shows the names and times, with the next prayer
+    lifted. Resizing taller reveals the track, then the head. The head is
+    the app's mihrab in small: the countdown to the next prayer and
     what it counts to, with the Hijri date and the place across from it. Under
     it, five equal columns (name, a slice of the day track, time) so the nodes
     on the track sit exactly over their own names however the launcher sizes
@@ -30,25 +32,16 @@
         android:contentDescription="@null"
         android:src="@drawable/widget_sheet" />
 
-    <ImageView
-        android:id="@+id/widget_star"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_gravity="top|end"
-        android:layout_marginTop="-48dp"
-        android:layout_marginEnd="-40dp"
-        android:contentDescription="@null"
-        android:src="@drawable/widget_star"
-        android:tint="#264E5C" />
-
     <LinearLayout
+        android:id="@+id/prayer_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:gravity="center_vertical"
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
-        android:paddingTop="14dp"
-        android:paddingBottom="10dp">
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp">
 
         <LinearLayout
             android:id="@+id/prayer_head"
@@ -57,7 +50,8 @@
             android:orientation="horizontal"
             android:paddingStart="6dp"
             android:paddingEnd="6dp"
-            android:baselineAligned="false">
+            android:baselineAligned="false"
+            android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -133,10 +127,10 @@
         </LinearLayout>
 
         <FrameLayout
+            android:id="@+id/prayer_head_gap"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:minHeight="6dp" />
+            android:layout_height="8dp"
+            android:visibility="gone" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -163,8 +157,8 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center_horizontal"
-                    android:paddingTop="7dp"
-                    android:paddingBottom="7dp">
+                    android:paddingTop="2dp"
+                    android:paddingBottom="2dp">
 
                     <TextView
                         android:id="@+id/name_fajr"
@@ -173,6 +167,7 @@
                         android:fontFamily="@font/readex_pro_regular"
                         android:textColor="#C9CECB"
                         android:textSize="12sp"
+                        android:includeFontPadding="false"
                         android:maxLines="1"
                         android:text="Fajr" />
 
@@ -183,6 +178,7 @@
                         android:layout_marginTop="4dp"
                         android:layout_marginBottom="4dp"
                         android:scaleType="fitXY"
+                        android:visibility="gone"
                         android:contentDescription="@null"
                         android:src="@drawable/widget_track_preview" />
 
@@ -193,6 +189,7 @@
                         android:fontFamily="@font/readex_pro_medium"
                         android:textColor="#C9CECB"
                         android:textSize="13sp"
+                        android:includeFontPadding="false"
                         android:maxLines="1"
                         android:text="4:51 AM" />
                 </LinearLayout>
@@ -217,8 +214,8 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center_horizontal"
-                    android:paddingTop="7dp"
-                    android:paddingBottom="7dp">
+                    android:paddingTop="2dp"
+                    android:paddingBottom="2dp">
 
                     <TextView
                         android:id="@+id/name_dhuhr"
@@ -227,6 +224,7 @@
                         android:fontFamily="@font/readex_pro_regular"
                         android:textColor="#C9CECB"
                         android:textSize="12sp"
+                        android:includeFontPadding="false"
                         android:maxLines="1"
                         android:text="Dhuhr" />
 
@@ -237,6 +235,7 @@
                         android:layout_marginTop="4dp"
                         android:layout_marginBottom="4dp"
                         android:scaleType="fitXY"
+                        android:visibility="gone"
                         android:contentDescription="@null"
                         android:src="@drawable/widget_track_preview" />
 
@@ -247,6 +246,7 @@
                         android:fontFamily="@font/readex_pro_medium"
                         android:textColor="#C9CECB"
                         android:textSize="13sp"
+                        android:includeFontPadding="false"
                         android:maxLines="1"
                         android:text="12:14 PM" />
                 </LinearLayout>
@@ -271,8 +271,8 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center_horizontal"
-                    android:paddingTop="7dp"
-                    android:paddingBottom="7dp">
+                    android:paddingTop="2dp"
+                    android:paddingBottom="2dp">
 
                     <TextView
                         android:id="@+id/name_asr"
@@ -281,6 +281,7 @@
                         android:fontFamily="@font/readex_pro_regular"
                         android:textColor="#C9CECB"
                         android:textSize="12sp"
+                        android:includeFontPadding="false"
                         android:maxLines="1"
                         android:text="Asr" />
 
@@ -291,6 +292,7 @@
                         android:layout_marginTop="4dp"
                         android:layout_marginBottom="4dp"
                         android:scaleType="fitXY"
+                        android:visibility="gone"
                         android:contentDescription="@null"
                         android:src="@drawable/widget_track_preview" />
 
@@ -301,6 +303,7 @@
                         android:fontFamily="@font/readex_pro_medium"
                         android:textColor="#C9CECB"
                         android:textSize="13sp"
+                        android:includeFontPadding="false"
                         android:maxLines="1"
                         android:text="3:32 PM" />
                 </LinearLayout>
@@ -325,8 +328,8 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center_horizontal"
-                    android:paddingTop="7dp"
-                    android:paddingBottom="7dp">
+                    android:paddingTop="2dp"
+                    android:paddingBottom="2dp">
 
                     <TextView
                         android:id="@+id/name_maghrib"
@@ -335,6 +338,7 @@
                         android:fontFamily="@font/readex_pro_regular"
                         android:textColor="#F4F1E8"
                         android:textSize="12sp"
+                        android:includeFontPadding="false"
                         android:maxLines="1"
                         android:text="Maghrib" />
 
@@ -345,6 +349,7 @@
                         android:layout_marginTop="4dp"
                         android:layout_marginBottom="4dp"
                         android:scaleType="fitXY"
+                        android:visibility="gone"
                         android:contentDescription="@null"
                         android:src="@drawable/widget_track_preview" />
 
@@ -355,6 +360,7 @@
                         android:fontFamily="@font/readex_pro_medium"
                         android:textColor="#F4F1E8"
                         android:textSize="13sp"
+                        android:includeFontPadding="false"
                         android:maxLines="1"
                         android:text="6:01 PM" />
                 </LinearLayout>
@@ -379,8 +385,8 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center_horizontal"
-                    android:paddingTop="7dp"
-                    android:paddingBottom="7dp">
+                    android:paddingTop="2dp"
+                    android:paddingBottom="2dp">
 
                     <TextView
                         android:id="@+id/name_isha"
@@ -389,6 +395,7 @@
                         android:fontFamily="@font/readex_pro_regular"
                         android:textColor="#D8DBD5"
                         android:textSize="12sp"
+                        android:includeFontPadding="false"
                         android:maxLines="1"
                         android:text="Isha" />
 
@@ -399,6 +406,7 @@
                         android:layout_marginTop="4dp"
                         android:layout_marginBottom="4dp"
                         android:scaleType="fitXY"
+                        android:visibility="gone"
                         android:contentDescription="@null"
                         android:src="@drawable/widget_track_preview" />
 
@@ -409,10 +417,21 @@
                         android:fontFamily="@font/readex_pro_medium"
                         android:textColor="#F4F1E8"
                         android:textSize="13sp"
+                        android:includeFontPadding="false"
                         android:maxLines="1"
                         android:text="7:21 PM" />
                 </LinearLayout>
             </FrameLayout>
         </LinearLayout>
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/prayer_ornament"
+        android:layout_width="80dp"
+        android:layout_height="7dp"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="1dp"
+        android:contentDescription="@null"
+        android:src="@drawable/prayer_widget_ornament"
+        android:tint="#385D68" />
 </FrameLayout>

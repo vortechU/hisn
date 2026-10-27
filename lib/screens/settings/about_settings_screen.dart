@@ -9,6 +9,7 @@ import '../../models/quran.dart';
 import '../../services/display_settings.dart';
 import '../../theme/app_theme.dart';
 import '../../util/arabic.dart';
+import '../../widgets/app_dedication.dart';
 import '../../widgets/ornament.dart';
 import 'settings_common.dart';
 
@@ -23,7 +24,19 @@ class AboutSettingsScreen extends StatelessWidget {
   const AboutSettingsScreen({super.key});
 
   static Future<void> _openSources(BuildContext context) async {
-    final uri = Uri.parse('https://tanzil.net/trans/');
+    await _openLink(
+      context,
+      'https://tanzil.net/trans/',
+      AppStrings.read(context).aboutLinkCopied,
+    );
+  }
+
+  static Future<void> _openLink(
+    BuildContext context,
+    String url,
+    String copiedMessage,
+  ) async {
+    final uri = Uri.parse(url);
     try {
       if (await launchUrl(uri, mode: LaunchMode.externalApplication)) return;
     } catch (_) {
@@ -31,9 +44,9 @@ class AboutSettingsScreen extends StatelessWidget {
     }
     await Clipboard.setData(ClipboardData(text: uri.toString()));
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppStrings.read(context).aboutLinkCopied)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(copiedMessage)));
     }
   }
 
@@ -60,7 +73,6 @@ class AboutSettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
     final theme = Theme.of(context);
-    final ms = ManuscriptTheme.of(context);
 
     return Scaffold(
       appBar: AppBar(title: Text(s.secAbout)),
@@ -71,7 +83,7 @@ class AboutSettingsScreen extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(Ms.margin, 18, Ms.margin, 0),
             child: Column(
               children: [
-                Rosette(size: 58, color: ms.gilt, lobes: 12),
+                const _AppIcon(),
                 const SizedBox(height: 14),
                 Text(s.appName, style: theme.textTheme.headlineMedium),
                 const SizedBox(height: 2),
@@ -83,6 +95,45 @@ class AboutSettingsScreen extends StatelessWidget {
                   style: theme.textTheme.bodyLarge,
                 ),
               ],
+            ),
+          ),
+          SettingsSectionHeader(s.aboutContributors),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: Ms.margin),
+            child: Material(
+              color: ManuscriptTheme.of(context).paper,
+              borderRadius: BorderRadius.circular(Ms.rPanel),
+              clipBehavior: Clip.antiAlias,
+              child: Column(
+                children: [
+                  _ContributorRow(
+                    name: 'Vortech',
+                    credit: s.aboutDeveloperCredit,
+                    handle: 'vortechU',
+                    onTap: () => _openLink(
+                      context,
+                      'https://github.com/vortechU',
+                      s.aboutProfileLinkCopied,
+                    ),
+                  ),
+                  Divider(
+                    height: 1,
+                    indent: 16,
+                    endIndent: 16,
+                    color: ManuscriptTheme.of(context).rule,
+                  ),
+                  _ContributorRow(
+                    name: 'عبدالله الشرعبي',
+                    credit: s.aboutContentReviewerCredit,
+                    handle: 'obbwddo',
+                    onTap: () => _openLink(
+                      context,
+                      'https://github.com/obbwddo',
+                      s.aboutProfileLinkCopied,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           SettingsSectionHeader(s.aboutTypefaces),
@@ -123,7 +174,10 @@ class AboutSettingsScreen extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.all(Ms.margin),
-            child: Text(s.aboutUrduDuaCredit, style: theme.textTheme.bodySmall),
+            child: Text(
+              s.aboutDuaDraftCredit,
+              style: theme.textTheme.bodySmall,
+            ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: Ms.margin),
@@ -136,7 +190,100 @@ class AboutSettingsScreen extends StatelessWidget {
               ),
             ),
           ),
+          const AppDedication(),
         ],
+      ),
+    );
+  }
+}
+
+/// The launcher artwork, with a quiet diagonal reflection over the glass.
+class _AppIcon extends StatelessWidget {
+  const _AppIcon();
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(Ms.rPanel),
+      child: SizedBox.square(
+        dimension: 88,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset('assets/icon/app_icon.png', excludeFromSemantics: true),
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0x38FFFFFF),
+                    Color(0x0AFFFFFF),
+                    Colors.transparent,
+                    Colors.transparent,
+                  ],
+                  stops: [0, 0.48, 0.49, 1],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ContributorRow extends StatelessWidget {
+  const _ContributorRow({
+    required this.name,
+    required this.credit,
+    required this.handle,
+    required this.onTap,
+  });
+
+  final String name;
+  final String credit;
+  final String handle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Semantics(
+      link: true,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _Credited(name, style: theme.textTheme.titleSmall),
+                    const SizedBox(height: 4),
+                    Text(credit, style: theme.textTheme.bodySmall),
+                    const SizedBox(height: 8),
+                    Text(
+                      'GitHub · @$handle',
+                      textDirection: TextDirection.ltr,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              Icon(
+                Icons.open_in_new,
+                size: 18,
+                color: theme.colorScheme.primary,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

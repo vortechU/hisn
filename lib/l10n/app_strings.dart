@@ -1,6 +1,7 @@
 import 'package:adhan/adhan.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hijri/hijri_calendar.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../i18n/strings.g.dart';
@@ -13,15 +14,9 @@ import 'locale_controller.dart';
 /// Bump this when shipping a build so the About screen confirms what's running.
 const String kAppVersion = '1.16.1';
 
-/// UI strings facade. The actual text lives in per-language files under
-/// `lib/i18n/` (`en.i18n.json`, `ar.i18n.json`, `id.i18n.json`) and is compiled
-/// to type-safe Dart by the `slang` package (run `dart run slang` after edits).
-///
-/// This class adapts that generated API to the rest of the app: it keeps the
-/// stable `AppStrings.of(context).xyz` call sites, and houses the bits slang
-/// can't express directly — switching on Dart enums ([Prayer]/[Madhab]) and
-/// formatting dates. **Adding a language = add one `<locale>.i18n.json` file,
-/// run slang, and add the locale here + in [LocaleController].**
+/// UI strings facade over the generated Slang catalogs in `lib/i18n/`.
+/// Language presentation and content coverage live in [AppLang].
+/// See `docs/LOCALIZATION.md` when adding a language.
 class AppStrings {
   AppStrings(this.lang) : _t = _translationsFor(lang);
 
@@ -31,12 +26,9 @@ class AppStrings {
   /// The generated translations for [lang].
   final Translations _t;
 
-  /// Whether the app is currently in Arabic (drives RTL + Arabic-title display).
+  /// Arabic source-language behavior, independent of interface direction.
   bool get ar => lang == AppLang.ar;
-  bool get rtl => lang == AppLang.ar || lang == AppLang.ur;
-
-  /// Whether the app is currently in Indonesian.
-  bool get id => lang == AppLang.id;
+  bool get rtl => lang.rtl;
 
   static AppStrings of(BuildContext context) =>
       AppStrings(context.watch<LocaleController>().lang);
@@ -47,21 +39,29 @@ class AppStrings {
 
   // One Translations instance per language, built once and reused.
   static final Map<AppLang, Translations> _cache = {};
-  static Translations _translationsFor(AppLang lang) =>
-      _cache.putIfAbsent(lang, () => _appLocaleFor(lang).buildSync());
+  static Translations _translationsFor(AppLang lang) => _cache.putIfAbsent(
+    lang,
+    () => _appLocaleFor(lang).buildSync(
+      // intl supplies CLDR rules for languages Slang's built-in table lacks
+      // (including Indonesian and Urdu), without an English fallback.
+      cardinalResolver: (n, {zero, one, two, few, many, other}) =>
+          Intl.pluralLogic(
+            n,
+            locale: lang.code,
+            zero: zero,
+            one: one,
+            two: two,
+            few: few,
+            many: many,
+            other: other!,
+            useExplicitNumberCases: false,
+          ),
+    ),
+  );
 
-  static AppLocale _appLocaleFor(AppLang lang) {
-    switch (lang) {
-      case AppLang.ar:
-        return AppLocale.ar;
-      case AppLang.id:
-        return AppLocale.id;
-      case AppLang.en:
-        return AppLocale.en;
-      case AppLang.ur:
-        return AppLocale.ur;
-    }
-  }
+  static AppLocale _appLocaleFor(AppLang lang) => AppLocale.values.singleWhere(
+    (locale) => locale.languageCode == lang.code,
+  );
 
   // ---- generic ----
   String get appName => 'Hisn';
@@ -88,8 +88,7 @@ class AppStrings {
   String get muhassanComplete => _t.muhassanComplete;
   String get muhassanMorning => _t.muhassanMorning;
   String get muhassanEvening => _t.muhassanEvening;
-  String streakDays(int n) =>
-      n == 1 ? _t.streakDaysOne : _t.streakDaysOther(n: n);
+  String streakDays(int n) => _t.streakDays(n: n);
   String get streakStart => _t.streakStart;
   String streakBest(int n) => _t.streakBest(n: n);
 
@@ -99,7 +98,7 @@ class AppStrings {
   String get statCurrent => _t.statCurrent;
   String get statBest => _t.statBest;
   String get statTotal => _t.statTotal;
-  String daysValue(int n) => n == 1 ? _t.daysValueOne : _t.daysValueOther(n: n);
+  String daysValue(int n) => _t.daysValue(n: n);
   String get streakOnFire => _t.streakOnFire;
   String get streakTodayPending => _t.streakTodayPending;
   String get streakBroken => _t.streakBroken;
@@ -127,12 +126,14 @@ class AppStrings {
   String get surahWord => _t.surahWord;
   String revelationLabel(String revelation) =>
       revelation == 'meccan' ? _t.revelationMeccan : _t.revelationMedinan;
-  String versesCount(int n) =>
-      n == 1 ? _t.versesCountOne : _t.versesCountOther(n: n);
+  String versesCount(int n) => _t.versesCount(n: n);
   String juzLabel(int n) => _t.juzLabel(n: n);
   String get quranBookmarks => _t.quranBookmarks;
   String get noBookmarks => _t.noBookmarks;
   String get versesOnThisPage => _t.versesOnThisPage;
+  String get quranZoomIn => _t.quranZoomIn;
+  String get quranZoomHint => _t.quranZoomHint;
+  String get quranReaderOptions => _t.quranReaderOptions;
   String get savedVerses => _t.savedVerses;
   String get savedPages => _t.savedPages;
   String get saveVerse => _t.saveVerse;
@@ -181,10 +182,8 @@ class AppStrings {
   String get noCustomTitle => _t.noCustomTitle;
   String get noCustomBody => _t.noCustomBody;
   String get recommendedNow => _t.recommendedNow;
-  String readNow(int count) =>
-      count == 1 ? _t.readNowOne : _t.readNowOther(count: count);
-  String duaCount(int count) =>
-      count == 1 ? _t.duaCountOne : _t.duaCountOther(count: count);
+  String readNow(int count) => _t.readNow(count: count);
+  String duaCount(int count) => _t.duaCount(count: count);
 
   // ---- prayer header ----
   String get now => _t.now;
@@ -200,8 +199,7 @@ class AppStrings {
   String get searchPrompt => _t.searchPrompt;
   String noResults(String query) => _t.noResults(query: query);
   String quranNoResults(String query) => _t.quranNoResults(query: query);
-  String resultsCount(int n) =>
-      n == 1 ? _t.resultsCountOne : _t.resultsCountOther(n: n);
+  String resultsCount(int n) => _t.resultsCount(n: n);
 
   // ---- saved ----
   String get noSavedTitle => _t.noSavedTitle;
@@ -210,8 +208,7 @@ class AppStrings {
   // ---- tasbih ----
   String get resetCount => _t.resetCount;
   String get tapToCount => _t.tapToCount;
-  String setsCompleted(int n) =>
-      n == 1 ? _t.setsCompletedOne : _t.setsCompletedOther(n: n);
+  String setsCompleted(int n) => _t.setsCompleted(n: n);
   String ofTarget(int n) => _t.ofTarget(n: n);
 
   // ---- read & count ----
@@ -226,8 +223,7 @@ class AppStrings {
   String get listenHint => _t.listenHint;
   String get listenIdleTitle => _t.listenIdleTitle;
   String get listenIdleBody => _t.listenIdleBody;
-  String listenMissing(int n) =>
-      n == 1 ? _t.listenMissingOne : _t.listenMissingOther(n: n);
+  String listenMissing(int n) => _t.listenMissing(n: n);
   String get listenPrevious => _t.listenPrevious;
   String get listenNext => _t.listenNext;
   String get listenPause => _t.listenPause;
@@ -308,9 +304,13 @@ class AppStrings {
   String get showTranslationSub => _t.showTranslationSub;
 
   String get aboutBody => _t.aboutBody;
+  String get aboutContributors => _t.aboutContributors;
+  String get aboutDeveloperCredit => _t.aboutDeveloperCredit;
+  String get aboutContentReviewerCredit => _t.aboutContentReviewerCredit;
+  String get aboutProfileLinkCopied => _t.aboutProfileLinkCopied;
   String get aboutTypefaces => _t.aboutTypefaces;
   String get aboutVerseMeanings => _t.aboutVerseMeanings;
-  String get aboutUrduDuaCredit => _t.aboutUrduDuaCredit;
+  String get aboutDuaDraftCredit => _t.aboutDuaDraftCredit;
   String get aboutTranslationSource => _t.aboutTranslationSource;
   String get aboutLinkCopied => _t.aboutLinkCopied;
   String get aboutArabicText => _t.aboutArabicText;
@@ -318,22 +318,7 @@ class AppStrings {
   String get aboutLatinApparatus => _t.aboutLatinApparatus;
   String get aboutMushafPages => _t.aboutMushafPages;
 
-  String get languageEnglish => 'English';
-  String get languageArabic => 'العربية';
-  String get languageIndonesian => 'Bahasa Indonesia';
-  String get languageUrdu => 'اردو';
-  String get currentLanguage {
-    switch (lang) {
-      case AppLang.ar:
-        return languageArabic;
-      case AppLang.id:
-        return languageIndonesian;
-      case AppLang.en:
-        return languageEnglish;
-      case AppLang.ur:
-        return languageUrdu;
-    }
-  }
+  String get currentLanguage => lang.nativeName;
 
   // ---- location picker ----
   String get automatic => _t.automatic;
@@ -436,6 +421,12 @@ class AppStrings {
   String get qiblaInterference => _t.qiblaInterference;
   String get qiblaTrueNorth => _t.qiblaTrueNorth;
   String get qiblaMagneticOnly => _t.qiblaMagneticOnly;
+  String get qiblaStyle => _t.qiblaStyle;
+  String get qiblaTone => _t.qiblaTone;
+  String get qiblaVibrationOn => _t.qiblaVibrationOn;
+  String get qiblaVibrationOff => _t.qiblaVibrationOff;
+  List<String> get qiblaStyles => _t.qiblaStyles;
+  List<String> get qiblaTones => _t.qiblaTones;
   String get compassUnavailable => _t.compassUnavailable;
   String get compassUnavailableBody => _t.compassUnavailableBody;
   String get qiblaNoLocation => _t.qiblaNoLocation;
@@ -471,6 +462,7 @@ class AppStrings {
     'Kuwait City': 'مدينة الكويت',
     'Cairo': 'القاهرة',
     'Istanbul': 'إسطنبول',
+    'Pristina': 'بريشتينا',
     'Casablanca': 'الدار البيضاء',
     'Lagos': 'لاغوس',
     'Karachi': 'كراتشي',
@@ -494,6 +486,7 @@ class AppStrings {
     'Kuwait': 'الكويت',
     'Egypt': 'مصر',
     'Türkiye': 'تركيا',
+    'Kosovo': 'كوسوفو',
     'Morocco': 'المغرب',
     'Nigeria': 'نيجيريا',
     'Pakistan': 'باكستان',
@@ -568,6 +561,13 @@ class AppStrings {
   String get patternsSub => _t.patternsSub;
 
   // ---- clock & date ----
+  String shortDuration(Duration duration) => duration.inHours > 0
+      ? _t.durationHoursMinutes(
+          hours: duration.inHours,
+          minutes: duration.inMinutes % 60,
+        )
+      : _t.durationMinutes(minutes: duration.inMinutes);
+
   String ampm(int hour24) => _t.ampm[hour24 >= 12 ? 1 : 0];
 
   /// The short weekday name alone ("Mon", "الإثنين"), without the
@@ -779,8 +779,7 @@ class AppStrings {
         : _t.restoreSavedOnVersion(date: d, version: version);
   }
 
-  String restoreDone(int n) =>
-      n == 1 ? _t.restoreDoneOne : _t.restoreDoneOther(n: n);
+  String restoreDone(int n) => _t.restoreDone(n: n);
 
   /// The message for a backup file that can't be used.
   String restoreError(BackupError error) => switch (error) {

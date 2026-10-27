@@ -58,8 +58,10 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get muhassanComplete => 'Terbentengi penuh — masha Allah';
 	@override String get muhassanMorning => 'Pagi';
 	@override String get muhassanEvening => 'Petang';
-	@override String get streakDaysOne => '1 hari beruntun';
-	@override String streakDaysOther({required Object n}) => '${n} hari beruntun';
+	@override String streakDays({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(n,
+		one: '1 hari beruntun',
+		other: '${n} hari beruntun',
+	);
 	@override String get streakStart => 'Mulai rentetan Anda';
 	@override String streakBest({required Object n}) => 'Terbaik: ${n}';
 	@override String get streakTitle => 'Rentetan Anda';
@@ -67,8 +69,10 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get statCurrent => 'Saat ini';
 	@override String get statBest => 'Terbaik';
 	@override String get statTotal => 'Total hari';
-	@override String get daysValueOne => '1 hari';
-	@override String daysValueOther({required Object n}) => '${n} hari';
+	@override String daysValue({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(n,
+		one: '1 hari',
+		other: '${n} hari',
+	);
 	@override String get streakOnFire => 'Luar biasa — pertahankan!';
 	@override String get streakTodayPending => 'Selesaikan zikir hari ini untuk menambah rentetan';
 	@override String get streakBroken => 'Selesaikan zikir pagi & petang untuk memulai lagi';
@@ -100,8 +104,10 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get surahWord => 'Surah';
 	@override String get revelationMeccan => 'Makkiyah';
 	@override String get revelationMedinan => 'Madaniyah';
-	@override String get versesCountOne => '1 ayat';
-	@override String versesCountOther({required Object n}) => '${n} ayat';
+	@override String versesCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(n,
+		one: '1 ayat',
+		other: '${n} ayat',
+	);
 	@override String juzLabel({required Object n}) => 'Juz ${n}';
 	@override String get quranBookmarks => 'Penanda';
 	@override String get noBookmarks => 'Belum ada penanda';
@@ -145,10 +151,14 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get noCustomTitle => 'Belum ada doa';
 	@override String get noCustomBody => 'Ketuk + untuk menambah doa Anda dan menyimpannya di sini.';
 	@override String get recommendedNow => 'Disarankan sekarang';
-	@override String get readNowOne => 'Baca sekarang · 1 doa';
-	@override String readNowOther({required Object count}) => 'Baca sekarang · ${count} doa';
-	@override String get duaCountOne => '1 doa';
-	@override String duaCountOther({required Object count}) => '${count} doa';
+	@override String readNow({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(count,
+		one: 'Baca sekarang · 1 doa',
+		other: 'Baca sekarang · ${count} doa',
+	);
+	@override String duaCount({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(count,
+		one: '1 doa',
+		other: '${count} doa',
+	);
 	@override String get now => 'Sekarang';
 	@override String get next => 'Berikutnya';
 	@override String get remaining => 'tersisa';
@@ -160,14 +170,18 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get searchPrompt => 'Cari berdasarkan judul, makna, transliterasi, atau sumber.';
 	@override String noResults({required Object query}) => 'Tidak ada doa untuk "${query}".';
 	@override String quranNoResults({required Object query}) => 'Tidak ada surah atau ayat untuk "${query}".';
-	@override String get resultsCountOne => '1 hasil';
-	@override String resultsCountOther({required Object n}) => '${n} hasil';
+	@override String resultsCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(n,
+		one: '1 hasil',
+		other: '${n} hasil',
+	);
 	@override String get noSavedTitle => 'Belum ada doa tersimpan';
 	@override String get noSavedBody => 'Ketuk penanda pada doa mana pun untuk menyimpannya di sini.';
 	@override String get resetCount => 'Atur ulang hitungan';
 	@override String get tapToCount => 'Ketuk di mana saja untuk menghitung';
-	@override String get setsCompletedOne => '1 putaran selesai';
-	@override String setsCompletedOther({required Object n}) => '${n} putaran selesai';
+	@override String setsCompleted({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(n,
+		one: '1 putaran selesai',
+		other: '${n} putaran selesai',
+	);
 	@override String ofTarget({required Object n}) => 'dari ${n}';
 	@override String get resetProgress => 'Atur ulang progres';
 	@override String get setComplete => 'Selesai — taqabbalallah';
@@ -178,8 +192,10 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get listenHint => 'Sedang diputar — ponsel boleh dikunci';
 	@override String get listenIdleTitle => 'Tidak ada yang diputar';
 	@override String get listenIdleBody => 'Putar rangkaiannya dan doa akan dibacakan, menghitung sendiri sambil berjalan.';
-	@override String get listenMissingOne => '1 doa belum ada rekamannya';
-	@override String listenMissingOther({required Object n}) => '${n} doa belum ada rekamannya';
+	@override String listenMissing({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(n,
+		one: '1 doa belum ada rekamannya',
+		other: '${n} doa belum ada rekamannya',
+	);
 	@override String get listenPrevious => 'Zikir sebelumnya';
 	@override String get listenNext => 'Zikir berikutnya';
 	@override String get listenPause => 'Jeda';
@@ -435,8 +451,10 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get restoreScopeProgressSub => 'Pertahankan lokasi, pengingat, dan bahasa ponsel ini';
 	@override String get restoreWarning => 'Ini akan mengganti apa yang ada di perangkat ini sekarang.';
 	@override String get restoreAction => 'Pulihkan';
-	@override String get restoreDoneOne => '1 item dipulihkan';
-	@override String restoreDoneOther({required Object n}) => '${n} item dipulihkan';
+	@override String restoreDone({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(n,
+		one: '1 item dipulihkan',
+		other: '${n} item dipulihkan',
+	);
 	@override String get backupSaved => 'Cadangan siap disimpan';
 	@override String get backupFailed => 'Tidak dapat membuat cadangan';
 	@override String get restoreErrMalformed => 'Berkas itu tidak dapat dibaca.';
@@ -444,6 +462,9 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get restoreErrTooNew => 'Cadangan itu dibuat oleh versi Hisn yang lebih baru. Perbarui aplikasi terlebih dahulu.';
 	@override String get restoreErrEmpty => 'Tidak ada yang bisa dipulihkan dari cadangan itu.';
 	@override String get restoreFailed => 'Tidak dapat memulihkan. Tidak ada yang diubah.';
+	@override String get quranZoomIn => 'Perbesar';
+	@override String get quranZoomHint => 'Rentangkan dua jari untuk memperbesar; rapatkan kembali untuk kembali.';
+	@override String get quranReaderOptions => 'Opsi membaca';
 	@override String get versesOnThisPage => 'Ayat di halaman ini';
 	@override String get savedVerses => 'Ayat tersimpan';
 	@override String get savedPages => 'Halaman tersimpan';
@@ -509,9 +530,13 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get shareImageFailedNotReady => 'Kartu belum siap diambil — teksnya dibagikan sebagai gantinya.';
 	@override String get shareImageFailedUnsupported => 'Perangkat ini tidak dapat membuat gambar — teksnya dibagikan sebagai gantinya.';
 	@override String get nextPhraseOnTap => 'Zikir selesai. Ketuk untuk menghitung zikir berikutnya.';
+	@override String get aboutContributors => 'Orang di balik Hisn';
+	@override String get aboutDeveloperCredit => 'Pengembang · Merancang dan mengembangkan aplikasi.';
+	@override String get aboutContentReviewerCredit => 'Kontributor · Membantu meninjau konten aplikasi untuk menemukan salah ketik dan kekeliruan informasi.';
+	@override String get aboutProfileLinkCopied => 'Tautan profil GitHub disalin. Buka di peramban Anda.';
 	@override String get aboutTypefaces => 'Jenis huruf';
 	@override String get aboutVerseMeanings => 'Makna ayat';
-	@override String get aboutUrduDuaCredit => 'Makna doa Urdu: draf proyek Hisn; menunggu tinjauan ahli.';
+	@override String get aboutDuaDraftCredit => 'Sebagian makna doa merupakan draf proyek Hisn; menunggu tinjauan bahasa dan agama yang kompeten.';
 	@override String get aboutTranslationSource => 'Sumber terjemahan · Tanzil';
 	@override String get aboutLinkCopied => 'Tautan sumber disalin. Buka di peramban Anda.';
 	@override String get aboutArabicText => 'Teks Arab';
@@ -557,6 +582,22 @@ class TranslationsId extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get prayerSilenceError => 'Senyap saat salat tidak dapat dijadwalkan. Periksa akses dan coba lagi.';
 	@override String get prayerSilenceStopNow => 'Akhiri waktu senyap ini';
 	@override String get prayerSilenceExpiryNote => 'Hanya mode Hisn yang berakhir otomatis; mode Jangan Ganggu Anda tidak diubah. Android dapat menunda pemeriksaan akhir cadangan jika akses alarm tepat dicabut atau aplikasi dibatasi.';
+	@override String get qiblaStyle => 'Desain kompas';
+	@override String get qiblaTone => 'Warna kompas';
+	@override String get qiblaVibrationOn => 'Getaran aktif';
+	@override String get qiblaVibrationOff => 'Getaran nonaktif';
+	@override List<String> get qiblaStyles => [
+		'Klasik',
+		'Minimal',
+		'Mawar kompas',
+	];
+	@override List<String> get qiblaTones => [
+		'Warna tema',
+		'Emas',
+		'Tinta',
+	];
+	@override String durationMinutes({required Object minutes}) => '${minutes}m';
+	@override String durationHoursMinutes({required Object hours, required Object minutes}) => '${hours}h ${minutes}m';
 }
 
 /// The flat map containing all translations for locale <id>.
@@ -586,8 +627,7 @@ extension on TranslationsId {
 			'muhassanComplete' => 'Terbentengi penuh — masha Allah',
 			'muhassanMorning' => 'Pagi',
 			'muhassanEvening' => 'Petang',
-			'streakDaysOne' => '1 hari beruntun',
-			'streakDaysOther' => ({required Object n}) => '${n} hari beruntun',
+			'streakDays' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(n, one: '1 hari beruntun', other: '${n} hari beruntun', ), 
 			'streakStart' => 'Mulai rentetan Anda',
 			'streakBest' => ({required Object n}) => 'Terbaik: ${n}',
 			'streakTitle' => 'Rentetan Anda',
@@ -595,8 +635,7 @@ extension on TranslationsId {
 			'statCurrent' => 'Saat ini',
 			'statBest' => 'Terbaik',
 			'statTotal' => 'Total hari',
-			'daysValueOne' => '1 hari',
-			'daysValueOther' => ({required Object n}) => '${n} hari',
+			'daysValue' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(n, one: '1 hari', other: '${n} hari', ), 
 			'streakOnFire' => 'Luar biasa — pertahankan!',
 			'streakTodayPending' => 'Selesaikan zikir hari ini untuk menambah rentetan',
 			'streakBroken' => 'Selesaikan zikir pagi & petang untuk memulai lagi',
@@ -626,8 +665,7 @@ extension on TranslationsId {
 			'surahWord' => 'Surah',
 			'revelationMeccan' => 'Makkiyah',
 			'revelationMedinan' => 'Madaniyah',
-			'versesCountOne' => '1 ayat',
-			'versesCountOther' => ({required Object n}) => '${n} ayat',
+			'versesCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(n, one: '1 ayat', other: '${n} ayat', ), 
 			'juzLabel' => ({required Object n}) => 'Juz ${n}',
 			'quranBookmarks' => 'Penanda',
 			'noBookmarks' => 'Belum ada penanda',
@@ -671,10 +709,8 @@ extension on TranslationsId {
 			'noCustomTitle' => 'Belum ada doa',
 			'noCustomBody' => 'Ketuk + untuk menambah doa Anda dan menyimpannya di sini.',
 			'recommendedNow' => 'Disarankan sekarang',
-			'readNowOne' => 'Baca sekarang · 1 doa',
-			'readNowOther' => ({required Object count}) => 'Baca sekarang · ${count} doa',
-			'duaCountOne' => '1 doa',
-			'duaCountOther' => ({required Object count}) => '${count} doa',
+			'readNow' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(count, one: 'Baca sekarang · 1 doa', other: 'Baca sekarang · ${count} doa', ), 
+			'duaCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(count, one: '1 doa', other: '${count} doa', ), 
 			'now' => 'Sekarang',
 			'next' => 'Berikutnya',
 			'remaining' => 'tersisa',
@@ -686,14 +722,12 @@ extension on TranslationsId {
 			'searchPrompt' => 'Cari berdasarkan judul, makna, transliterasi, atau sumber.',
 			'noResults' => ({required Object query}) => 'Tidak ada doa untuk "${query}".',
 			'quranNoResults' => ({required Object query}) => 'Tidak ada surah atau ayat untuk "${query}".',
-			'resultsCountOne' => '1 hasil',
-			'resultsCountOther' => ({required Object n}) => '${n} hasil',
+			'resultsCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(n, one: '1 hasil', other: '${n} hasil', ), 
 			'noSavedTitle' => 'Belum ada doa tersimpan',
 			'noSavedBody' => 'Ketuk penanda pada doa mana pun untuk menyimpannya di sini.',
 			'resetCount' => 'Atur ulang hitungan',
 			'tapToCount' => 'Ketuk di mana saja untuk menghitung',
-			'setsCompletedOne' => '1 putaran selesai',
-			'setsCompletedOther' => ({required Object n}) => '${n} putaran selesai',
+			'setsCompleted' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(n, one: '1 putaran selesai', other: '${n} putaran selesai', ), 
 			'ofTarget' => ({required Object n}) => 'dari ${n}',
 			'resetProgress' => 'Atur ulang progres',
 			'setComplete' => 'Selesai — taqabbalallah',
@@ -704,8 +738,7 @@ extension on TranslationsId {
 			'listenHint' => 'Sedang diputar — ponsel boleh dikunci',
 			'listenIdleTitle' => 'Tidak ada yang diputar',
 			'listenIdleBody' => 'Putar rangkaiannya dan doa akan dibacakan, menghitung sendiri sambil berjalan.',
-			'listenMissingOne' => '1 doa belum ada rekamannya',
-			'listenMissingOther' => ({required Object n}) => '${n} doa belum ada rekamannya',
+			'listenMissing' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(n, one: '1 doa belum ada rekamannya', other: '${n} doa belum ada rekamannya', ), 
 			'listenPrevious' => 'Zikir sebelumnya',
 			'listenNext' => 'Zikir berikutnya',
 			'listenPause' => 'Jeda',
@@ -945,8 +978,7 @@ extension on TranslationsId {
 			'restoreScopeProgressSub' => 'Pertahankan lokasi, pengingat, dan bahasa ponsel ini',
 			'restoreWarning' => 'Ini akan mengganti apa yang ada di perangkat ini sekarang.',
 			'restoreAction' => 'Pulihkan',
-			'restoreDoneOne' => '1 item dipulihkan',
-			'restoreDoneOther' => ({required Object n}) => '${n} item dipulihkan',
+			'restoreDone' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('id'))(n, one: '1 item dipulihkan', other: '${n} item dipulihkan', ), 
 			'backupSaved' => 'Cadangan siap disimpan',
 			'backupFailed' => 'Tidak dapat membuat cadangan',
 			'restoreErrMalformed' => 'Berkas itu tidak dapat dibaca.',
@@ -954,6 +986,9 @@ extension on TranslationsId {
 			'restoreErrTooNew' => 'Cadangan itu dibuat oleh versi Hisn yang lebih baru. Perbarui aplikasi terlebih dahulu.',
 			'restoreErrEmpty' => 'Tidak ada yang bisa dipulihkan dari cadangan itu.',
 			'restoreFailed' => 'Tidak dapat memulihkan. Tidak ada yang diubah.',
+			'quranZoomIn' => 'Perbesar',
+			'quranZoomHint' => 'Rentangkan dua jari untuk memperbesar; rapatkan kembali untuk kembali.',
+			'quranReaderOptions' => 'Opsi membaca',
 			'versesOnThisPage' => 'Ayat di halaman ini',
 			'savedVerses' => 'Ayat tersimpan',
 			'savedPages' => 'Halaman tersimpan',
@@ -1017,9 +1052,13 @@ extension on TranslationsId {
 			'shareImageFailedNotReady' => 'Kartu belum siap diambil — teksnya dibagikan sebagai gantinya.',
 			'shareImageFailedUnsupported' => 'Perangkat ini tidak dapat membuat gambar — teksnya dibagikan sebagai gantinya.',
 			'nextPhraseOnTap' => 'Zikir selesai. Ketuk untuk menghitung zikir berikutnya.',
+			'aboutContributors' => 'Orang di balik Hisn',
+			'aboutDeveloperCredit' => 'Pengembang · Merancang dan mengembangkan aplikasi.',
+			'aboutContentReviewerCredit' => 'Kontributor · Membantu meninjau konten aplikasi untuk menemukan salah ketik dan kekeliruan informasi.',
+			'aboutProfileLinkCopied' => 'Tautan profil GitHub disalin. Buka di peramban Anda.',
 			'aboutTypefaces' => 'Jenis huruf',
 			'aboutVerseMeanings' => 'Makna ayat',
-			'aboutUrduDuaCredit' => 'Makna doa Urdu: draf proyek Hisn; menunggu tinjauan ahli.',
+			'aboutDuaDraftCredit' => 'Sebagian makna doa merupakan draf proyek Hisn; menunggu tinjauan bahasa dan agama yang kompeten.',
 			'aboutTranslationSource' => 'Sumber terjemahan · Tanzil',
 			'aboutLinkCopied' => 'Tautan sumber disalin. Buka di peramban Anda.',
 			'aboutArabicText' => 'Teks Arab',
@@ -1065,6 +1104,18 @@ extension on TranslationsId {
 			'prayerSilenceError' => 'Senyap saat salat tidak dapat dijadwalkan. Periksa akses dan coba lagi.',
 			'prayerSilenceStopNow' => 'Akhiri waktu senyap ini',
 			'prayerSilenceExpiryNote' => 'Hanya mode Hisn yang berakhir otomatis; mode Jangan Ganggu Anda tidak diubah. Android dapat menunda pemeriksaan akhir cadangan jika akses alarm tepat dicabut atau aplikasi dibatasi.',
+			'qiblaStyle' => 'Desain kompas',
+			'qiblaTone' => 'Warna kompas',
+			'qiblaVibrationOn' => 'Getaran aktif',
+			'qiblaVibrationOff' => 'Getaran nonaktif',
+			'qiblaStyles.0' => 'Klasik',
+			'qiblaStyles.1' => 'Minimal',
+			'qiblaStyles.2' => 'Mawar kompas',
+			'qiblaTones.0' => 'Warna tema',
+			'qiblaTones.1' => 'Emas',
+			'qiblaTones.2' => 'Tinta',
+			'durationMinutes' => ({required Object minutes}) => '${minutes}m',
+			'durationHoursMinutes' => ({required Object hours, required Object minutes}) => '${hours}h ${minutes}m',
 			_ => null,
 		};
 	}

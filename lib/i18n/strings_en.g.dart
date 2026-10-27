@@ -98,11 +98,11 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// en: 'Evening'
 	String get muhassanEvening => 'Evening';
 
-	/// en: '1 day streak'
-	String get streakDaysOne => '1 day streak';
-
-	/// en: '$n day streak'
-	String streakDaysOther({required Object n}) => '${n} day streak';
+	/// en: '(one) {1 day streak} (other) {$n day streak}'
+	String streakDays({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+		one: '1 day streak',
+		other: '${n} day streak',
+	);
 
 	/// en: 'Start your streak'
 	String get streakStart => 'Start your streak';
@@ -125,11 +125,11 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// en: 'Total days'
 	String get statTotal => 'Total days';
 
-	/// en: '1 day'
-	String get daysValueOne => '1 day';
-
-	/// en: '$n days'
-	String daysValueOther({required Object n}) => '${n} days';
+	/// en: '(one) {1 day} (other) {$n days}'
+	String daysValue({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+		one: '1 day',
+		other: '${n} days',
+	);
 
 	/// en: 'You're on fire — keep it up!'
 	String get streakOnFire => 'You\'re on fire — keep it up!';
@@ -207,11 +207,11 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// en: 'Medinan'
 	String get revelationMedinan => 'Medinan';
 
-	/// en: '1 verse'
-	String get versesCountOne => '1 verse';
-
-	/// en: '$n verses'
-	String versesCountOther({required Object n}) => '${n} verses';
+	/// en: '(one) {1 verse} (other) {$n verses}'
+	String versesCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+		one: '1 verse',
+		other: '${n} verses',
+	);
 
 	/// en: 'Juz $n'
 	String juzLabel({required Object n}) => 'Juz ${n}';
@@ -342,17 +342,17 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// en: 'Recommended now'
 	String get recommendedNow => 'Recommended now';
 
-	/// en: 'Read now · 1 dua'
-	String get readNowOne => 'Read now · 1 dua';
+	/// en: '(one) {Read now · 1 dua} (other) {Read now · $count duas}'
+	String readNow({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(count,
+		one: 'Read now · 1 dua',
+		other: 'Read now · ${count} duas',
+	);
 
-	/// en: 'Read now · $count duas'
-	String readNowOther({required Object count}) => 'Read now · ${count} duas';
-
-	/// en: '1 dua'
-	String get duaCountOne => '1 dua';
-
-	/// en: '$count duas'
-	String duaCountOther({required Object count}) => '${count} duas';
+	/// en: '(one) {1 dua} (other) {$count duas}'
+	String duaCount({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(count,
+		one: '1 dua',
+		other: '${count} duas',
+	);
 
 	/// en: 'Now'
 	String get now => 'Now';
@@ -387,11 +387,11 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// en: 'No surahs or verses found for “$query”.'
 	String quranNoResults({required Object query}) => 'No surahs or verses found for “${query}”.';
 
-	/// en: '1 result'
-	String get resultsCountOne => '1 result';
-
-	/// en: '$n results'
-	String resultsCountOther({required Object n}) => '${n} results';
+	/// en: '(one) {1 result} (other) {$n results}'
+	String resultsCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+		one: '1 result',
+		other: '${n} results',
+	);
 
 	/// en: 'No saved duas yet'
 	String get noSavedTitle => 'No saved duas yet';
@@ -405,11 +405,11 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// en: 'Tap anywhere to count'
 	String get tapToCount => 'Tap anywhere to count';
 
-	/// en: '1 set completed'
-	String get setsCompletedOne => '1 set completed';
-
-	/// en: '$n sets completed'
-	String setsCompletedOther({required Object n}) => '${n} sets completed';
+	/// en: '(one) {1 set completed} (other) {$n sets completed}'
+	String setsCompleted({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+		one: '1 set completed',
+		other: '${n} sets completed',
+	);
 
 	/// en: 'of $n'
 	String ofTarget({required Object n}) => 'of ${n}';
@@ -441,11 +441,11 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// en: 'Play the set and it will be recited aloud, counting itself as it goes.'
 	String get listenIdleBody => 'Play the set and it will be recited aloud, counting itself as it goes.';
 
-	/// en: '1 dua has no recording yet'
-	String get listenMissingOne => '1 dua has no recording yet';
-
-	/// en: '$n duas have no recording yet'
-	String listenMissingOther({required Object n}) => '${n} duas have no recording yet';
+	/// en: '(one) {1 dua has no recording yet} (other) {$n duas have no recording yet}'
+	String listenMissing({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+		one: '1 dua has no recording yet',
+		other: '${n} duas have no recording yet',
+	);
 
 	/// en: 'Previous dhikr'
 	String get listenPrevious => 'Previous dhikr';
@@ -1091,11 +1091,11 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// en: 'Restore'
 	String get restoreAction => 'Restore';
 
-	/// en: 'Restored 1 item'
-	String get restoreDoneOne => 'Restored 1 item';
-
-	/// en: 'Restored $n items'
-	String restoreDoneOther({required Object n}) => 'Restored ${n} items';
+	/// en: '(one) {Restored 1 item} (other) {Restored $n items}'
+	String restoreDone({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n,
+		one: 'Restored 1 item',
+		other: 'Restored ${n} items',
+	);
 
 	/// en: 'Backup ready to save'
 	String get backupSaved => 'Backup ready to save';
@@ -1117,6 +1117,15 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
 	/// en: 'Could not restore. Nothing was changed.'
 	String get restoreFailed => 'Could not restore. Nothing was changed.';
+
+	/// en: 'Zoom in'
+	String get quranZoomIn => 'Zoom in';
+
+	/// en: 'Spread two fingers to zoom in; pinch them together to return.'
+	String get quranZoomHint => 'Spread two fingers to zoom in; pinch them together to return.';
+
+	/// en: 'Reading options'
+	String get quranReaderOptions => 'Reading options';
 
 	/// en: 'Verses on this page'
 	String get versesOnThisPage => 'Verses on this page';
@@ -1300,14 +1309,26 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	/// en: 'Phrase complete. Tap to count the next phrase.'
 	String get nextPhraseOnTap => 'Phrase complete. Tap to count the next phrase.';
 
+	/// en: 'People behind Hisn'
+	String get aboutContributors => 'People behind Hisn';
+
+	/// en: 'Developer · Designed and developed the app.'
+	String get aboutDeveloperCredit => 'Developer · Designed and developed the app.';
+
+	/// en: 'Contributor · Helped review the app’s content for typos and factual errors.'
+	String get aboutContentReviewerCredit => 'Contributor · Helped review the app’s content for typos and factual errors.';
+
+	/// en: 'GitHub profile link copied. Open it in your browser.'
+	String get aboutProfileLinkCopied => 'GitHub profile link copied. Open it in your browser.';
+
 	/// en: 'Typefaces'
 	String get aboutTypefaces => 'Typefaces';
 
 	/// en: 'Verse meanings'
 	String get aboutVerseMeanings => 'Verse meanings';
 
-	/// en: 'Urdu dua meanings: Hisn project draft; qualified review pending.'
-	String get aboutUrduDuaCredit => 'Urdu dua meanings: Hisn project draft; qualified review pending.';
+	/// en: 'Some dua meanings are Hisn project drafts; qualified language and religious review is pending.'
+	String get aboutDuaDraftCredit => 'Some dua meanings are Hisn project drafts; qualified language and religious review is pending.';
 
 	/// en: 'Translation sources · Tanzil'
 	String get aboutTranslationSource => 'Translation sources · Tanzil';
@@ -1443,6 +1464,35 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
 	/// en: 'Only Hisn's mode ends automatically; your own Do Not Disturb stays unchanged. Android may delay the backup end check if precise-alarm access is revoked or the phone restricts the app.'
 	String get prayerSilenceExpiryNote => 'Only Hisn\'s mode ends automatically; your own Do Not Disturb stays unchanged. Android may delay the backup end check if precise-alarm access is revoked or the phone restricts the app.';
+
+	/// en: 'Compass design'
+	String get qiblaStyle => 'Compass design';
+
+	/// en: 'Compass color'
+	String get qiblaTone => 'Compass color';
+
+	/// en: 'Vibration on'
+	String get qiblaVibrationOn => 'Vibration on';
+
+	/// en: 'Vibration off'
+	String get qiblaVibrationOff => 'Vibration off';
+
+	List<String> get qiblaStyles => [
+		'Classic',
+		'Minimal',
+		'Compass rose',
+	];
+	List<String> get qiblaTones => [
+		'Theme accent',
+		'Gold',
+		'Ink',
+	];
+
+	/// en: '${minutes}m'
+	String durationMinutes({required Object minutes}) => '${minutes}m';
+
+	/// en: '${hours}h ${minutes}m'
+	String durationHoursMinutes({required Object hours, required Object minutes}) => '${hours}h ${minutes}m';
 }
 
 /// The flat map containing all translations for locale <en>.
@@ -1472,8 +1522,7 @@ extension on Translations {
 			'muhassanComplete' => 'Fully fortified — masha\'Allah',
 			'muhassanMorning' => 'Morning',
 			'muhassanEvening' => 'Evening',
-			'streakDaysOne' => '1 day streak',
-			'streakDaysOther' => ({required Object n}) => '${n} day streak',
+			'streakDays' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '1 day streak', other: '${n} day streak', ), 
 			'streakStart' => 'Start your streak',
 			'streakBest' => ({required Object n}) => 'Best: ${n}',
 			'streakTitle' => 'Your streak',
@@ -1481,8 +1530,7 @@ extension on Translations {
 			'statCurrent' => 'Current',
 			'statBest' => 'Best',
 			'statTotal' => 'Total days',
-			'daysValueOne' => '1 day',
-			'daysValueOther' => ({required Object n}) => '${n} days',
+			'daysValue' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '1 day', other: '${n} days', ), 
 			'streakOnFire' => 'You\'re on fire — keep it up!',
 			'streakTodayPending' => 'Finish today\'s adhkar to extend your streak',
 			'streakBroken' => 'Complete morning & evening adhkar to begin again',
@@ -1512,8 +1560,7 @@ extension on Translations {
 			'surahWord' => 'Surah',
 			'revelationMeccan' => 'Meccan',
 			'revelationMedinan' => 'Medinan',
-			'versesCountOne' => '1 verse',
-			'versesCountOther' => ({required Object n}) => '${n} verses',
+			'versesCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '1 verse', other: '${n} verses', ), 
 			'juzLabel' => ({required Object n}) => 'Juz ${n}',
 			'quranBookmarks' => 'Bookmarks',
 			'noBookmarks' => 'No bookmarks yet',
@@ -1557,10 +1604,8 @@ extension on Translations {
 			'noCustomTitle' => 'No duas yet',
 			'noCustomBody' => 'Tap + to add your own dua and keep it here.',
 			'recommendedNow' => 'Recommended now',
-			'readNowOne' => 'Read now · 1 dua',
-			'readNowOther' => ({required Object count}) => 'Read now · ${count} duas',
-			'duaCountOne' => '1 dua',
-			'duaCountOther' => ({required Object count}) => '${count} duas',
+			'readNow' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(count, one: 'Read now · 1 dua', other: 'Read now · ${count} duas', ), 
+			'duaCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(count, one: '1 dua', other: '${count} duas', ), 
 			'now' => 'Now',
 			'next' => 'Next',
 			'remaining' => 'remaining',
@@ -1572,14 +1617,12 @@ extension on Translations {
 			'searchPrompt' => 'Search by title, meaning, transliteration, or source.',
 			'noResults' => ({required Object query}) => 'No duas found for “${query}”.',
 			'quranNoResults' => ({required Object query}) => 'No surahs or verses found for “${query}”.',
-			'resultsCountOne' => '1 result',
-			'resultsCountOther' => ({required Object n}) => '${n} results',
+			'resultsCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '1 result', other: '${n} results', ), 
 			'noSavedTitle' => 'No saved duas yet',
 			'noSavedBody' => 'Tap the bookmark on any dua to keep it here for quick access.',
 			'resetCount' => 'Reset count',
 			'tapToCount' => 'Tap anywhere to count',
-			'setsCompletedOne' => '1 set completed',
-			'setsCompletedOther' => ({required Object n}) => '${n} sets completed',
+			'setsCompleted' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '1 set completed', other: '${n} sets completed', ), 
 			'ofTarget' => ({required Object n}) => 'of ${n}',
 			'resetProgress' => 'Reset progress',
 			'setComplete' => 'Set complete — taqabbal Allah',
@@ -1590,8 +1633,7 @@ extension on Translations {
 			'listenHint' => 'Playing — you can lock your phone',
 			'listenIdleTitle' => 'Nothing playing',
 			'listenIdleBody' => 'Play the set and it will be recited aloud, counting itself as it goes.',
-			'listenMissingOne' => '1 dua has no recording yet',
-			'listenMissingOther' => ({required Object n}) => '${n} duas have no recording yet',
+			'listenMissing' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: '1 dua has no recording yet', other: '${n} duas have no recording yet', ), 
 			'listenPrevious' => 'Previous dhikr',
 			'listenNext' => 'Next dhikr',
 			'listenPause' => 'Pause',
@@ -1831,8 +1873,7 @@ extension on Translations {
 			'restoreScopeProgressSub' => 'Keep this phone\'s location, reminders and language',
 			'restoreWarning' => 'This replaces what is currently on this device.',
 			'restoreAction' => 'Restore',
-			'restoreDoneOne' => 'Restored 1 item',
-			'restoreDoneOther' => ({required Object n}) => 'Restored ${n} items',
+			'restoreDone' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('en'))(n, one: 'Restored 1 item', other: 'Restored ${n} items', ), 
 			'backupSaved' => 'Backup ready to save',
 			'backupFailed' => 'Could not create the backup',
 			'restoreErrMalformed' => 'That file could not be read.',
@@ -1840,6 +1881,9 @@ extension on Translations {
 			'restoreErrTooNew' => 'That backup was made by a newer version of Hisn. Update the app first.',
 			'restoreErrEmpty' => 'That backup has nothing to restore.',
 			'restoreFailed' => 'Could not restore. Nothing was changed.',
+			'quranZoomIn' => 'Zoom in',
+			'quranZoomHint' => 'Spread two fingers to zoom in; pinch them together to return.',
+			'quranReaderOptions' => 'Reading options',
 			'versesOnThisPage' => 'Verses on this page',
 			'savedVerses' => 'Saved verses',
 			'savedPages' => 'Saved pages',
@@ -1903,9 +1947,13 @@ extension on Translations {
 			'shareImageFailedNotReady' => 'The card wasn\'t ready to capture — sharing the text instead.',
 			'shareImageFailedUnsupported' => 'This device couldn\'t make an image — sharing the text instead.',
 			'nextPhraseOnTap' => 'Phrase complete. Tap to count the next phrase.',
+			'aboutContributors' => 'People behind Hisn',
+			'aboutDeveloperCredit' => 'Developer · Designed and developed the app.',
+			'aboutContentReviewerCredit' => 'Contributor · Helped review the app’s content for typos and factual errors.',
+			'aboutProfileLinkCopied' => 'GitHub profile link copied. Open it in your browser.',
 			'aboutTypefaces' => 'Typefaces',
 			'aboutVerseMeanings' => 'Verse meanings',
-			'aboutUrduDuaCredit' => 'Urdu dua meanings: Hisn project draft; qualified review pending.',
+			'aboutDuaDraftCredit' => 'Some dua meanings are Hisn project drafts; qualified language and religious review is pending.',
 			'aboutTranslationSource' => 'Translation sources · Tanzil',
 			'aboutLinkCopied' => 'Source link copied. Open it in your browser.',
 			'aboutArabicText' => 'Arabic text',
@@ -1951,6 +1999,18 @@ extension on Translations {
 			'prayerSilenceError' => 'Prayer silence could not be scheduled. Check access and try again.',
 			'prayerSilenceStopNow' => 'End this quiet period',
 			'prayerSilenceExpiryNote' => 'Only Hisn\'s mode ends automatically; your own Do Not Disturb stays unchanged. Android may delay the backup end check if precise-alarm access is revoked or the phone restricts the app.',
+			'qiblaStyle' => 'Compass design',
+			'qiblaTone' => 'Compass color',
+			'qiblaVibrationOn' => 'Vibration on',
+			'qiblaVibrationOff' => 'Vibration off',
+			'qiblaStyles.0' => 'Classic',
+			'qiblaStyles.1' => 'Minimal',
+			'qiblaStyles.2' => 'Compass rose',
+			'qiblaTones.0' => 'Theme accent',
+			'qiblaTones.1' => 'Gold',
+			'qiblaTones.2' => 'Ink',
+			'durationMinutes' => ({required Object minutes}) => '${minutes}m',
+			'durationHoursMinutes' => ({required Object hours, required Object minutes}) => '${hours}h ${minutes}m',
 			_ => null,
 		};
 	}

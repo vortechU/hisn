@@ -9,8 +9,8 @@ import android.view.View
 import android.widget.RemoteViews
 
 /**
- * The larger prayer widget: the day's five prayers as a timeline on the field,
- * under a countdown to the next one.
+ * The horizontal prayer widget: a one-row timetable, with the day track and
+ * countdown revealed as the user gives it more vertical space.
  *
  * Times are computed natively (see [PrayerWidget.compute]) so it stays correct
  * on its own. Android re-runs [onUpdate] every ~30 min, which walks the "now"
@@ -62,17 +62,34 @@ class PrayerWidgetProvider : AppWidgetProvider() {
         val now = System.currentTimeMillis()
 
         WidgetChrome.applyGround(views, inks) { it.field }
-        WidgetChrome.tint(views, R.id.widget_star, inks) { WidgetTheme.over(it.onField, 0.08f, it.field) }
+        WidgetChrome.tint(views, R.id.prayer_ornament, inks) {
+            WidgetTheme.over(it.onField, 0.18f, it.field)
+        }
         WidgetChrome.applyDirection(context, views, R.id.widget_root)
         WidgetChrome.open(context, WidgetChrome.ROUTE_PRAYER)?.let {
             views.setOnClickPendingIntent(R.id.widget_root, it)
         }
 
-        // A launcher's smallest cell has room for the timeline alone.
+        // Spend a single launcher row on the five times. Larger sizes reveal
+        // the track, then the countdown and context, without shrinking type.
         val height = WidgetChrome.heightDp(manager, widgetId, FALLBACK_HEIGHT_DP)
+        val fontScale = context.resources.configuration.fontScale.coerceAtLeast(1f)
+        val showHead = height >= (EXPANDED_FROM_DP * fontScale).toInt()
+        val showTrack = height >= (TRACK_FROM_DP * fontScale).toInt()
         views.setViewVisibility(
             R.id.prayer_head,
-            if (height < COMPACT_BELOW_DP) View.GONE else View.VISIBLE,
+            if (showHead) View.VISIBLE else View.GONE,
+        )
+        views.setViewVisibility(R.id.prayer_head_gap, if (showHead) View.VISIBLE else View.GONE)
+        for (id in TRACK_IDS) {
+            views.setViewVisibility(id, if (showTrack) View.VISIBLE else View.GONE)
+        }
+        views.setViewPadding(
+            R.id.prayer_content,
+            WidgetChrome.dp(context, 12f),
+            WidgetChrome.dp(context, if (showHead) 14f else 2f),
+            WidgetChrome.dp(context, 12f),
+            WidgetChrome.dp(context, if (showHead) 10f else 2f),
         )
 
         views.setTextViewText(R.id.prayer_hijri, WidgetChrome.ui(context, data.hijri))
@@ -204,10 +221,10 @@ class PrayerWidgetProvider : AppWidgetProvider() {
     private companion object {
         const val EM_DASH = "—"
         const val FALLBACK_WIDTH_DP = 250
-        const val FALLBACK_HEIGHT_DP = 160
+        const val FALLBACK_HEIGHT_DP = 50
 
-        /** Below this height the head is dropped and the timeline stands alone. */
-        const val COMPACT_BELOW_DP = 130
+        const val TRACK_FROM_DP = 88
+        const val EXPANDED_FROM_DP = 160
 
         val NAME_IDS = intArrayOf(
             R.id.name_fajr, R.id.name_dhuhr, R.id.name_asr,

@@ -74,7 +74,7 @@ class VerseRow extends StatelessWidget {
                   Expanded(
                     child: Text(
                       showSurahName
-                          ? '${verse.surah.nameFor(s.rtl)} · ${verse.reference}'
+                          ? '${verse.surah.nameFor(s.lang.usesArabicScript)} · ${verse.reference}'
                           : verse.reference,
                       style: theme.textTheme.labelSmall,
                     ),
@@ -118,7 +118,7 @@ class VerseRow extends StatelessWidget {
                         ClipboardData(
                           text:
                               '${verse.ayah.text}\n'
-                              '(${verse.surah.nameFor(s.rtl)} '
+                              '(${verse.surah.nameFor(s.lang.usesArabicScript)} '
                               '${verse.reference})',
                         ),
                       );
@@ -149,7 +149,7 @@ class VerseRow extends StatelessWidget {
               // two.
               if (showTranslation && verse.translation != null) ...[
                 const SizedBox(height: 8),
-                if (verse.translationIsArabic || s.lang.name == 'ur')
+                if (verse.translationIsArabic || s.lang.usesArabicScript)
                   ArabicText(
                     verse.translation!,
                     block: true,

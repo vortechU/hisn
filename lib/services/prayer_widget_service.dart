@@ -144,36 +144,36 @@ class PrayerWidgetService extends ChangeNotifier {
   // ---- payload sections ----
 
   Map<String, String> _prayerConfig(PrayerService prayer, AppStrings s) => {
-        'lat': prayer.latitude.toString(),
-        'lng': prayer.longitude.toString(),
-        'method': prayer.method.name,
-        'madhab': prayer.madhab.name,
-        'label': s.place(prayer.locationLabel),
-        'name_fajr': s.prayerName(Prayer.fajr),
-        'name_dhuhr': s.prayerName(Prayer.dhuhr),
-        'name_asr': s.prayerName(Prayer.asr),
-        'name_maghrib': s.prayerName(Prayer.maghrib),
-        'name_isha': s.prayerName(Prayer.isha),
-        'next_label': s.next,
-        // The compact widget counts up from each adhan for this long before
-        // it turns to the next one, as the app's header does.
-        'since_label': s.sinceAdhan,
-        for (final p in NotificationService.notifiablePrayers)
-          'since_minutes_${p.name}': _iqamahWindow(p).inMinutes.toString(),
-        'remaining': s.remaining,
-        // Localized 12-hour markers (index 0 = AM, 1 = PM).
-        'am': s.ampm(9),
-        'pm': s.ampm(21),
-        // Hijri date: a ready-made string (fallback for old Android) plus the
-        // pieces the widget needs to recompute it natively each day. The
-        // sighting offset is pushed alongside; the ready-made string already
-        // carries it, but the native daily recompute must apply it too or the
-        // widget will drift a day from the app.
-        'hijri': s.hijriDate(DateTime.now(), offset: _hijriOffset),
-        'hijri_months': s.hijriMonths.join('|'),
-        'hijri_suffix': s.hijriSuffix,
-        'hijri_offset': _hijriOffset.toString(),
-      };
+    'lat': prayer.latitude.toString(),
+    'lng': prayer.longitude.toString(),
+    'method': prayer.method.name,
+    'madhab': prayer.madhab.name,
+    'label': s.place(prayer.locationLabel),
+    'name_fajr': s.prayerName(Prayer.fajr),
+    'name_dhuhr': s.prayerName(Prayer.dhuhr),
+    'name_asr': s.prayerName(Prayer.asr),
+    'name_maghrib': s.prayerName(Prayer.maghrib),
+    'name_isha': s.prayerName(Prayer.isha),
+    'next_label': s.next,
+    // The compact widget counts up from each adhan for this long before
+    // it turns to the next one, as the app's header does.
+    'since_label': s.sinceAdhan,
+    for (final p in NotificationService.notifiablePrayers)
+      'since_minutes_${p.name}': _iqamahWindow(p).inMinutes.toString(),
+    'remaining': s.remaining,
+    // Localized 12-hour markers (index 0 = AM, 1 = PM).
+    'am': s.ampm(9),
+    'pm': s.ampm(21),
+    // Hijri date: a ready-made string (fallback for old Android) plus the
+    // pieces the widget needs to recompute it natively each day. The
+    // sighting offset is pushed alongside; the ready-made string already
+    // carries it, but the native daily recompute must apply it too or the
+    // widget will drift a day from the app.
+    'hijri': s.hijriDate(DateTime.now(), offset: _hijriOffset),
+    'hijri_months': s.hijriMonths.join('|'),
+    'hijri_suffix': s.hijriSuffix,
+    'hijri_offset': _hijriOffset.toString(),
+  };
 
   Duration _iqamahWindow(Prayer prayer) =>
       _notifications?.iqamahWindow(prayer) ??
@@ -255,7 +255,7 @@ class PrayerWidgetService extends ChangeNotifier {
   /// dropped on the home screen before the Tasbih screen has ever been opened
   /// still has something to count.
   Map<String, String> _tasbihPhrase() {
-    final presets = _repository.dhikr;
+    final presets = [..._repository.dhikr, ...?_tasbih?.customDhikr];
     if (presets.isEmpty) return const {};
     final selected = _tasbih?.selectedId;
     final dhikr = presets.firstWhere(
@@ -276,7 +276,7 @@ class PrayerWidgetService extends ChangeNotifier {
     final lead = last == null ? s.quranTitle : s.continueReading;
     return {
       'quran_page': page.toString(),
-      'quran_title': '${s.surahWord} ${surah.nameFor(s.rtl)}',
+      'quran_title': '${s.surahWord} ${surah.nameFor(s.lang.usesArabicScript)}',
       'quran_sub': '$lead · ${s.juzLabel(surah.juz)}',
       'quran_ar': surah.name,
     };
@@ -301,10 +301,11 @@ class PrayerWidgetService extends ChangeNotifier {
     final cached = _poolCache[lang];
     if (cached != null) return cached;
 
-    final short = _repository.duas
-        .where((d) => d.arabic.length >= 12 && d.arabic.length <= 110)
-        .toList()
-      ..sort((a, b) => a.id.compareTo(b.id));
+    final short =
+        _repository.duas
+            .where((d) => d.arabic.length >= 12 && d.arabic.length <= 110)
+            .toList()
+          ..sort((a, b) => a.id.compareTo(b.id));
     if (short.isEmpty) return '[]';
 
     final stride = (short.length / _poolSize).ceil().clamp(1, short.length);

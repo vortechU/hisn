@@ -178,14 +178,16 @@ void main() {
         ],
         child: MaterialApp(
           theme: dark
-              ? AppTheme.dark(AppPalettes.emerald, arabicUi: lang == AppLang.ar)
+              ? AppTheme.dark(AppPalettes.emerald,
+                  arabicUi: lang.usesArabicScript, uiFamily: lang.uiFontFamily)
               : AppTheme.light(
                   AppPalettes.emerald,
-                  arabicUi: lang == AppLang.ar,
+                  arabicUi: lang.usesArabicScript,
+                  uiFamily: lang.uiFontFamily,
                 ),
           home: Scaffold(
             body: Directionality(
-              textDirection: lang == AppLang.ar
+              textDirection: lang.rtl
                   ? TextDirection.rtl
                   : TextDirection.ltr,
               child: MediaQuery(

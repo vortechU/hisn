@@ -99,19 +99,11 @@ class AdhanPlayerService : Service() {
 
     private fun language(): String = FlutterPrefs.getString(this, "app_language", "en") ?: "en"
 
-    private fun stopLabel(): String = when (language()) {
-        "ar" -> "إيقاف الأذان"
-        "id" -> "Hentikan azan"
-        "ur" -> "اذان بند کریں"
-        else -> "Stop adhan"
-    }
+    private fun stopLabel(): String =
+        NativeLocalizations.text(this, language(), "stopAdhan", "Stop adhan")
 
-    private fun playbackLabel(): String = when (language()) {
-        "ar" -> "الأذان قيد التشغيل"
-        "id" -> "Azan sedang diputar"
-        "ur" -> "اذان چل رہی ہے"
-        else -> "Adhan is playing"
-    }
+    private fun playbackLabel(): String =
+        NativeLocalizations.text(this, language(), "adhanPlaying", "Adhan is playing")
 
     private fun play(fajr: Boolean, usage: String) {
         try {

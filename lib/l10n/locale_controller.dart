@@ -1,94 +1,49 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// The languages the UI is translated into.
-enum AppLang { en, ar, id, ur }
+import 'app_language.dart';
+export 'app_language.dart';
 
-/// Holds the app's chosen UI language and persists it. On first launch it
-/// follows the phone's language when that's one we translate into, so the app
-/// (and the welcome tour) open in a language the user understands; any other
-/// device language falls back to English. Switching to Arabic also flips the
-/// whole app to a right-to-left layout (handled by [MaterialApp] via the locale
-/// + localizations delegates). Indonesian (`id`) is left-to-right like English.
+/// Persists the UI language; first launch honors the device's ordered choices.
 class LocaleController extends ChangeNotifier {
   LocaleController(this._prefs) {
-    final saved = _prefs.getString(_kKey);
-    if (saved != null) {
-      _locale = _localeForCode(saved);
-    } else {
-      // No explicit choice yet — match the device language if we support it.
-      // Persist it so everything that reads [_kKey] (notifications, place
-      // names) stays in step with the UI; the user can still override it in
-      // Settings.
-      _locale = _deviceDefaultLocale();
-      _prefs.setString(_kKey, _locale.languageCode);
-    }
+    final saved = _prefs.getString(preferenceKey);
+    _lang = saved == null ? _deviceDefault() : AppLang.fromCode(saved);
+    // Normalize stale saved codes for background readers as well.
+    if (saved != _lang.code) _prefs.setString(preferenceKey, _lang.code);
   }
 
   final SharedPreferences _prefs;
-  static const _kKey = 'app_language';
+  static const preferenceKey = 'app_language';
+  late AppLang _lang;
 
-  Locale _locale = const Locale('en');
+  AppLang get lang => _lang;
+  Locale get locale => Locale(_lang.code);
+  bool get isArabic => _lang == AppLang.ar;
+  bool get rtl => _lang.rtl;
 
-  Locale get locale => _locale;
-  bool get isArabic => _locale.languageCode == 'ar';
-  bool get rtl => const {'ar', 'ur'}.contains(_locale.languageCode);
+  static final List<Locale> supported = List.unmodifiable(
+    AppLang.values.map((language) => Locale(language.code)),
+  );
 
-  /// The current language as an [AppLang] (what [AppStrings] switches on).
-  AppLang get lang {
-    switch (_locale.languageCode) {
-      case 'ar':
-        return AppLang.ar;
-      case 'id':
-        return AppLang.id;
-      case 'ur':
-        return AppLang.ur;
-      default:
-        return AppLang.en;
-    }
-  }
-
-  /// The languages the app offers, in display order.
-  static const List<Locale> supported = [
-    Locale('en'),
-    Locale('ar'),
-    Locale('id'),
-    Locale('ur'),
-  ];
-
-  static Locale _localeForCode(String? code) {
-    switch (code) {
-      case 'ar':
-        return const Locale('ar');
-      case 'id':
-        return const Locale('id');
-      case 'ur':
-        return const Locale('ur');
-      default:
-        return const Locale('en');
-    }
-  }
-
-  /// The first of the device's preferred languages that we translate into,
-  /// or English if none match. Mirrors how the platform resolves resources:
-  /// the user's ordered locale list is honoured, most-preferred first.
-  static Locale _deviceDefaultLocale() {
-    const supportedCodes = {'en', 'ar', 'id', 'ur'};
+  static AppLang _deviceDefault() {
     for (final locale in WidgetsBinding.instance.platformDispatcher.locales) {
-      if (supportedCodes.contains(locale.languageCode)) {
-        return Locale(locale.languageCode);
-      }
+      final language = AppLang.tryFromCode(locale.languageCode);
+      if (language != null) return language;
     }
-    return const Locale('en');
+    return AppLang.en;
   }
 
-  Future<void> setLocale(Locale locale) async {
-    if (locale.languageCode == _locale.languageCode) return;
-    _locale = locale;
+  Future<void> setLocale(Locale locale) =>
+      setLang(AppLang.fromCode(locale.languageCode));
+
+  Future<void> setLang(AppLang language) async {
+    if (language == _lang) return;
+    _lang = language;
+    // The setter updates the preference cache synchronously. Observers see the
+    // new choice immediately, with no notification delayed past disposal.
+    final persisted = _prefs.setString(preferenceKey, language.code);
     notifyListeners();
-    await _prefs.setString(_kKey, locale.languageCode);
+    await persisted;
   }
-
-  /// Switch to a specific UI language.
-  Future<void> setLang(AppLang lang) => setLocale(Locale(lang.name));
 }

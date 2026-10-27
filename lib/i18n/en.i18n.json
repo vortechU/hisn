@@ -18,8 +18,10 @@
   "muhassanComplete": "Fully fortified — masha'Allah",
   "muhassanMorning": "Morning",
   "muhassanEvening": "Evening",
-  "streakDaysOne": "1 day streak",
-  "streakDaysOther": "$n day streak",
+  "streakDays(param=n)": {
+    "one": "1 day streak",
+    "other": "$n day streak"
+  },
   "streakStart": "Start your streak",
   "streakBest": "Best: $n",
   "streakTitle": "Your streak",
@@ -27,8 +29,10 @@
   "statCurrent": "Current",
   "statBest": "Best",
   "statTotal": "Total days",
-  "daysValueOne": "1 day",
-  "daysValueOther": "$n days",
+  "daysValue(param=n)": {
+    "one": "1 day",
+    "other": "$n days"
+  },
   "streakOnFire": "You're on fire — keep it up!",
   "streakTodayPending": "Finish today's adhkar to extend your streak",
   "streakBroken": "Complete morning & evening adhkar to begin again",
@@ -60,8 +64,10 @@
   "surahWord": "Surah",
   "revelationMeccan": "Meccan",
   "revelationMedinan": "Medinan",
-  "versesCountOne": "1 verse",
-  "versesCountOther": "$n verses",
+  "versesCount(param=n)": {
+    "one": "1 verse",
+    "other": "$n verses"
+  },
   "juzLabel": "Juz $n",
   "quranBookmarks": "Bookmarks",
   "noBookmarks": "No bookmarks yet",
@@ -105,10 +111,14 @@
   "noCustomTitle": "No duas yet",
   "noCustomBody": "Tap + to add your own dua and keep it here.",
   "recommendedNow": "Recommended now",
-  "readNowOne": "Read now · 1 dua",
-  "readNowOther": "Read now · $count duas",
-  "duaCountOne": "1 dua",
-  "duaCountOther": "$count duas",
+  "readNow(param=count)": {
+    "one": "Read now · 1 dua",
+    "other": "Read now · $count duas"
+  },
+  "duaCount(param=count)": {
+    "one": "1 dua",
+    "other": "$count duas"
+  },
   "now": "Now",
   "next": "Next",
   "remaining": "remaining",
@@ -120,14 +130,18 @@
   "searchPrompt": "Search by title, meaning, transliteration, or source.",
   "noResults": "No duas found for “$query”.",
   "quranNoResults": "No surahs or verses found for “$query”.",
-  "resultsCountOne": "1 result",
-  "resultsCountOther": "$n results",
+  "resultsCount(param=n)": {
+    "one": "1 result",
+    "other": "$n results"
+  },
   "noSavedTitle": "No saved duas yet",
   "noSavedBody": "Tap the bookmark on any dua to keep it here for quick access.",
   "resetCount": "Reset count",
   "tapToCount": "Tap anywhere to count",
-  "setsCompletedOne": "1 set completed",
-  "setsCompletedOther": "$n sets completed",
+  "setsCompleted(param=n)": {
+    "one": "1 set completed",
+    "other": "$n sets completed"
+  },
   "ofTarget": "of $n",
   "resetProgress": "Reset progress",
   "setComplete": "Set complete — taqabbal Allah",
@@ -138,8 +152,10 @@
   "listenHint": "Playing — you can lock your phone",
   "listenIdleTitle": "Nothing playing",
   "listenIdleBody": "Play the set and it will be recited aloud, counting itself as it goes.",
-  "listenMissingOne": "1 dua has no recording yet",
-  "listenMissingOther": "$n duas have no recording yet",
+  "listenMissing(param=n)": {
+    "one": "1 dua has no recording yet",
+    "other": "$n duas have no recording yet"
+  },
   "listenPrevious": "Previous dhikr",
   "listenNext": "Next dhikr",
   "listenPause": "Pause",
@@ -395,8 +411,10 @@
   "restoreScopeProgressSub": "Keep this phone's location, reminders and language",
   "restoreWarning": "This replaces what is currently on this device.",
   "restoreAction": "Restore",
-  "restoreDoneOne": "Restored 1 item",
-  "restoreDoneOther": "Restored $n items",
+  "restoreDone(param=n)": {
+    "one": "Restored 1 item",
+    "other": "Restored $n items"
+  },
   "backupSaved": "Backup ready to save",
   "backupFailed": "Could not create the backup",
   "restoreErrMalformed": "That file could not be read.",
@@ -404,6 +422,9 @@
   "restoreErrTooNew": "That backup was made by a newer version of Hisn. Update the app first.",
   "restoreErrEmpty": "That backup has nothing to restore.",
   "restoreFailed": "Could not restore. Nothing was changed.",
+  "quranZoomIn": "Zoom in",
+  "quranZoomHint": "Spread two fingers to zoom in; pinch them together to return.",
+  "quranReaderOptions": "Reading options",
   "versesOnThisPage": "Verses on this page",
   "savedVerses": "Saved verses",
   "savedPages": "Saved pages",
@@ -469,9 +490,13 @@
   "shareImageFailedNotReady": "The card wasn't ready to capture — sharing the text instead.",
   "shareImageFailedUnsupported": "This device couldn't make an image — sharing the text instead.",
   "nextPhraseOnTap": "Phrase complete. Tap to count the next phrase.",
+  "aboutContributors": "People behind Hisn",
+  "aboutDeveloperCredit": "Developer · Designed and developed the app.",
+  "aboutContentReviewerCredit": "Contributor · Helped review the app’s content for typos and factual errors.",
+  "aboutProfileLinkCopied": "GitHub profile link copied. Open it in your browser.",
   "aboutTypefaces": "Typefaces",
   "aboutVerseMeanings": "Verse meanings",
-  "aboutUrduDuaCredit": "Urdu dua meanings: Hisn project draft; qualified review pending.",
+  "aboutDuaDraftCredit": "Some dua meanings are Hisn project drafts; qualified language and religious review is pending.",
   "aboutTranslationSource": "Translation sources · Tanzil",
   "aboutLinkCopied": "Source link copied. Open it in your browser.",
   "aboutArabicText": "Arabic text",
@@ -516,5 +541,21 @@
   "prayerSilenceUnavailable": "Prayer silence is available on Android only.",
   "prayerSilenceError": "Prayer silence could not be scheduled. Check access and try again.",
   "prayerSilenceStopNow": "End this quiet period",
-  "prayerSilenceExpiryNote": "Only Hisn's mode ends automatically; your own Do Not Disturb stays unchanged. Android may delay the backup end check if precise-alarm access is revoked or the phone restricts the app."
+  "prayerSilenceExpiryNote": "Only Hisn's mode ends automatically; your own Do Not Disturb stays unchanged. Android may delay the backup end check if precise-alarm access is revoked or the phone restricts the app.",
+  "qiblaStyle": "Compass design",
+  "qiblaTone": "Compass color",
+  "qiblaVibrationOn": "Vibration on",
+  "qiblaVibrationOff": "Vibration off",
+  "qiblaStyles": [
+    "Classic",
+    "Minimal",
+    "Compass rose"
+  ],
+  "qiblaTones": [
+    "Theme accent",
+    "Gold",
+    "Ink"
+  ],
+  "durationMinutes": "${minutes}m",
+  "durationHoursMinutes": "${hours}h ${minutes}m"
 }

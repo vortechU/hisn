@@ -58,8 +58,10 @@ class TranslationsUr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get muhassanComplete => 'مکمل — ما شاء اللہ';
 	@override String get muhassanMorning => 'صبح';
 	@override String get muhassanEvening => 'شام';
-	@override String get streakDaysOne => 'مسلسل 1 دن';
-	@override String streakDaysOther({required Object n}) => 'مسلسل ${n} دن';
+	@override String streakDays({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ur'))(n,
+		one: 'مسلسل 1 دن',
+		other: 'مسلسل ${n} دن',
+	);
 	@override String get streakStart => 'اپنا تسلسل شروع کریں';
 	@override String streakBest({required Object n}) => 'بہترین: ${n}';
 	@override String get streakTitle => 'آپ کا تسلسل';
@@ -67,8 +69,10 @@ class TranslationsUr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get statCurrent => 'موجودہ';
 	@override String get statBest => 'بہترین';
 	@override String get statTotal => 'کل دن';
-	@override String get daysValueOne => '1 دن';
-	@override String daysValueOther({required Object n}) => '${n} دن';
+	@override String daysValue({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ur'))(n,
+		one: '1 دن',
+		other: '${n} دن',
+	);
 	@override String get streakOnFire => 'آپ کا تسلسل بہت اچھا ہے — جاری رکھیں!';
 	@override String get streakTodayPending => 'تسلسل بڑھانے کے لیے آج کے اذکار مکمل کریں';
 	@override String get streakBroken => 'دوبارہ شروع کرنے کے لیے صبح اور شام کے اذکار مکمل کریں';
@@ -100,8 +104,10 @@ class TranslationsUr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get surahWord => 'سورت';
 	@override String get revelationMeccan => 'مکی';
 	@override String get revelationMedinan => 'مدنی';
-	@override String get versesCountOne => '1 آیت';
-	@override String versesCountOther({required Object n}) => '${n} آیات';
+	@override String versesCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ur'))(n,
+		one: '1 آیت',
+		other: '${n} آیات',
+	);
 	@override String juzLabel({required Object n}) => 'پارہ ${n}';
 	@override String get quranBookmarks => 'بک مارکس';
 	@override String get noBookmarks => 'ابھی کوئی بک مارک نہیں';
@@ -145,10 +151,14 @@ class TranslationsUr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get noCustomTitle => 'ابھی کوئی دعا نہیں';
 	@override String get noCustomBody => 'اپنی دعا شامل کرنے کے لیے + دبائیں۔';
 	@override String get recommendedNow => 'اس وقت کے لیے';
-	@override String get readNowOne => 'ابھی پڑھیں · 1 دعا';
-	@override String readNowOther({required Object count}) => 'ابھی پڑھیں · ${count} دعائیں';
-	@override String get duaCountOne => '1 دعا';
-	@override String duaCountOther({required Object count}) => '${count} دعائیں';
+	@override String readNow({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ur'))(count,
+		one: 'ابھی پڑھیں · 1 دعا',
+		other: 'ابھی پڑھیں · ${count} دعائیں',
+	);
+	@override String duaCount({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ur'))(count,
+		one: '1 دعا',
+		other: '${count} دعائیں',
+	);
 	@override String get now => 'ابھی';
 	@override String get next => 'اگلی';
 	@override String get remaining => 'باقی';
@@ -160,14 +170,18 @@ class TranslationsUr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get searchPrompt => 'عنوان، مفہوم، تلفظ یا حوالے سے تلاش کریں۔';
 	@override String noResults({required Object query}) => '“${query}” کے لیے کوئی دعا نہیں ملی۔';
 	@override String quranNoResults({required Object query}) => '“${query}” کے لیے کوئی سورت یا آیت نہیں ملی۔';
-	@override String get resultsCountOne => '1 نتیجہ';
-	@override String resultsCountOther({required Object n}) => '${n} نتائج';
+	@override String resultsCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ur'))(n,
+		one: '1 نتیجہ',
+		other: '${n} نتائج',
+	);
 	@override String get noSavedTitle => 'ابھی کوئی دعا محفوظ نہیں';
 	@override String get noSavedBody => 'فوری رسائی کے لیے کسی دعا کا بک مارک دبائیں۔';
 	@override String get resetCount => 'گنتی صفر کریں';
 	@override String get tapToCount => 'گنتی کے لیے کہیں بھی دبائیں';
-	@override String get setsCompletedOne => '1 دور مکمل';
-	@override String setsCompletedOther({required Object n}) => '${n} دور مکمل';
+	@override String setsCompleted({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ur'))(n,
+		one: '1 دور مکمل',
+		other: '${n} دور مکمل',
+	);
 	@override String ofTarget({required Object n}) => 'کل ${n} میں سے';
 	@override String get resetProgress => 'پیش رفت از سر نو شروع کریں';
 	@override String get setComplete => 'دور مکمل — تقبّل اللہ';
@@ -178,8 +192,10 @@ class TranslationsUr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get listenHint => 'تلاوت جاری ہے — آپ فون لاک کر سکتے ہیں';
 	@override String get listenIdleTitle => 'کچھ نہیں چل رہا';
 	@override String get listenIdleBody => 'اذکار چلائیں؛ ہر تکرار کی گنتی خود بخود ہو گی۔';
-	@override String get listenMissingOne => '1 دعا کی ریکارڈنگ ابھی موجود نہیں';
-	@override String listenMissingOther({required Object n}) => '${n} دعاؤں کی ریکارڈنگ ابھی موجود نہیں';
+	@override String listenMissing({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ur'))(n,
+		one: '1 دعا کی ریکارڈنگ ابھی موجود نہیں',
+		other: '${n} دعاؤں کی ریکارڈنگ ابھی موجود نہیں',
+	);
 	@override String get listenPrevious => 'پچھلا ذکر';
 	@override String get listenNext => 'اگلا ذکر';
 	@override String get listenPause => 'وقفہ کریں';
@@ -435,8 +451,10 @@ class TranslationsUr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get restoreScopeProgressSub => 'اس فون کا مقام، یاد دہانیاں اور زبان برقرار رکھیں';
 	@override String get restoreWarning => 'اس آلے کی موجودہ معلومات بدل جائیں گی۔';
 	@override String get restoreAction => 'بحال کریں';
-	@override String get restoreDoneOne => '1 اندراج بحال ہوا';
-	@override String restoreDoneOther({required Object n}) => '${n} اندراجات بحال ہوئے';
+	@override String restoreDone({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ur'))(n,
+		one: '1 اندراج بحال ہوا',
+		other: '${n} اندراجات بحال ہوئے',
+	);
 	@override String get backupSaved => 'بیک اپ محفوظ کرنے کے لیے تیار ہے';
 	@override String get backupFailed => 'بیک اپ نہیں بنایا جا سکا';
 	@override String get restoreErrMalformed => 'یہ فائل پڑھی نہیں جا سکی۔';
@@ -444,6 +462,9 @@ class TranslationsUr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get restoreErrTooNew => 'یہ بیک اپ Hisn کے نئے نسخے سے بنایا گیا تھا۔ پہلے ایپ تازہ کریں۔';
 	@override String get restoreErrEmpty => 'اس بیک اپ میں بحالی کے لیے کچھ نہیں ہے۔';
 	@override String get restoreFailed => 'بحالی نہیں ہو سکی۔ کوئی تبدیلی نہیں ہوئی۔';
+	@override String get quranZoomIn => 'بڑا کریں';
+	@override String get quranZoomHint => 'بڑا کرنے کے لیے دو انگلیاں پھیلائیں؛ واپس آنے کے لیے انہیں قریب لائیں۔';
+	@override String get quranReaderOptions => 'تلاوت کے اختیارات';
 	@override String get versesOnThisPage => 'اس صفحے کی آیات';
 	@override String get savedVerses => 'محفوظ آیات';
 	@override String get savedPages => 'محفوظ صفحات';
@@ -509,9 +530,13 @@ class TranslationsUr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get shareImageFailedNotReady => 'تصویر تیار نہیں تھی؛ متن شیئر کیا جا رہا ہے۔';
 	@override String get shareImageFailedUnsupported => 'یہ آلہ تصویر نہیں بنا سکا؛ متن شیئر کیا جا رہا ہے۔';
 	@override String get nextPhraseOnTap => 'ذکر مکمل ہوا۔ اگلا ذکر گننے کے لیے دبائیں۔';
+	@override String get aboutContributors => 'حصن کے پیچھے لوگ';
+	@override String get aboutDeveloperCredit => 'ڈویلپر · ایپ کو ڈیزائن کیا اور تیار کیا۔';
+	@override String get aboutContentReviewerCredit => 'معاون · ایپ کے مواد میں املا کی غلطیوں اور غلط معلومات کی نشاندہی کے لیے جائزے میں مدد کی۔';
+	@override String get aboutProfileLinkCopied => 'GitHub پروفائل کا ربط نقل ہو گیا۔ اسے اپنے براؤزر میں کھولیں۔';
 	@override String get aboutTypefaces => 'خطوط';
 	@override String get aboutVerseMeanings => 'آیات کے معانی';
-	@override String get aboutUrduDuaCredit => 'دعاؤں کے اردو معانی: Hisn منصوبے کا مسودہ؛ اہلِ علم کی نظرثانی باقی ہے۔';
+	@override String get aboutDuaDraftCredit => 'دعاؤں کے بعض معانی Hisn منصوبے کے مسودے ہیں؛ مستند لسانی اور دینی نظرثانی باقی ہے۔';
 	@override String get aboutTranslationSource => 'ترجمے کے مآخذ · تنزیل';
 	@override String get aboutLinkCopied => 'ماخذ کا ربط نقل ہو گیا۔ اسے اپنے براؤزر میں کھولیں۔';
 	@override String get aboutArabicText => 'عربی متن';
@@ -557,6 +582,22 @@ class TranslationsUr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get prayerSilenceError => 'نماز کی خاموشی مقرر نہیں ہو سکی۔ رسائی دیکھ کر دوبارہ کوشش کریں۔';
 	@override String get prayerSilenceStopNow => 'یہ خاموش وقفہ ختم کریں';
 	@override String get prayerSilenceExpiryNote => 'صرف Hisn کا موڈ خودکار ختم ہوتا ہے؛ آپ کا اپنا ڈو ناٹ ڈسٹرب تبدیل نہیں ہوتا۔ درست الارم کی رسائی واپس لینے یا ایپ محدود ہونے پر Android اختتام کی متبادل جانچ میں تاخیر کر سکتا ہے۔';
+	@override String get qiblaStyle => 'قطب نما کا انداز';
+	@override String get qiblaTone => 'قطب نما کا رنگ';
+	@override String get qiblaVibrationOn => 'ارتعاش فعال';
+	@override String get qiblaVibrationOff => 'ارتعاش بند';
+	@override List<String> get qiblaStyles => [
+		'کلاسیکی',
+		'سادہ',
+		'قطب نما پھول',
+	];
+	@override List<String> get qiblaTones => [
+		'تھیم کا رنگ',
+		'سنہری',
+		'سیاہی',
+	];
+	@override String durationMinutes({required Object minutes}) => '${minutes} منٹ';
+	@override String durationHoursMinutes({required Object hours, required Object minutes}) => '${hours} گھنٹے ${minutes} منٹ';
 }
 
 /// The flat map containing all translations for locale <ur>.
@@ -586,8 +627,7 @@ extension on TranslationsUr {
 			'muhassanComplete' => 'مکمل — ما شاء اللہ',
 			'muhassanMorning' => 'صبح',
 			'muhassanEvening' => 'شام',
-			'streakDaysOne' => 'مسلسل 1 دن',
-			'streakDaysOther' => ({required Object n}) => 'مسلسل ${n} دن',
+			'streakDays' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ur'))(n, one: 'مسلسل 1 دن', other: 'مسلسل ${n} دن', ), 
 			'streakStart' => 'اپنا تسلسل شروع کریں',
 			'streakBest' => ({required Object n}) => 'بہترین: ${n}',
 			'streakTitle' => 'آپ کا تسلسل',
@@ -595,8 +635,7 @@ extension on TranslationsUr {
 			'statCurrent' => 'موجودہ',
 			'statBest' => 'بہترین',
 			'statTotal' => 'کل دن',
-			'daysValueOne' => '1 دن',
-			'daysValueOther' => ({required Object n}) => '${n} دن',
+			'daysValue' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ur'))(n, one: '1 دن', other: '${n} دن', ), 
 			'streakOnFire' => 'آپ کا تسلسل بہت اچھا ہے — جاری رکھیں!',
 			'streakTodayPending' => 'تسلسل بڑھانے کے لیے آج کے اذکار مکمل کریں',
 			'streakBroken' => 'دوبارہ شروع کرنے کے لیے صبح اور شام کے اذکار مکمل کریں',
@@ -626,8 +665,7 @@ extension on TranslationsUr {
 			'surahWord' => 'سورت',
 			'revelationMeccan' => 'مکی',
 			'revelationMedinan' => 'مدنی',
-			'versesCountOne' => '1 آیت',
-			'versesCountOther' => ({required Object n}) => '${n} آیات',
+			'versesCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ur'))(n, one: '1 آیت', other: '${n} آیات', ), 
 			'juzLabel' => ({required Object n}) => 'پارہ ${n}',
 			'quranBookmarks' => 'بک مارکس',
 			'noBookmarks' => 'ابھی کوئی بک مارک نہیں',
@@ -671,10 +709,8 @@ extension on TranslationsUr {
 			'noCustomTitle' => 'ابھی کوئی دعا نہیں',
 			'noCustomBody' => 'اپنی دعا شامل کرنے کے لیے + دبائیں۔',
 			'recommendedNow' => 'اس وقت کے لیے',
-			'readNowOne' => 'ابھی پڑھیں · 1 دعا',
-			'readNowOther' => ({required Object count}) => 'ابھی پڑھیں · ${count} دعائیں',
-			'duaCountOne' => '1 دعا',
-			'duaCountOther' => ({required Object count}) => '${count} دعائیں',
+			'readNow' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ur'))(count, one: 'ابھی پڑھیں · 1 دعا', other: 'ابھی پڑھیں · ${count} دعائیں', ), 
+			'duaCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ur'))(count, one: '1 دعا', other: '${count} دعائیں', ), 
 			'now' => 'ابھی',
 			'next' => 'اگلی',
 			'remaining' => 'باقی',
@@ -686,14 +722,12 @@ extension on TranslationsUr {
 			'searchPrompt' => 'عنوان، مفہوم، تلفظ یا حوالے سے تلاش کریں۔',
 			'noResults' => ({required Object query}) => '“${query}” کے لیے کوئی دعا نہیں ملی۔',
 			'quranNoResults' => ({required Object query}) => '“${query}” کے لیے کوئی سورت یا آیت نہیں ملی۔',
-			'resultsCountOne' => '1 نتیجہ',
-			'resultsCountOther' => ({required Object n}) => '${n} نتائج',
+			'resultsCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ur'))(n, one: '1 نتیجہ', other: '${n} نتائج', ), 
 			'noSavedTitle' => 'ابھی کوئی دعا محفوظ نہیں',
 			'noSavedBody' => 'فوری رسائی کے لیے کسی دعا کا بک مارک دبائیں۔',
 			'resetCount' => 'گنتی صفر کریں',
 			'tapToCount' => 'گنتی کے لیے کہیں بھی دبائیں',
-			'setsCompletedOne' => '1 دور مکمل',
-			'setsCompletedOther' => ({required Object n}) => '${n} دور مکمل',
+			'setsCompleted' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ur'))(n, one: '1 دور مکمل', other: '${n} دور مکمل', ), 
 			'ofTarget' => ({required Object n}) => 'کل ${n} میں سے',
 			'resetProgress' => 'پیش رفت از سر نو شروع کریں',
 			'setComplete' => 'دور مکمل — تقبّل اللہ',
@@ -704,8 +738,7 @@ extension on TranslationsUr {
 			'listenHint' => 'تلاوت جاری ہے — آپ فون لاک کر سکتے ہیں',
 			'listenIdleTitle' => 'کچھ نہیں چل رہا',
 			'listenIdleBody' => 'اذکار چلائیں؛ ہر تکرار کی گنتی خود بخود ہو گی۔',
-			'listenMissingOne' => '1 دعا کی ریکارڈنگ ابھی موجود نہیں',
-			'listenMissingOther' => ({required Object n}) => '${n} دعاؤں کی ریکارڈنگ ابھی موجود نہیں',
+			'listenMissing' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ur'))(n, one: '1 دعا کی ریکارڈنگ ابھی موجود نہیں', other: '${n} دعاؤں کی ریکارڈنگ ابھی موجود نہیں', ), 
 			'listenPrevious' => 'پچھلا ذکر',
 			'listenNext' => 'اگلا ذکر',
 			'listenPause' => 'وقفہ کریں',
@@ -945,8 +978,7 @@ extension on TranslationsUr {
 			'restoreScopeProgressSub' => 'اس فون کا مقام، یاد دہانیاں اور زبان برقرار رکھیں',
 			'restoreWarning' => 'اس آلے کی موجودہ معلومات بدل جائیں گی۔',
 			'restoreAction' => 'بحال کریں',
-			'restoreDoneOne' => '1 اندراج بحال ہوا',
-			'restoreDoneOther' => ({required Object n}) => '${n} اندراجات بحال ہوئے',
+			'restoreDone' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ur'))(n, one: '1 اندراج بحال ہوا', other: '${n} اندراجات بحال ہوئے', ), 
 			'backupSaved' => 'بیک اپ محفوظ کرنے کے لیے تیار ہے',
 			'backupFailed' => 'بیک اپ نہیں بنایا جا سکا',
 			'restoreErrMalformed' => 'یہ فائل پڑھی نہیں جا سکی۔',
@@ -954,6 +986,9 @@ extension on TranslationsUr {
 			'restoreErrTooNew' => 'یہ بیک اپ Hisn کے نئے نسخے سے بنایا گیا تھا۔ پہلے ایپ تازہ کریں۔',
 			'restoreErrEmpty' => 'اس بیک اپ میں بحالی کے لیے کچھ نہیں ہے۔',
 			'restoreFailed' => 'بحالی نہیں ہو سکی۔ کوئی تبدیلی نہیں ہوئی۔',
+			'quranZoomIn' => 'بڑا کریں',
+			'quranZoomHint' => 'بڑا کرنے کے لیے دو انگلیاں پھیلائیں؛ واپس آنے کے لیے انہیں قریب لائیں۔',
+			'quranReaderOptions' => 'تلاوت کے اختیارات',
 			'versesOnThisPage' => 'اس صفحے کی آیات',
 			'savedVerses' => 'محفوظ آیات',
 			'savedPages' => 'محفوظ صفحات',
@@ -1017,9 +1052,13 @@ extension on TranslationsUr {
 			'shareImageFailedNotReady' => 'تصویر تیار نہیں تھی؛ متن شیئر کیا جا رہا ہے۔',
 			'shareImageFailedUnsupported' => 'یہ آلہ تصویر نہیں بنا سکا؛ متن شیئر کیا جا رہا ہے۔',
 			'nextPhraseOnTap' => 'ذکر مکمل ہوا۔ اگلا ذکر گننے کے لیے دبائیں۔',
+			'aboutContributors' => 'حصن کے پیچھے لوگ',
+			'aboutDeveloperCredit' => 'ڈویلپر · ایپ کو ڈیزائن کیا اور تیار کیا۔',
+			'aboutContentReviewerCredit' => 'معاون · ایپ کے مواد میں املا کی غلطیوں اور غلط معلومات کی نشاندہی کے لیے جائزے میں مدد کی۔',
+			'aboutProfileLinkCopied' => 'GitHub پروفائل کا ربط نقل ہو گیا۔ اسے اپنے براؤزر میں کھولیں۔',
 			'aboutTypefaces' => 'خطوط',
 			'aboutVerseMeanings' => 'آیات کے معانی',
-			'aboutUrduDuaCredit' => 'دعاؤں کے اردو معانی: Hisn منصوبے کا مسودہ؛ اہلِ علم کی نظرثانی باقی ہے۔',
+			'aboutDuaDraftCredit' => 'دعاؤں کے بعض معانی Hisn منصوبے کے مسودے ہیں؛ مستند لسانی اور دینی نظرثانی باقی ہے۔',
 			'aboutTranslationSource' => 'ترجمے کے مآخذ · تنزیل',
 			'aboutLinkCopied' => 'ماخذ کا ربط نقل ہو گیا۔ اسے اپنے براؤزر میں کھولیں۔',
 			'aboutArabicText' => 'عربی متن',
@@ -1065,6 +1104,18 @@ extension on TranslationsUr {
 			'prayerSilenceError' => 'نماز کی خاموشی مقرر نہیں ہو سکی۔ رسائی دیکھ کر دوبارہ کوشش کریں۔',
 			'prayerSilenceStopNow' => 'یہ خاموش وقفہ ختم کریں',
 			'prayerSilenceExpiryNote' => 'صرف Hisn کا موڈ خودکار ختم ہوتا ہے؛ آپ کا اپنا ڈو ناٹ ڈسٹرب تبدیل نہیں ہوتا۔ درست الارم کی رسائی واپس لینے یا ایپ محدود ہونے پر Android اختتام کی متبادل جانچ میں تاخیر کر سکتا ہے۔',
+			'qiblaStyle' => 'قطب نما کا انداز',
+			'qiblaTone' => 'قطب نما کا رنگ',
+			'qiblaVibrationOn' => 'ارتعاش فعال',
+			'qiblaVibrationOff' => 'ارتعاش بند',
+			'qiblaStyles.0' => 'کلاسیکی',
+			'qiblaStyles.1' => 'سادہ',
+			'qiblaStyles.2' => 'قطب نما پھول',
+			'qiblaTones.0' => 'تھیم کا رنگ',
+			'qiblaTones.1' => 'سنہری',
+			'qiblaTones.2' => 'سیاہی',
+			'durationMinutes' => ({required Object minutes}) => '${minutes} منٹ',
+			'durationHoursMinutes' => ({required Object hours, required Object minutes}) => '${hours} گھنٹے ${minutes} منٹ',
 			_ => null,
 		};
 	}

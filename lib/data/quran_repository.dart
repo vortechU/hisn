@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/foundation.dart' show compute;
+import 'package:flutter/services.dart' show AssetBundle, rootBundle;
 
 import '../models/quran.dart';
 import '../util/arabic.dart';
@@ -9,23 +10,36 @@ import '../util/arabic.dart';
 /// and loaded once up front; each surah's verses are loaded (and cached) on
 /// demand the first time it's opened, so startup stays fast.
 class QuranRepository {
+  QuranRepository({AssetBundle? bundle}) : _bundle = bundle ?? rootBundle;
+
+  final AssetBundle _bundle;
   List<Surah> _surahs = const [];
   final Map<int, SurahDetail> _cache = {};
+  final Map<int, Future<SurahDetail>> _surahLoads = {};
   bool _loaded = false;
+  Future<void>? _indexLoad;
 
   List<Surah> get surahs => _surahs;
 
   /// The Bismillah in Uthmani script, shown as a header above most surahs.
   static const bismillah = 'بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ';
 
-  Future<void> loadIndex() async {
-    if (_loaded) return;
-    final raw = await rootBundle.loadString('assets/data/quran/surahs.json');
-    _surahs = (jsonDecode(raw) as List)
-        .map((e) => Surah.fromJson(e as Map<String, dynamic>))
-        .toList(growable: false);
-    await _loadAyahIndex();
-    _loaded = true;
+  Future<void> loadIndex() {
+    if (_loaded) return Future<void>.value();
+    return _indexLoad ??= _readIndex();
+  }
+
+  Future<void> _readIndex() async {
+    try {
+      final raw = await _bundle.loadString('assets/data/quran/surahs.json');
+      _surahs = (jsonDecode(raw) as List)
+          .map((e) => Surah.fromJson(e as Map<String, dynamic>))
+          .toList(growable: false);
+      await _loadAyahIndex();
+      _loaded = true;
+    } finally {
+      _indexLoad = null;
+    }
   }
 
   Surah? surahByNumber(int number) {
@@ -49,20 +63,19 @@ class QuranRepository {
     return result;
   }
 
-  Future<SurahDetail> loadSurah(int number) async {
-    final cached = _cache[number];
-    if (cached != null) return cached;
-    final raw =
-        await rootBundle.loadString('assets/data/quran/surah_$number.json');
-    final detail =
-        SurahDetail.fromJson(jsonDecode(raw) as Map<String, dynamic>);
-    _cache[number] = detail;
-    return detail;
-  }
+  Future<SurahDetail> loadSurah(int number) =>
+      _cachedLoad(number, _cache, _surahLoads, () async {
+        final raw = await _bundle.loadString(
+          'assets/data/quran/surah_$number.json',
+        );
+        return SurahDetail.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+      });
 
   // ---- Verse meanings ----
   final Map<String, SurahTranslation> _transCache = {};
+  final Map<String, Future<SurahTranslation>> _translationLoads = {};
   List<QuranEdition>? _editions;
+  Future<List<QuranEdition>>? _editionLoad;
 
   /// The meaning editions bundled with the app, one per language — a
   /// translation for English and Indonesian, the Muyassar tafsir for Arabic.
@@ -70,16 +83,23 @@ class QuranRepository {
   /// Generated alongside the verse files, so this is also the authority on
   /// which languages have a meaning at all — rather than a list kept in Dart
   /// that could fall out of step with what actually shipped.
-  Future<List<QuranEdition>> loadEditions() async {
+  Future<List<QuranEdition>> loadEditions() {
     final cached = _editions;
-    if (cached != null) return cached;
-    final raw =
-        await rootBundle.loadString('assets/data/quran/trans/editions.json');
-    final editions = (jsonDecode(raw) as List)
-        .map((e) => QuranEdition.fromJson(e as Map<String, dynamic>))
-        .toList(growable: false);
-    _editions = editions;
-    return editions;
+    if (cached != null) return Future.value(cached);
+    return _editionLoad ??= _readEditions();
+  }
+
+  Future<List<QuranEdition>> _readEditions() async {
+    try {
+      final raw = await _bundle.loadString(
+        'assets/data/quran/trans/editions.json',
+      );
+      return _editions = (jsonDecode(raw) as List)
+          .map((e) => QuranEdition.fromJson(e as Map<String, dynamic>))
+          .toList(growable: false);
+    } finally {
+      _editionLoad = null;
+    }
   }
 
   /// The edition for [lang], or null if that language has none.
@@ -98,33 +118,36 @@ class QuranRepository {
   Future<SurahTranslation?> loadTranslation(int surah, String lang) async {
     if (await editionFor(lang) == null) return null;
     final key = '$lang:$surah';
-    final cached = _transCache[key];
-    if (cached != null) return cached;
-    final raw = await rootBundle
-        .loadString('assets/data/quran/trans/$lang/surah_$surah.json');
-    final translation =
-        SurahTranslation.fromJson(jsonDecode(raw) as Map<String, dynamic>);
-    _transCache[key] = translation;
-    return translation;
+    return _cachedLoad<String, SurahTranslation>(
+      key,
+      _transCache,
+      _translationLoads,
+      () async {
+        final raw = await _bundle.loadString(
+          'assets/data/quran/trans/$lang/surah_$surah.json',
+        );
+        return SurahTranslation.fromJson(
+          jsonDecode(raw) as Map<String, dynamic>,
+        );
+      },
+    );
   }
 
   // ---- Madani Mushaf pages (QCF v4) ----
   static const totalPages = 604;
   final Map<int, MushafPage> _pageCache = {};
+  final Map<int, Future<MushafPage>> _pageLoads = {};
 
   /// The page if it's already decoded in memory (visited before or prefetched),
   /// or null. Lets the reader render instantly without a FutureBuilder spinner.
   MushafPage? pageIfCached(int page) => _pageCache[page];
 
-  Future<MushafPage> loadPage(int page) async {
-    final cached = _pageCache[page];
-    if (cached != null) return cached;
-    final name = page.toString().padLeft(3, '0');
-    final raw = await rootBundle.loadString('assets/data/mushaf/$name.json');
-    final mushaf = MushafPage.fromJson(jsonDecode(raw) as Map<String, dynamic>);
-    _pageCache[page] = mushaf;
-    return mushaf;
-  }
+  Future<MushafPage> loadPage(int page) =>
+      _cachedLoad(page, _pageCache, _pageLoads, () async {
+        final name = page.toString().padLeft(3, '0');
+        final raw = await _bundle.loadString('assets/data/mushaf/$name.json');
+        return MushafPage.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+      });
 
   // ---- Which verse is which on a page ----
   //
@@ -148,8 +171,7 @@ class QuranRepository {
   List<int> _surahBefore = const [];
 
   Future<void> _loadAyahIndex() async {
-    final raw =
-        await rootBundle.loadString('assets/data/mushaf/ayah_index.json');
+    final raw = await _bundle.loadString('assets/data/mushaf/ayah_index.json');
     final json = jsonDecode(raw) as Map<String, dynamic>;
     _versesBefore = [
       ...(json['before'] as List).cast<int>(),
@@ -243,13 +265,15 @@ class QuranRepository {
       final ayah = _ayahIn(detail, parsed.$2);
       if (ayah == null) continue;
       final meaning = translation?.forAyah(parsed.$2);
-      verses.add(PageVerse(
-        surah: surah,
-        ayah: ayah,
-        translation: meaning,
-        translationCredit: meaning == null ? null : edition!.credit,
-        translationKind: meaning == null ? null : edition!.kind,
-      ));
+      verses.add(
+        PageVerse(
+          surah: surah,
+          ayah: ayah,
+          translation: meaning,
+          translationCredit: meaning == null ? null : edition!.credit,
+          translationKind: meaning == null ? null : edition!.kind,
+        ),
+      );
     }
     return verses;
   }
@@ -309,12 +333,14 @@ class QuranRepository {
     final q = raw.toLowerCase();
     final qn = normalizeArabic(raw);
     final asNumber = int.tryParse(raw);
-    return _surahs.where((s) {
-      return s.number == asNumber ||
-          s.translit.toLowerCase().contains(q) ||
-          s.meaning.toLowerCase().contains(q) ||
-          normalizeArabic(s.name).contains(qn);
-    }).toList(growable: false);
+    return _surahs
+        .where((s) {
+          return s.number == asNumber ||
+              s.translit.toLowerCase().contains(q) ||
+              s.meaning.toLowerCase().contains(q) ||
+              normalizeArabic(s.name).contains(qn);
+        })
+        .toList(growable: false);
   }
 
   Future<_VerseSearchIndex>? _verseSearchIndex;
@@ -352,42 +378,98 @@ class QuranRepository {
   }
 
   Future<_VerseSearchIndex> _buildVerseSearchIndex() async {
-    final verses = <PageVerse>[];
-    final texts = <String>[];
-    final words = <String, List<int>>{};
     try {
-      // Keep asset reads bounded instead of opening 114 files at once.
+      final documents = <_SearchSurah>[];
+      // Read assets here; decoding and normalizing the complete corpus belongs
+      // on a worker, not between keyboard/scroll frames on the UI isolate.
       for (var start = 0; start < _surahs.length; start += 8) {
         final group = _surahs.skip(start).take(8).toList();
-        final details = await Future.wait(
-          group.map((surah) => loadSurah(surah.number)),
+        documents.addAll(
+          await Future.wait(
+            group.map((surah) async {
+              final cached =
+                  _cache[surah.number] ?? await _surahLoads[surah.number];
+              return (
+                surah: surah,
+                cached: cached,
+                raw: cached == null
+                    ? await _bundle.loadString(
+                        'assets/data/quran/surah_${surah.number}.json',
+                      )
+                    : null,
+              );
+            }),
+          ),
         );
-        for (var i = 0; i < group.length; i++) {
-          for (final ayah in details[i].ayahs) {
-            final position = verses.length;
-            final text = _normalizeVerseSearch(ayah.text);
-            verses.add(PageVerse(surah: group[i], ayah: ayah));
-            texts.add(text);
-            for (final word in text.split(' ').toSet()) {
-              (words[word] ??= []).add(position);
-            }
-          }
-        }
       }
-      return _VerseSearchIndex(verses, texts, words);
+      final index = await compute(
+        _indexVerseDocuments,
+        documents,
+        debugLabel: 'Quran word index',
+      );
+      for (final entry in index.surahs.entries) {
+        _cache.putIfAbsent(entry.key, () => entry.value);
+      }
+      return index;
     } catch (_) {
-      _verseSearchIndex = null; // A later retry can recover an asset-read error.
+      _verseSearchIndex =
+          null; // A later retry can recover an asset-read error.
       rethrow;
     }
   }
+}
+
+typedef _SearchSurah = ({Surah surah, SurahDetail? cached, String? raw});
+
+_VerseSearchIndex _indexVerseDocuments(List<_SearchSurah> documents) {
+  final verses = <PageVerse>[];
+  final texts = <String>[];
+  final words = <String, List<int>>{};
+  final surahs = <int, SurahDetail>{};
+  for (final document in documents) {
+    final detail =
+        document.cached ??
+        SurahDetail.fromJson(jsonDecode(document.raw!) as Map<String, dynamic>);
+    surahs[document.surah.number] = detail;
+    for (final ayah in detail.ayahs) {
+      final position = verses.length;
+      final text = _normalizeVerseSearch(ayah.text);
+      verses.add(PageVerse(surah: document.surah, ayah: ayah));
+      texts.add(text);
+      for (final word in text.split(' ').toSet()) {
+        (words[word] ??= []).add(position);
+      }
+    }
+  }
+  return _VerseSearchIndex(verses, texts, words, surahs);
+}
+
+/// Share pending work as well as its result. Failed reads are removed so a
+/// later request can retry instead of retaining a rejected future forever.
+Future<T> _cachedLoad<K, T extends Object>(
+  K key,
+  Map<K, T> cache,
+  Map<K, Future<T>> pending,
+  Future<T> Function() read,
+) {
+  final cached = cache[key];
+  if (cached != null) return Future.value(cached);
+  return pending.putIfAbsent(key, () async {
+    try {
+      return cache[key] = await read();
+    } finally {
+      pending.remove(key);
+    }
+  });
 }
 
 String _normalizeVerseSearch(String text) =>
     normalizeArabic(text).replaceAll(RegExp(r'\s+'), ' ').trim();
 
 class _VerseSearchIndex {
-  const _VerseSearchIndex(this.verses, this.texts, this.words);
+  const _VerseSearchIndex(this.verses, this.texts, this.words, this.surahs);
   final List<PageVerse> verses;
   final List<String> texts;
   final Map<String, List<int>> words;
+  final Map<int, SurahDetail> surahs;
 }

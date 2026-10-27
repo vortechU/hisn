@@ -1,0 +1,12 @@
+{
+  "morning": {"title": "Dhikret e mëngjesit", "subtitle": "Lexohen pas sabahut deri në lindjen e diellit"},
+  "evening": {"title": "Dhikret e mbrëmjes", "subtitle": "Lexohen pas ikindisë deri në perëndimin e diellit"},
+  "after_salah": {"title": "Pas namazit", "subtitle": "Thuhen pas namazeve të detyrueshme"},
+  "waking": {"title": "Pas zgjimit", "subtitle": "Thuhen kur zgjohesh nga gjumi"},
+  "sleep": {"title": "Para gjumit", "subtitle": "Lexohen kur shkon në shtrat"},
+  "daily": {"title": "Jeta e përditshme", "subtitle": "Ushqimi, dalja nga shtëpia e raste të tjera"},
+  "forgiveness": {"title": "Kërkimi i faljes", "subtitle": "Kthimi tek Allahu me pendim"},
+  "distress": {"title": "Shqetësimi dhe pikëllimi", "subtitle": "Kur të rëndon brenga ose trishtimi"},
+  "travel": {"title": "Udhëtimi", "subtitle": "Nisja, ndalesa dhe kthimi"},
+  "mosque": {"title": "Xhamia dhe ezani", "subtitle": "Ezani, hyrja dhe dalja nga xhamia"}
+}

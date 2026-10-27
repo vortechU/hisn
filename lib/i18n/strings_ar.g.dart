@@ -58,8 +58,14 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get muhassanComplete => 'محصَّن بالكامل — ما شاء الله';
 	@override String get muhassanMorning => 'الصباح';
 	@override String get muhassanEvening => 'المساء';
-	@override String get streakDaysOne => 'سلسلة يوم واحد';
-	@override String streakDaysOther({required Object n}) => 'سلسلة ${n} أيام';
+	@override String streakDays({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n,
+		zero: 'سلسلة بلا أيام',
+		one: 'سلسلة يوم واحد',
+		two: 'سلسلة يومين',
+		few: 'سلسلة ${n} أيام',
+		many: 'سلسلة ${n} يومًا',
+		other: 'سلسلة ${n} يوم',
+	);
 	@override String get streakStart => 'ابدأ سلسلتك';
 	@override String streakBest({required Object n}) => 'الأفضل: ${n}';
 	@override String get streakTitle => 'سلسلتك';
@@ -67,8 +73,14 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get statCurrent => 'الحالية';
 	@override String get statBest => 'الأفضل';
 	@override String get statTotal => 'إجمالي الأيام';
-	@override String get daysValueOne => 'يوم واحد';
-	@override String daysValueOther({required Object n}) => '${n} يوم';
+	@override String daysValue({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n,
+		zero: '${n} يوم',
+		one: 'يوم واحد',
+		two: 'يومان',
+		few: '${n} أيام',
+		many: '${n} يومًا',
+		other: '${n} يوم',
+	);
 	@override String get streakOnFire => 'أنت في تتابع رائع — واصل!';
 	@override String get streakTodayPending => 'أكمل أذكار اليوم لتمديد سلسلتك';
 	@override String get streakBroken => 'أكمل أذكار الصباح والمساء لتبدأ من جديد';
@@ -100,8 +112,14 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get surahWord => 'سورة';
 	@override String get revelationMeccan => 'مكية';
 	@override String get revelationMedinan => 'مدنية';
-	@override String get versesCountOne => 'آية واحدة';
-	@override String versesCountOther({required Object n}) => '${n} آيات';
+	@override String versesCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n,
+		zero: '${n} آية',
+		one: 'آية واحدة',
+		two: 'آيتان',
+		few: '${n} آيات',
+		many: '${n} آية',
+		other: '${n} آية',
+	);
 	@override String juzLabel({required Object n}) => 'الجزء ${n}';
 	@override String get quranBookmarks => 'العلامات المرجعية';
 	@override String get noBookmarks => 'لا توجد علامات مرجعية بعد';
@@ -145,10 +163,22 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get noCustomTitle => 'لا توجد أدعية بعد';
 	@override String get noCustomBody => 'اضغط + لإضافة دعائك والاحتفاظ به هنا.';
 	@override String get recommendedNow => 'مُقترَحٌ الآن';
-	@override String get readNowOne => 'اقرأ الآن · دعاء واحد';
-	@override String readNowOther({required Object count}) => 'اقرأ الآن · ${count} من الأذكار';
-	@override String get duaCountOne => 'ذِكْر واحد';
-	@override String duaCountOther({required Object count}) => '${count} ذِكْر';
+	@override String readNow({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(count,
+		zero: 'اقرأ الآن · ${count} من الأذكار',
+		one: 'اقرأ الآن · دعاء واحد',
+		two: 'اقرأ الآن · دعاءان',
+		few: 'اقرأ الآن · ${count} أدعية',
+		many: 'اقرأ الآن · ${count} دعاءً',
+		other: 'اقرأ الآن · ${count} دعاء',
+	);
+	@override String duaCount({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(count,
+		zero: '${count} ذِكْر',
+		one: 'ذِكْر واحد',
+		two: 'ذِكْران',
+		few: '${count} أذكار',
+		many: '${count} ذِكْرًا',
+		other: '${count} ذِكْر',
+	);
 	@override String get now => 'الآن';
 	@override String get next => 'التالي';
 	@override String get remaining => 'متبقٍّ';
@@ -160,14 +190,26 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get searchPrompt => 'ابحث بالعنوان أو المعنى أو النطق أو المصدر.';
 	@override String noResults({required Object query}) => 'لا توجد أدعية لـ «${query}».';
 	@override String quranNoResults({required Object query}) => 'لا توجد سور أو آيات لـ «${query}».';
-	@override String get resultsCountOne => 'نتيجة واحدة';
-	@override String resultsCountOther({required Object n}) => '${n} نتيجة';
+	@override String resultsCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n,
+		zero: '${n} نتيجة',
+		one: 'نتيجة واحدة',
+		two: 'نتيجتان',
+		few: '${n} نتائج',
+		many: '${n} نتيجة',
+		other: '${n} نتيجة',
+	);
 	@override String get noSavedTitle => 'لا توجد أدعية محفوظة بعد';
 	@override String get noSavedBody => 'اضغط على علامة الحفظ في أي دعاء لتحتفظ به هنا.';
 	@override String get resetCount => 'إعادة العدّ';
 	@override String get tapToCount => 'اضغط في أي مكان للعدّ';
-	@override String get setsCompletedOne => 'اكتملت جولة واحدة';
-	@override String setsCompletedOther({required Object n}) => 'اكتمل ${n} جولات';
+	@override String setsCompleted({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n,
+		zero: 'اكتمل ${n} جولات',
+		one: 'اكتملت جولة واحدة',
+		two: 'اكتملت جولتان',
+		few: 'اكتملت ${n} جولات',
+		many: 'اكتملت ${n} جولة',
+		other: 'اكتملت ${n} جولة',
+	);
 	@override String ofTarget({required Object n}) => 'من ${n}';
 	@override String get resetProgress => 'إعادة التقدّم';
 	@override String get setComplete => 'اكتملت — تقبّل الله';
@@ -178,8 +220,14 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get listenHint => 'قيد التشغيل — يمكنك إقفال الهاتف';
 	@override String get listenIdleTitle => 'لا شيء قيد التشغيل';
 	@override String get listenIdleBody => 'شغّل الورد ليُتلى جهرًا، ويُحصى من تلقاء نفسه.';
-	@override String get listenMissingOne => 'دعاء واحد بلا تسجيل بعد';
-	@override String listenMissingOther({required Object n}) => '${n} أدعية بلا تسجيل بعد';
+	@override String listenMissing({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n,
+		zero: '${n} أدعية بلا تسجيل بعد',
+		one: 'دعاء واحد بلا تسجيل بعد',
+		two: 'دعاءان بلا تسجيل بعد',
+		few: '${n} أدعية بلا تسجيل بعد',
+		many: '${n} دعاءً بلا تسجيل بعد',
+		other: '${n} دعاء بلا تسجيل بعد',
+	);
 	@override String get listenPrevious => 'الذكر السابق';
 	@override String get listenNext => 'الذكر التالي';
 	@override String get listenPause => 'إيقاف مؤقّت';
@@ -435,8 +483,14 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get restoreScopeProgressSub => 'الإبقاء على موقع هذا الهاتف وتنبيهاته ولغته';
 	@override String get restoreWarning => 'سيحلّ هذا محلّ ما هو موجود على الجهاز الآن.';
 	@override String get restoreAction => 'استعادة';
-	@override String get restoreDoneOne => 'تمت استعادة عنصر واحد';
-	@override String restoreDoneOther({required Object n}) => 'تمت استعادة ${n} عنصرًا';
+	@override String restoreDone({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n,
+		zero: 'تمت استعادة ${n} عنصر',
+		one: 'تمت استعادة عنصر واحد',
+		two: 'تمت استعادة عنصرين',
+		few: 'تمت استعادة ${n} عناصر',
+		many: 'تمت استعادة ${n} عنصرًا',
+		other: 'تمت استعادة ${n} عنصر',
+	);
 	@override String get backupSaved => 'النسخة جاهزة للحفظ';
 	@override String get backupFailed => 'تعذّر إنشاء النسخة';
 	@override String get restoreErrMalformed => 'تعذّرت قراءة هذا الملف.';
@@ -444,6 +498,9 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get restoreErrTooNew => 'أُنشئت هذه النسخة بإصدار أحدث من حصن. حدّث التطبيق أولًا.';
 	@override String get restoreErrEmpty => 'لا يوجد في هذه النسخة ما يُستعاد.';
 	@override String get restoreFailed => 'تعذّرت الاستعادة. لم يتغيّر شيء.';
+	@override String get quranZoomIn => 'تكبير';
+	@override String get quranZoomHint => 'باعد بين إصبعيك للتكبير، وقاربهما للعودة.';
+	@override String get quranReaderOptions => 'خيارات القراءة';
 	@override String get versesOnThisPage => 'آيات هذه الصفحة';
 	@override String get savedVerses => 'الآيات المحفوظة';
 	@override String get savedPages => 'الصفحات المحفوظة';
@@ -509,9 +566,13 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get shareImageFailedNotReady => 'لم تكن البطاقة جاهزة — تتم مشاركة النص بدلاً من ذلك.';
 	@override String get shareImageFailedUnsupported => 'تعذّر إنشاء صورة على هذا الجهاز — تتم مشاركة النص بدلاً من ذلك.';
 	@override String get nextPhraseOnTap => 'اكتمل الذكر. اضغط لعدّ الذكر التالي.';
+	@override String get aboutContributors => 'القائمون على حصن';
+	@override String get aboutDeveloperCredit => 'المطوّر · صمّم التطبيق وطوّره.';
+	@override String get aboutContentReviewerCredit => 'مساهم · ساعد في مراجعة محتوى التطبيق لرصد الأخطاء الإملائية والمعلومات غير الدقيقة.';
+	@override String get aboutProfileLinkCopied => 'نُسخ رابط الملف الشخصي على GitHub. افتحه في المتصفح.';
 	@override String get aboutTypefaces => 'الخطوط';
 	@override String get aboutVerseMeanings => 'معاني الآيات';
-	@override String get aboutUrduDuaCredit => 'معاني الأدعية بالأردية: مسودة مشروع حصن؛ في انتظار مراجعة مختصّ.';
+	@override String get aboutDuaDraftCredit => 'بعض معاني الأدعية مسودات من مشروع حصن؛ في انتظار مراجعة لغوية وشرعية مختصة.';
 	@override String get aboutTranslationSource => 'مصادر الترجمات · تنزيل';
 	@override String get aboutLinkCopied => 'نُسخ رابط المصدر. افتحه في متصفحك.';
 	@override String get aboutArabicText => 'النص العربي';
@@ -557,6 +618,22 @@ class TranslationsAr extends Translations with BaseTranslations<AppLocale, Trans
 	@override String get prayerSilenceError => 'تعذّر جدولة الصامت وقت الصلاة. راجع الأذونات وأعد المحاولة.';
 	@override String get prayerSilenceStopNow => 'إنهاء فترة الصامت الحالية';
 	@override String get prayerSilenceExpiryNote => 'ينتهي وضع حصن وحده تلقائيًا؛ ولا يتغير وضع عدم الإزعاج الذي ضبطته بنفسك. قد يؤخر أندرويد التحقق الاحتياطي من النهاية عند سحب إذن المنبّهات الدقيقة أو تقييد التطبيق.';
+	@override String get qiblaStyle => 'تصميم البوصلة';
+	@override String get qiblaTone => 'لون البوصلة';
+	@override String get qiblaVibrationOn => 'الاهتزاز مفعّل';
+	@override String get qiblaVibrationOff => 'الاهتزاز معطّل';
+	@override List<String> get qiblaStyles => [
+		'كلاسيكي',
+		'بسيط',
+		'وردة البوصلة',
+	];
+	@override List<String> get qiblaTones => [
+		'لون السمة',
+		'ذهبي',
+		'حبر',
+	];
+	@override String durationMinutes({required Object minutes}) => '${minutes} د';
+	@override String durationHoursMinutes({required Object hours, required Object minutes}) => '${hours} س ${minutes} د';
 }
 
 /// The flat map containing all translations for locale <ar>.
@@ -586,8 +663,7 @@ extension on TranslationsAr {
 			'muhassanComplete' => 'محصَّن بالكامل — ما شاء الله',
 			'muhassanMorning' => 'الصباح',
 			'muhassanEvening' => 'المساء',
-			'streakDaysOne' => 'سلسلة يوم واحد',
-			'streakDaysOther' => ({required Object n}) => 'سلسلة ${n} أيام',
+			'streakDays' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'سلسلة بلا أيام', one: 'سلسلة يوم واحد', two: 'سلسلة يومين', few: 'سلسلة ${n} أيام', many: 'سلسلة ${n} يومًا', other: 'سلسلة ${n} يوم', ), 
 			'streakStart' => 'ابدأ سلسلتك',
 			'streakBest' => ({required Object n}) => 'الأفضل: ${n}',
 			'streakTitle' => 'سلسلتك',
@@ -595,8 +671,7 @@ extension on TranslationsAr {
 			'statCurrent' => 'الحالية',
 			'statBest' => 'الأفضل',
 			'statTotal' => 'إجمالي الأيام',
-			'daysValueOne' => 'يوم واحد',
-			'daysValueOther' => ({required Object n}) => '${n} يوم',
+			'daysValue' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${n} يوم', one: 'يوم واحد', two: 'يومان', few: '${n} أيام', many: '${n} يومًا', other: '${n} يوم', ), 
 			'streakOnFire' => 'أنت في تتابع رائع — واصل!',
 			'streakTodayPending' => 'أكمل أذكار اليوم لتمديد سلسلتك',
 			'streakBroken' => 'أكمل أذكار الصباح والمساء لتبدأ من جديد',
@@ -626,8 +701,7 @@ extension on TranslationsAr {
 			'surahWord' => 'سورة',
 			'revelationMeccan' => 'مكية',
 			'revelationMedinan' => 'مدنية',
-			'versesCountOne' => 'آية واحدة',
-			'versesCountOther' => ({required Object n}) => '${n} آيات',
+			'versesCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${n} آية', one: 'آية واحدة', two: 'آيتان', few: '${n} آيات', many: '${n} آية', other: '${n} آية', ), 
 			'juzLabel' => ({required Object n}) => 'الجزء ${n}',
 			'quranBookmarks' => 'العلامات المرجعية',
 			'noBookmarks' => 'لا توجد علامات مرجعية بعد',
@@ -671,10 +745,8 @@ extension on TranslationsAr {
 			'noCustomTitle' => 'لا توجد أدعية بعد',
 			'noCustomBody' => 'اضغط + لإضافة دعائك والاحتفاظ به هنا.',
 			'recommendedNow' => 'مُقترَحٌ الآن',
-			'readNowOne' => 'اقرأ الآن · دعاء واحد',
-			'readNowOther' => ({required Object count}) => 'اقرأ الآن · ${count} من الأذكار',
-			'duaCountOne' => 'ذِكْر واحد',
-			'duaCountOther' => ({required Object count}) => '${count} ذِكْر',
+			'readNow' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(count, zero: 'اقرأ الآن · ${count} من الأذكار', one: 'اقرأ الآن · دعاء واحد', two: 'اقرأ الآن · دعاءان', few: 'اقرأ الآن · ${count} أدعية', many: 'اقرأ الآن · ${count} دعاءً', other: 'اقرأ الآن · ${count} دعاء', ), 
+			'duaCount' => ({required num count}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(count, zero: '${count} ذِكْر', one: 'ذِكْر واحد', two: 'ذِكْران', few: '${count} أذكار', many: '${count} ذِكْرًا', other: '${count} ذِكْر', ), 
 			'now' => 'الآن',
 			'next' => 'التالي',
 			'remaining' => 'متبقٍّ',
@@ -686,14 +758,12 @@ extension on TranslationsAr {
 			'searchPrompt' => 'ابحث بالعنوان أو المعنى أو النطق أو المصدر.',
 			'noResults' => ({required Object query}) => 'لا توجد أدعية لـ «${query}».',
 			'quranNoResults' => ({required Object query}) => 'لا توجد سور أو آيات لـ «${query}».',
-			'resultsCountOne' => 'نتيجة واحدة',
-			'resultsCountOther' => ({required Object n}) => '${n} نتيجة',
+			'resultsCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${n} نتيجة', one: 'نتيجة واحدة', two: 'نتيجتان', few: '${n} نتائج', many: '${n} نتيجة', other: '${n} نتيجة', ), 
 			'noSavedTitle' => 'لا توجد أدعية محفوظة بعد',
 			'noSavedBody' => 'اضغط على علامة الحفظ في أي دعاء لتحتفظ به هنا.',
 			'resetCount' => 'إعادة العدّ',
 			'tapToCount' => 'اضغط في أي مكان للعدّ',
-			'setsCompletedOne' => 'اكتملت جولة واحدة',
-			'setsCompletedOther' => ({required Object n}) => 'اكتمل ${n} جولات',
+			'setsCompleted' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'اكتمل ${n} جولات', one: 'اكتملت جولة واحدة', two: 'اكتملت جولتان', few: 'اكتملت ${n} جولات', many: 'اكتملت ${n} جولة', other: 'اكتملت ${n} جولة', ), 
 			'ofTarget' => ({required Object n}) => 'من ${n}',
 			'resetProgress' => 'إعادة التقدّم',
 			'setComplete' => 'اكتملت — تقبّل الله',
@@ -704,8 +774,7 @@ extension on TranslationsAr {
 			'listenHint' => 'قيد التشغيل — يمكنك إقفال الهاتف',
 			'listenIdleTitle' => 'لا شيء قيد التشغيل',
 			'listenIdleBody' => 'شغّل الورد ليُتلى جهرًا، ويُحصى من تلقاء نفسه.',
-			'listenMissingOne' => 'دعاء واحد بلا تسجيل بعد',
-			'listenMissingOther' => ({required Object n}) => '${n} أدعية بلا تسجيل بعد',
+			'listenMissing' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: '${n} أدعية بلا تسجيل بعد', one: 'دعاء واحد بلا تسجيل بعد', two: 'دعاءان بلا تسجيل بعد', few: '${n} أدعية بلا تسجيل بعد', many: '${n} دعاءً بلا تسجيل بعد', other: '${n} دعاء بلا تسجيل بعد', ), 
 			'listenPrevious' => 'الذكر السابق',
 			'listenNext' => 'الذكر التالي',
 			'listenPause' => 'إيقاف مؤقّت',
@@ -945,8 +1014,7 @@ extension on TranslationsAr {
 			'restoreScopeProgressSub' => 'الإبقاء على موقع هذا الهاتف وتنبيهاته ولغته',
 			'restoreWarning' => 'سيحلّ هذا محلّ ما هو موجود على الجهاز الآن.',
 			'restoreAction' => 'استعادة',
-			'restoreDoneOne' => 'تمت استعادة عنصر واحد',
-			'restoreDoneOther' => ({required Object n}) => 'تمت استعادة ${n} عنصرًا',
+			'restoreDone' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('ar'))(n, zero: 'تمت استعادة ${n} عنصر', one: 'تمت استعادة عنصر واحد', two: 'تمت استعادة عنصرين', few: 'تمت استعادة ${n} عناصر', many: 'تمت استعادة ${n} عنصرًا', other: 'تمت استعادة ${n} عنصر', ), 
 			'backupSaved' => 'النسخة جاهزة للحفظ',
 			'backupFailed' => 'تعذّر إنشاء النسخة',
 			'restoreErrMalformed' => 'تعذّرت قراءة هذا الملف.',
@@ -954,6 +1022,9 @@ extension on TranslationsAr {
 			'restoreErrTooNew' => 'أُنشئت هذه النسخة بإصدار أحدث من حصن. حدّث التطبيق أولًا.',
 			'restoreErrEmpty' => 'لا يوجد في هذه النسخة ما يُستعاد.',
 			'restoreFailed' => 'تعذّرت الاستعادة. لم يتغيّر شيء.',
+			'quranZoomIn' => 'تكبير',
+			'quranZoomHint' => 'باعد بين إصبعيك للتكبير، وقاربهما للعودة.',
+			'quranReaderOptions' => 'خيارات القراءة',
 			'versesOnThisPage' => 'آيات هذه الصفحة',
 			'savedVerses' => 'الآيات المحفوظة',
 			'savedPages' => 'الصفحات المحفوظة',
@@ -1017,9 +1088,13 @@ extension on TranslationsAr {
 			'shareImageFailedNotReady' => 'لم تكن البطاقة جاهزة — تتم مشاركة النص بدلاً من ذلك.',
 			'shareImageFailedUnsupported' => 'تعذّر إنشاء صورة على هذا الجهاز — تتم مشاركة النص بدلاً من ذلك.',
 			'nextPhraseOnTap' => 'اكتمل الذكر. اضغط لعدّ الذكر التالي.',
+			'aboutContributors' => 'القائمون على حصن',
+			'aboutDeveloperCredit' => 'المطوّر · صمّم التطبيق وطوّره.',
+			'aboutContentReviewerCredit' => 'مساهم · ساعد في مراجعة محتوى التطبيق لرصد الأخطاء الإملائية والمعلومات غير الدقيقة.',
+			'aboutProfileLinkCopied' => 'نُسخ رابط الملف الشخصي على GitHub. افتحه في المتصفح.',
 			'aboutTypefaces' => 'الخطوط',
 			'aboutVerseMeanings' => 'معاني الآيات',
-			'aboutUrduDuaCredit' => 'معاني الأدعية بالأردية: مسودة مشروع حصن؛ في انتظار مراجعة مختصّ.',
+			'aboutDuaDraftCredit' => 'بعض معاني الأدعية مسودات من مشروع حصن؛ في انتظار مراجعة لغوية وشرعية مختصة.',
 			'aboutTranslationSource' => 'مصادر الترجمات · تنزيل',
 			'aboutLinkCopied' => 'نُسخ رابط المصدر. افتحه في متصفحك.',
 			'aboutArabicText' => 'النص العربي',
@@ -1065,6 +1140,18 @@ extension on TranslationsAr {
 			'prayerSilenceError' => 'تعذّر جدولة الصامت وقت الصلاة. راجع الأذونات وأعد المحاولة.',
 			'prayerSilenceStopNow' => 'إنهاء فترة الصامت الحالية',
 			'prayerSilenceExpiryNote' => 'ينتهي وضع حصن وحده تلقائيًا؛ ولا يتغير وضع عدم الإزعاج الذي ضبطته بنفسك. قد يؤخر أندرويد التحقق الاحتياطي من النهاية عند سحب إذن المنبّهات الدقيقة أو تقييد التطبيق.',
+			'qiblaStyle' => 'تصميم البوصلة',
+			'qiblaTone' => 'لون البوصلة',
+			'qiblaVibrationOn' => 'الاهتزاز مفعّل',
+			'qiblaVibrationOff' => 'الاهتزاز معطّل',
+			'qiblaStyles.0' => 'كلاسيكي',
+			'qiblaStyles.1' => 'بسيط',
+			'qiblaStyles.2' => 'وردة البوصلة',
+			'qiblaTones.0' => 'لون السمة',
+			'qiblaTones.1' => 'ذهبي',
+			'qiblaTones.2' => 'حبر',
+			'durationMinutes' => ({required Object minutes}) => '${minutes} د',
+			'durationHoursMinutes' => ({required Object hours, required Object minutes}) => '${hours} س ${minutes} د',
 			_ => null,
 		};
 	}

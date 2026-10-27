@@ -63,6 +63,14 @@ TOTAL_AYAHS = 6236
 # explaining it does.
 EDITIONS = [
     {
+        'lang': 'sq',
+        'id': 'sq.nahi',
+        'kind': 'translation',
+        'name': 'Përkthimi i kuptimeve të Kuranit në shqip',
+        'translator': 'Hasan Efendi Nahi',
+        'credit': 'Hasan Efendi Nahi',
+    },
+    {
         'lang': 'ur',
         'id': 'ur.junagarhi',
         'kind': 'translation',

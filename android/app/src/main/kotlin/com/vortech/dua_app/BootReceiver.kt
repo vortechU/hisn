@@ -16,7 +16,10 @@ class BootReceiver : BroadcastReceiver() {
             Intent.ACTION_LOCKED_BOOT_COMPLETED,
             Intent.ACTION_MY_PACKAGE_REPLACED,
             "android.intent.action.QUICKBOOT_POWERON" ->
-                AdhanScheduler.rearmFuture(context)
+                {
+                    AdhanScheduler.rearmFuture(context)
+                    ReminderRenewal.afterBoot(context)
+                }
         }
     }
 }

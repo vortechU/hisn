@@ -189,20 +189,22 @@ class _DuaAppState extends State<DuaApp> {
               (service ?? PrayerSilenceSettings(prefs))
                 ..sync(AppStrings(locale.lang)),
         ),
-        ChangeNotifierProxyProvider4<
+        ChangeNotifierProxyProvider5<
           PrayerService,
           AdhanAudioService,
           DuaProgressService,
           SunnahCalendarService,
+          LocaleController,
           NotificationService
         >(
           // Eager so reminders are (re)scheduled at launch, not only when the
           // Settings tab is first opened.
           lazy: false,
           create: (_) => NotificationService(prefs, repository),
-          update: (_, prayer, adhan, progress, calendar, notifications) =>
-              (notifications ?? NotificationService(prefs, repository))
-                ..bind(prayer, adhan, progress, calendar),
+          update:
+              (_, prayer, adhan, progress, calendar, locale, notifications) =>
+                  (notifications ?? NotificationService(prefs, repository))
+                    ..bind(prayer, adhan, progress, calendar),
         ),
         // The home-screen widgets draw from most of the app at once: where you
         // are, which language and scheme, how far through today's adhkar. The
@@ -252,12 +254,8 @@ class _DuaAppState extends State<DuaApp> {
       child: Consumer3<LocaleController, ThemeController, DisplaySettings>(
         builder: (context, localeController, themeController, display, _) {
           final arabicFamily = display.arabicFontFamily;
-          final arabicUi = localeController.rtl;
-          // Readex Pro has no Urdu-specific letters; an Urdu interface sets
-          // its chrome in a Naskh that does.
-          final uiFamily = localeController.locale.languageCode == 'ur'
-              ? AppTheme.urduUiFont
-              : AppTheme.sans;
+          final arabicUi = localeController.lang.usesArabicScript;
+          final uiFamily = localeController.lang.uiFontFamily;
           return MaterialApp(
             title: 'Hisn',
             navigatorKey: appNavigatorKey,

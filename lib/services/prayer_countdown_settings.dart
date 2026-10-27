@@ -17,10 +17,7 @@ class PrayerCountdownSettings extends ChangeNotifier {
         _bridge = bridge ?? _invoke {
     _enabled = _prefs.getBool(preferenceKey) ?? false;
     final saved = _prefs.getString('app_language');
-    _strings = AppStrings(AppLang.values.firstWhere(
-      (lang) => lang.name == saved,
-      orElse: () => AppLang.en,
-    ));
+    _strings = AppStrings(AppLang.fromCode(saved));
   }
 
   static const preferenceKey = 'notif_prayer_countdown_enabled';

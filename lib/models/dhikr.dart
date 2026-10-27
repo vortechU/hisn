@@ -6,6 +6,7 @@ class Dhikr {
     required this.transliteration,
     required this.translation,
     required this.target,
+    this.localizedTranslations = const {},
   });
 
   final String id;
@@ -13,19 +14,19 @@ class Dhikr {
   final String transliteration;
   final String translation;
 
-  String translationFor(String langCode) =>
-      langCode == 'ur' ? (_urdu[id] ?? translation) : translation;
+  final Map<String, String> localizedTranslations;
 
-  static const _urdu = {
-    'subhanallah': 'اللہ پاک ہے',
-    'alhamdulillah': 'تمام تعریفیں اللہ کے لیے ہیں',
-    'allahu_akbar': 'اللہ سب سے بڑا ہے',
-    'tahlil': 'اللہ کے سوا کوئی معبود نہیں',
-    'istighfar': 'میں اللہ سے بخشش مانگتا ہوں',
-    'subhanallah_bihamdihi': 'اللہ پاک ہے اور اسی کی حمد ہے',
-    'hawqala': 'اللہ کے بغیر نہ کوئی طاقت ہے نہ قوت',
-    'salawat': 'اے اللہ! محمد پر درود بھیج',
-  };
+  String translationFor(String langCode) =>
+      localizedTranslations[langCode] ?? translation;
+
+  Dhikr withTranslations(Map<String, String> translations) => Dhikr(
+    id: id,
+    arabic: arabic,
+    transliteration: transliteration,
+    translation: translation,
+    target: target,
+    localizedTranslations: translations,
+  );
 
   /// The number of repetitions that completes one set.
   final int target;

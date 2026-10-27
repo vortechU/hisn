@@ -49,14 +49,13 @@ class BackupSummary {
   final int quranBookmarks;
 
   Map<String, dynamic> toJson() => {
-        'streak': streak,
-        'bestStreak': bestStreak,
-        'fortifiedDays': fortifiedDays,
-        'favorites': favorites,
-        'customDuas': customDuas,
-        'quranBookmarks': quranBookmarks,
-      };
-
+    'streak': streak,
+    'bestStreak': bestStreak,
+    'fortifiedDays': fortifiedDays,
+    'favorites': favorites,
+    'customDuas': customDuas,
+    'quranBookmarks': quranBookmarks,
+  };
 }
 
 /// A backup file that parsed and validated — ready to be restored.
@@ -113,6 +112,7 @@ class BackupService {
     'favorite_dua_ids',
     'custom_duas',
     'tasbih_custom_phrases',
+    'tasbih_selected',
   };
   static const _progressPrefixes = <String>[
     'muhassan_', // streak, best, history, per-day completion
@@ -147,12 +147,10 @@ class BackupService {
       _matches(key, _settingsKeys, _settingsPrefixes);
 
   /// Whether [key] should be written back when restoring with [scope].
-  static bool inScope(String key, BackupScope scope) =>
-      switch (scope) {
-        BackupScope.everything => isBackedUp(key),
-        BackupScope.progressOnly =>
-          _matches(key, _progressKeys, _progressPrefixes),
-      };
+  static bool inScope(String key, BackupScope scope) => switch (scope) {
+    BackupScope.everything => isBackedUp(key),
+    BackupScope.progressOnly => _matches(key, _progressKeys, _progressPrefixes),
+  };
 
   static bool _matches(String key, Set<String> exact, List<String> prefixes) =>
       exact.contains(key) || prefixes.any(key.startsWith);
@@ -191,16 +189,17 @@ class BackupService {
     SharedPreferences prefs, {
     required String appVersion,
     DateTime? now,
-  }) =>
-      utf8.encode(
-        const JsonEncoder.withIndent('  ')
-            .convert(build(prefs, appVersion: appVersion, now: now)),
-      );
+  }) => utf8.encode(
+    const JsonEncoder.withIndent(
+      '  ',
+    ).convert(build(prefs, appVersion: appVersion, now: now)),
+  );
 
   /// The suggested filename, dated so successive backups don't collide.
   String fileName({DateTime? now}) {
     final d = now ?? DateTime.now();
-    final stamp = '${d.year.toString().padLeft(4, '0')}-'
+    final stamp =
+        '${d.year.toString().padLeft(4, '0')}-'
         '${d.month.toString().padLeft(2, '0')}-'
         '${d.day.toString().padLeft(2, '0')}';
     return 'hisn-backup-$stamp.json';
@@ -210,14 +209,14 @@ class BackupService {
       v.entries.toList()..sort((a, b) => a.key.compareTo(b.key));
 
   static Map<String, dynamic> _encodeValue(Object value) => switch (value) {
-        bool v => {'type': 'bool', 'value': v},
-        int v => {'type': 'int', 'value': v},
-        double v => {'type': 'double', 'value': v},
-        String v => {'type': 'string', 'value': v},
-        List<String> v => {'type': 'stringList', 'value': v},
-        // getKeys/get only ever yield the five types above.
-        _ => {'type': 'string', 'value': value.toString()},
-      };
+    bool v => {'type': 'bool', 'value': v},
+    int v => {'type': 'int', 'value': v},
+    double v => {'type': 'double', 'value': v},
+    String v => {'type': 'string', 'value': v},
+    List<String> v => {'type': 'stringList', 'value': v},
+    // getKeys/get only ever yield the five types above.
+    _ => {'type': 'string', 'value': value.toString()},
+  };
 
   static Object? _decodeValue(Object? encoded) {
     if (encoded is! Map) return null;
@@ -229,7 +228,9 @@ class BackupService {
       'double' => value is num ? value.toDouble() : null,
       'string' => value is String ? value : null,
       'stringList' =>
-        value is List && value.every((e) => e is String) ? value.cast<String>() : null,
+        value is List && value.every((e) => e is String)
+            ? value.cast<String>()
+            : null,
       _ => null,
     };
   }
@@ -284,7 +285,7 @@ class BackupService {
         summary: _summarize(values),
         values: values,
       ),
-      null
+      null,
     );
   }
 
@@ -414,15 +415,14 @@ class BackupService {
     SharedPreferences prefs,
     String key,
     Object value,
-  ) async =>
-      switch (value) {
-        bool v => prefs.setBool(key, v),
-        int v => prefs.setInt(key, v),
-        double v => prefs.setDouble(key, v),
-        String v => prefs.setString(key, v),
-        List<String> v => prefs.setStringList(key, v),
-        _ => Future.value(false),
-      };
+  ) async => switch (value) {
+    bool v => prefs.setBool(key, v),
+    int v => prefs.setInt(key, v),
+    double v => prefs.setDouble(key, v),
+    String v => prefs.setString(key, v),
+    List<String> v => prefs.setStringList(key, v),
+    _ => Future.value(false),
+  };
 
   // --------------------------------------------------------------- journal
 
@@ -443,17 +443,16 @@ class BackupService {
     SharedPreferences prefs,
     BackupScope scope,
     Map<String, Object> values,
-  ) =>
-      prefs.setString(
-        _kJournal,
-        jsonEncode({
-          'scope': scope.name,
-          'data': {
-            for (final entry in values.entries)
-              entry.key: _encodeValue(entry.value),
-          },
-        }),
-      );
+  ) => prefs.setString(
+    _kJournal,
+    jsonEncode({
+      'scope': scope.name,
+      'data': {
+        for (final entry in values.entries)
+          entry.key: _encodeValue(entry.value),
+      },
+    }),
+  );
 
   static (BackupScope, Map<String, Object>)? _readJournal(String raw) {
     final Object? decoded;
@@ -503,8 +502,8 @@ class BackupService {
       customDuas: _customDuaCount(values['custom_duas']),
       // Pages and verses together — the summary answers "how much of my Quran
       // reading is in here", not which kind of mark it is.
-      quranBookmarks: lengthOf('quran_bookmark_pages') +
-          lengthOf('quran_bookmark_ayahs'),
+      quranBookmarks:
+          lengthOf('quran_bookmark_pages') + lengthOf('quran_bookmark_ayahs'),
     );
   }
 

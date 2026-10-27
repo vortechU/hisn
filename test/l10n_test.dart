@@ -49,6 +49,19 @@ void main() {
         expect(s.locDeviceGps('Madinah'), contains('Madinah'));
       });
 
+      test('plural categories resolve across representative counts', () {
+        for (final count in [0, 1, 2, 3, 11, 21, 102]) {
+          for (final text in [
+            s.streakDays(count), s.daysValue(count), s.versesCount(count),
+            s.readNow(count), s.duaCount(count), s.resultsCount(count),
+            s.setsCompleted(count), s.listenMissing(count), s.restoreDone(count),
+          ]) {
+            expect(text, isNotEmpty);
+            expect(text, isNot(contains(r'$')));
+          }
+        }
+      });
+
       test('list-backed strings have the right length', () {
         expect(s.weekdayLetters, hasLength(7));
         expect(s.fontScaleLabels, hasLength(4));

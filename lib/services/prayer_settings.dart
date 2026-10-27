@@ -25,6 +25,7 @@ const List<PresetCity> presetCities = [
   PresetCity('Kuwait City', 'Kuwait', 29.3759, 47.9774),
   PresetCity('Cairo', 'Egypt', 30.0444, 31.2357),
   PresetCity('Istanbul', 'Türkiye', 41.0082, 28.9784),
+  PresetCity('Pristina', 'Kosovo', 42.6629, 21.1655),
   PresetCity('Casablanca', 'Morocco', 33.5731, -7.5898),
   PresetCity('Lagos', 'Nigeria', 6.5244, 3.3792),
   PresetCity('Karachi', 'Pakistan', 24.8607, 67.0011),

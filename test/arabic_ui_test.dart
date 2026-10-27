@@ -133,6 +133,8 @@ void main() {
   testWidgets('the go-to-verse sheet lists surahs in Arabic', (tester) async {
     // The surah picker is a sheet, so no screen-level render reaches it.
     await pump(tester, const MushafScreen(startPage: 1));
+    await tester.tap(find.byType(PopupMenuButton<VoidCallback>));
+    await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.my_location));
     for (var i = 0; i < 4; i++) {
       await tester.pump(const Duration(milliseconds: 200));

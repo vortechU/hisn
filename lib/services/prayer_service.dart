@@ -6,6 +6,8 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../l10n/app_language.dart';
+
 import 'prayer_settings.dart';
 
 /// One prayer occurrence: which prayer, and the moment its adhan is called.
@@ -35,14 +37,14 @@ class DayMarkTiming {
 /// In GPS mode it starts with a Makkah fallback (so the UI has data instantly),
 /// then tries the device location and recomputes if a fix arrives.
 class PrayerService extends ChangeNotifier {
-  PrayerService(this._prefs) {
+  PrayerService(this._prefs, {bool refreshDeviceLocation = true}) {
     _load();
     if (_locationMode == LocationMode.gps) {
       _compute();
       // Never prompts: launch is not a moment the user chose, and Play wants
       // the in-app explanation (the onboarding permissions page) to come
       // before the system dialog. A grant already given is used silently.
-      _tryDeviceLocation(prompt: false);
+      if (refreshDeviceLocation) _tryDeviceLocation(prompt: false);
     } else {
       _compute();
     }
@@ -77,6 +79,8 @@ class PrayerService extends ChangeNotifier {
   String _locationLabel = _makkahLabel;
   bool _usingDeviceLocation = false;
   bool _locating = false;
+  bool _disposed = false;
+  int _locationRequest = 0;
 
   /// Yesterday's Isha → today's five prayers → tomorrow's Fajr, in order, so a
   /// "current" and "next" can always be resolved whatever the time of day.
@@ -221,15 +225,19 @@ class PrayerService extends ChangeNotifier {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     }
-    final granted = permission == LocationPermission.whileInUse ||
+    final granted =
+        permission == LocationPermission.whileInUse ||
         permission == LocationPermission.always;
     if (granted) await useDeviceLocation();
     return granted;
   }
 
   Future<void> useDeviceLocation() async {
+    if (_disposed || (_locationMode == LocationMode.gps && _locating)) return;
+    final request = ++_locationRequest;
     _locationMode = LocationMode.gps;
     await _prefs.setString(_kLocMode, LocationMode.gps.name);
+    if (!_isCurrentLocationRequest(request)) return;
     // Don't reset to Makkah — fall back to the last detected location (if any)
     // while we try to refresh it. Makkah only stands in when nothing is known.
     if (!_restoreLastGps()) {
@@ -254,6 +262,9 @@ class PrayerService extends ChangeNotifier {
   }
 
   Future<void> useManualCity(PresetCity city) async {
+    if (_disposed) return;
+    _locationRequest++;
+    _locating = false;
     _locationMode = LocationMode.manual;
     _coordinates = Coordinates(city.latitude, city.longitude);
     _locationLabel = city.name;
@@ -272,13 +283,17 @@ class PrayerService extends ChangeNotifier {
     if (method != null) {
       try {
         _method = CalculationMethod.values.byName(method);
-      } catch (_) {/* keep default */}
+      } catch (_) {
+        /* keep default */
+      }
     }
     final madhab = _prefs.getString(_kMadhab);
     if (madhab != null) {
       try {
         _madhab = Madhab.values.byName(madhab);
-      } catch (_) {/* keep default */}
+      } catch (_) {
+        /* keep default */
+      }
     }
     _locationMode = _prefs.getString(_kLocMode) == LocationMode.manual.name
         ? LocationMode.manual
@@ -299,6 +314,7 @@ class PrayerService extends ChangeNotifier {
   }
 
   void _compute() {
+    if (_disposed) return;
     final now = DateTime.now();
     PrayerTimes forDay(DateTime day) =>
         PrayerTimes(_coordinates, DateComponents.from(day), _params);
@@ -320,16 +336,20 @@ class PrayerService extends ChangeNotifier {
   }
 
   Future<void> _tryDeviceLocation({bool prompt = true}) async {
-    if (_locationMode != LocationMode.gps) return;
+    if (_disposed || _locationMode != LocationMode.gps) return;
+    final request = ++_locationRequest;
     _locating = true;
     notifyListeners();
     try {
       if (!await Geolocator.isLocationServiceEnabled()) return;
+      if (!_isCurrentLocationRequest(request)) return;
 
       var permission = await Geolocator.checkPermission();
+      if (!_isCurrentLocationRequest(request)) return;
       if (prompt && permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
       }
+      if (!_isCurrentLocationRequest(request)) return;
       if (permission == LocationPermission.denied ||
           permission == LocationPermission.deniedForever) {
         return;
@@ -341,37 +361,57 @@ class PrayerService extends ChangeNotifier {
       Position? position;
       try {
         position = await Geolocator.getCurrentPosition(
-          locationSettings:
-              const LocationSettings(accuracy: LocationAccuracy.low),
-        ).timeout(const Duration(seconds: 8));
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.low,
+            // Let the plugin cancel its native request when the limit expires.
+            timeLimit: Duration(seconds: 8),
+          ),
+        );
       } on TimeoutException {
+        if (!_isCurrentLocationRequest(request)) return;
         position = await Geolocator.getLastKnownPosition();
       }
       if (position == null) return;
 
       // The user may have switched to manual while we were waiting.
-      if (_locationMode != LocationMode.gps) return;
-
-      _coordinates = Coordinates(position.latitude, position.longitude);
+      if (!_isCurrentLocationRequest(request)) return;
       // Resolve a human town name ("Madinah"); keep the previous label if the
       // lookup fails so we never downgrade a good name to "Your location".
       final town = await _townName(position.latitude, position.longitude);
+      if (!_isCurrentLocationRequest(request)) return;
+      _coordinates = Coordinates(position.latitude, position.longitude);
       _locationLabel =
           town ?? (_locationLabel.isEmpty ? 'Your location' : _locationLabel);
       _usingDeviceLocation = true;
 
       // Persist the fix so it survives the next launch even with services off.
-      await _prefs.setDouble(_kGpsLat, position.latitude);
-      await _prefs.setDouble(_kGpsLng, position.longitude);
-      await _prefs.setString(_kGpsLabel, _locationLabel);
+      await Future.wait([
+        _prefs.setDouble(_kGpsLat, position.latitude),
+        _prefs.setDouble(_kGpsLng, position.longitude),
+        _prefs.setString(_kGpsLabel, _locationLabel),
+      ]);
 
-      _compute();
+      if (_isCurrentLocationRequest(request)) _compute();
     } catch (_) {
       // Keep the last known (or Makkah) location if a fix is unavailable.
     } finally {
-      _locating = false;
-      notifyListeners();
+      if (_isCurrentLocationRequest(request)) {
+        _locating = false;
+        notifyListeners();
+      }
     }
+  }
+
+  bool _isCurrentLocationRequest(int request) =>
+      !_disposed &&
+      request == _locationRequest &&
+      _locationMode == LocationMode.gps;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    _locationRequest++;
+    super.dispose();
   }
 
   /// Reverse-geocode coordinates to a town/city name, localized to the app
@@ -380,10 +420,12 @@ class PrayerService extends ChangeNotifier {
     try {
       final lang = _prefs.getString(_kLang);
       // Map the app language to a geocoder locale (defaults to English).
-      final locale = (lang == 'ar' || lang == 'id') ? lang! : 'en';
+      final locale = AppLang.fromCode(lang).geocoderLocale;
       try {
         await setLocaleIdentifier(locale);
-      } catch (_) {/* locale override is best-effort */}
+      } catch (_) {
+        /* locale override is best-effort */
+      }
       final placemarks = await placemarkFromCoordinates(lat, lng);
       if (placemarks.isEmpty) return null;
       final p = placemarks.first;

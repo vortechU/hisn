@@ -25,10 +25,17 @@ class QuranService extends ChangeNotifier {
   static const _kBookmarks = 'quran_bookmark_pages';
   static const _kVerses = 'quran_bookmark_ayahs';
   static const _kLastPage = 'quran_last_page';
+  static const _kZoomHintSeen = 'quran_zoom_hint_seen';
 
   Set<int> _bookmarks = {};
   Set<String> _verses = {};
   int? _lastPage;
+
+  bool get hasSeenZoomHint => _prefs.getBool(_kZoomHintSeen) ?? false;
+
+  void markZoomHintSeen() {
+    if (!hasSeenZoomHint) _prefs.setBool(_kZoomHintSeen, true);
+  }
 
   // ---- last read ----
   int? get lastPage => _lastPage;
@@ -50,7 +57,9 @@ class QuranService extends ChangeNotifier {
   void toggleBookmark(int page) {
     if (!_bookmarks.add(page)) _bookmarks.remove(page);
     _prefs.setStringList(
-        _kBookmarks, _bookmarks.map((p) => p.toString()).toList());
+      _kBookmarks,
+      _bookmarks.map((p) => p.toString()).toList(),
+    );
     notifyListeners();
   }
 

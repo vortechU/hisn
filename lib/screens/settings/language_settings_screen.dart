@@ -7,7 +7,7 @@ import '../../theme/app_theme.dart';
 import '../../widgets/arabic_text.dart';
 import '../../widgets/ornament.dart';
 
-/// UI language picker (English / Arabic / Indonesian).
+/// UI language picker, populated from the language registry.
 ///
 /// Each language is named in its own script and set in the face that will
 /// actually render it, so the list previews the choice it offers.
@@ -29,32 +29,14 @@ class LanguageSettingsScreen extends StatelessWidget {
           RowGroup(
             indent: 66,
             children: [
-              _LanguageRow(
-                label: s.languageEnglish,
-                code: 'EN',
-                selected: locale.lang == AppLang.en,
-                onTap: () => select(AppLang.en),
-              ),
-              _LanguageRow(
-                label: s.languageArabic,
-                code: 'AR',
-                arabic: true,
-                selected: locale.lang == AppLang.ar,
-                onTap: () => select(AppLang.ar),
-              ),
-              _LanguageRow(
-                label: s.languageIndonesian,
-                code: 'ID',
-                selected: locale.lang == AppLang.id,
-                onTap: () => select(AppLang.id),
-              ),
-              _LanguageRow(
-                label: s.languageUrdu,
-                code: 'UR',
-                arabic: true,
-                selected: locale.lang == AppLang.ur,
-                onTap: () => select(AppLang.ur),
-              ),
+              for (final language in AppLang.values)
+                _LanguageRow(
+                  label: language.nativeName,
+                  code: language.code.toUpperCase(),
+                  arabic: language.usesArabicScript,
+                  selected: locale.lang == language,
+                  onTap: () => select(language),
+                ),
             ],
           ),
         ],

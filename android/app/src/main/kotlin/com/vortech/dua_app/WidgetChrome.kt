@@ -219,36 +219,34 @@ object WidgetChrome {
         val mins = (millis / 60000).coerceAtLeast(0)
         val h = mins / 60
         val m = mins % 60
-        if (PrayerWidget.prefs(context).getString("lang", "en") == "ur") {
-            return if (h > 0) "$h گھنٹے $m منٹ" else "$m منٹ"
+        val code = PrayerWidget.prefs(context).getString("lang", "en")
+        val template = if (h > 0) {
+            NativeLocalizations.text(context, code, "durationHoursMinutes", "${h}h ${m}m")
+        } else {
+            NativeLocalizations.text(context, code, "durationMinutes", "${m}m")
         }
-        return if (h > 0) "${h}h ${m}m" else "${m}m"
+        return template.replace("\${hours}", h.toString()).replace("\$hours", h.toString())
+            .replace("\${minutes}", m.toString()).replace("\$minutes", m.toString())
     }
 
     /** A pushed label, or [fallback] before the app has pushed one. */
     fun label(context: Context, key: String, fallback: String): CharSequence =
         ui(context, PrayerWidget.prefs(context).getString(key, fallback) ?: fallback)
 
-    /**
-     * Interface text, ready for a TextView set in Readex Pro.
-     *
-     * Readex has Arabic but not the letters only Urdu uses (ہ, ے, ٹ…). Left to
-     * glyph fallback, a word would switch faces mid-word and lose its joins, so
-     * an Urdu interface's text is spanned whole onto the system sans — whose
-     * Arabic-script face does have them, as the app sets Urdu chrome in Noto
-     * Naskh. A family-name span is the one kind that survives the parcel.
-     */
+    /** Applies the registered native font when the bundled UI face lacks a script. */
     fun ui(context: Context, text: String): CharSequence {
-        if (PrayerWidget.prefs(context).getString("lang", "en") != "ur" || text.isEmpty()) {
-            return text
-        }
+        val font = language(context).opt("fontFamily") as? String ?: return text
+        if (font.isEmpty() || text.isEmpty()) return text
         return android.text.SpannableString(text).apply {
             setSpan(
-                android.text.style.TypefaceSpan("sans-serif"),
+                android.text.style.TypefaceSpan(font),
                 0, length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
             )
         }
     }
+
+    private fun language(context: Context): org.json.JSONObject =
+        NativeLocalizations.language(context, PrayerWidget.prefs(context).getString("lang", "en"))
 
     /** dp → px, for ornament geometry that should match the app's metrics. */
     fun dp(context: Context, value: Float): Int =
@@ -260,10 +258,10 @@ object WidgetChrome {
 
     /** Whether the interface language is Arabic. */
     fun isArabicUi(context: Context): Boolean =
-        PrayerWidget.prefs(context).getString("lang", "en") == "ar"
+        language(context).optBoolean("isArabic")
 
     fun isRtlUi(context: Context): Boolean =
-        PrayerWidget.prefs(context).getString("lang", "en") in setOf("ar", "ur")
+        language(context).optBoolean("rtl")
 
     fun applyDirection(context: Context, views: RemoteViews, root: Int) {
         views.setInt(root, "setLayoutDirection",
@@ -280,7 +278,7 @@ object WidgetChrome {
      */
     fun digits(context: Context, value: Int): String {
         val plain = value.toString()
-        if (!isArabicUi(context)) return plain
+        if (!language(context).optBoolean("arabicDigits")) return plain
         val out = StringBuilder(plain.length)
         for (ch in plain) {
             out.append(if (ch in '0'..'9') ARABIC_DIGITS[ch - '0'] else ch)

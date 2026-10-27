@@ -120,6 +120,11 @@
             android:name=".AdhanPlayerService"
             android:exported="false"
             android:foregroundServiceType="mediaPlayback" />
+        <!-- Periodically refill all enabled reminders without opening the UI. -->
+        <service
+            android:name=".ReminderRenewalJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="true" />
 
         <!-- Hands-free adhkar. Unlike the adhan above — a one-shot with no
              transport — a recited set is a real media session: the lock

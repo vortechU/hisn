@@ -11,6 +11,8 @@ class DuaCategory {
     required this.subtitle,
     this.subtitleArabic,
     this.group = groupSituational,
+    this.localizedTitles = const {},
+    this.localizedSubtitles = const {},
   });
 
   final String id;
@@ -33,24 +35,28 @@ class DuaCategory {
   String subtitleFor(bool arabic) =>
       arabic ? (subtitleArabic ?? subtitle) : subtitle;
 
+  final Map<String, String> localizedTitles;
+  final Map<String, String> localizedSubtitles;
+
   String titleForLang(String code) =>
-      code == 'ur' ? (_urdu[id]?.$1 ?? title) : titleFor(code == 'ar');
+      localizedTitles[code] ?? titleFor(code == 'ar');
 
   String subtitleForLang(String code) =>
-      code == 'ur' ? (_urdu[id]?.$2 ?? subtitle) : subtitleFor(code == 'ar');
+      localizedSubtitles[code] ?? subtitleFor(code == 'ar');
 
-  static const _urdu = <String, (String, String)>{
-    'morning': ('صبح کے اذکار', 'فجر کے بعد طلوع آفتاب تک پڑھے جاتے ہیں'),
-    'evening': ('شام کے اذکار', 'عصر کے بعد غروب آفتاب تک پڑھے جاتے ہیں'),
-    'after_salah': ('نماز کے بعد', 'فرض نمازوں کے بعد پڑھے جاتے ہیں'),
-    'waking': ('بیدار ہونے پر', 'نیند سے بیدار ہونے کے بعد'),
-    'sleep': ('سونے سے پہلے', 'بستر پر جاتے وقت پڑھے جاتے ہیں'),
-    'daily': ('روزمرہ زندگی', 'کھانا، گھر سے نکلنا اور دیگر مواقع'),
-    'forgiveness': ('استغفار', 'توبہ کے ساتھ اللہ کی طرف رجوع'),
-    'distress': ('پریشانی اور غم', 'فکر، غم یا تنگی کے وقت'),
-    'travel': ('سفر', 'روانگی، قیام اور واپسی'),
-    'mosque': ('مسجد اور اذان', 'اذان، مسجد میں داخلہ اور نکلنا'),
-  };
+  DuaCategory withLocalized({
+    required Map<String, String> titles,
+    required Map<String, String> subtitles,
+  }) => DuaCategory(
+    id: id,
+    title: title,
+    titleArabic: titleArabic,
+    subtitle: subtitle,
+    subtitleArabic: subtitleArabic,
+    group: group,
+    localizedTitles: titles,
+    localizedSubtitles: subtitles,
+  );
 
   factory DuaCategory.fromJson(Map<String, dynamic> json) {
     return DuaCategory(

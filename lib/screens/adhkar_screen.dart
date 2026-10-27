@@ -9,6 +9,7 @@ import '../services/custom_dua_service.dart';
 import '../services/feature_tour_controller.dart';
 import '../services/theme_controller.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_dedication.dart';
 import '../widgets/category_card.dart';
 import '../widgets/feature_tour_anchor.dart';
 import '../widgets/muhassan_card.dart';
@@ -76,11 +77,11 @@ class AdhkarScreen extends StatelessWidget {
               categories: [customCategory],
               countOf: (_) => custom.count,
               featured: true,
-              bottomPadding: 32,
               onTapOverride: (context, _) => Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const CustomDuasScreen()),
               ),
             ),
+            const SliverToBoxAdapter(child: AppDedication()),
           ],
         ),
       ),
@@ -250,7 +251,6 @@ class _CategoryGroup extends StatelessWidget {
     this.leading,
     this.onTapOverride,
     this.featured = false,
-    this.bottomPadding = 0,
   });
 
   final List<DuaCategory> categories;
@@ -263,7 +263,6 @@ class _CategoryGroup extends StatelessWidget {
 
   /// Shows each row's subtitle — for a group of one, where there is room.
   final bool featured;
-  final double bottomPadding;
 
   void _open(BuildContext context, DuaCategory category) {
     if (onTapOverride != null) {
@@ -280,7 +279,7 @@ class _CategoryGroup extends StatelessWidget {
     if (categories.isEmpty) return const SliverToBoxAdapter();
 
     return SliverPadding(
-      padding: EdgeInsets.fromLTRB(Ms.margin, 0, Ms.margin, bottomPadding),
+      padding: const EdgeInsets.symmetric(horizontal: Ms.margin),
       sliver: SliverToBoxAdapter(
         child: RowGroup(
           indent: 70,

@@ -59,12 +59,7 @@ class PrayerSilenceSettings extends ChangeNotifier {
        _bridge = bridge ?? _invoke {
     _readPreferences();
     final saved = _prefs.getString('app_language');
-    _strings = AppStrings(
-      AppLang.values.firstWhere(
-        (lang) => lang.name == saved,
-        orElse: () => AppLang.en,
-      ),
-    );
+    _strings = AppStrings(AppLang.fromCode(saved));
   }
 
   static const preferenceKey = 'prayer_silence_enabled';
